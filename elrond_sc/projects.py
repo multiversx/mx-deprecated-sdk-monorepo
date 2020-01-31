@@ -1,25 +1,30 @@
 import logging
+import os
 import shutil
 from os import path
 
-from elrond_sc import config, downloader, environment, utils
+from elrond_sc import config, downloader, environment, errors, utils
 
 logger = logging.getLogger("projects")
 
 
-def create_project(name, template, destination_folder):
+def create_project(name, template, directory):
     logger.info("create_project.name: %s", name)
     logger.info("create_project.template: %s", template)
-    logger.info("create_project.destination_folder: %s", destination_folder)
+    logger.info("create_project.directory: %s", directory)
+
+    if not directory:
+        logger.info("Using current directory")
+        directory = os.getcwd()     
 
     _download_templates_archive()
     tools_folder = environment.get_tools_folder()
     template_folder = path.join(config.TEMPLATES_PATH_AFTER_UNZIP, template)
-    source_path = path.join(template_folder, tools_folder)
-    destination_path = path.join(destination_folder, name)
+    source_path = path.join(tools_folder, template_folder)
+    destination_path = path.join(directory, name)
 
     if not path.isdir(source_path):
-        raise Exception(f"Template missing: {source_path}")
+        raise errors.KnownError(f"Template missing: {source_path}")
 
     shutil.copytree(source_path, destination_path)
 

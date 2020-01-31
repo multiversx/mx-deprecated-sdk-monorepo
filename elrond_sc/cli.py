@@ -2,7 +2,7 @@ import logging
 import pprint
 from argparse import ArgumentParser
 
-from elrond_sc import dependencies, projects
+from elrond_sc import dependencies, projects, errors
 
 logger = logging.getLogger("cli")
 
@@ -54,8 +54,11 @@ def create(args):
     name = args.name
     template = args.template
     directory = args.directory
-    projects.create_project(name, template, directory)
 
+    try:
+        projects.create_project(name, template, directory)
+    except errors.KnownError as err:
+        logger.fatal(err)
 
 def build(args):
     logger.info("build")
