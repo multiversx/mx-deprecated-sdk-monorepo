@@ -43,14 +43,15 @@ def setup_parser():
 
 
 def install(args):
-    logger.info("install")
-    pprint.pprint(args)
+    module = args.module
+
+    try:
+        dependencies.install(module)
+    except errors.KnownError as err:
+        logger.fatal(err)
 
 
 def create(args):
-    logger.info("create")
-    pprint.pprint(args)
-
     name = args.name
     template = args.template
     directory = args.directory
@@ -59,6 +60,7 @@ def create(args):
         projects.create_project(name, template, directory)
     except errors.KnownError as err:
         logger.fatal(err)
+
 
 def build(args):
     logger.info("build")

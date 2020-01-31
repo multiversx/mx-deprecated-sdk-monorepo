@@ -24,7 +24,7 @@ def create_project(name, template, directory):
     destination_path = path.join(directory, name)
 
     if not path.isdir(source_path):
-        raise errors.KnownError(f"Template missing: {source_path}")
+        raise errors.TemplateMissingError(source_path)
 
     shutil.copytree(source_path, destination_path)
 

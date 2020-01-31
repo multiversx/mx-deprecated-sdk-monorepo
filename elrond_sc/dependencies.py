@@ -2,9 +2,27 @@
 import logging
 from os import path
 
-from elrond_sc import config, environment, downloader, utils
+from elrond_sc import config, downloader, environment, errors, utils
 
 logger = logging.getLogger("dependencies")
+
+
+def install(module):
+    logger.info(f"install.module: {module}")
+
+    if module == "C":
+        install_llvm("v9")
+    elif module == "soll":
+        install_llvm("v8")
+        pass
+    elif module == "rust":
+        pass
+    elif module == "nodedebug":
+        pass
+    else:
+        raise errors.KnownError("Unknown module to install")
+
+    logger.info(f"Installed [{module}]")
 
 
 def install_llvm(version="v9"):
@@ -16,8 +34,6 @@ def install_llvm(version="v9"):
     downloader.download(url, archive)
     llvm_folder = path.join(tools_folder, "llvm-folder")
     utils.untar(archive, llvm_folder)
-
-    logger.info("Install done.")
 
 
 def _get_url_llvm(version):
