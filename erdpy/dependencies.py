@@ -2,7 +2,7 @@
 import logging
 from os import path
 
-from elrond_sc import config, downloader, environment, errors, utils
+from erdpy import config, downloader, environment, errors, utils
 
 logger = logging.getLogger("dependencies")
 

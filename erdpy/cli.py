@@ -2,7 +2,7 @@ import logging
 import pprint
 from argparse import ArgumentParser
 
-from elrond_sc import dependencies, projects, errors
+from erdpy import dependencies, projects, errors
 
 logger = logging.getLogger("cli")
 

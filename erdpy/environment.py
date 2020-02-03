@@ -2,7 +2,7 @@ import sys
 import pathlib
 from os import path
 
-from elrond_sc import config, utils
+from erdpy import config, utils
 
 
 def get_tools_folder():
