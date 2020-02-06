@@ -7,5 +7,8 @@ setuptools.setup(name="erdpy",
       author="Elrond Network",
       license="GPL",
       packages=setuptools.find_packages(),
+      install_requires=[
+          "toml",
+      ],
       zip_safe=False,
       python_requires=">=3.6")
