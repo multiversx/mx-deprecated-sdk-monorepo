@@ -1,8 +1,11 @@
 import logging
+import base64
 
 from erdpy.building.builder import CCodebase
 from erdpy.gateways import DebugGateway
 from erdpy.contracts import SmartContract
+
+logger = logging.getLogger("examples")
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
@@ -19,21 +22,27 @@ if __name__ == '__main__':
 
     # We can inspect the bytecode like this:
     bytecode = codebase.get_bytecode()
-    print("Bytecode:", bytecode)
+    logger.info("Bytecode: %s", bytecode)
 
     # Now, we can deploy the smart contract on node-debug.
     contract = SmartContract(bytecode=bytecode)
     gateway = DebugGateway()
-    tx_hash, contract_address = gateway.deploy_contract(contract)
-    print("Tx hash:", tx_hash)
-    print("Contract address:", contract_address)
+
+    answer = None
 
     def myflow():
-        gateway.deploy_contract(contract)
-        # assert ...
-        # gateway.execute_contract(contract)
-        # assert ...
-    
+        alice = "aaaaaaaa112233441122334411223344112233441122334411223344aaaaaaaa"
+        tx, address = gateway.deploy_contract(contract, sender=alice)
+        
+        assert address is not None
+        logger.info("Tx hash: %s", tx)
+        logger.info("Contract address: %s", address)
+        
+        answer = gateway.query_contract(contract, "getUltimateAnswer")[0]
+        answer_bytes = base64.decodebytes(b"Kg==")
+        answer_hex = answer_bytes.hex()
+        answer_int = int(answer_hex, 16)
+        logger.info(f"Answer: {answer}, {answer_bytes}, {answer_hex}, {answer_int}")
+
+
     gateway.run_flow(myflow)
-
-
