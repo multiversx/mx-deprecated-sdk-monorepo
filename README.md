@@ -1,2 +1,3 @@
-# elrond-sc-tools
-Elrond - Command Line Tools for Smart Contracts
+# erdpy
+
+Elrond - Command Line Tools and Python SDK for interacting with Smart Contracts.
