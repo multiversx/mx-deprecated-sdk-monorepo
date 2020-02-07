@@ -45,4 +45,5 @@ if __name__ == '__main__':
         logger.info(f"Answer: {answer_bytes}, {answer_hex}, {answer_int}")
 
 
+    # This is how we run a defined flow.
     gateway.run_flow(myflow)
