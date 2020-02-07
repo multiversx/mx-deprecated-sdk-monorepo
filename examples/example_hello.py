@@ -2,7 +2,7 @@ import logging
 import base64
 
 from erdpy.building.builder import CodebaseC
-from erdpy.gateways import DebugGateway
+from erdpy.gateways import DebugHost
 from erdpy.contracts import SmartContract
 
 logger = logging.getLogger("examples")
@@ -25,7 +25,7 @@ if __name__ == '__main__':
     logger.info("Bytecode: %s", bytecode)
 
     # Now, we create a gateway which intermediates deployment and execution
-    gateway = DebugGateway()
+    gateway = DebugHost()
     # We initialize the smart contract with the compiled bytecode.
     contract = SmartContract(bytecode=bytecode)
 
