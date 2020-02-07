@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     # Create a codebase object afterwards
     codebase = CCodebase("./examples/hello")
-    
+
     # This will build the smart contract.
     # If the buildchain is missing, it will be installed automatically.
     codebase.build(debug=True)
@@ -27,3 +27,13 @@ if __name__ == '__main__':
     tx_hash, contract_address = gateway.deploy_contract(contract)
     print("Tx hash:", tx_hash)
     print("Contract address:", contract_address)
+
+    def myflow():
+        gateway.deploy_contract(contract)
+        # assert ...
+        # gateway.execute_contract(contract)
+        # assert ...
+    
+    gateway.run_flow(myflow)
+
+
