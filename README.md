@@ -48,3 +48,11 @@ The following command creates a sample project called `hello` based on the templ
 ```
 $ python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hello
 ```
+
+### Build a project
+
+In order to build a project you only have to specify its directory:
+
+```
+python3 -m erdpy.cli build ./examples/hello
+```
