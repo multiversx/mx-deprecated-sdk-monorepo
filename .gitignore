@@ -127,3 +127,10 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+examples/**/*.wasm
+examples/**/*.hex
+examples/**/*.hex.arwen
+examples/**/*.ll
+examples/**/*.o
+examples/**/Cargo.lock
