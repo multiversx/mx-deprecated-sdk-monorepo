@@ -51,8 +51,11 @@ $ python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hel
 
 ### Build a project
 
-In order to build a project you only have to specify its directory:
+In order to build a project you only have to specify its directory. Let's build the projects under `/example`: 
 
 ```
 python3 -m erdpy.cli build ./examples/hello
+python3 -m erdpy.cli build ./examples/myadder
 ```
+
+The first one is written in **C**, while the second in **rust**. As you can see, the commands are similar.
