@@ -1,7 +1,7 @@
 import logging
 import base64
 
-from erdpy.building.builder import CodebaseC
+from erdpy.projects import ProjectClang
 from erdpy.gateways import DebugHost
 from erdpy.contracts import SmartContract
 
@@ -14,7 +14,7 @@ if __name__ == '__main__':
     # python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hello
 
     # Create a codebase object afterwards
-    codebase = CodebaseC("./examples/hello")
+    codebase = ProjectClang("./examples/hello")
 
     # This will build the smart contract.
     # If the buildchain is missing, it will be installed automatically.
