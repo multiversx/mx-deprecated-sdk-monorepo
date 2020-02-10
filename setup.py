@@ -3,6 +3,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
+# See https://packaging.python.org/tutorials/packaging-projects/
 setuptools.setup(
     name="erdpy",
     version="0.0.1",
