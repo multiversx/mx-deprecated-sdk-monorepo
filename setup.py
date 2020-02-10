@@ -6,19 +6,21 @@ with open("README.md", "r") as fh:
 # See https://packaging.python.org/tutorials/packaging-projects/
 setuptools.setup(
     name="erdpy",
-    version="0.0.1",
+    version="0.0.2",
     description="Elrond Smart Contracts Tools and Python SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ElrondNetwork/erdpy",
     author="Elrond Network",
     license="GPL",
-    packages=setuptools.find_packages(include=["erdpy*"], exclude=["examples*"]),
+    packages=setuptools.find_packages(
+        include=["erdpy*"], exclude=["examples*"]),
     include_package_data=True,
     install_requires=[
         "toml",
     ],
     zip_safe=False,
+    keywords=["Elrond"],
     classifiers=[
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
@@ -28,5 +30,10 @@ setuptools.setup(
         "Intended Audience :: Developers",
         "Development Status :: 3 - Alpha"
     ],
+    entry_points={
+        "console_scripts": [
+            "erdpy=erdpy.cli:main",
+        ],
+    },
     python_requires=">=3.6"
 )

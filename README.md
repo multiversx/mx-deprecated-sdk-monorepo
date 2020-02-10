@@ -23,6 +23,17 @@ Then issue the following command:
 pip3 install erdpy
 ```
 
+Or, to upgrade at anytime,
+
+```
+pip3 install erdpy --upgrade
+```
+
+You can check installation as follows:
+```
+pip3 show erdpy
+```
+
 ## Command-line interface
 
 ### List project templates
