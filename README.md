@@ -47,6 +47,7 @@ The following command creates a sample project called `hello` based on the templ
 
 ```
 $ python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hello
+$ python3 -m erdpy.cli new --template adder --directory ./examples myadder
 ```
 
 ### Build a project
