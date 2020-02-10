@@ -87,3 +87,35 @@ In order to inspect values stored in the smart contract, issue a call to a pure,
 ```
 erdpy query 00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
 ```
+
+## Tutorial for a simple counter written in C
+
+Create the project:
+
+```
+erdpy new --template="simple-counter" --directory="./examples" mycounter
+```
+
+Build the project:
+
+```
+erdpy build ./examples/myconter
+```
+
+Deploy the contract:
+
+```
+erdpy deploy ./examples/mycounter --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+```
+
+Inspect the contract address in the output. Then use the address to call the `increment` function several times.
+
+```
+erdpy call 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="increment" --caller="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+```
+
+Upon running the `increment` function several times, let's query the counter variable.
+
+```
+erdpy query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="get" --proxy="https://wallet-api.elrond.com"
+```
