@@ -34,7 +34,7 @@ if __name__ == '__main__':
     def deploy_flow():
         # For deploy, we initialize the smart contract with the compiled bytecode
         contract = SmartContract(bytecode=bytecode)
-        tx, address = host.deploy_contract(contract, sender=alice)
+        tx, address = host.deploy_contract(contract, owner=alice)
         logger.info("Tx hash: %s", tx)
         logger.info("Contract address: %s", address)
 

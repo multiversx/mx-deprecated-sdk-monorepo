@@ -72,10 +72,18 @@ erdpy build ./examples/myadder
 
 The first one is written in **C**, while the second in **rust**. As you can see, the commands are similar.
 
-### Deploy on testnet
+### Deploy contract on testnet
 
 In order to deploy a smart contract on the testnet, make sure it is already build and issue the following command:
 
 ```
-erdpy deploy ./examples/hello --proxy="https://wallet-api.elrond.com" --address="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem"
+erdpy deploy ./examples/hello --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+```
+
+### Query contract values on testnet
+
+In order to inspect values stored in the smart contract, issue a call to a pure, getter function like this:
+
+```
+erdpy query 00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
 ```

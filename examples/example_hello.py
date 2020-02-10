@@ -34,7 +34,7 @@ if __name__ == '__main__':
     def myflow():
         # First, we deploy the contract in the name of Alice.
         alice = Account("aaaaaaaa112233441122334411223344112233441122334411223344aaaaaaaa")
-        tx, address = host.deploy_contract(contract, sender=alice)
+        tx, address = host.deploy_contract(contract, owner=alice)
         logger.info("Tx hash: %s", tx)
         logger.info("Contract address: %s", address)
         
