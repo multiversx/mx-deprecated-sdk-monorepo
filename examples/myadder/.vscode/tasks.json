@@ -2,15 +2,15 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "{{PROJECT_NAME}}-debug-build",
+            "label": "myadder-debug-build",
             "command": "cargo",
             "args": ["build"],
             "options": {
                 "cwd": "${workspaceFolder}/debug",
                 "env": {
-                    "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
-                    "RUSTUP_HOME": "{{RUSTUP_HOME}}",
-                    "CARGO_HOME": "{{CARGO_HOME}}"
+                    "PATH": "/home/andrei/ElrondSCTools/vendor-rust/bin:${env:PATH}",
+                    "RUSTUP_HOME": "/home/andrei/ElrondSCTools/vendor-rust",
+                    "CARGO_HOME": "/home/andrei/ElrondSCTools/vendor-rust"
                 }
             },
             "type": "shell"

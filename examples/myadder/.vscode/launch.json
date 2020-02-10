@@ -4,15 +4,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug {{PROJECT_NAME}}",
-            "preLaunchTask": "{{PROJECT_NAME}}-debug-build",
-            "program": "${workspaceFolder}/debug/target/debug/{{PROJECT_NAME}}-debug",
+            "name": "Debug myadder",
+            "preLaunchTask": "myadder-debug-build",
+            "program": "${workspaceFolder}/debug/target/debug/myadder-debug",
             "args": [],
             "cwd": "${workspaceFolder}",
             "env": {
-                "PATH": "{{PATH_RUST_BIN}}:${env:PATH}",
-                "RUSTUP_HOME": "{{RUSTUP_HOME}}",
-                "CARGO_HOME": "{{CARGO_HOME}}"
+                "PATH": "/home/andrei/ElrondSCTools/vendor-rust/bin:${env:PATH}",
+                "RUSTUP_HOME": "/home/andrei/ElrondSCTools/vendor-rust",
+                "CARGO_HOME": "/home/andrei/ElrondSCTools/vendor-rust"
             }
         }
     ]
