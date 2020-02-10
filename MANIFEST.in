@@ -1,0 +1,2 @@
+include erdpy/projects/*.txt
+include erdpy/projects/*.json

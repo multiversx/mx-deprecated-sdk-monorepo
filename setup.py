@@ -12,7 +12,8 @@ setuptools.setup(
     url="https://github.com/ElrondNetwork/erdpy",
     author="Elrond Network",
     license="GPL",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(include=["erdpy*"], exclude=["examples*"]),
+    include_package_data=True,
     install_requires=[
         "toml",
     ],
