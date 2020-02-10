@@ -1,10 +1,10 @@
-import logging
 import base64
+import logging
 
-from erdpy.projects import ProjectClang
-from erdpy.hosts import DebugHost
-from erdpy.contracts import SmartContract
 from erdpy.accounts import Account
+from erdpy.contracts import SmartContract
+from erdpy.hosts import TestnetHost
+from erdpy.projects import ProjectClang
 
 logger = logging.getLogger("examples")
 
@@ -26,25 +26,34 @@ if __name__ == '__main__':
     logger.info("Bytecode: %s", bytecode)
 
     # Now, we create a host which intermediates deployment and execution
-    host = DebugHost()
-    # We initialize the smart contract with the compiled bytecode.
-    contract = SmartContract(bytecode=bytecode)
+    host = TestnetHost("https://wallet-api.elrond.com")
+    alice = Account(
+        "8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d", "./examples/keys/alice.pem")
 
     # A flow defines the desired steps to interact with the contract.
-    def myflow():
-        # First, we deploy the contract in the name of Alice.
-        alice = Account("aaaaaaaa112233441122334411223344112233441122334411223344aaaaaaaa")
+    def deploy_flow():
+        # For deploy, we initialize the smart contract with the compiled bytecode
+        contract = SmartContract(bytecode=bytecode)
         tx, address = host.deploy_contract(contract, sender=alice)
         logger.info("Tx hash: %s", tx)
         logger.info("Contract address: %s", address)
-        
-        # Secondly, we execute a pure function of the contract.
+
+    def query_flow():
+        # For interaction, we initialize the smart contract contract with its actual address
+        contract = SmartContract(
+            "00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d")
         answer = host.query_contract(contract, "getUltimateAnswer")[0]
         answer_bytes = base64.b64decode(answer)
         answer_hex = answer_bytes.hex()
         answer_int = int(answer_hex, 16)
         logger.info(f"Answer: {answer_bytes}, {answer_hex}, {answer_int}")
 
+    # Now run any of the defined flows.
+    print("1. Deploy smart contract")
+    print("2. Query smart contract")
+    choice = int(input("Choose:\n"))
 
-    # This is how we run a defined flow.
-    host.run_flow(myflow)
+    if choice == 1:
+        host.run_flow(deploy_flow)
+    elif choice == 2:
+        host.run_flow(query_flow)
