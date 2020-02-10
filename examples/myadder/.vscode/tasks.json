@@ -8,9 +8,9 @@
             "options": {
                 "cwd": "${workspaceFolder}/debug",
                 "env": {
-                    "PATH": "/home/andrei/ElrondSCTools/vendor-rust/bin:${env:PATH}",
-                    "RUSTUP_HOME": "/home/andrei/ElrondSCTools/vendor-rust",
-                    "CARGO_HOME": "/home/andrei/ElrondSCTools/vendor-rust"
+                    "PATH": "/home/user/ElrondSCTools/vendor-rust/bin:${env:PATH}",
+                    "RUSTUP_HOME": "/home/user/ElrondSCTools/vendor-rust",
+                    "CARGO_HOME": "/home/user/ElrondSCTools/vendor-rust"
                 }
             },
             "type": "shell"
