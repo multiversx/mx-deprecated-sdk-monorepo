@@ -14,15 +14,15 @@ if __name__ == '__main__':
     # First, create a sample project called "hello" based on the template "ultimate-answer" (written in C)
     # python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hello
 
-    # Create a codebase object afterwards
-    codebase = ProjectClang("./examples/hello")
+    # Create a project object afterwards
+    project = ProjectClang("./examples/hello")
 
     # This will build the smart contract.
     # If the buildchain is missing, it will be installed automatically.
-    codebase.build(debug=True)
+    project.build(debug=True)
 
     # We can inspect the bytecode like this:
-    bytecode = codebase.get_bytecode()
+    bytecode = project.get_bytecode()
     logger.info("Bytecode: %s", bytecode)
 
     # Now, we create a host which intermediates deployment and execution

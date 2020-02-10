@@ -60,3 +60,11 @@ python3 -m erdpy.cli build ./examples/myadder
 ```
 
 The first one is written in **C**, while the second in **rust**. As you can see, the commands are similar.
+
+### Deploy on testnet
+
+In order to deploy a smart contract on the testnet, make sure it is already build and issue the following command:
+
+```
+python3 -m erdpy.cli deploy ./examples/hello --proxy="https://wallet-api.elrond.com" --address="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem"
+```
