@@ -42,12 +42,7 @@ Display the list of project templates (smart contracts templates):
 
 ```
 $ erdpy templates
-```
-
-Output example:
-
-```
-['adder', 'crypto-bubbles', 'erc20-c', 'factorial', 'features', 'queue', 'simple-coin', 'simple-counter', 'soll_erc20_0-0-2-sol', 'soll_erc20_0-0-3-sol', 'ultimate-answer']
+$ erdpy templates --json
 ```
 
 These templates are downloaded from different sources, as configured in [templates_config.py](erdpy/projects/templates_config.py) and are written in **rust**, **C** or **Solidity**.
