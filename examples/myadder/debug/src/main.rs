@@ -39,9 +39,9 @@ fn main() {
     assert_eq!(0, result2.result_status);
     //result2.print();
 
-    // tx 3: getA
+    // tx 3: getSum
     let tx3 = TxData::new_call(
-        "getA", 
+        "getSum", 
         ADDR1.into(), 
         ADDR2.into());
     let result3 = mock_ref.execute_tx(tx3);

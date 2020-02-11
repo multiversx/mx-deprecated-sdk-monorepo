@@ -19,7 +19,7 @@ pub trait Adder {
         self.storage_store_big_int(&A_KEY.into(), &current);
     }
 
-    fn getA(&self) -> BigInt {
+    fn getSum(&self) -> BigInt {
         let current = self.storage_load_big_int(&A_KEY.into());
         current
     }
