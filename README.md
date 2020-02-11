@@ -26,7 +26,7 @@ pip3 install erdpy
 Or, to upgrade at anytime,
 
 ```
-pip3 install erdpy --upgrade
+pip3 install erdpy --upgrade --no-cache-dir
 ```
 
 You can check installation as follows:
