@@ -21,3 +21,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Changed
 
 - Improve example for testnet to allow query after deploy.
+
+## [0.0.6]
+
+### Fixed
+
+- Default to current directory in `build` command.
