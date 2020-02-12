@@ -67,6 +67,14 @@ erdpy build ./examples/myadder
 
 The first one is written in **C**, while the second in **rust**. As you can see, the commands are similar.
 
+### Run smart contract unit tests
+
+In order to run JSON unit tests, add the unit tests in the project of the smart contract, in a folder named `test`. Then run the following command:
+
+```
+erdpy test ./examples/hello --wildcard="*"
+```
+
 ### Deploy contract on testnet
 
 In order to deploy a smart contract on the testnet, make sure it is already build and issue the following command:
