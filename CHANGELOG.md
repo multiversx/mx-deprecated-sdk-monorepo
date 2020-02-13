@@ -33,3 +33,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 
 - Enabled test runner: `erdpy test --wildcard='*'`
+
+## [0.0.8]
+
+### Fixed
+
+- Set `LD_LIBRARY_PATH` before executing `nodedebug` and `testrunner`.
