@@ -39,3 +39,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Set `LD_LIBRARY_PATH` before executing `nodedebug` and `testrunner`.
+
+## [0.0.9]
+
+### Fixed
+
+- Fixed passing environment variables to test runner.
