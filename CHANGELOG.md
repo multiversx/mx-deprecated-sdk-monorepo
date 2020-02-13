@@ -27,3 +27,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Default to current directory in `build` command.
+
+## [0.0.7]
+
+### Added
+
+- Enabled test runner: `erdpy test --wildcard='*'`
