@@ -154,3 +154,15 @@ Now let's add a value:
 ```
 erdpy run --owner="000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --function="add" --arguments 0x64
 ```
+
+## Contribute
+
+One can contribute by creating *pull requests*, or by opening *issues* for discovered bugs or desired features.
+
+### Get started
+
+Clone the repository and run the tests:
+
+```
+python3 -m unittest discover -s erdpy/tests
+```
