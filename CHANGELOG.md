@@ -45,3 +45,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed passing environment variables to test runner.
+
+## [0.1.0]
+
+### Fixed
+
+- Fixed node-debug stdout & stderr decode.
+
+### Other
+- Updated reference to node-debug.
+- SOLL migration in progress (Solidity build does not work yet).

@@ -1,6 +1,6 @@
 # erdpy
 
-**Development is in progress.**
+**Development is in progress. See [CHANGELOG](CHANGELOG.md).**
 
 Elrond - Command Line Tools and Python SDK for interacting with Smart Contracts.
 
