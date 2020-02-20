@@ -67,3 +67,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Default to current directory for `erdpy deploy`.
+
+## [0.1.3]
+
+### Fixed
+
+- Fix passing arguments for command `erdpy call`.
