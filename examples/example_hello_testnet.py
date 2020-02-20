@@ -15,7 +15,7 @@ if __name__ == '__main__':
     # python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hello
 
     # Create a project object afterwards
-    project = ProjectClang("./examples/hello")
+    project = ProjectClang("./examples/contracts/hello")
 
     # This will build the smart contract.
     # If the buildchain is missing, it will be installed automatically.

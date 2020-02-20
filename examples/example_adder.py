@@ -11,7 +11,7 @@ logger = logging.getLogger("examples")
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
 
-    project = ProjectRust("./examples/myadder")
+    project = ProjectRust("./examples/contracts/myadder")
     project.build(debug=False)
     bytecode = project.get_bytecode()
 
