@@ -128,9 +128,24 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+erdpy/tests/testdata/**/*.wasm
+erdpy/tests/testdata/**/*.wat
+erdpy/tests/testdata/**/*.hex
+erdpy/tests/testdata/**/*.hex.arwen
+erdpy/tests/testdata/**/*.ll
+erdpy/tests/testdata/**/*.bc
+erdpy/tests/testdata/**/*.o
+erdpy/tests/testdata/**/Cargo.lock
+erdpy/tests/testdata/**/*.functions
+
 examples/**/*.wasm
+examples/**/*.wat
 examples/**/*.hex
 examples/**/*.hex.arwen
 examples/**/*.ll
+examples/**/*.bc
 examples/**/*.o
 examples/**/Cargo.lock
+examples/**/*.functions
+
+db/**
