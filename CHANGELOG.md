@@ -55,3 +55,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Other
 - Updated reference to node-debug.
 - SOLL migration in progress (Solidity build does not work yet).
+
+## [0.1.1]
+
+### Fixed
+
+- Fixed Solidity / SOLL buildchain.
