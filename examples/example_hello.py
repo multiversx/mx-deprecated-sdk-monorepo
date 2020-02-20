@@ -2,7 +2,7 @@ import logging
 import base64
 
 from erdpy.projects import ProjectClang
-from erdpy.hosts import DebugHost
+from erdpy.environments import DebugEnvironment
 from erdpy.contracts import SmartContract
 from erdpy.accounts import Account
 
@@ -25,8 +25,8 @@ if __name__ == '__main__':
     bytecode = project.get_bytecode()
     logger.info("Bytecode: %s", bytecode)
 
-    # Now, we create a host which intermediates deployment and execution
-    host = DebugHost()
+    # Now, we create a environment which intermediates deployment and execution
+    environment = DebugEnvironment()
     # We initialize the smart contract with the compiled bytecode.
     contract = SmartContract(bytecode=bytecode)
 
@@ -34,12 +34,12 @@ if __name__ == '__main__':
     def myflow():
         # First, we deploy the contract in the name of Alice.
         alice = Account("aaaaaaaa112233441122334411223344112233441122334411223344aaaaaaaa")
-        tx, address = host.deploy_contract(contract, owner=alice)
+        tx, address = environment.deploy_contract(contract, owner=alice)
         logger.info("Tx hash: %s", tx)
         logger.info("Contract address: %s", address)
         
         # Secondly, we execute a pure function of the contract.
-        answer = host.query_contract(contract, "getUltimateAnswer")[0]
+        answer = environment.query_contract(contract, "getUltimateAnswer")[0]
         answer_bytes = base64.b64decode(answer)
         answer_hex = answer_bytes.hex()
         answer_int = int(answer_hex, 16)
@@ -47,4 +47,4 @@ if __name__ == '__main__':
 
 
     # This is how we run a defined flow.
-    host.run_flow(myflow)
+    environment.run_flow(myflow)
