@@ -61,3 +61,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed Solidity / SOLL buildchain.
+
+## [0.1.2]
+
+### Fixed
+
+- Default to current directory for `erdpy deploy`.
