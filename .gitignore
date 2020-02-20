@@ -133,6 +133,7 @@ erdpy/tests/testdata/**/*.wat
 erdpy/tests/testdata/**/*.hex
 erdpy/tests/testdata/**/*.hex.arwen
 erdpy/tests/testdata/**/*.ll
+erdpy/tests/testdata/**/*.main.ll
 erdpy/tests/testdata/**/*.bc
 erdpy/tests/testdata/**/*.o
 erdpy/tests/testdata/**/Cargo.lock
