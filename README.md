@@ -20,13 +20,13 @@ python3 --version
 Then issue the following command:
 
 ```
-pip3 install erdpy
+pip3 install --user erdpy
 ```
 
 Or, to upgrade at anytime,
 
 ```
-pip3 install erdpy --upgrade --no-cache-dir
+pip3 install --user --upgrade --no-cache-dir erdpy
 ```
 After installation update **.profile** file 
 ```
