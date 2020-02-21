@@ -28,6 +28,11 @@ Or, to upgrade at anytime,
 ```
 pip3 install erdpy --upgrade --no-cache-dir
 ```
+After installation update **.profile** file 
+```
+source ~/.profile
+```
+
 
 You can check installation as follows:
 ```
