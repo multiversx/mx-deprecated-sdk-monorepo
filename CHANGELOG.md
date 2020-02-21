@@ -73,3 +73,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fix passing arguments for command `erdpy call`.
+
+## [0.1.4]
+
+### Fixed
+
+- Fix passing arguments for command `erdpy query`.
