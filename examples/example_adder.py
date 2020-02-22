@@ -12,7 +12,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
 
     project = ProjectRust("./examples/contracts/myadder")
-    project.build(debug=False)
+    project.build()
     bytecode = project.get_bytecode()
 
     environment = DebugEnvironment()
