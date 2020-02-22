@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Python: erdpy ide",
+            "type": "python",
+            "module": "erdpy.cli",
+            "request": "launch",
+            "args": ["ide"],
+            "console": "integratedTerminal"
+        },
+        {
+            "name": "Python: erdpy ide with bottle reload",
+            "type": "python",
+            "module": "bottle",
+            "request": "launch",
+            "args": ["--debug", "--reload", "--bind=0.0.0.0:8081", "erdpy.ide.core:app"],
+            "console": "integratedTerminal"
+        }
+    ]
+}
