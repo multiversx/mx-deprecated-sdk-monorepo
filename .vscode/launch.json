@@ -5,7 +5,7 @@
             "type": "python",
             "module": "erdpy.cli",
             "request": "launch",
-            "args": ["ide"],
+            "args": ["ide", "./examples/contracts"],
             "console": "integratedTerminal"
         },
         {
