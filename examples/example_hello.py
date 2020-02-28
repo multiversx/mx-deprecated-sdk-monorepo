@@ -19,7 +19,7 @@ if __name__ == '__main__':
 
     # This will build the smart contract.
     # If the buildchain is missing, it will be installed automatically.
-    project.build(debug=True)
+    project.build()
 
     # We can inspect the bytecode like this:
     bytecode = project.get_bytecode()

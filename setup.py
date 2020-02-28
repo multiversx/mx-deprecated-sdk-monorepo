@@ -17,7 +17,7 @@ setuptools.setup(
         include=["erdpy*"], exclude=["examples*"]),
     include_package_data=True,
     install_requires=[
-        "toml", "texttable", "psutil"
+        "toml", "texttable", "psutil", "bottle"
     ],
     zip_safe=False,
     keywords=["Elrond"],
