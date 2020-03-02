@@ -165,29 +165,29 @@ erdpy run --owner="000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb
 General info
 ```
 # will return how many shards are in testnet
-erd get_num_shards --proxy="proxy-url"
+erd get-num-shards --proxy="proxy-url"
 
 # will return gas price (minimum gas price)
-erd get_gas_price --proxy="proxy-url"
+erd get-gas-price --proxy="proxy-url"
 
 # will return chain id of the testnet
-erd get_chain_id --proxy="proxy-url"
+erd get-chain-id --proxy="proxy-url"
 
 # will return last block nonce of a specific shard
-erd get_last_block_nonce --shard-id="shard-id" --proxy="proxy-url
+erd get-last-block-nonce --shard-id="shard-id" --proxy="proxy-url
 ```
 
 
 Account
 ```
 # will reuturn the account with given address
-erd get_account --address="account-address-hex-encoded" --proxy="proxy-url"
+erd get-account --address="account-address-hex-encoded" --proxy="proxy-url"
 
 # will reuturn account balance with  given address
-erd get_account --address="account-address-hex-encoded" --balance --proxy="proxy-url"
+erd get-account --address="account-address-hex-encoded" --balance --proxy="proxy-url"
 
 # will reuturn account nonce with given address
-erd get_account --address="account-address-hex-encoded" --nonce --proxy="proxy-url"
+erd get-account --address="account-address-hex-encoded" --nonce --proxy="proxy-url"
 ```
 
 Transaction cost estimation
@@ -197,13 +197,13 @@ Transaction cost estimation
 # there're 3 types of transactions: move-balance, sc-deploy and sc-call 
 
 # will return how many gas units a move balance transaction will cost
-erd get_transaction_cost move-balance --data="optional" --proxy="proxy-url"
+erd get-transaction-cost move-balance --data="optional" --proxy="proxy-url"
 
 # will return how many gas units a smart contract deploy will cost
-erd get_transaction_cost sc-deploy --path="path-smart-contract-location" --proxy="proxy-url" 
+erd get-transaction-cost sc-deploy --sc-path="path-smart-contract-location" --proxy="proxy-url" 
 
 # will return how many gas unit a smart contract call will cost
-erd get_transaction_cost sc-call --sc-address="sc-address-hex-encoded" --function="mint(address,uint256)" ----arguments 100 recipient-address-hex --proxy="proxy-url"
+erd get-transaction-cost sc-call --sc-address="sc-address-hex-encoded" --function="mint(address,uint256)" ----arguments 100 recipient-address-hex --proxy="proxy-url"
 ```
 
 
