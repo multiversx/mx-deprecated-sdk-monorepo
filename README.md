@@ -148,7 +148,7 @@ Deploy the contract and set an initial value of `42`:
 erdpy deploy ./examples/myadder --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --arguments 100
 ```
 
-Frist, let's query the accumulator value, it should have the initial value:
+First, let's query the accumulator value, it should have the initial value:
 
 ```
 erdpy query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="getSum" --proxy="https://wallet-api.elrond.com"
@@ -159,6 +159,54 @@ Now let's add a value:
 ```
 erdpy run --owner="000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --function="add" --arguments 0x64
 ```
+
+## Information about a testnet from proxy
+
+General info
+```
+# will return how many shards are in testnet
+erd get_num_shards --proxy="proxy-url"
+
+# will return gas price (minimum gas price)
+erd get_gas_price --proxy="proxy-url"
+
+# will return chain id of the testnet
+erd get_chain_id --proxy="proxy-url"
+
+# will return last block nonce of a specific shard
+erd get_last_block_nonce --shard-id="shard-id" --proxy="proxy-url
+```
+
+
+Account
+```
+# will reuturn the account with given address
+erd get_account --address="account-address-hex-encoded" --proxy="proxy-url"
+
+# will reuturn account balance with  given address
+erd get_account --address="account-address-hex-encoded" --balance --proxy="proxy-url"
+
+# will reuturn account nonce with given address
+erd get_account --address="account-address-hex-encoded" --nonce --proxy="proxy-url"
+```
+
+Transaction cost estimation
+
+```
+# transaction cost estimator will return how many gas units a transaction will consume
+# there're 3 types of transactions: move-balance, sc-deploy and sc-call 
+
+# will return how many gas units a move balance transaction will cost
+erd get_transaction_cost move-balance --data="optional" --proxy="proxy-url"
+
+# will return how many gas units a smart contract deploy will cost
+erd get_transaction_cost sc-deploy --path="path-smart-contract-location" --proxy="proxy-url" 
+
+# will return how many gas unit a smart contract call will cost
+erd get_transaction_cost sc-call --sc-address="sc-address-hex-encoded" --function="mint(address,uint256)" ----arguments 100 recipient-address-hex --proxy="proxy-url"
+```
+
+
 
 ## Contribute
 
