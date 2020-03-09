@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 # See https://packaging.python.org/tutorials/packaging-projects/
 setuptools.setup(
     name="erdpy",
-    version="0.1.4",
+    version="0.1.5",
     description="Elrond Smart Contracts Tools and Python SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -17,7 +17,7 @@ setuptools.setup(
         include=["erdpy*"], exclude=["examples*"]),
     include_package_data=True,
     install_requires=[
-        "toml", "texttable", "psutil", "bottle"
+        "toml", "texttable", "psutil", "bottle", "requests"
     ],
     zip_safe=False,
     keywords=["Elrond"],
