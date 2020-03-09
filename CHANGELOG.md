@@ -53,6 +53,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Fixed node-debug stdout & stderr decode.
 
 ### Other
+
 - Updated reference to node-debug.
 - SOLL migration in progress (Solidity build does not work yet).
 
@@ -79,3 +80,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fix passing arguments for command `erdpy query`.
+
+## [0.1.5]
+
+### Fixed
+
+- For MacOS `chmod +x` upon downloading SOLL, nodedebug.
+
+### Other
+
+- Updated reference to node-debug.
