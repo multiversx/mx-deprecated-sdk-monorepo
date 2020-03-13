@@ -48,10 +48,16 @@ python3 --version
 pip3 --version
 ```
 
-Add this line to `~/.bash_profile` or `~/.zshrc` (if you’re using zsh) before installing the package:
+Add this line to `~/.bash_profile` or `~/.zshrc` (if you’re using zsh) before installing the package (make sure to replace the placeholders):
 
 ```
-export PATH=/usr/local/bin:/usr/local/sbin:${PATH}
+export PATH=/Users/YOUR_USERNAME/Library/Python/YOUR_PYTHON_VERSION/bin:${PATH}
+```
+
+For example:
+
+```
+export PATH=/Users/elrond/Library/Python/3.7/bin:${PATH}
 ```
 
 Then issue the following command:
