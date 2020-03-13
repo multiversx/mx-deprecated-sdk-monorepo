@@ -11,32 +11,60 @@ One can use **erdpy** to build, test and debug Elrond smart contracts, deploy th
 
 ## Installation
 
-In order to install **erdpy**, make sure that you have **Python** installed (version **3.6** or later):
+### Ubuntu
+
+Make sure that you have installed **Python3** (version **3.6** or later) and **Pip3** in advance:
 
 ```
 python3 --version
+pip3 --version
 ```
 
 Then issue the following command:
 
 ```
-pip3 install --user erdpy
-```
-
-Or, to upgrade at anytime,
-
-```
 pip3 install --user --upgrade --no-cache-dir erdpy
 ```
-After installation update **.profile** file 
+
+Test installation as follows:
+
+```
+pip3 show erdpy
+erdpy --version
+```
+
+If `erdpy` command is not found (not registered correctly), issue the command:
+
 ```
 source ~/.profile
 ```
 
+### MacOS
 
-You can check installation as follows:
+Make sure that you have installed **Python3** (version **3.6** or later) and **Pip3** in advance:
+
+```
+python3 --version
+pip3 --version
+```
+
+Add this line to `~/.bash_profile` or `~/.zshrc` (if you’re using zsh) before installing the package:
+
+```
+export PATH=/usr/local/bin:/usr/local/sbin:${PATH}
+```
+
+Then issue the following command:
+
+```
+pip3 install --user --upgrade --no-cache-dir erdpy
+```
+
+Test installation as follows:
+
 ```
 pip3 show erdpy
+erdpy --version
 ```
 
 ## Command-line interface
