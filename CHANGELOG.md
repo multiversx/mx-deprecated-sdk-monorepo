@@ -93,6 +93,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Downloads performed using `requests` module (certificate errors on MacOS otherwise).
 
+## [0.1.7]
+
+### Fixed
+
+- Node-debug build for MacOS.
+
 ### Other
 
 - Updated reference to node-debug.
