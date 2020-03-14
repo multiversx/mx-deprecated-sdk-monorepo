@@ -87,6 +87,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - For MacOS `chmod +x` upon downloading SOLL, nodedebug.
 
+## [0.1.6]
+
+### Fixed
+
+- Downloads performed using `requests` module (certificate errors on MacOS otherwise).
+
 ### Other
 
 - Updated reference to node-debug.
