@@ -3,6 +3,7 @@ import os
 import shutil
 import sys
 import pathlib
+import tarfile
 from argparse import ArgumentParser
 from git import Repo
 from os import path
@@ -44,7 +45,8 @@ def prepare_nodedebug(args):
     go_build(nodedebug_folder)
     fix_libwasmer_reference(nodedebug_exe)
 
-    # todo: prepare archive: exe, config, .so, .dylib
+    archive_path = archive_nodedebug(workspace)
+    print(archive_path)
     # todo: upload to S3
 
 
@@ -94,6 +96,28 @@ def fix_libwasmer_reference(executable_path):
         shutil.copy(libwasmer_path, libwasmer_copy_path)
         os.chmod(libwasmer_copy_path, 0o755)
         subprocess.check_output(["patchelf", "--set-rpath", "$ORIGIN", "nodedebug"], cwd=executable_folder)
+    elif platform == "osx":
+        pass
+    else:
+        raise NotImplementedError()
+
+
+def archive_nodedebug(workspace):
+    platform = get_platform()
+    nodedebug_folder = path.join(workspace, "nodedebug", "cmd", "nodedebug")
+
+    archive_path = path.join(workspace, f"nodedebug-{platform}.tar.gz")
+    archive = tarfile.open(archive_path, "w:gz")
+    archive.add(path.join(nodedebug_folder, "nodedebug"), arcname="nodedebug")
+    archive.add(path.join(nodedebug_folder, "config"), arcname="config")
+
+    if platform == "linux":
+        archive.add(path.join(nodedebug_folder, "libwasmer_runtime_c_api.so"), arcname="libwasmer_runtime_c_api.so")
+    elif platform == "osx":
+        archive.add(path.join(nodedebug_folder, "libwasmer_runtime_c_api.so"), arcname="libwasmer_runtime_c_api.dylib")
+    archive.close()
+
+    return archive_path
 
 
 def get_platform():
