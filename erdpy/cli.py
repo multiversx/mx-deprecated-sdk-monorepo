@@ -1,7 +1,7 @@
 import logging
 import os
-
 from argparse import ArgumentParser
+
 from erdpy import config, dependencies, errors, flows, nodedebug, projects, ide, proxy
 from erdpy._version import __version__
 
@@ -9,10 +9,13 @@ logger = logging.getLogger("cli")
 
 
 def main():
-    logging.basicConfig(level=logging.DEBUG)
-
     parser = setup_parser()
     args = parser.parse_args()
+
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.WARNING)
 
     if not hasattr(args, "func"):
         parser.print_help()
@@ -25,6 +28,7 @@ def setup_parser():
     subparsers = parser.add_subparsers()
 
     parser.add_argument('-v', '--version', action='version', version=f"erdpy {__version__}")
+    parser.add_argument("--verbose", action="store_true", default=False)
 
     install_parser = subparsers.add_parser("install")
     choices = ["C_BUILDCHAIN", "SOL_BUILDCHAIN",
@@ -162,8 +166,9 @@ def create(args):
 def build(args):
     project = args.project
     options = {
-        "debug" : args.debug,
-        "optimized": not args.no_optimization
+        "debug": args.debug,
+        "optimized": not args.no_optimization,
+        "verbose": args.verbose
     }
 
     try:
