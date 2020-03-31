@@ -111,7 +111,7 @@ The first one is written in **C**, while the second in **rust**. As you can see,
 In order to run JSON unit tests, add the unit tests in the project of the smart contract, in a folder named `test`. Then run the following command:
 
 ```
-erdpy test ./examples/hello --wildcard="*"
+erdpy --verbose test ./examples/hello --wildcard="*"
 ```
 
 ### Deploy contract on testnet
@@ -119,7 +119,7 @@ erdpy test ./examples/hello --wildcard="*"
 In order to deploy a smart contract on the testnet, make sure it is already build and issue the following command:
 
 ```
-erdpy deploy ./examples/hello --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose deploy ./examples/hello --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Query contract values on testnet
@@ -127,7 +127,7 @@ erdpy deploy ./examples/hello --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84
 In order to inspect values stored in the smart contract, issue a call to a pure, getter function like this:
 
 ```
-erdpy query 00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose query 00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
 ```
 
 ## Tutorial for a simple counter written in C
@@ -141,25 +141,25 @@ erdpy new --template="simple-counter" --directory="./examples" mycounter
 Build the project:
 
 ```
-erdpy build ./examples/myconter
+erdpy --verbose build ./examples/myconter
 ```
 
 Deploy the contract:
 
 ```
-erdpy deploy ./examples/mycounter --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose deploy ./examples/mycounter --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
 ```
 
 Inspect the contract address in the output. Then use the address to call the `increment` function several times.
 
 ```
-erdpy call 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="increment" --caller="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose call 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="increment" --caller="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
 ```
 
 Upon running the `increment` function several times, let's query the counter variable.
 
 ```
-erdpy query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="get" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="get" --proxy="https://wallet-api.elrond.com"
 ```
 
 ## Tutorial for a simple adder written in RUST
@@ -167,31 +167,31 @@ erdpy query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --f
 Create the project:
 
 ```
-erdpy new --template="adder" --directory="./examples" myadder
+erdpy --verbose new --template="adder" --directory="./examples" myadder
 ```
 
 Build the project:
 
 ```
-erdpy build ./examples/myadder
+erdpy --verbose build ./examples/myadder
 ```
 
 Deploy the contract and set an initial value of `42`:
 
 ```
-erdpy deploy ./examples/myadder --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --arguments 100
+erdpy --verbose deploy ./examples/myadder --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --arguments 100
 ```
 
 First, let's query the accumulator value, it should have the initial value:
 
 ```
-erdpy query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="getSum" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d --function="getSum" --proxy="https://wallet-api.elrond.com"
 ```
 
 Now let's add a value:
 
 ```
-erdpy run --owner="000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --function="add" --arguments 0x64
+erdpy --verbose run --owner="000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --function="add" --arguments 0x64
 ```
 
 ## Information about a testnet from proxy
@@ -214,13 +214,13 @@ erd get-last-block-nonce --shard-id="shard-id" --proxy="proxy-url
 
 Account
 ```
-# will reuturn the account with given address
+# will return the account with given address
 erd get-account --address="account-address-hex-encoded" --proxy="proxy-url"
 
-# will reuturn account balance with  given address
+# will return account balance with  given address
 erd get-account --address="account-address-hex-encoded" --balance --proxy="proxy-url"
 
-# will reuturn account nonce with given address
+# will return account nonce with given address
 erd get-account --address="account-address-hex-encoded" --nonce --proxy="proxy-url"
 ```
 
@@ -252,4 +252,5 @@ Clone the repository and run the tests:
 
 ```
 python3 -m unittest discover -s erdpy/tests
+python3 -m unittest -v erdpy.tests.test_wallet
 ```
