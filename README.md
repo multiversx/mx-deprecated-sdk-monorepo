@@ -119,7 +119,7 @@ erdpy --verbose test ./examples/hello --wildcard="*"
 In order to deploy a smart contract on the testnet, make sure it is already build and issue the following command:
 
 ```
-erdpy --verbose deploy ./examples/hello --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose deploy ./examples/hello --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Query contract values on testnet
@@ -147,7 +147,7 @@ erdpy --verbose build ./examples/myconter
 Deploy the contract:
 
 ```
-erdpy --verbose deploy ./examples/mycounter --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose deploy ./examples/mycounter --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
 ```
 
 Inspect the contract address in the output. Then use the address to call the `increment` function several times.
@@ -179,7 +179,7 @@ erdpy --verbose build ./examples/myadder
 Deploy the contract and set an initial value of `42`:
 
 ```
-erdpy --verbose deploy ./examples/myadder --owner="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --arguments 100
+erdpy --verbose deploy ./examples/myadder --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --arguments 100
 ```
 
 First, let's query the accumulator value, it should have the initial value:
@@ -191,7 +191,7 @@ erdpy --verbose query 000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8
 Now let's add a value:
 
 ```
-erdpy --verbose run --owner="000000000000000005001d80d94d25a77b5a9a6295d260e3c0e4b53ee8cbb39d" --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --function="add" --arguments 0x64
+erdpy --verbose run --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com" --function="add" --arguments 0x64
 ```
 
 ## Information about a testnet from proxy
