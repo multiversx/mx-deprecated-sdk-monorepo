@@ -5,7 +5,6 @@ import sys
 import pathlib
 import tarfile
 from argparse import ArgumentParser
-from git import Repo
 from os import path
 import subprocess
 
