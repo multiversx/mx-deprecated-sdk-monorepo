@@ -10,3 +10,6 @@ publish: build
 test:
 	python3 -m unittest -v erdpy.tests.test_wallet
 	python3 -m unittest -v erdpy.tests.test_contracts
+
+test-all:
+	python3 -m unittest discover -s erdpy/tests
