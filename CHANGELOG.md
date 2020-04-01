@@ -102,3 +102,18 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Other
 
 - Updated reference to node-debug.
+
+## [0.1.9]
+
+### Fixed
+
+- Transaction signing - updated to **Ed25519**
+- Removed **node-debug** from the testnet flows (deployment and execution of smart contracts)
+- Fixed contract project generation from Rust templates
+- Minor fixes on the build flow.
+
+### Other
+
+- Temporarily disabled node-debug interaction (node-debug's place will be soon taken by a debug version of Arwen VM)
+- Added extra command to prepare and send transactions against the testnet
+- Added extra examples.
