@@ -123,7 +123,7 @@ erdpy --verbose test ./examples/hello --wildcard="*"
 Deploy a smart contract on the testnet (make sure the contract is built in advance):
 
 ```
-erdpy --verbose deploy ./examples/hello --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose deploy ./examples/contracts/hello --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Query contract values on testnet
@@ -140,6 +140,15 @@ Call a function of an existing smart contract:
 
 ```
 erdpy --verbose call 000000000000000005000480f273914b6ceeaed2653a1a3d59f9656d6530bd5e --pem="./examples/keys/alice.pem" --function="increment" --proxy="https://wallet-api.elrond.com"
+```
+
+### Issue regular transactions against the testnet
+
+Prepare, then send transactions:
+
+```
+erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="./examples/keys/alice.pem" --nonce=42 --receiver=a967adb3d1574581a6f7ffe0cd6600fb488686704fcff944c88efc7c90b3b13b --value=100000
+erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy=https://wallet-api.elrond.com
 ```
 
 ### Other features

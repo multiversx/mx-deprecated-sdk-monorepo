@@ -117,3 +117,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Temporarily disabled node-debug interaction (node-debug's place will be soon taken by a debug version of Arwen VM)
 - Added extra command to prepare and send transactions against the testnet
 - Added extra examples.
+
+## [0.2.0]
+
+### Fixed
+
+- Fixed getting metrics from testnet.
+
+### Other
+
+- Temporarily disabled transaction costs estimators.
