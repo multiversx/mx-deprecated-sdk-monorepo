@@ -138,7 +138,7 @@ Call a function of an existing smart contract:
 erdpy --verbose call 000000000000000005000480f273914b6ceeaed2653a1a3d59f9656d6530bd5e --pem="./examples/keys/alice.pem" --function="increment" --proxy="https://wallet-api.elrond.com"
 ```
 
-## Get general information about the testnet
+### Other features
 
 Get information such as the number of shards, the gas price, the chain ID and so on:
 
