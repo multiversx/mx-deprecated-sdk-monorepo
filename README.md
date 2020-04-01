@@ -2,6 +2,10 @@
 
 **Development is in progress. See [CHANGELOG](CHANGELOG.md).**
 
+**For tutorials, go to [wiki](https://github.com/ElrondNetwork/erdpy/wiki).**
+
+**For Python SDK examples, see [examples](examples).**
+
 Elrond - Command Line Tools and Python SDK for interacting with Smart Contracts.
 
 One can use **erdpy** to build, test and debug Elrond smart contracts, deploy them on the testnet and interact with contracts by issuing function calls (transactions).
