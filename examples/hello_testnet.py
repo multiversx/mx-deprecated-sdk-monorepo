@@ -28,14 +28,14 @@ if __name__ == '__main__':
     # Now, we create a environment which intermediates deployment and execution
     environment = TestnetEnvironment("https://wallet-api.elrond.com")
     alice = Account(
-        address="8eb27b2bcaedc6de11793cf0625a4f8d64bf7ac84753a0b6c5d6ceb2be7eb39d",
+        address="93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e",
         pem_file="./examples/keys/alice.pem"
     )
 
-    # We initialize the smart contract contract with an actual address if it was previously deployed,
+    # We initialize the smart contract with an actual address if IF was previously deployed,
     # so that we can start to interact with it ("query_flow")
     contract = SmartContract(
-        address="00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d"
+        address="0000000000000000050000000000000000000000000000000000000000000000"
     )
 
     # A flow defines the desired steps to interact with the contract.
@@ -61,7 +61,7 @@ if __name__ == '__main__':
         print("Let's run a flow.")
         print("1. Deploy smart contract")
         print("2. Query smart contract")
-        
+
         choice = int(input("Choose:\n"))
 
         if choice == 1:
