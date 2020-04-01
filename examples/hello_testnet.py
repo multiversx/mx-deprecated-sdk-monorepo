@@ -1,5 +1,6 @@
 import base64
 import logging
+from argparse import ArgumentParser
 
 from erdpy.accounts import Account
 from erdpy.contracts import SmartContract
@@ -8,7 +9,12 @@ from erdpy.projects import ProjectClang
 
 logger = logging.getLogger("examples")
 
+
 if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument("--proxy", help="Testnet Proxy URL", required=True)
+    args = parser.parse_args()
+
     logging.basicConfig(level=logging.DEBUG)
 
     # First, create a sample project called "hello" based on the template "ultimate-answer" (written in C)
@@ -26,7 +32,7 @@ if __name__ == '__main__':
     logger.info("Bytecode: %s", bytecode)
 
     # Now, we create a environment which intermediates deployment and execution
-    environment = TestnetEnvironment("https://wallet-api.elrond.com")
+    environment = TestnetEnvironment(args.proxy)
     alice = Account(
         address="93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e",
         pem_file="./examples/keys/alice.pem"

@@ -1,12 +1,12 @@
 import logging
 import os
-import shutil
-import sys
 import pathlib
+import shutil
+import subprocess
+import sys
 import tarfile
 from argparse import ArgumentParser
 from os import path
-import subprocess
 
 logger = logging.getLogger("cli")
 
