@@ -12,7 +12,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
 
     # First, create a sample project called "hello" based on the template "ultimate-answer" (written in C)
-    # python3 -m erdpy.cli new --template ultimate-answer --directory ./examples hello
+    # erdpy new --template ultimate-answer --directory ./examples hello
 
     # Create a project object afterwards
     project = ProjectClang("./examples/contracts/hello")

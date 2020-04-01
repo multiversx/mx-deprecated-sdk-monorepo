@@ -18,11 +18,11 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.DEBUG)
 
-    # First, create a sample project called "hello" based on the template "ultimate-answer" (written in C)
-    # erdpy new --template ultimate-answer --directory ./examples hello
+    # First, create a sample project called "mycounter" based on the template "simple-counter" (written in C)
+    # erdpy new --template simple-counter --directory ./examples hello
 
     # Create a project object afterwards
-    project = ProjectClang("./examples/contracts/hello")
+    project = ProjectClang("./examples/contracts/mycounter")
 
     # This will build the smart contract.
     # If the buildchain is missing, it will be installed automatically.
@@ -56,16 +56,24 @@ if __name__ == '__main__':
     def query_flow():
         global contract
 
-        answer = environment.query_contract(contract, "getUltimateAnswer")[0]
+        answer = environment.query_contract(contract, "get")[0]
         answer_bytes = base64.b64decode(answer)
         answer_hex = answer_bytes.hex()
         answer_int = int(answer_hex, 16)
         logger.info(f"Answer: {answer_bytes}, {answer_hex}, {answer_int}")
 
+    def execute_flow(function):
+        global contract
+
+        tx = environment.execute_contract(contract, caller=alice, function=function)
+        logger.info("Tx hash: %s", tx)
+
     while True:
         print("Let's run a flow.")
         print("1. Deploy smart contract")
         print("2. Query smart contract")
+        print("3. Call smart contract: increment")
+        print("4. Call smart contract: decrement")
 
         try:
             choice = int(input("Choose:\n"))
@@ -76,3 +84,7 @@ if __name__ == '__main__':
             environment.run_flow(deploy_flow)
         elif choice == 2:
             environment.run_flow(query_flow)
+        elif choice == 3:
+            environment.run_flow(lambda: execute_flow("increment"))
+        elif choice == 4:
+            environment.run_flow(lambda: execute_flow("decrement"))
