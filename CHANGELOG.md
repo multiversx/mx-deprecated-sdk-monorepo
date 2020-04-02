@@ -127,3 +127,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Other
 
 - Temporarily disabled transaction costs estimators.
+
+## [0.2.1]
+
+### Fixed
+
+- Fixed reference to pycryptodomex.
