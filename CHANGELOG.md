@@ -139,3 +139,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed (improved) handling of proxy request errors.
+
+## [0.2.3]
+
+### Fixed
+
+- Fixed CPP compilation support.
