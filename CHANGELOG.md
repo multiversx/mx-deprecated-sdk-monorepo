@@ -133,3 +133,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed reference to pycryptodomex.
+
+## [0.2.2]
+
+### Fixed
+
+- Fixed (improved) handling of proxy request errors.
