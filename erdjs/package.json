@@ -1,0 +1,11 @@
+{
+  "name": "erdjs",
+  "version": "1.0.0",
+  "description": "Smart Contracts interaction framework (for interacting with Arwen Debug in unit tests)",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "ElrondNetwork",
+  "license": "GPL-3.0-or-later"
+}
