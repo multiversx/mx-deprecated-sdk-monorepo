@@ -148,7 +148,11 @@ Prepare, then send transactions:
 
 ```
 erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="./examples/keys/alice.pem" --nonce=42 --receiver=a967adb3d1574581a6f7ffe0cd6600fb488686704fcff944c88efc7c90b3b13b --value=100000
+
 erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy=https://wallet-api.elrond.com
+
+erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver=a967adb3d1574581a6f7ffe0cd6600fb488686704fcff944c88efc7c90b3b13b --value=100000 --proxy=https://wallet-api.elrond.com
+
 ```
 
 ### Other features
