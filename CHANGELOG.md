@@ -145,3 +145,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed CPP compilation support.
+
+## [0.2.4]
+
+### Fixed
+
+- Dependency to psutils.
+
+### Added
+
+- Extra CLI command to prepare and send transaction.
