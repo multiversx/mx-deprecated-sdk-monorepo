@@ -43,6 +43,18 @@ If `erdpy` command is not found (not registered correctly), issue the command:
 source ~/.profile
 ```
 
+If you encounter encoding-related issues at installation time, such as:
+
+```
+UnicodeDecodeError: 'ascii' codec can't decode byte
+```
+
+Then please set `PYTHONIOENCODING` before running the install command:
+
+```
+PYTHONIOENCODING=utf8 pip3 install --user --upgrade --no-cache-dir erdpy
+```
+
 ### MacOS
 
 Make sure that you have installed **Python3** (version **3.6** or later) and **Pip3** in advance:
