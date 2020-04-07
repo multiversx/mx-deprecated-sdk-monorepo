@@ -155,3 +155,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 
 - Extra CLI command to prepare and send transaction.
+
+## [0.2.5]
+
+### Fixed
+
+- Format of "transaction.data" field.
