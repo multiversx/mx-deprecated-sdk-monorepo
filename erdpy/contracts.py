@@ -3,11 +3,14 @@ from erdpy.transactions import PlainTransaction, TransactionPayloadToSign, Prepa
 from erdpy.wallet import signing
 from Cryptodome.Hash import keccak
 
+VM_TYPE_ARWEN = "0500"
+
 
 class SmartContract:
-    def __init__(self, address=None, bytecode=None):
+    def __init__(self, address=None, bytecode=None, metadata=None):
         self.address = address
         self.bytecode = bytecode
+        self.metadata = metadata or CodeMetadata()
 
     def deploy(self, proxy, owner, arguments, gas_price, gas_limit, value):
         self.owner = owner
@@ -38,7 +41,7 @@ class SmartContract:
         return prepared
 
     def prepare_deploy_transaction_data(self, arguments):
-        tx_data = self.bytecode
+        tx_data = f"{self.bytecode}@{VM_TYPE_ARWEN}@{self.metadata.to_hex()}"
 
         for arg in arguments:
             tx_data += f"@{_prepare_argument(arg)}"
@@ -91,6 +94,41 @@ class SmartContract:
 
         return tx_data
 
+    def upgrade(self, proxy, caller, arguments, gas_price, gas_limit, value):
+        self.caller = caller
+        self.caller.sync_nonce(proxy)
+        transaction = self.prepare_upgrade_transaction(caller, arguments, gas_price, gas_limit, value)
+        tx_hash = transaction.send(proxy)
+        return tx_hash
+
+    def prepare_upgrade_transaction(self, owner, arguments, gas_price, gas_limit, value):
+        arguments = arguments or []
+        gas_price = int(gas_price or config.DEFAULT_GASPRICE)
+        gas_limit = int(gas_limit or config.DEFAULT_GASLIMIT)
+        value = str(value or "0")
+
+        plain = PlainTransaction()
+        plain.nonce = owner.nonce
+        plain.value = value
+        plain.sender = owner.address
+        plain.receiver = self.address
+        plain.gasPrice = gas_price
+        plain.gasLimit = gas_limit
+        plain.data = self.prepare_upgrade_transaction_data(arguments)
+
+        payload = TransactionPayloadToSign(plain)
+        signature = signing.sign_transaction(payload, owner.pem_file)
+        prepared = PreparedTransaction(plain, signature)
+        return prepared
+
+    def prepare_upgrade_transaction_data(self, arguments):
+        tx_data = f"upgradeContract@{self.bytecode}@{self.metadata.to_hex()}"
+
+        for arg in arguments:
+            tx_data += f"@{_prepare_argument(arg)}"
+
+        return tx_data
+
     def query(self, proxy, function, arguments):
         arguments = arguments or []
         prepared_arguments = [_prepare_argument(argument) for argument in arguments]
@@ -122,3 +160,13 @@ def _prepare_argument(argument):
         as_hexstring = "0" + as_hexstring
 
     return as_hexstring
+
+
+class CodeMetadata:
+    def __init__(self, upgradeable=False):
+        self.upgradeable = upgradeable
+
+    def to_hex(self):
+        if self.upgradeable:
+            return "0100"
+        return "0000"
