@@ -161,3 +161,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Format of "transaction.data" field.
+
+
+## [0.2.6]
+
+### Fixed
+
+- Upgradeable smart contracts.
