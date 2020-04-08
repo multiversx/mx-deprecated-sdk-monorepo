@@ -3,7 +3,7 @@ import logging
 from argparse import ArgumentParser
 
 from erdpy.accounts import Account
-from erdpy.contracts import SmartContract
+from erdpy.contracts import SmartContract, CodeMetadata
 from erdpy.environments import TestnetEnvironment
 from erdpy.projects import ProjectClang
 
@@ -27,13 +27,15 @@ if __name__ == '__main__':
     myself = Account(pem_file=args.pem)
 
     # We initialize the smart contract with an actual address if IF was previously deployed,
-    contract = SmartContract(address=args.contract)
+    contract = SmartContract(address=args.contract, metadata=CodeMetadata(upgradeable=True))
 
     # A flow defines the desired steps to interact with the contract.
     def deploy_v1_flow():
         global contract
-        contract = SmartContract(bytecode=project_v1.get_bytecode())
+        contract.bytecode = project_v1.get_bytecode()
         tx, address = environment.deploy_contract(contract, owner=myself)
+        logger.info("Tx hash: %s", tx)
+        logger.info("Contract address: %s", address)
 
     def query_v1_flow():
         global contract
@@ -42,7 +44,7 @@ if __name__ == '__main__':
         answer_bytes = base64.b64decode(answer)
         answer_hex = answer_bytes.hex()
         answer_int = int(answer_hex, 16)
-        logger.info(f"Answer: {answer_bytes}, {answer_hex}, {answer_int}")
+        logger.info(f"\n\n[[[ Answer: {answer_bytes}, {answer_hex}, {answer_int} ]]]\n\n")
 
     def query_v2_flow():
         global contract
@@ -51,7 +53,7 @@ if __name__ == '__main__':
         answer_bytes = base64.b64decode(answer)
         answer_hex = answer_bytes.hex()
         answer_int = int(answer_hex, 16)
-        logger.info(f"Answer: {answer_bytes}, {answer_hex}, {answer_int}")
+        logger.info(f"\n\n[[[ Answer: {answer_bytes}, {answer_hex}, {answer_int} ]]]\n\n")
 
     def execute_v2_flow(function):
         global contract
