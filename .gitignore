@@ -139,7 +139,6 @@ erdpy/tests/testdata/**/*.o
 erdpy/tests/testdata/**/Cargo.lock
 erdpy/tests/testdata/**/*.functions
 
-examples/**/*.wasm
 examples/**/*.wat
 examples/**/*.hex
 examples/**/*.hex.arwen
