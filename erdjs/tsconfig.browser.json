@@ -1,11 +1,11 @@
 {
 	"compilerOptions": {
 		"module": "System",
-		"target": "es6",
+		"target": "ES2015",
 		"outDir": "out-browser",
 		"outFile": "out-browser/erdjs.js",
 		"lib": [
-			"es6", "DOM"
+			"ES2015", "DOM"
 		],
         "sourceMap": true,
         "allowJs": true,

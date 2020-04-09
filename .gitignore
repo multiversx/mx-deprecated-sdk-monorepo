@@ -148,3 +148,5 @@ examples/**/*.functions
 examples/**/.vscode/**
 
 db/**
+
+**/node_modules
