@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./../dist/web3.min.js"></script>
+
+</head>
+<body>
+<div class="container">
+
+    <h1>First smart contract </h1>
+
+    <button id="button1">getValue</button>
+    <label for="value1" class="col-lg-2 control-label"></label>
+    <input id="value1" type="text">
+
+
+    <button id="button2">setValue</button>
+    <label for="value2" class="col-lg-2 control-label"></label>
+    <input id="value2" type="text">
+
+
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+<script>
+    const web3Fork = new Web3(new Web3.providers.HttpProvider("http://localhost:8001/web3"));
+
+    const sk = "MjcwMDhjNjQ4NDdlZjMxZGZjNTcxMjQ2ZmEyYmIwMGE2YTI0Y2E4YzUyZjEzYjVmZWJjZDQ0YTk5YmFjZjUwZg==";
+    const account = web3Fork.eth.accounts.privateKeyToAccount(sk);
+
+    web3Fork.eth.accounts.wallet.add(account);
+
+    web3Fork.defaultAccount = account.address;
+
+    const contractAddress = "0x000000000000000005008cb96e814817ec3c6078cc05f8ae9387a5a90279d425";
+    const contractAbi = [
+        {
+            "constant": true,
+            "inputs": [],
+            "name": "getValue",
+            "outputs": [
+                {
+                    "name": "",
+                    "type": "uint256"
+                }
+            ],
+            "payable": false,
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
+            "constant": false,
+            "inputs": [
+                {
+                    "name": "_state",
+                    "type": "uint256"
+                }
+            ],
+            "name": "setValue",
+            "outputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [],
+            "payable": false,
+            "stateMutability": "nonpayable",
+            "type": "constructor"
+        }
+    ];
+
+    const contractObj = new web3Fork.eth.Contract(contractAbi, contractAddress);
+
+    $("#button1").click(function() {
+        contractObj.methods.getValue().call({from: account.address}).then(
+            function (result, error) {
+                if (!error) {
+                    document.getElementById("value1").value = result[0];
+                }
+                else {
+                    console.log(error)
+                }
+            }
+        );
+    });
+
+    $("#button2").click(function(){
+        var inputValue = $("#value2").val();
+        console.log(inputValue);
+
+        contractObj.methods.setValue(inputValue).send({from: account.address, gas: 1000000000, gasPrice: 1}).then(
+            function(result, error) {
+                console.log(error);
+                console.log(result);
+            }
+        )
+    });
+
+
+</script>
+
+</body>
+</html>
+
+
+
