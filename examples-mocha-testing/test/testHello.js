@@ -10,7 +10,11 @@ describe("Array", function () {
 
     describe("#foobar()", function () {
         it("should deploy and run smart contract", function () {
-            erdjs.deployContract();
+            erdjs.testing.DeployContract();
+            erdjs.testing.CallFunction();
+
+            model = new erdjs.core.MyModel();
+            console.log(model.Get())
         });
     });
 });

@@ -12,6 +12,6 @@
     "mocha": "^7.1.1"
   },
   "dependencies": {
-    "erdjs": "file:../../erdjs"
+    "erdjs": "file:../erdjs"
   }
 }

@@ -2,7 +2,9 @@
   "name": "erdjs",
   "version": "1.0.0",
   "description": "Smart Contracts interaction framework (for interacting with Arwen Debug in unit tests)",
-  "main": "index.js",
+  "main": "out-node/index.js",
+  "types": "out-node/index.d.js",
+  "files": ["out-node/**/*"],
   "scripts": {
     "test": "mocha",
     "compile-browser": "tsc -p tsconfig.browser.json",
