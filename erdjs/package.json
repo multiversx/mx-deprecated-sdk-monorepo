@@ -4,10 +4,12 @@
   "description": "Smart Contracts interaction framework (for interacting with Arwen Debug in unit tests)",
   "main": "out-node/index.js",
   "types": "out-node/index.d.js",
-  "files": ["out-node/**/*"],
+  "files": [
+    "out-node/**/*"
+  ],
   "scripts": {
     "test": "mocha",
-    "compile-browser": "tsc -p tsconfig.browser.json",
+    "compile-browser": "tsc -p tsconfig.browser.json && browserify out-browser/index.js -o out-browser/erdjs.js --standalone erdjs",
     "compile-node": "tsc -p tsconfig.node.json",
     "compile": "tsc -p ./",
     "pretest": "npm run compile"

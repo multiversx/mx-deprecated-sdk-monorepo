@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
-		"module": "System",
+		"module": "CommonJS",
 		"target": "ES2015",
 		"outDir": "out-browser",
-		"outFile": "out-browser/erdjs.js",
+		"types": [],
 		"lib": [
 			"ES2015", "DOM"
 		],
@@ -21,6 +21,7 @@
 		"node_modules",
 		"out",
 		"out-node",
-		"out-browser"
+		"out-browser",
+		"**/*.spec.ts"
     ]
 }
