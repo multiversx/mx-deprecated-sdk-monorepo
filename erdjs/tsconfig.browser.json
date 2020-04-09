@@ -1,8 +1,9 @@
 {
 	"compilerOptions": {
-		"module": "CommonJS",
+		"module": "System",
 		"target": "es6",
-		"outDir": "out",
+		"outDir": "out-browser",
+		"outFile": "out-browser/erdjs.js",
 		"lib": [
 			"es6", "DOM"
 		],

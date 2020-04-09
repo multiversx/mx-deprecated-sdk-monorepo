@@ -2,6 +2,7 @@
 
 ```
 npm install
-npm run compile
+npm run compile-node
+npm run compile-browser
 npm test
 ```

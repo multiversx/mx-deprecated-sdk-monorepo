@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha",
+    "compile-browser": "tsc -p tsconfig.browser.json",
+    "compile-node": "tsc -p tsconfig.node.json",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
     "pretest": "npm run compile"
   },
   "author": "ElrondNetwork",
