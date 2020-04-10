@@ -26,21 +26,6 @@ Accounts.prototype._addAccountFunctions = function(sk) {
         privateKey: "0x" +acct.privateKeyAsString(),
     };
 
-   // var _this = this;
-
-    // add sign functions
-    // account.signTransaction = function signTransaction(tx, callback) {
-    //     return _this.signTransaction(tx, account.privateKey, callback);
-    // };
-    // account.sign = function sign(data) {
-    //     return _this.sign(data, account.privateKey);
-    // };
-    //
-    // account.encrypt = function encrypt(password, options) {
-    //     return _this.encrypt(account.privateKey, password, options);
-    // };
-
-
 
     account.signTransaction = function signTransaction(tx) {
         const elrondTx = convertEthTxToElrondTx(tx);
@@ -52,9 +37,7 @@ Accounts.prototype._addAccountFunctions = function(sk) {
 
         return elrondTx;
     };
-
-
-
+    
     return account;
 };
 
@@ -88,10 +71,3 @@ args.forEach( function(arg) {
         encodedArgs += "@" + utils.toHex(arg).slice(2);
     }
 });
-
- },
-    "dependencies": {
-        "@babel/cli": "^7.8.4",
-        "@babel/runtime": "^7.8.7",
-        "@elrondnetwork/elrond-core-js": "^1.22.1"
-    }
