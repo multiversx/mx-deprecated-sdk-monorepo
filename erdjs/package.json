@@ -27,7 +27,6 @@
     "@types/underscore": "^1.9.4",
     "assert": "^2.0.0",
     "mocha": "^7.1.1",
-    "node-fetch": "^2.6.0",
     "ts-node": "^8.8.2",
     "tslint": "^6.1.1",
     "typescript": "^3.8.3"
