@@ -1,4 +1,3 @@
-
 export function DeployContract() {
     console.warn("deploy contract");
 }
