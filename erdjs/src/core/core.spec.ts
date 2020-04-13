@@ -6,6 +6,7 @@ import fetch, {
     Headers,
     Request,
     RequestInit,
+    RequestInfo,
     Response,
     FetchError
 } from "node-fetch";
@@ -22,13 +23,11 @@ describe("Proxy try-out", () => {
         let address: string = "14dcb8b9aaa0069fc600f08938a130ebba4a9b691dfbd6775bd59cbd052c94ca";
         console.log(address);
 
-        let addressHex: string = stringToHex(address);
-        console.log(addressHex);
-
         let url: string = `http://zirconium:7950/address/${address}/balance`;
-        fetch(url)
-            .then(res => res.json())
-            .then(json => console.log(json));
+        fetchWithTimeout(url, 1000)
+            .then((response: Response) => response.json())
+            .then((json: string) => console.log(json))
+            .catch((err: Error) => console.log(err));
     });
 });
 
@@ -39,4 +38,20 @@ function stringToHex(str: string): string {
 
 function bytesToHex(bytes: Array<number>): string {
     return bytes.map(byte => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function fetchWithTimeout(resource: RequestInfo, timeout: number, init?: RequestInit): Promise<Response> {
+    return new Promise<Response>((resolve, reject) => {
+        const timeoutID = setTimeout(
+            () => reject(new Error('Request timed out')),
+            timeout
+        );
+
+        fetch(resource)
+            .then(
+                (response: Response) =>  resolve(response),
+                (err: Error) => reject(err)
+            )
+            .finally(() => clearTimeout(timeoutID));
+    });
 }
