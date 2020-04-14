@@ -13,6 +13,7 @@
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "abort-controller": "^3.0.0",
     "backbone": "^1.4.0",
     "jquery": "^3.4.1",
     "node-fetch": "^2.6.0",
