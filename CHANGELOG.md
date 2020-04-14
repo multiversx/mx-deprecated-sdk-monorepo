@@ -168,3 +168,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Upgradeable smart contracts.
+
+## [0.2.7]
+
+### Other
+
+- Implement bech32 addresses.
