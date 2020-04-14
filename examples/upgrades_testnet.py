@@ -35,7 +35,8 @@ if __name__ == '__main__':
         contract.bytecode = project_v1.get_bytecode()
         tx, address = environment.deploy_contract(contract, owner=myself)
         logger.info("Tx hash: %s", tx)
-        logger.info("Contract address: %s", address)
+        logger.info("Contract address (hex): %s", address.hex())
+        logger.info("Contract address (bech32): %s", address.bech32())
 
     def query_v1_flow():
         global contract
