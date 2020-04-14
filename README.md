@@ -143,7 +143,7 @@ erdpy --verbose deploy ./examples/contracts/hello --pem="./examples/keys/alice.p
 Inspect values stored in the smart contract by performing a call to a pure, getter function:
 
 ```
-erdpy --verbose query 00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose query ... --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Call contract functions on testnet
@@ -159,11 +159,11 @@ erdpy --verbose call 000000000000000005000480f273914b6ceeaed2653a1a3d59f9656d653
 Prepare, then send transactions:
 
 ```
-erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="./examples/keys/alice.pem" --nonce=42 --receiver=a967adb3d1574581a6f7ffe0cd6600fb488686704fcff944c88efc7c90b3b13b --value=100000
+erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="./examples/keys/alice.pem" --nonce=42 --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000
 
 erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy=https://wallet-api.elrond.com
 
-erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver=a967adb3d1574581a6f7ffe0cd6600fb488686704fcff944c88efc7c90b3b13b --value=100000 --proxy=https://wallet-api.elrond.com
+erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000 --proxy=https://wallet-api.elrond.com
 
 ```
 
