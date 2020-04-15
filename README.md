@@ -143,7 +143,7 @@ erdpy --verbose deploy ./examples/contracts/hello --pem="./examples/keys/alice.p
 Inspect values stored in the smart contract by performing a call to a pure, getter function:
 
 ```
-erdpy --verbose query ... --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose query erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Call contract functions on testnet
@@ -151,7 +151,7 @@ erdpy --verbose query ... --function="getUltimateAnswer" --proxy="https://wallet
 Call a function of an existing smart contract:
 
 ```
-erdpy --verbose call 000000000000000005000480f273914b6ceeaed2653a1a3d59f9656d6530bd5e --pem="./examples/keys/alice.pem" --function="increment" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose call erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy --pem="./examples/keys/alice.pem" --function="increment" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Issue regular transactions against the testnet
