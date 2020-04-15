@@ -181,9 +181,9 @@ erdpy get-last-block-nonce --shard-id="1" --proxy="https://wallet-api.elrond.com
 Get details about a specific account (address on the blockchain):
 
 ```
-erdpy get-account --address="93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e" --proxy="https://wallet-api.elrond.com"
-erdpy get-account --nonce --address="93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e" --proxy="https://wallet-api.elrond.com"
-erdpy get-account --balance --address="93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e" --proxy="https://wallet-api.elrond.com"
+erdpy get-account --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
+erdpy get-account --nonce --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
+erdpy get-account --balance --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
 ```
 
 Get estimated costs for transactions, in gas units. Note that there are 3 types of transactions:
@@ -196,7 +196,7 @@ Get estimated costs for transactions, in gas units. Note that there are 3 types 
 ```
 erdpy get-transaction-cost move-balance --data="foobar" --proxy="https://wallet-api.elrond.com"
 erdpy get-transaction-cost sc-deploy --sc-path="./examples/hello" --proxy="https://wallet-api.elrond.com"
-erdpy get-transaction-cost sc-call --sc-address="00000000000000000500de287dcbcaa9b5867c7c83b489ab1a1a40ea4f39b39d" --function="increment" --proxy="https://wallet-api.elrond.com"
+erdpy get-transaction-cost sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://wallet-api.elrond.com"
 ```
 
 
