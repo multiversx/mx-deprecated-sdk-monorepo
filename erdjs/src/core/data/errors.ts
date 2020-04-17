@@ -8,3 +8,6 @@ export var ErrCodeHasUnexpectedHash = new Error("code has unexpected hash");
 export var ErrInvalidAddressPrefix = new Error("invalid error prefix");
 export var ErrNegativeGasPrice = new Error("negative gas price");
 export var ErrNegativeGasLimit = new Error("negative gas limit");
+export var ErrWrongSecretKeyLength = new Error("wrong secret key length");
+export var ErrInvalidTxValueString = new Error("invalid tx value string");
+export var ErrNegativeValue = new Error("negative value");

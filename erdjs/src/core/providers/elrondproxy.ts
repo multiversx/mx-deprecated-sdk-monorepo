@@ -19,6 +19,7 @@ GET    /validator/statistics        --> github.com/ElrondNetwork/elrond-proxy-go
 import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
 import { Account } from "../data/account";
+import { Transaction } from "../data/transaction";
 
 export class ElrondProxy implements Provider {
     private url: string;
@@ -120,4 +121,11 @@ export class ElrondProxy implements Provider {
         ).then(response => response.data.data);
     }
 
+    sendTransaction(tx: Transaction): Promise<AxiosResponse> {
+        return axios.post(
+            this.url + '/transaction/send',
+            JSON.stringify(tx.getPlain()),
+            { timeout: this.timeoutLimit }
+        );
+    }
 }

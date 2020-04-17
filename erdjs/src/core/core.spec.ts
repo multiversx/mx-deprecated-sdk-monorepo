@@ -1,6 +1,6 @@
 import * as assert from "assert";
 import axios, { AxiosResponse } from "axios";
-import { Address, Account } from "./data/account";
+import { Address, Account, AccountSigner } from "./data/account";
 import { Transaction } from "./data/transaction";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
@@ -28,7 +28,6 @@ describe("Proxy", () => {
 
         let txgen = getTxGenConfiguration();
         let nAccounts = txgen.accounts.length;
-        console.log("txgen accounts: " + nAccounts.toString());
 
         let minter = new Address(txgen.mintingAddress);
         let minterNonce = await proxy.getNonce(minter.toString());
@@ -58,14 +57,32 @@ describe("Proxy", () => {
         let txgen = getTxGenConfiguration();
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
-        const sender = new Address(txgen.accounts[1].pubKey);
+        const sender = await proxy.getAccount(txgen.accounts[1].pubKey);
+        sender.setKeysFromRawData(txgen.accounts[1]);
+
         const receiver = new Address(txgen.accounts[2].pubKey);
 
         // At first, the sender and receiver have equal balances (due to txgen
         // minting)
-        let senderBalance = await proxy.getBalance(sender.toString());
+        let senderBalance = await proxy.getBalance(sender.getAddress());
         let receiverBalance = await proxy.getBalance(receiver.toString());
         assert.equal(senderBalance, receiverBalance);
+
+        let tx = new Transaction({
+            sender: sender.getAddress(),
+            receiver: receiver.toString(),
+            value: "25",
+            nonce: sender.getNonce(),
+            gasPrice: "100000000000000",
+            gasLimit: "50001",
+            data: ""
+        });
+
+        let signer = new AccountSigner(sender);
+        signer.sign(tx);
+
+        let response = await proxy.sendTransaction(tx);
+        console.log(response);
     });
 });
 

@@ -1,4 +1,6 @@
 import { Account } from "../data/account";
+import { Transaction } from "../data/transaction";
+import { AxiosResponse } from "axios";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;
@@ -8,6 +10,7 @@ export interface Provider {
     getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint>;
     getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
+    sendTransaction(tx: Transaction): Promise<AxiosResponse>;
 }
 
 export interface Signer {

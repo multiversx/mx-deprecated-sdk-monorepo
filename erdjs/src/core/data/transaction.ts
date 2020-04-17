@@ -41,6 +41,7 @@ export class Transaction implements Signable {
 
         this.sender = valid.Address(data.sender);
         this.receiver = valid.Address(data.receiver);
+        this.value = valid.TxValue(data.value);
         this.nonce = valid.Nonce(data.nonce);
         this.gasPrice = valid.GasPrice(data.gasPrice);
         this.gasLimit = valid.GasLimit(data.gasLimit);
@@ -57,8 +58,8 @@ export class Transaction implements Signable {
         signer.sign(this);
     }
 
-    public serializeForSigning(): Buffer {
-        let tx: any = {
+    public getPlain(): any {
+        let plainTx: any = {
             nonce: this.nonce,
             value: this.value.toString(),
             receiver: this.receiver,
@@ -66,16 +67,22 @@ export class Transaction implements Signable {
         };
 
         if (this.gasPrice > 0) {
-            tx.gasPrice = this.gasPrice;
+            plainTx.gasPrice = this.gasPrice;
         }
         if (this.gasLimit > 0) {
-            tx.gasLimit = this.gasLimit;
+            plainTx.gasLimit = this.gasLimit;
         }
         if (this.data != "") {
-            tx.data = Buffer.from(this.data).toString('base64');
+            plainTx.data = Buffer.from(this.data).toString('base64');
         }
-        
-        return tx;
+
+        return plainTx;
+    }
+
+    public serializeForSigning(): Buffer {
+        let tx = this.getPlain();
+        let serializedTx = JSON.stringify(tx);
+        return Buffer.from(serializedTx);
     }
 
     public applySignature(signature: Buffer) {

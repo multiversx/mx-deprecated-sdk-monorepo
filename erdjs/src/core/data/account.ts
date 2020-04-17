@@ -1,6 +1,8 @@
+import * as tweetnacl from "tweetnacl";
 import * as valid from "./validation";
 import * as bech32 from "bech32";
 import * as errors from "./errors";
+import { Signer, Signable } from "../providers/interface";
 
 export class Address {
     private buffer: Buffer = Buffer.from("");
@@ -47,6 +49,7 @@ export class Address {
 
 export class Account {
     private address: Address = new Address("");
+    private seed: Buffer = Buffer.from("");
     private nonce: number = 0;
     private balance: bigint = BigInt(0);
     private code: string = "";
@@ -59,8 +62,20 @@ export class Account {
         this.set(data);
     }
 
-    public getAddress(): Address {
-        return this.address;
+    public getAddress(): string {
+        return this.address.toString();
+    }
+
+    public getSeed(): Buffer {
+        return this.seed;
+    }
+
+    public getNonce(): number {
+        return this.nonce;
+    }
+
+    public incrementNonce() {
+        this.nonce++;
     }
 
     public set(data: any) {
@@ -77,5 +92,36 @@ export class Account {
         this.rootHash = valid.RootHash(data.rootHash);
 
         this.initialized = true;
+    }
+
+    public sign(signable: Signable): void {
+        let bufferToSign = signable.serializeForSigning();
+
+    }
+
+    public setKeysFromRawData(data: any) {
+        this.address = new Address(data.pubKey);
+        this.seed = valid.Seed(data.privKey);
+    }
+}
+
+export class AccountSigner implements Signer {
+    private account: Account = new Account(null);
+
+    public constructor(acc: Account) {
+        this.account = acc;
+    }
+
+    public sign(signable: Signable): void {
+        let seed = this.account.getSeed();
+        console.log("seed length: " + seed.length);
+        let pair = tweetnacl.sign.keyPair.fromSeed(seed);
+        let signingKey = pair.secretKey;
+
+        let bufferToSign = signable.serializeForSigning();
+        let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
+        let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
+
+        signable.applySignature(signature);
     }
 }

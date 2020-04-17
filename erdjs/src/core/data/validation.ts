@@ -2,6 +2,8 @@ import * as errors from "./errors";
 
 export const HASH_LENGTH = 32;
 export const ADDRESS_LENGTH = 32;
+export const SEED_STRING_LENGTH = 64;
+export const SEED_LENGTH = 32;
 export const CODE_HASH_LENGTH = HASH_LENGTH;
 export const ADDRESS_PREFIX = "erd";
 
@@ -89,8 +91,29 @@ export function GasLimit(gasLimit: number): number {
     return gasLimit;
 }
 
+export function TxValue(txValue: string): bigint {
+    if (txValue.length == 0) {
+        throw errors.ErrInvalidTxValueString;
+    }
+    let value = BigInt(txValue);
+    if (value < 0) {
+        throw errors.ErrNegativeValue;
+    }
+    return value;
+}
+
 export function TxData(txData: string): string {
     return txData;
+}
+
+export function Seed(key: string): Buffer {
+    if (key.length != 2 * SEED_STRING_LENGTH) {
+        throw errors.ErrWrongSecretKeyLength;
+    }
+
+    let keyBytes = Buffer.from(key, 'hex');
+    let seedBytes = keyBytes.slice(0, SEED_LENGTH);
+    return seedBytes;
 }
 
 function makeCodeHash(code: string) {
