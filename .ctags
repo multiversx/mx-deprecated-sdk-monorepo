@@ -1,0 +1,16 @@
+--exclude=.git
+--exclude=.gitignore
+--exclude=.vscode
+--exclude=README*
+--exclude=distribution
+--exclude=docs
+--exclude=erdjs/.mocharc.json
+--exclude=erdjs/node_modules
+--exclude=erdjs/out*
+--exclude=erdjs/package*.json
+--exclude=erdjs/src/web3/temp-snippets
+--exclude=erdjs/tsconfig*
+--exclude=erdjs/tslint.json
+--exclude=examples
+--exclude=*.html
+--exclude=*.md

@@ -1,61 +1,40 @@
-import fetch, {
-    Blob,
-    Headers,
-    Request,
-    RequestInit,
-    RequestInfo,
-    Response,
-    FetchError
-} from "node-fetch";
+import * as bech32 from "bech32";
+import { ADDRESS_LENGTH, ADDRESS_PREFIX } from "./data/validation";
+import * as errors from "./data/errors";
 
-import { AbortController, AbortSignal } from "abort-controller";
-
-export function fetchWithTimeout(resource: RequestInfo, timeout: number, init?: RequestInit): Promise<Response> {
-    const timeoutController = new TimeoutController(timeout);
-
-    if (init == null) {
-        init = {}; 
-    }
-    if (init.signal == null) {
-        init.signal = timeoutController.start();
+export function erdAddressToBytes(address: string): Buffer {
+    let decodedAddress = bech32.decode(address);
+    if (decodedAddress.prefix != ADDRESS_PREFIX) {
+        throw errors.ErrInvalidAddressPrefix;
     }
 
-    let fetchPromise = fetch(resource, init);
-    fetchPromise.finally(() => timeoutController.clear());
-    return fetchPromise;
+    let addressBytes = Buffer.from(bech32.fromWords(decodedAddress.words));
+    if (addressBytes.length != ADDRESS_LENGTH) {
+        throw errors.ErrWrongAddressLength;
+    }
+    return addressBytes;
 }
 
-export class TimeoutController extends AbortController {
-    private timer: NodeJS.Timer;
-    private timeout: number;
-
-    constructor(t: number) {
-        super();
-        this.timeout = t;
+export function erdAddressFromBytes(bytes: Buffer): string {
+    if (bytes.length != ADDRESS_LENGTH) {
+        throw errors.ErrWrongAddressLength;
     }
 
-    start(): AbortSignal {
-        if (this.signal.aborted) {
-            throw new Error(`TimeoutController already aborted`);
-        }
-        this.timer = setTimeout(
-            () => this.abort(),
-            this.timeout
-        );
-
-        return this.signal;
-    }
-
-    clear() {
-        clearTimeout(this.timer);
-    }
+    let words = bech32.toWords(bytes);
+    let address = bech32.encode(ADDRESS_PREFIX, words);
+    return address;
 }
 
-export function stringToHex(str: string): string {
-    const chars = [...str];
-    return chars.map(chr => chr.charCodeAt(0).toString(16).padStart(2, "0")).join("");
+export function erdAddressToHex(address: string): string {
+    let addressBytes = erdAddressToBytes(address);
+    let addressHex = addressBytes.toString('hex');
+
+    return addressHex
 }
 
-export function bytesToHex(bytes: Array<number>): string {
-    return bytes.map(byte => byte.toString(16).padStart(2, "0")).join("");
+export function erdAddressFromHex(addressHex: string): string {
+    let addressBytes = Buffer.from(addressHex, 'hex');
+    let address = erdAddressFromBytes(addressBytes);
+
+    return address;
 }

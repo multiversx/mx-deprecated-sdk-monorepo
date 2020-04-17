@@ -6,11 +6,12 @@
     "lib": [
       "es6", "DOM"
     ],
-    "sourceMap": true,
-    "allowJs": true,
+    "sourceMap": false,
+    "allowJs": false,
     "strict": true,
-    "strictPropertyInitialization": false,
-    "strictNullChecks": false
+    "strictPropertyInitialization": true,
+    "strictNullChecks": true,
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules",
