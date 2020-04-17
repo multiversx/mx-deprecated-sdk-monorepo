@@ -75,6 +75,24 @@ export function RootHash(hash: string | null): string {
     return hash;
 }
 
+export function GasPrice(gasPrice: number): number {
+    if (gasPrice < 0) {
+        throw errors.ErrNegativeGasPrice;
+    }
+    return gasPrice;
+}
+
+export function GasLimit(gasLimit: number): number {
+    if (gasLimit < 0) {
+        throw errors.ErrNegativeGasLimit;
+    }
+    return gasLimit;
+}
+
+export function TxData(txData: string): string {
+    return txData;
+}
+
 function makeCodeHash(code: string) {
     return "not_a_hash";
 }

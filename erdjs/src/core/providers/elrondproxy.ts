@@ -17,27 +17,17 @@ GET    /validator/statistics        --> github.com/ElrondNetwork/elrond-proxy-go
 */
 
 import axios, { AxiosResponse } from "axios";
+import { Provider } from "./interface";
 import { Account } from "../data/account";
 
-
-export interface Provider {
-    getAccount(address: string): Promise<Account>;
-    getBalance(address: string): Promise<bigint>;
-    getNonce(address: string): Promise<number>;
-    getVMValueString(address: string, funcName: string, args: string[]): Promise<string>;
-    getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint>;
-    getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
-    getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
-}
-
 export class ElrondProxy implements Provider {
-    private URL: string;
-    private TimeoutLimit: number;
+    private url: string;
+    private timeoutLimit: number;
 
     constructor(config: any) {
         // TODO validate proper structure of url
-        this.URL = config.url;
-        this.TimeoutLimit = config.timeout;
+        this.url = config.url;
+        this.timeoutLimit = config.timeout;
     }
 
     getAccount(address: string): Promise<Account> {
@@ -45,8 +35,8 @@ export class ElrondProxy implements Provider {
         //  * if the GET request fails
         //  * if the retrieved data cannot be set to an Account
         return axios.get(
-            this.URL + `/address/${address}`,
-            { timeout: this.TimeoutLimit }
+            this.url + `/address/${address}`,
+            { timeout: this.timeoutLimit }
         ).then(response => new Account(response.data.account));
     }
 
@@ -55,8 +45,8 @@ export class ElrondProxy implements Provider {
         //  * if the GET request fails
         //  * if the retrieved data cannot be used as a bigint
         return axios.get(
-            this.URL + `/address/${address}/balance`,
-            { timeout: this.TimeoutLimit }
+            this.url + `/address/${address}/balance`,
+            { timeout: this.timeoutLimit }
         ).then(response => BigInt(response.data.balance));
     }
 
@@ -65,8 +55,8 @@ export class ElrondProxy implements Provider {
         //  * if the GET request fails
         //  * if the retrieved data is an invalid nonce
         return axios.get(
-            this.URL + `/address/${address}/nonce`,
-            { timeout: this.TimeoutLimit }
+            this.url + `/address/${address}/nonce`,
+            { timeout: this.timeoutLimit }
         ).then(response => response.data.nonce);
     }
 
@@ -79,9 +69,9 @@ export class ElrondProxy implements Provider {
             "args": args
         };
         return axios.post(
-            this.URL + `/vm-values/string`,
+            this.url + `/vm-values/string`,
             postBody,
-            { timeout: this.TimeoutLimit }
+            { timeout: this.timeoutLimit }
         ).then(response => response.data.data);
     }
 
@@ -94,9 +84,9 @@ export class ElrondProxy implements Provider {
             "args": args
         };
         return axios.post(
-            this.URL + `/vm-values/int`,
+            this.url + `/vm-values/int`,
             postBody,
-            { timeout: this.TimeoutLimit }
+            { timeout: this.timeoutLimit }
         ).then(response => BigInt(response.data.data));
     }
 
@@ -109,9 +99,9 @@ export class ElrondProxy implements Provider {
             "args": args
         };
         return axios.post(
-            this.URL + `/vm-values/hex`,
+            this.url + `/vm-values/hex`,
             postBody,
-            { timeout: this.TimeoutLimit }
+            { timeout: this.timeoutLimit }
         ).then(response => response.data.data);
     }
 
@@ -124,9 +114,9 @@ export class ElrondProxy implements Provider {
             "args": args
         };
         return axios.post(
-            this.URL + `/vm-values/query`,
+            this.url + `/vm-values/query`,
             postBody,
-            { timeout: this.TimeoutLimit }
+            { timeout: this.timeoutLimit }
         ).then(response => response.data.data);
     }
 

@@ -6,3 +6,5 @@ export var ErrInvalidCodeHash = new Error("invalid code hash");
 export var ErrInvalidRootHash = new Error("invalid code hash");
 export var ErrCodeHasUnexpectedHash = new Error("code has unexpected hash");
 export var ErrInvalidAddressPrefix = new Error("invalid error prefix");
+export var ErrNegativeGasPrice = new Error("negative gas price");
+export var ErrNegativeGasLimit = new Error("negative gas limit");

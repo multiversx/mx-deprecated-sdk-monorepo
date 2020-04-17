@@ -1,8 +1,9 @@
 import * as assert from "assert";
 import axios, { AxiosResponse } from "axios";
-import * as core from "./core";
-import { Account } from "./data/account";
-import { Provider, ElrondProxy } from "./providers/elrondproxy";
+import { Address, Account } from "./data/account";
+import { Transaction } from "./data/transaction";
+import { Provider } from "./providers/interface";
+import { ElrondProxy } from "./providers/elrondproxy";
 import * as fs from "fs";
 
 var ErrTestError1 = new Error("test error 1");
@@ -19,35 +20,19 @@ describe("Preliminary try-out code", async () => {
 });
 
 describe("Proxy", () => {
-    it("should retrieve accounts", async () => {
+    it("should retrieve nonce of account", async () => {
         const proxy: Provider = new ElrondProxy({
             url: "http://zirconium:7950",
             timeout: 1000
         });
 
-        let account = await proxy.getAccount("new_account");
+        let txgen = getTxGenConfiguration();
+        let nAccounts = txgen.accounts.length;
+        console.log("txgen accounts: " + nAccounts.toString());
 
-        // TODO this assertion is misleading, because both 'expected' and
-        // 'actual' are produced by the same code (constructor of Account),
-        // just the inputs have different sources (proxy response vs literal
-        // object)
-        let expectedAccount = new Account({
-            address: "new_account",
-            nonce: 5,
-            balance: '12',
-            code: "",
-            codeHash: "",
-            rootHash: "",
-        });
-        console.log(expectedAccount);
-        console.log(account);
-        assert.deepStrictEqual(account, expectedAccount);
-
-        let balance = await proxy.getBalance("new_account");
-        assert.deepStrictEqual(balance, BigInt(12));
-
-        let nonce = await proxy.getNonce("new_account");
-        assert.deepStrictEqual(nonce, 5);
+        let minter = new Address(txgen.mintingAddress);
+        let minterNonce = await proxy.getNonce(minter.toString());
+        assert.deepStrictEqual(minterNonce, 2 * nAccounts + 1);
     });
 
     it("should retrieve VM values", async () => {
@@ -58,10 +43,29 @@ describe("Proxy", () => {
 
         let txgen = getTxGenConfiguration();
 
-        let accountAddress = txgen.accounts[2].pubKey;
-        let addressAsHex = core.erdAddressToHex(accountAddress);
-        let value = await proxy.getVMValueQuery(txgen.scAddress, "balanceOf", [addressAsHex]);
-        console.log(value);
+        let address = new Address(txgen.accounts[2].pubKey);
+        let value = await proxy.getVMValueQuery(txgen.scAddress, "balanceOf", [address.hex()]);
+
+        assert.ok(value != null);
+    });
+
+    it("should transfer some ERD between accounts", async () => {
+        const proxy: Provider = new ElrondProxy({
+            url: "http://zirconium:7950",
+            timeout: 1000
+        });
+
+        let txgen = getTxGenConfiguration();
+        assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
+
+        const sender = new Address(txgen.accounts[1].pubKey);
+        const receiver = new Address(txgen.accounts[2].pubKey);
+
+        // At first, the sender and receiver have equal balances (due to txgen
+        // minting)
+        let senderBalance = await proxy.getBalance(sender.toString());
+        let receiverBalance = await proxy.getBalance(receiver.toString());
+        assert.equal(senderBalance, receiverBalance);
     });
 });
 
@@ -70,15 +74,16 @@ function getTxGenConfiguration(): any {
 
     const accountsDataFilename = txgenFolder + "/data/accounts.json";
     const scAddressFilename = txgenFolder + "/deployedSCAddress.txt";
+    const minterAddressFilename = txgenFolder + "/minterAddress.txt";
 
     let accountsData = JSON.parse(fs.readFileSync(accountsDataFilename).toString());
     let accounts = accountsData["0"];
-    let mintingAccount = accounts[0];
     let scAddress = fs.readFileSync(scAddressFilename).toString();
+    let mintingAddress = fs.readFileSync(minterAddressFilename).toString();
 
     return {
         accounts: accounts,
-        mintingAccount: mintingAccount,
+        mintingAddress: mintingAddress,
         scAddress: scAddress
     };
 }
