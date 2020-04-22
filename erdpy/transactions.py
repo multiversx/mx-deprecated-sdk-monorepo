@@ -6,6 +6,7 @@ from os import path
 from erdpy import utils
 from erdpy.wallet import signing
 from collections import OrderedDict
+from erdpy.accounts import Address
 
 
 logger = logging.getLogger("transactions")
@@ -28,14 +29,6 @@ class PlainTransaction:
 class TransactionPayloadToSign:
     def __init__(self, transaction):
         self.__dict__.update(transaction.payload())
-
-        receiver_bytes = bytes.fromhex(transaction.receiver)
-        receiver_base64 = base64.b64encode(receiver_bytes).decode()
-        self.receiver = receiver_base64
-
-        sender_bytes = bytes.fromhex(transaction.sender)
-        sender_base64 = base64.b64encode(sender_bytes).decode()
-        self.sender = sender_base64
 
         # When signing the transaction, we base64 encode the "Data" field
         if transaction.data:
@@ -119,13 +112,13 @@ def prepare(args):
 
 def do_prepare_transaction(args):
     # "sender" taken from the PEM file
-    sender_bytes = signing.get_address_from_pem(args.pem)
-    sender_hex = sender_bytes.hex()
+    sender_bytes = signing.get_pubkey_from_pem(args.pem)
+    sender_bech32 = Address(sender_bytes).bech32()
 
     plain = PlainTransaction()
     plain.nonce = int(args.nonce)
     plain.value = args.value
-    plain.sender = sender_hex
+    plain.sender = sender_bech32
     plain.receiver = args.receiver
     plain.gasPrice = int(args.gas_price)
     plain.gasLimit = int(args.gas_limit)

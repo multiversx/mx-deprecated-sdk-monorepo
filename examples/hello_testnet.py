@@ -34,10 +34,7 @@ if __name__ == '__main__':
 
     # Now, we create a environment which intermediates deployment and execution
     environment = TestnetEnvironment(args.proxy)
-    alice = Account(
-        address="93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e",
-        pem_file="./examples/keys/alice.pem"
-    )
+    bob = Account(pem_file="./examples/keys/bob.pem")
 
     # We initialize the smart contract with an actual address if IF was previously deployed,
     # so that we can start to interact with it ("query_flow")
@@ -49,9 +46,10 @@ if __name__ == '__main__':
 
         # For deploy, we initialize the smart contract with the compiled bytecode
         contract = SmartContract(bytecode=bytecode)
-        tx, address = environment.deploy_contract(contract, owner=alice)
+        tx, address = environment.deploy_contract(contract, owner=bob)
         logger.info("Tx hash: %s", tx)
-        logger.info("Contract address: %s", address)
+        logger.info("Contract address (hex): %s", address.hex())
+        logger.info("Contract address (bech32): %s", address.bech32())
 
     def query_flow():
         global contract

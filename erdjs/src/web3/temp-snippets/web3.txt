@@ -1,4 +1,0 @@
-web3.setProvider('ws://localhost:8546');
-// or
-web3.setProvider(new Web3.providers.WebsocketProvider('ws://localhost:8546'));
-web3.eth.getAccounts().then(console.log);

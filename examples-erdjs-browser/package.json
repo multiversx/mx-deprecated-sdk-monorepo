@@ -1,0 +1,6 @@
+{
+  "name": "erdjs-examples",
+  "scripts": {
+    "serve": "http-server"
+  }
+}
