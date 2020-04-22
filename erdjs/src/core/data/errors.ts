@@ -11,3 +11,6 @@ export var ErrNegativeGasLimit = new Error("negative gas limit");
 export var ErrWrongSecretKeyLength = new Error("wrong secret key length");
 export var ErrInvalidTxValueString = new Error("invalid tx value string");
 export var ErrNegativeValue = new Error("negative value");
+export var ErrNotANumber = new Error("not a number");
+export var ErrTransactionNotSigned = new Error("transaction not signed");
+export var ErrProviderNotSet = new Error("provider not set");

@@ -38,7 +38,11 @@ export class ElrondProxy implements Provider {
         return axios.get(
             this.url + `/address/${address}`,
             { timeout: this.timeoutLimit }
-        ).then(response => new Account(response.data.account));
+        ).then(response => {
+            let account = new Account(response.data.account);
+            account.setProvider(this);
+            return account;
+        });
     }
 
     getBalance(address: string): Promise<bigint> {
@@ -124,7 +128,7 @@ export class ElrondProxy implements Provider {
     sendTransaction(tx: Transaction): Promise<AxiosResponse> {
         return axios.post(
             this.url + '/transaction/send',
-            JSON.stringify(tx.getPlain()),
+            JSON.stringify(tx.getAsSendable()),
             { timeout: this.timeoutLimit }
         );
     }
