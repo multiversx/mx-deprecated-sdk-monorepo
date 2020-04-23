@@ -16,6 +16,11 @@ export function getToolsSubfolder(subfolder: string): string {
     return folder;
 }
 
+export function getToolsPath(relativePath: string): string {
+    let absolutePath = path.join(getToolsFolder(), relativePath)
+    return absolutePath;
+}
+
 function getHomeFolder(): string {
     return os.homedir();
 }

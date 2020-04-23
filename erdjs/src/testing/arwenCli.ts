@@ -1,5 +1,7 @@
 import child_process = require("child_process");
 import { ArwenDebugProvider, DeployRequest, DeployResponse, UpgradeRequest, UpgradeResponse, RunRequest, RunResponse, CreateAccountResponse, CreateAccountRequest, QueryRequest, QueryResponse } from "./arwen";
+import { getToolsPath } from "./workstation"
+import { MyExecError } from "./errors";
 
 export class ArwenCLI implements ArwenDebugProvider {
     async deployContract(request: DeployRequest): Promise<DeployResponse> {
@@ -21,17 +23,25 @@ export class ArwenCLI implements ArwenDebugProvider {
     async createAccount(request: CreateAccountRequest): Promise<CreateAccountResponse> {
         let options: any = {};
         options.program = this.getArwenDebugPath();
-        options.args = ["create-account"];
+        options.args = [
+            "create-account",
+            `--database=${request.databasePath}`,
+            `--world=${request.world}`,
+            `--address=${request.address}`,
+            `--balance=${request.balance}`,
+            `--nonce=${request.nonce}`
+        ];
+
         await execute(options);
         return new CreateAccountResponse();
     }
 
     private getArwenDebugPath(): string {
-        return process.env.ARWENDEBUG || "arwendebug";
+        return process.env.ARWENDEBUG || getToolsPath("arwendebug");
     }
 }
 
-function execute(options: any): Promise<any> {
+async function execute(options: any): Promise<any> {
     var resolve: any, reject: any;
     let promise = new Promise((_resolve, _reject) => {
         resolve = _resolve;
@@ -51,23 +61,30 @@ function execute(options: any): Promise<any> {
     let subprocess = child_process.spawn(program, args, spawnOptions);
 
     subprocess.on("error", function (error) {
-        //reject(new MyExecError({ Program: programName, Message: error.message }));
+        reject(new MyExecError({ program: program, message: error.message }));
     });
 
-    // subprocess.stdout.setEncoding('utf8');
-    // subprocess.stderr.setEncoding('utf8');
+    if (subprocess.stdout) {
+        subprocess.stdout.setEncoding('utf8');
 
-    // subprocess.stdout.on("data", function (data: string) {
-    // });
+        subprocess.stdout.on("data", function (data: string) {
+            console.log(data);
+        });
+    }
 
-    // subprocess.stderr.on("data", function (data: string) {
-    // });
+    if (subprocess.stderr) {
+        subprocess.stderr.setEncoding('utf8');
+
+        subprocess.stderr.on("data", function (data: string) {
+            console.warn(data);
+        });
+    }
 
     subprocess.on("close", function (code: number) {
         if (code == 0) {
-            //resolve({ code: code, stdOut: latestStdout.trim() });
+            resolve({ code: code });
         } else {
-            //reject(new MyExecError({ Program: programName, Message: latestStderr, Code: code.toString() }));
+            reject(new MyExecError({ program: program, code: code.toString() }));
         }
     });
 

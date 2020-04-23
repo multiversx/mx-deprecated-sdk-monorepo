@@ -1,22 +1,24 @@
-import { ArwenDebugProvider } from "./arwen";
+import { ArwenDebugProvider, CreateAccountResponse } from "./arwen";
 import { ArwenCLI } from "./arwenCli";
 import { getToolsSubfolder } from "./workstation";
 
 export class World {
-    private name: string;
     private uniqueName: string;
     private databasePath: string;
     private provider: ArwenDebugProvider;
 
-    constructor(name: string) {
-        this.name = name;
+    constructor(name: string, databasePath: string = "") {
         this.uniqueName = `${name}${Date.now()}`;
-        this.databasePath = getToolsSubfolder("tests-db");
+        this.databasePath = databasePath || this.getDefaultDatabasePath();
         this.provider = new ArwenCLI();
     }
 
-    async createAccount(address: string, balance: string = "1000000000", nonce: number = 0): Promise<any> {
-        this.provider.createAccount({
+    private getDefaultDatabasePath(): string {
+        return getToolsSubfolder("tests-db");
+    }
+
+    async createAccount(address: string, balance: string = "1000000000", nonce: number = 0): Promise<CreateAccountResponse> {
+        return await this.provider.createAccount({
             databasePath: this.databasePath,
             world: this.uniqueName,
             address: address,
