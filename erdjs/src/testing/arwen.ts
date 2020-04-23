@@ -66,4 +66,11 @@ export class CreateAccountRequest extends RequestBase {
 }
 
 export class CreateAccountResponse {
+    Account: Account | null = null;
+}
+
+export class Account {
+    Address: string = "";
+    Nonce: number = 0;
+    Balance: number = 0;
 }
