@@ -151,3 +151,5 @@ db/**
 
 tags
 **/node_modules
+
+distribution/go
