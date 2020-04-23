@@ -1,4 +1,5 @@
 import * as valid from "./validation";
+import * as errors from "./errors";
 import { Signer, Signable } from "../providers/interface"
 
 /* type Transaction struct { */
@@ -77,6 +78,32 @@ export class Transaction implements Signable {
         }
 
         return plainTx;
+    }
+
+    public getAsSendable(): any {
+        if (!this.signed) {
+            throw errors.ErrTransactionNotSigned;
+        }
+
+        let sendableTx: any = {
+            nonce: this.nonce,
+            value: this.value.toString(),
+            receiver: this.receiver,
+            sender: this.sender,
+            signature: this.signature
+        };
+
+        if (this.gasPrice > 0) {
+            sendableTx.gasPrice = this.gasPrice;
+        }
+        if (this.gasLimit > 0) {
+            sendableTx.gasLimit = this.gasLimit;
+        }
+        if (this.data != "") {
+            sendableTx.data = this.data;
+        }
+
+        return sendableTx;
     }
 
     public serializeForSigning(): Buffer {

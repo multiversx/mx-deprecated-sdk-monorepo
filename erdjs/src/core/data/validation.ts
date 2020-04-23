@@ -15,6 +15,7 @@ export function Address(address: string): string {
 }
 
 export function Nonce(nonce: number): number {
+    nonce = validNumber(nonce);
     if (nonce < 0) {
         throw errors.ErrNegativeNonce;
     }
@@ -78,6 +79,7 @@ export function RootHash(hash: string | null): string {
 }
 
 export function GasPrice(gasPrice: number): number {
+    gasPrice = validNumber(gasPrice);
     if (gasPrice < 0) {
         throw errors.ErrNegativeGasPrice;
     }
@@ -85,6 +87,7 @@ export function GasPrice(gasPrice: number): number {
 }
 
 export function GasLimit(gasLimit: number): number {
+    gasLimit = validNumber(gasLimit);
     if (gasLimit < 0) {
         throw errors.ErrNegativeGasLimit;
     }
@@ -118,4 +121,12 @@ export function Seed(key: string): Buffer {
 
 function makeCodeHash(code: string) {
     return "not_a_hash";
+}
+
+function validNumber(n: number): number {
+    let nr: number = Number(n);
+    if (Number.isNaN(nr)) {
+        throw errors.ErrNotANumber;
+    }
+    return nr;
 }

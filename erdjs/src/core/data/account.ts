@@ -2,50 +2,7 @@ import * as tweetnacl from "tweetnacl";
 import * as valid from "./validation";
 import * as bech32 from "bech32";
 import * as errors from "./errors";
-import { Signer, Signable } from "../providers/interface";
-
-export class Address {
-    private buffer: Buffer = Buffer.from("");
-    private prefix: string = "";
-
-    public constructor(address: string) {
-        if (address != "") {
-            this.set(address);
-        }
-    }
-
-    public set(address: string) {
-        let decodedAddress = bech32.decode(address);
-        if (decodedAddress.prefix != valid.ADDRESS_PREFIX) {
-            throw errors.ErrInvalidAddressPrefix;
-        }
-
-        let addressBytes = Buffer.from(bech32.fromWords(decodedAddress.words));
-        if (addressBytes.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
-        }
-        this.buffer = addressBytes;
-    }
-
-    public bytes(): Buffer {
-        return this.buffer;
-    }
-
-    public hex(): string {
-        return this.buffer.toString('hex');
-    }
-
-    public toString(): string {
-        if (this.buffer.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
-        }
-
-        let words = bech32.toWords(this.buffer);
-        let address = bech32.encode(valid.ADDRESS_PREFIX, words);
-        return address;
-    }
-
-}
+import { Provider, Signer, Signable } from "../providers/interface";
 
 export class Account {
     private address: Address = new Address("");
@@ -56,10 +13,25 @@ export class Account {
     private codeHash: string = "";
     private rootHash: string = "";
 
+    private provider: Provider | null = null;
+
     private initialized: boolean = false;
 
     public constructor(data: any) {
         this.set(data);
+    }
+
+    public setProvider(provider: Provider) {
+        this.provider = provider;
+    }
+
+    public async update(): Promise<void> {
+        if (this.provider !== null) {
+            let account = await this.provider.getAccount(this.getAddress());
+            this.copyFrom(account);
+        } else {
+            throw errors.ErrProviderNotSet;
+        }
     }
 
     public getAddress(): string {
@@ -72,6 +44,10 @@ export class Account {
 
     public getNonce(): number {
         return this.nonce;
+    }
+
+    public getBalance(): bigint {
+        return this.balance;
     }
 
     public incrementNonce() {
@@ -94,9 +70,19 @@ export class Account {
         this.initialized = true;
     }
 
-    public sign(signable: Signable): void {
-        let bufferToSign = signable.serializeForSigning();
+    public copyFrom(account: Account) {
+        this.set(account.getPlain());
+    }
 
+    public getPlain(): any {
+        return {
+            address: this.getAddress(),
+            nonce: this.getNonce(),
+            balance: this.getBalance(),
+            code: this.code,
+            codeHash: this.codeHash,
+            rootHash: this.rootHash
+        }
     }
 
     public setKeysFromRawData(data: any) {
@@ -114,7 +100,6 @@ export class AccountSigner implements Signer {
 
     public sign(signable: Signable): void {
         let seed = this.account.getSeed();
-        console.log("seed length: " + seed.length);
         let pair = tweetnacl.sign.keyPair.fromSeed(seed);
         let signingKey = pair.secretKey;
 
@@ -123,5 +108,53 @@ export class AccountSigner implements Signer {
         let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
 
         signable.applySignature(signature);
+    }
+}
+
+export class Address {
+    private buffer: Buffer = Buffer.from("");
+    private prefix: string = "";
+
+    public constructor(address: string) {
+        if (address != "") {
+            this.set(address);
+        }
+    }
+
+    public set(address: string) {
+        let decodedAddress = bech32.decode(address);
+        if (decodedAddress.prefix != valid.ADDRESS_PREFIX) {
+            throw errors.ErrInvalidAddressPrefix;
+        }
+
+        let addressBytes = Buffer.from(bech32.fromWords(decodedAddress.words));
+        if (addressBytes.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        this.buffer = addressBytes;
+        this.prefix = decodedAddress.prefix;
+    }
+
+    public getPrefix(): string {
+        return this.prefix;
+    }
+
+    public bytes(): Buffer {
+        return this.buffer;
+    }
+
+    public hex(): string {
+        return this.buffer.toString('hex');
+    }
+
+    public toString(): string {
+        if (this.buffer.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        let words = bech32.toWords(this.buffer);
+        let address = bech32.encode(valid.ADDRESS_PREFIX, words);
+        return address;
     }
 }

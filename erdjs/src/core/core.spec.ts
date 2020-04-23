@@ -17,6 +17,22 @@ describe("Preliminary try-out code", async () => {
 
         assert.throws(testfunc, ErrTestError1);
     });
+    it("should throw exception for invalid BigInts", () => {
+        let testfunc = () => {
+            let n = BigInt("oranges");
+        };
+        assert.throws(testfunc, SyntaxError);
+
+        testfunc = () => {
+            let n = BigInt("112oranges");
+        };
+        assert.throws(testfunc, SyntaxError);
+
+        testfunc = () => {
+            let n = BigInt("112oranges23");
+        };
+        assert.throws(testfunc, SyntaxError);
+    });
 });
 
 describe("Proxy", () => {
@@ -60,29 +76,83 @@ describe("Proxy", () => {
         const sender = await proxy.getAccount(txgen.accounts[1].pubKey);
         sender.setKeysFromRawData(txgen.accounts[1]);
 
-        const receiver = new Address(txgen.accounts[2].pubKey);
+        const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
+        receiver.setKeysFromRawData(txgen.accounts[2]);
+
+        let senderBalanceBeforeTx = sender.getBalance();
+        let receiverBalanceBeforeTx = receiver.getBalance()
+
+        // TODO this test requires tx status queries from the proxy, WIP
 
         // At first, the sender and receiver have equal balances (due to txgen
         // minting)
-        let senderBalance = await proxy.getBalance(sender.getAddress());
-        let receiverBalance = await proxy.getBalance(receiver.toString());
-        assert.equal(senderBalance, receiverBalance);
+        console.log(senderBalanceBeforeTx, receiverBalanceBeforeTx);
+        assert.equal(senderBalanceBeforeTx, receiverBalanceBeforeTx);
 
+        // Send funds from sender to receiver
         let tx = new Transaction({
             sender: sender.getAddress(),
-            receiver: receiver.toString(),
+            receiver: receiver.getAddress(),
             value: "25",
             nonce: sender.getNonce(),
             gasPrice: "100000000000000",
-            gasLimit: "50001",
+            gasLimit: 50001,
             data: ""
         });
+
+        console.log('signing tx...');
 
         let signer = new AccountSigner(sender);
         signer.sign(tx);
 
-        let response = await proxy.sendTransaction(tx);
-        console.log(response);
+        console.log('sending tx...');
+        try {
+            let response = await proxy.sendTransaction(tx);
+            console.log(response);
+        } catch(err) {
+            console.log(err);
+            assert.fail(err);
+        }
+
+        try {
+            await sender.update();
+            await receiver.update();
+        } catch (err) {
+            assert.fail(err);
+        }
+
+        // Send funds back, from receiver to sender, to bring their balances to
+        // equal values
+        tx = new Transaction({
+            sender: receiver.getAddress(),
+            receiver: sender.getAddress(),
+            value: "25",
+            nonce: receiver.getNonce(),
+            gasPrice: 100000000000000,
+            gasLimit: "50001",
+            data: ""
+        });
+
+        signer = new AccountSigner(receiver);
+        signer.sign(tx);
+
+        try {
+            let response = await proxy.sendTransaction(tx);
+            console.log(response);
+        } catch(err) {
+            console.log(err);
+            assert.fail(err);
+        }
+
+        // At the end, the sender and receiver should have equal balances 
+        try {
+            await sender.update();
+            await receiver.update();
+        } catch (err) {
+            assert.fail(err);
+        }
+        console.log(sender.getBalance(), receiver.getBalance());
+        assert.equal(sender.getBalance(), receiver.getBalance());
     });
 });
 
