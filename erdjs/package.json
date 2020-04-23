@@ -19,17 +19,13 @@
   "dependencies": {
     "abort-controller": "^3.0.0",
     "axios": "^0.19.2",
-    "backbone": "^1.4.0",
-    "jquery": "^3.4.1",
     "tweetnacl": "^1.0.3",
     "underscore": "^1.10.2"
   },
   "devDependencies": {
     "@types/assert": "^1.4.6",
-    "@types/backbone": "^1.4.1",
-    "@types/jquery": "^3.3.34",
     "@types/mocha": "^7.0.2",
-    "@types/node": "^13.11.1",
+    "@types/node": "^13.13.2",
     "@types/underscore": "^1.9.4",
     "assert": "^2.0.0",
     "bech32": "^1.1.4",
