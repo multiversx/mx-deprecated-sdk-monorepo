@@ -3,14 +3,14 @@ import { World } from "./world"
 import { loadContractCode } from "./testing"
 import { assert } from "chai";
 
-describe.only("test world", () => {
+describe("test world", () => {
     it("should create account", async () => {
         let world = new World("foo");
         let result = await world.createAccount({ address: "alice", nonce: 42 });
         assert.equal(result.Account?.Nonce, 42);
     });
 
-    it.only("should interact well with contract [counter]", async () => {
+    it("should interact well with contract [counter]", async () => {
         let code = loadContractCode("../examples/contracts/mycounter/counter.wasm");
         let world = new World("foo");
         await world.createAccount({ address: "alice", nonce: 42 });
