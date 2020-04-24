@@ -129,7 +129,6 @@ export class ArwenCLI implements ArwenDebugProvider {
     }
 
     private getArwenDebugPath(): string {
-        return "/home/andrei/Desktop/workspaces/go/arwen-wasm-vm/cmd/arwendebug/arwendebug";
         return process.env.ARWENDEBUG || getToolsPath("arwendebug");
     }
 }
