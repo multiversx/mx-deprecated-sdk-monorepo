@@ -13,6 +13,10 @@ export class RequestBase {
 
 export class ResponseBase {
     Error: string = "";
+
+    isSuccess(): Boolean {
+        return this.Error ? false : true;
+    }
 }
 
 export class ContractRequestBase extends RequestBase {
@@ -25,6 +29,11 @@ export class ContractRequestBase extends RequestBase {
 export class ContractResponseBase extends ResponseBase {
     Input: any = {};
     Output: VMOutput = new VMOutput();
+
+    isSuccess(): Boolean {
+        let ok = this.Output.ReturnCode == 0;
+        return ok && super.isSuccess();
+    }
 }
 
 export class DeployRequest extends ContractRequestBase {

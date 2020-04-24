@@ -1,7 +1,7 @@
 import { describe } from "mocha"
 import { World } from "./world"
 import { loadContractCode } from "./testing"
-import assert = require("assert");
+import { assert } from "chai";
 
 describe.only("test world", () => {
     it("should create account", async () => {
@@ -15,12 +15,13 @@ describe.only("test world", () => {
         let world = new World("foo");
         await world.createAccount({ address: "alice", nonce: 42 });
         await world.createAccount({ address: "bob", nonce: 7 });
-        
+
         let deployResponse = await world.deployContract({ impersonated: "alice", code: code });
         let contract = deployResponse.ContractAddress;
+        
         let runResponse = await world.runContract({ impersonated: "alice", contract: contract, functionName: "increment" });
-        assert.equal(runResponse.Output.ReturnCode, 0);
+        assert.isTrue(runResponse.isSuccess())
         runResponse = await world.runContract({ impersonated: "bob", contract: contract, functionName: "increment" });
-        assert.equal(runResponse.Output.ReturnCode, 0);
+        assert.isTrue(runResponse.isSuccess())
     });
 });
