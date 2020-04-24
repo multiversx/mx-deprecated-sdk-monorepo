@@ -15,10 +15,13 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--impresonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated}`,
                 `--code=${request.code}`,
                 `--code-path=${request.codePath}`,
-                `--code-metadata=${request.codeMetadata}`
+                `--code-metadata=${request.codeMetadata}`,
+                `--value=${request.value}`,
+                `--gas-limit=${request.gasLimit}`,
+                `--gas-price=${request.gasPrice}`
             ]
         };
 
@@ -37,10 +40,13 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--impresonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated}`,
                 `--code=${request.code}`,
                 `--code-path=${request.codePath}`,
-                `--code-metadata=${request.codeMetadata}`
+                `--code-metadata=${request.codeMetadata}`,
+                `--value=${request.value}`,
+                `--gas-limit=${request.gasLimit}`,
+                `--gas-price=${request.gasPrice}`
             ]
         };
 
@@ -55,13 +61,16 @@ export class ArwenCLI implements ArwenDebugProvider {
         let options: any = {
             program: this.getArwenDebugPath(),
             args: [
-                "upgrade",
+                "run",
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress}`,
-                `--impresonated=${request.impersonated}`,
-                `--function=${request.function}`
+                `--impersonated=${request.impersonated}`,
+                `--function=${request.function}`,
+                `--value=${request.value}`,
+                `--gas-limit=${request.gasLimit}`,
+                `--gas-price=${request.gasPrice}`
             ]
         };
 
@@ -81,7 +90,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress}`,
-                `--impresonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated}`,
                 `--function=${request.function}`
             ]
         };

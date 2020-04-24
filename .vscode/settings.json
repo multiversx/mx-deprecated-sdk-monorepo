@@ -1,4 +1,20 @@
 {
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true,
+        "**/__pycache__": true,
+        "*.egg-info": true,
+        "build": true,
+        "dist": true,
+        "distribution/go": true,
+        "erdjs/out": true,
+        "erdjs/out-node": true,
+        "erdjs/out-browser": true
+    },
     "python.pythonPath": "python3",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
