@@ -12,7 +12,7 @@ export class RequestBase {
 }
 
 export class ResponseBase {
-    error: string = "";
+    Error: string = "";
 }
 
 export class ContractRequestBase extends RequestBase {
@@ -23,8 +23,8 @@ export class ContractRequestBase extends RequestBase {
 }
 
 export class ContractResponseBase extends ResponseBase {
-    input: any = {};
-    output: any = {};
+    Input: any = {};
+    Output: VMOutput = new VMOutput();
 }
 
 export class DeployRequest extends ContractRequestBase {
@@ -35,6 +35,7 @@ export class DeployRequest extends ContractRequestBase {
 }
 
 export class DeployResponse extends ContractResponseBase {
+    ContractAddress: string = ""
 }
 
 export class UpgradeRequest extends DeployRequest {
@@ -73,4 +74,16 @@ export class Account {
     Address: string = "";
     Nonce: number = 0;
     Balance: number = 0;
+}
+
+export class VMOutput {
+    ReturnData: any[] = [];
+    ReturnCode: number = 0;
+    ReturnMessage: string = "";
+    GasRemaining: number = 0;
+    GasRefund: number = 0;
+    OutputAccounts: any = {};
+    DeletedAccounts: any[] = [];
+    TouchedAccounts: any[] = [];
+    Logs: any[] = [];
 }

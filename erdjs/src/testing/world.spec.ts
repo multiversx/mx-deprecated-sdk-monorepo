@@ -10,12 +10,17 @@ describe.only("test world", () => {
         assert.equal(result.Account?.Nonce, 42);
     });
 
-    it("should interact well with contract [counter]", async () => {
+    it.only("should interact well with contract [counter]", async () => {
         let code = loadContractCode("../examples/contracts/mycounter/counter.wasm");
         let world = new World("foo");
-        let createAccountResponse = await world.createAccount({ address: "alice", nonce: 42 });
+        await world.createAccount({ address: "alice", nonce: 42 });
+        await world.createAccount({ address: "bob", nonce: 7 });
+        
         let deployResponse = await world.deployContract({ impersonated: "alice", code: code });
-        let runResponse = await world.runContract({ impersonated: "alice", contract: "contract4100000000000000000alice", functionName: "foo" });
-        assert.equal(createAccountResponse.Account?.Nonce, 42);
+        let contract = deployResponse.ContractAddress;
+        let runResponse = await world.runContract({ impersonated: "alice", contract: contract, functionName: "increment" });
+        assert.equal(runResponse.Output.ReturnCode, 0);
+        runResponse = await world.runContract({ impersonated: "bob", contract: contract, functionName: "increment" });
+        assert.equal(runResponse.Output.ReturnCode, 0);
     });
 });

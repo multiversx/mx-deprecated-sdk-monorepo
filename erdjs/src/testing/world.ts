@@ -1,4 +1,4 @@
-import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse } from "./arwen";
+import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse, RunResponse } from "./arwen";
 import { ArwenCLI } from "./arwenCli";
 import { getToolsSubfolder } from "./workstation";
 
@@ -38,7 +38,7 @@ export class World {
     async runContract(
         { contract, impersonated, functionName, args, value, gasLimit, gasPrice }
             : { contract: string, impersonated: string, functionName: string, args?: any, value?: string, gasLimit?: number, gasPrice?: number })
-        : Promise<DeployResponse> {
+        : Promise<RunResponse> {
         return await this.provider.runContract({
             databasePath: this.databasePath,
             world: this.uniqueName,

@@ -164,8 +164,8 @@ async function execute(options: any): Promise<any> {
         subprocess.stdout.setEncoding('utf8');
 
         subprocess.stdout.on("data", function (data: string) {
-            lastStdout = data;
-            console.log(data);
+            lastStdout = data.trim();
+            console.log(lastStdout);
         });
     }
 
@@ -173,8 +173,8 @@ async function execute(options: any): Promise<any> {
         subprocess.stderr.setEncoding('utf8');
 
         subprocess.stderr.on("data", function (data: string) {
-            lastStderr = data;
-            console.warn(data);
+            lastStderr = data.trim();
+            console.warn(lastStderr);
         });
     }
 
