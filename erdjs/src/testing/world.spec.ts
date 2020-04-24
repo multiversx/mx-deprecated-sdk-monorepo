@@ -18,10 +18,13 @@ describe.only("test world", () => {
 
         let deployResponse = await world.deployContract({ impersonated: "alice", code: code });
         let contract = deployResponse.ContractAddress;
-        
-        let runResponse = await world.runContract({ impersonated: "alice", contract: contract, functionName: "increment" });
+
+        let runResponse = await world.runContract({ contract: contract, impersonated: "alice", functionName: "increment" });
         assert.isTrue(runResponse.isSuccess())
-        runResponse = await world.runContract({ impersonated: "bob", contract: contract, functionName: "increment" });
+        runResponse = await world.runContract({ contract: contract, impersonated: "bob", functionName: "increment" });
         assert.isTrue(runResponse.isSuccess())
+
+        let queryResponse = await world.queryContract({ contract: contract, impersonated: "alice", functionName: "get" });
+        assert.equal(queryResponse.firstResult().asNumber, 2);
     });
 });

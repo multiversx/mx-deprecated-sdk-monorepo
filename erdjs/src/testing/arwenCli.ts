@@ -85,7 +85,7 @@ export class ArwenCLI implements ArwenDebugProvider {
         let options: any = {
             program: this.getArwenDebugPath(),
             args: [
-                "upgrade",
+                "query",
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,

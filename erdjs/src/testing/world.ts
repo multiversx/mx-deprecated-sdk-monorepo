@@ -1,4 +1,4 @@
-import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse, RunResponse } from "./arwen";
+import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse, RunResponse, QueryResponse } from "./arwen";
 import { ArwenCLI } from "./arwenCli";
 import { getToolsSubfolder } from "./workstation";
 
@@ -49,6 +49,23 @@ export class World {
             value: value || "0",
             gasLimit: gasLimit || 0,
             gasPrice: gasPrice || 0
+        });
+    }
+
+    async queryContract(
+        { contract, impersonated, functionName, args }
+            : { contract: string, impersonated: string, functionName: string, args?: any })
+        : Promise<QueryResponse> {
+        return await this.provider.queryContract({
+            databasePath: this.databasePath,
+            world: this.uniqueName,
+            contractAddress: contract,
+            impersonated: impersonated,
+            function: functionName,
+            arguments: args,
+            value: "0",
+            gasLimit: 0,
+            gasPrice: 0
         });
     }
 

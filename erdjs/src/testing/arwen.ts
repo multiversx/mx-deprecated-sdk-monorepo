@@ -34,6 +34,11 @@ export class ContractResponseBase extends ResponseBase {
         let ok = this.Output.ReturnCode == 0;
         return ok && super.isSuccess();
     }
+
+    firstResult(): WrappedContractReturnData {
+        let first = this.Output.ReturnData[0];
+        return new WrappedContractReturnData(first);
+    }
 }
 
 export class DeployRequest extends ContractRequestBase {
@@ -95,4 +100,20 @@ export class VMOutput {
     DeletedAccounts: any[] = [];
     TouchedAccounts: any[] = [];
     Logs: any[] = [];
+}
+
+export class WrappedContractReturnData {
+    raw: any;
+    asHex: string;
+    asNumber: number;
+    asString: string;
+
+    constructor(raw: any) {
+        let buffer = Buffer.from(raw, "base64");
+
+        this.raw = raw;
+        this.asHex = buffer.toString("hex");
+        this.asNumber = parseInt(this.asHex, 16);
+        this.asString = buffer.toString();
+    }
 }
