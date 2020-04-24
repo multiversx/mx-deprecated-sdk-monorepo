@@ -7,48 +7,116 @@ import path = require("path");
 
 export class ArwenCLI implements ArwenDebugProvider {
     async deployContract(request: DeployRequest): Promise<DeployResponse> {
-        throw new Error("Method not implemented.");
+        let [outcomeKey, outcomePath] = this.createOutcomeCoordinates(request.databasePath);
+        let options: any = {
+            program: this.getArwenDebugPath(),
+            args: [
+                "deploy",
+                `--database=${request.databasePath}`,
+                `--world=${request.world}`,
+                `--outcome=${outcomeKey}`,
+                `--impresonated=${request.impersonated}`,
+                `--code=${request.code}`,
+                `--code-path=${request.codePath}`,
+                `--code-metadata=${request.codeMetadata}`
+            ]
+        };
+
+        await execute(options);
+
+        let response = readJSONFile(DeployResponse, outcomePath);
+        return response;
     }
 
     async upgradeContract(request: UpgradeRequest): Promise<UpgradeResponse> {
-        throw new Error("Method not implemented.");
+        let [outcomeKey, outcomePath] = this.createOutcomeCoordinates(request.databasePath);
+        let options: any = {
+            program: this.getArwenDebugPath(),
+            args: [
+                "upgrade",
+                `--database=${request.databasePath}`,
+                `--world=${request.world}`,
+                `--outcome=${outcomeKey}`,
+                `--impresonated=${request.impersonated}`,
+                `--code=${request.code}`,
+                `--code-path=${request.codePath}`,
+                `--code-metadata=${request.codeMetadata}`
+            ]
+        };
+
+        await execute(options);
+
+        let response = readJSONFile(UpgradeResponse, outcomePath);
+        return response;
     }
 
     async runContract(request: RunRequest): Promise<RunResponse> {
-        throw new Error("Method not implemented.");
+        let [outcomeKey, outcomePath] = this.createOutcomeCoordinates(request.databasePath);
+        let options: any = {
+            program: this.getArwenDebugPath(),
+            args: [
+                "upgrade",
+                `--database=${request.databasePath}`,
+                `--world=${request.world}`,
+                `--outcome=${outcomeKey}`,
+                `--contract=${request.contractAddress}`,
+                `--impresonated=${request.impersonated}`,
+                `--function=${request.function}`
+            ]
+        };
+
+        await execute(options);
+
+        let response = readJSONFile(RunResponse, outcomePath);
+        return response;
     }
 
     async queryContract(request: QueryRequest): Promise<QueryResponse> {
-        throw new Error("Method not implemented.");
+        let [outcomeKey, outcomePath] = this.createOutcomeCoordinates(request.databasePath);
+        let options: any = {
+            program: this.getArwenDebugPath(),
+            args: [
+                "upgrade",
+                `--database=${request.databasePath}`,
+                `--world=${request.world}`,
+                `--outcome=${outcomeKey}`,
+                `--contract=${request.contractAddress}`,
+                `--impresonated=${request.impersonated}`,
+                `--function=${request.function}`
+            ]
+        };
+
+        await execute(options);
+
+        let response = readJSONFile(QueryResponse, outcomePath);
+        return response;
     }
 
     async createAccount(request: CreateAccountRequest): Promise<CreateAccountResponse> {
-        let outcomeKey = this.createOutcomeKey();
-        let outcomePath = this.getOutcomePath(request.databasePath, outcomeKey);
-
-        let options: any = {};
-        options.program = this.getArwenDebugPath();
-        options.args = [
-            "create-account",
-            `--database=${request.databasePath}`,
-            `--world=${request.world}`,
-            `--outcome=${outcomeKey}`,
-            `--address=${request.address}`,
-            `--balance=${request.balance}`,
-            `--nonce=${request.nonce}`
-        ];
+        let [outcomeKey, outcomePath] = this.createOutcomeCoordinates(request.databasePath);
+        let options: any = {
+            program: this.getArwenDebugPath(),
+            args: [
+                "create-account",
+                `--database=${request.databasePath}`,
+                `--world=${request.world}`,
+                `--outcome=${outcomeKey}`,
+                `--address=${request.address}`,
+                `--balance=${request.balance}`,
+                `--nonce=${request.nonce}`
+            ]
+        };
 
         await execute(options);
+
         let response = readJSONFile(CreateAccountResponse, outcomePath);
         return response;
     }
 
-    private createOutcomeKey(): string {
-        return Math.random().toString(36).substring(2, 15);
-    }
-
-    private getOutcomePath(databasePath: string, key: string): string {
-        return path.join(databasePath, "out", `${key}.json`);
+    private createOutcomeCoordinates(databasePath: string): [string, string] {
+        let outcomeKey = Math.random().toString(36).substring(2, 15);
+        let outcomePath = path.join(databasePath, "out", `${outcomeKey}.json`);
+        return [outcomeKey, outcomePath];
     }
 
     private getArwenDebugPath(): string {
