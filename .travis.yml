@@ -1,12 +1,18 @@
-os:
-  - linux
-  - osx
-osx_image: xcode11.3
-
 matrix:
   include:
     - language: python
       python: "3.6"
+      os: linux
+      install:
+        - pip3 install -r requirements.txt
+      before_script:
+      script:
+        - make test-short
+
+    - language: python
+      python: "3.6"
+      os: osx
+      osx_image: xcode11.3
       install:
         - pip3 install -r requirements.txt
       before_script:
