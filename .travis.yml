@@ -1,10 +1,11 @@
+os:
+  - linux
+  - osx
+osx_image: xcode11.3
+
 matrix:
   include:
     - language: python
-      os:
-        - linux
-        - osx
-      osx_image: xcode11.3
       python: "3.6"
       install:
         - pip3 install -r requirements.txt
