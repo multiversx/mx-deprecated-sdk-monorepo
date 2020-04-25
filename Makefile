@@ -7,8 +7,9 @@ build: clean
 publish: build
 	twine upload dist/*
 
-test:
+test-short:
 	python3 -m unittest -v erdpy.tests.test_wallet
+	python3 -m unittest -v erdpy.tests.test_accounts
 	python3 -m unittest -v erdpy.tests.test_contracts
 
 test-all:

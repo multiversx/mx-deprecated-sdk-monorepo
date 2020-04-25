@@ -1,0 +1,6 @@
+toml
+texttable
+bottle
+requests
+pynacl
+pycryptodomex
