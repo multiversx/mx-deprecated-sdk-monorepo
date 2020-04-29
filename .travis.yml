@@ -12,8 +12,6 @@ install:
   - pip3 install -r requirements.txt
   - npm --prefix ./erdjs install
 before_script:
-  - APP_VER=$(git describe --tags --long --dirty)
-  - APP_VER_SHORT=$(git describe --tags)
 script:
   - make test-short
   - npm --prefix ./erdjs test
