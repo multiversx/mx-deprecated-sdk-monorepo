@@ -180,3 +180,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed calls to estimators.
+
+## [0.2.9]
+
+### Fixed
+
+- Adjust reference to the new JSON testing tool.
+- Other minor fixes.
