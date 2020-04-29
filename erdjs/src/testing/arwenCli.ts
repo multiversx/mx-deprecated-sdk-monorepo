@@ -129,7 +129,7 @@ export class ArwenCLI implements ArwenDebugProvider {
     }
 
     private getArwenDebugPath(): string {
-        return process.env.ARWENDEBUG || getToolsPath("arwentools/geb3c3f7/arwendebug");
+        return process.env.ARWENDEBUG || getToolsPath("arwentools/g03d0b3f/arwendebug");
     }
 }
 

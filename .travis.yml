@@ -15,6 +15,7 @@ matrix:
       before_script:
       script:
         - make test-short
+        - make test-cli
         - python3 -m erdpy.cli install ARWENTOOLS
         - npm --prefix ./erdjs test
 
@@ -31,5 +32,6 @@ matrix:
       before_script:
       script:
         - make test-short
+        - make test-cli
         - python3 -m erdpy.cli install ARWENTOOLS
         - npm --prefix ./erdjs test
