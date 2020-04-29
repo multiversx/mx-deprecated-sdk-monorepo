@@ -9,6 +9,7 @@ matrix:
         - nvm install node
         - node --version
         - python3 --version
+        - sudo apt-get install -y libstdc++6
       install:
         - pip3 install -r requirements.txt
         - npm --prefix ./erdjs install
