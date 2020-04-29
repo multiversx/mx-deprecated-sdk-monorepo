@@ -187,3 +187,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Adjust reference to the new JSON testing tool.
 - Other minor fixes.
+
+## [0.3.0]
+
+### Fixed
+
+- Fix path to WASM binary (for rust projects).
+- Fix build of rust projects (trim size of artifact).
