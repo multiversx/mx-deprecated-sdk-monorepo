@@ -1,4 +1,5 @@
 language: python
+python: "3.8"
 os:
   - linux
   - osx
@@ -15,9 +16,8 @@ before_script:
 script:
   - make test-short
   - python3 -m erdpy.cli install ARWENTOOLS
-  
-  - npm --prefix ./erdjs test
 
+  - npm --prefix ./erdjs test
 # matrix:
 #   include:
 #     - language: python
