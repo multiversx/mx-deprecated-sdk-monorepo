@@ -194,3 +194,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Fix path to WASM binary (for rust projects).
 - Fix build of rust projects (trim size of artifact).
+
+## [0.3.1]
+
+### Fixed
+
+- Fix path to contract binary within JSON tests.
+- Fix templates download by deleting the "templates" folder at first.
