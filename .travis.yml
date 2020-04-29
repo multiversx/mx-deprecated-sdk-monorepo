@@ -5,13 +5,14 @@ matrix:
   include:
     - language: python
       os: linux
+      dist: bionic
       before_install:
         - nvm install node
         - node --version
         - python3 --version
-        - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-        - sudo apt-get update
-        - sudo apt-get install -y --only-upgrade libstdc++6
+        #sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+        #sudo apt-get update
+        #sudo apt-get install -y --only-upgrade libstdc++6
       install:
         - pip3 install -r requirements.txt
         - npm --prefix ./erdjs install
