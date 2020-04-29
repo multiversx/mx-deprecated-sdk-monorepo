@@ -23,7 +23,7 @@ if __name__ == '__main__':
         tx, address = environment.deploy_contract(contract, owner=alice, arguments=["0x64"])
         logger.info("Tx hash: %s", tx)
         logger.info("Contract address: %s", address)
-        
+
         querySum()
         environment.execute_contract(contract, alice, "add", arguments=["100"])
         querySum()
