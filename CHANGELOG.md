@@ -195,7 +195,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Fix path to WASM binary (for rust projects).
 - Fix build of rust projects (trim size of artifact).
 
-## [0.3.1]
+## [0.3.1], [0.3.2]
 
 ### Fixed
 
