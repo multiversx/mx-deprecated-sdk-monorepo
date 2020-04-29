@@ -17,7 +17,8 @@ export class Account {
 
     private initialized: boolean = false;
 
-    public constructor(data: any) {
+    public constructor(provider: Provider, data: any) {
+        this.setProvider(provider);
         this.set(data);
     }
 
@@ -92,22 +93,24 @@ export class Account {
 }
 
 export class AccountSigner implements Signer {
-    private account: Account = new Account(null);
+    private account: Account | null = null;
 
     public constructor(acc: Account) {
         this.account = acc;
     }
 
     public sign(signable: Signable): void {
-        let seed = this.account.getSeed();
-        let pair = tweetnacl.sign.keyPair.fromSeed(seed);
-        let signingKey = pair.secretKey;
+        if (this.account != null) {
+            let seed = this.account.getSeed();
+            let pair = tweetnacl.sign.keyPair.fromSeed(seed);
+            let signingKey = pair.secretKey;
 
-        let bufferToSign = signable.serializeForSigning();
-        let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
-        let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
+            let bufferToSign = signable.serializeForSigning();
+            let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
+            let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
 
-        signable.applySignature(signature);
+            signable.applySignature(signature);
+        }
     }
 }
 

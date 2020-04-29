@@ -1,6 +1,6 @@
 import * as valid from "./validation";
 import * as errors from "./errors";
-import { Signer, Signable } from "../providers/interface"
+import { Signer, Signable, Provider } from "../providers/interface"
 
 /* type Transaction struct { */
 /* 	Nonce     uint64 `form:"nonce" json:"nonce"` */
@@ -25,8 +25,10 @@ export class Transaction implements Signable {
     private data: string = "";
     private signature: string = "";
 
-    private initialized: boolean = false;
     private signed: boolean = false;
+    private initialized: boolean = false;
+
+    private provider: Provider | null = null;
 
     public constructor(data: any) {
         this.set(data);
@@ -115,5 +117,39 @@ export class Transaction implements Signable {
     public applySignature(signature: Buffer) {
         this.signature = signature.toString('hex');
         this.signed = true;
+    }
+
+    public setProvider(provider: Provider) {
+        this.provider = provider;
+    }
+}
+
+class TransactionWatcher {
+    private hash: string = "";
+    private timer: ReturnType<typeof setTimeout> | null = null;
+
+    public expectExecuted(period: number, timeout: number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            return;
+        });
+    }
+}
+
+
+class AsyncTimer {
+    // TODO replace 'any' with a proper type
+    private timeoutTimer: any = null;
+    private periodicTimer: any = null;
+
+    constructor() {
+    }
+
+    public start(timeout: number): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            this.timeoutTimer = setTimeout(resolve, timeout);
+        });
+    }
+
+    public callPeriodically(callback: () => void, period: number) {
     }
 }

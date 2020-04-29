@@ -10,7 +10,8 @@ export interface Provider {
     getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint>;
     getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
-    sendTransaction(tx: Transaction): Promise<AxiosResponse>;
+    sendTransaction(tx: Transaction): Promise<string>;
+    getTransactionStatus(txHash: string): Promise<string>;
 }
 
 export interface Signer {
