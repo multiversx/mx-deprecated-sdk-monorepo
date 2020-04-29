@@ -24,5 +24,17 @@ arwendebug:
 test-cli:
 	python3 -m erdpy.cli get-num-shards --proxy="https://wallet-api.elrond.com"
 	python3 -m erdpy.cli get-gas-price --proxy="https://wallet-api.elrond.com"
-	python3 -m erdpy.cli get-chain-id --proxy="https://wallet-api.elrond.abcd"
+	python3 -m erdpy.cli get-chain-id --proxy="https://wallet-api.elrond.com"
 	python3 -m erdpy.cli get-last-block-nonce --shard-id="1" --proxy="https://wallet-api.elrond.com"
+
+	python3 -m erdpy.cli get-account --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
+	python3 -m erdpy.cli get-account --nonce --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
+	python3 -m erdpy.cli get-account --balance --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
+
+test-cli-contracts:
+	python3 -m erdpy.cli templates --json
+	python3 -m erdpy.cli new --template ultimate-answer --directory ./test-examples myanswer
+	python3 -m erdpy.cli new --template adder --directory ./test-examples myadder
+
+	python3 -m erdpy.cli build ./test-examples/myanswer
+	python3 -m erdpy.cli build ./test-examples/myadder
