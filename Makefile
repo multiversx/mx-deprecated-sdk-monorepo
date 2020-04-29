@@ -38,4 +38,4 @@ test-cli-contracts:
 
 	python3 -m erdpy.cli build ./test-examples/myanswer
 	python3 -m erdpy.cli build ./test-examples/myadder
-	python3 -m erdpy.cli test ./test-examples/myadder
+	python3 -m erdpy.cli test --directory="test" ./test-examples/myadder
