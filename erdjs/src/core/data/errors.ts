@@ -14,3 +14,4 @@ export var ErrNegativeValue = new Error("negative value");
 export var ErrNotANumber = new Error("not a number");
 export var ErrTransactionNotSigned = new Error("transaction not signed");
 export var ErrProviderNotSet = new Error("provider not set");
+export var ErrAsyncTimerAlreadyRunning = new Error("async timer already running");

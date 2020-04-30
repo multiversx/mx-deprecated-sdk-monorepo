@@ -8,7 +8,7 @@
     "out-node/**/*"
   ],
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --timeout 80000",
     "compile-browser": "tsc -p tsconfig.browser.json && browserify out-browser/index.js -o out-browser/erdjs.js --standalone erdjs",
     "compile-node": "tsc -p tsconfig.node.json",
     "compile": "tsc -p ./",

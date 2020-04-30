@@ -1,7 +1,7 @@
 import * as assert from "assert";
 import axios, { AxiosResponse } from "axios";
 import { Address, Account, AccountSigner } from "./data/account";
-import { Transaction } from "./data/transaction";
+import { Transaction, TransactionWatcher } from "./data/transaction";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
 import * as fs from "fs";
@@ -111,13 +111,15 @@ describe("Proxy", () => {
             assert.fail(err);
         }
 
+        let watcher = new TransactionWatcher(txHash, proxy);
+
         // Check transaction status
         console.log('check transaction status');
         try {
-            await delay(20000);
-            let status = await proxy.getTransactionStatus(txHash);
-            console.log('tx status:', status);
+            let result = await watcher.awaitExecuted(2000, 20000);
+            console.log('tx status executed:', result);
         } catch (err) {
+            console.log(err);
             assert.fail(err);
         }
 
@@ -165,12 +167,13 @@ describe("Proxy", () => {
         }
 
         // Check transaction status
+        watcher = new TransactionWatcher(txHash, proxy);
         console.log('check transaction status');
         try {
-            await delay(20000);
-            let status = await proxy.getTransactionStatus(txHash);
-            console.log('tx status:', status);
+            let result = await watcher.awaitExecuted(2000, 20000);
+            console.log('tx status executed:', result);
         } catch (err) {
+            console.log(err);
             assert.fail(err);
         }
 

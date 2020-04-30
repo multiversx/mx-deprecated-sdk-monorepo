@@ -124,32 +124,90 @@ export class Transaction implements Signable {
     }
 }
 
-class TransactionWatcher {
-    private hash: string = "";
-    private timer: ReturnType<typeof setTimeout> | null = null;
+export class TransactionWatcher {
+    private txHash: string = "";
+    private provider: Provider | null = null;
+    private stop: boolean = false;
 
-    public expectExecuted(period: number, timeout: number): Promise<void> {
-        return new Promise<void>((resolve, reject) => {
-            return;
-        });
+    constructor(hash: string, provider: Provider) {
+        this.txHash = hash;
+        this.provider = provider;
+    }
+
+    public async awaitExecuted(period: number, timeout: number): Promise<boolean> {
+        // TODO "executed" or later, not just "executed"
+        return this.awaitStatus("expected", period, timeout);
+    }
+
+    public async awaitStatus(awaited_status: string, period: number, timeout: number): Promise<boolean> {
+        if (this.provider == null) {
+            throw errors.ErrProviderNotSet;
+        }
+
+        this.stop = false;
+
+        let txStatus = "";
+        let periodicTimer = new AsyncTimer();
+        let timeoutTimer = new AsyncTimer();
+        timeoutTimer.start(timeout).finally(() => {timeoutTimer.stop(); this.stop = true;});
+
+        while (this.stop == false) {
+            console.log('getting status for', this.txHash);
+            txStatus = await this.provider.getTransactionStatus(this.txHash);
+            console.log('status', txStatus);
+            if (txStatus != awaited_status && this.stop == false) {
+                console.log('not done yet, and stop =', this.stop, ', waiting');
+                await periodicTimer.start(period);
+                console.log('done waiting');
+            } else {
+                console.log('stop');
+                break;
+            }
+        }
+
+        let result = false;
+        if (this.stop == false && txStatus == awaited_status) {
+            result = true;
+        }
+
+        console.log('exiting expectExecuted() with result = ', result);
+        return result;
     }
 }
 
-
+// TODO add tests for this class
 class AsyncTimer {
     // TODO replace 'any' with a proper type
     private timeoutTimer: any = null;
-    private periodicTimer: any = null;
+    private rejectTimeoutPromise: any = null;
 
     constructor() {
     }
 
     public start(timeout: number): Promise<void> {
+        if (this.timeoutTimer != null) {
+            throw errors.ErrAsyncTimerAlreadyRunning;
+        }
+
         return new Promise<void>((resolve, reject) => {
-            this.timeoutTimer = setTimeout(resolve, timeout);
+            this.rejectTimeoutPromise = reject;
+            let resolutionCallback = () => {
+                resolve();
+                this.stop();
+            };
+
+            this.timeoutTimer = setTimeout(resolutionCallback, timeout);
         });
     }
 
-    public callPeriodically(callback: () => void, period: number) {
+    public stop() {
+        if (this.rejectTimeoutPromise != null) {
+            this.rejectTimeoutPromise();
+            this.rejectTimeoutPromise = null;
+        }
+        if (this.timeoutTimer != null) {
+            clearTimeout(this.timeoutTimer);
+            this.timeoutTimer = null;
+        }
     }
 }
