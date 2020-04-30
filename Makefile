@@ -55,3 +55,6 @@ endif
 	rm -rf ${SANDBOX}/sc-busd-rs/.git
 	python3 -m erdpy.cli build ${SANDBOX}/sc-busd-rs
 	python3 -m erdpy.cli test --directory="tests" ${SANDBOX}/sc-busd-rs
+
+test-deployment:
+	python3 -m examples.mycounter_testnet --proxy=https://wallet-api.elrond.com --pem=./examples/keys/alice.pem
