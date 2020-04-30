@@ -201,3 +201,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Fix path to contract binary within JSON tests.
 - Fix templates download by deleting the "templates" folder at first.
+
+## [0.3.3]
+
+### Fixed
+
+- Display address of smart contract upon deploy
+- Improve tests CLI
+- Copy build artifacts to "output" folder
