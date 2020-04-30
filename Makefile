@@ -51,7 +51,7 @@ endif
 	python3 -m erdpy.cli test --directory="test" ${SANDBOX}/myadder
 
 	# BUSD (rust)
-	git clone --depth=1 --branch=master git@github.com:ElrondNetwork/sc-busd-rs.git ${SANDBOX}/sc-busd-rs
+	git clone --depth=1 --branch=master https://github.com/ElrondNetwork/sc-busd-rs.git ${SANDBOX}/sc-busd-rs
 	rm -rf ${SANDBOX}/sc-busd-rs/.git
 	python3 -m erdpy.cli build ${SANDBOX}/sc-busd-rs
 	python3 -m erdpy.cli test --directory="tests" ${SANDBOX}/sc-busd-rs
