@@ -1,5 +1,4 @@
 import base64
-import time
 import logging
 from argparse import ArgumentParser
 
@@ -38,7 +37,9 @@ if __name__ == '__main__':
     environment = TestnetEnvironment(args.proxy)
     bob = Account(pem_file=args.pem)
 
-    contract = SmartContract()
+    # We initialize the smart contract with an actual address if IF was previously deployed,
+    # so that we can start to interact with it ("query_flow")
+    contract = SmartContract(address=args.contract)
 
     # A flow defines the desired steps to interact with the contract.
     def deploy_flow():
@@ -59,7 +60,6 @@ if __name__ == '__main__':
         answer_hex = answer_bytes.hex()
         answer_int = int(answer_hex, 16)
         logger.info(f"Answer: {answer_bytes}, {answer_hex}, {answer_int}")
-        return answer_int
 
     def execute_flow(function):
         global contract
@@ -67,15 +67,23 @@ if __name__ == '__main__':
         tx = environment.execute_contract(contract, caller=bob, function=function)
         logger.info("Tx hash: %s", tx)
 
-    def wait_a_bit():
-        print("Wait 30 seconds")
-        time.sleep(30)
+    while True:
+        print("Let's run a flow.")
+        print("1. Deploy smart contract")
+        print("2. Query smart contract")
+        print("3. Call smart contract: increment")
+        print("4. Call smart contract: decrement")
 
-    environment.run_flow(deploy_flow)
-    wait_a_bit()
-    value = environment.run_flow(query_flow)
-    assert value == 0
-    environment.run_flow(lambda: execute_flow("increment"))
-    wait_a_bit()
-    value = environment.run_flow(query_flow)
-    assert value == 1
+        try:
+            choice = int(input("Choose:\n"))
+        except Exception:
+            break
+
+        if choice == 1:
+            environment.run_flow(deploy_flow)
+        elif choice == 2:
+            environment.run_flow(query_flow)
+        elif choice == 3:
+            environment.run_flow(lambda: execute_flow("increment"))
+        elif choice == 4:
+            environment.run_flow(lambda: execute_flow("decrement"))
