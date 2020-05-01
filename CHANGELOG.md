@@ -180,3 +180,32 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed calls to estimators.
+
+## [0.2.9]
+
+### Fixed
+
+- Adjust reference to the new JSON testing tool.
+- Other minor fixes.
+
+## [0.3.0]
+
+### Fixed
+
+- Fix path to WASM binary (for rust projects).
+- Fix build of rust projects (trim size of artifact).
+
+## [0.3.1], [0.3.2]
+
+### Fixed
+
+- Fix path to contract binary within JSON tests.
+- Fix templates download by deleting the "templates" folder at first.
+
+## [0.3.3]
+
+### Fixed
+
+- Display address of smart contract upon deploy
+- Improve tests CLI
+- Copy build artifacts to "output" folder

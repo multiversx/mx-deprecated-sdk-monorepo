@@ -8,6 +8,7 @@
         "**/node_modules": true,
         "**/__pycache__": true,
         "*.egg-info": true,
+        "**/*.pyc": true,
         "build": true,
         "dist": true,
         "distribution/go": true,

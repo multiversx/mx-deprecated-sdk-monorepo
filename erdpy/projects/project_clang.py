@@ -15,7 +15,7 @@ class ProjectClang(Project):
 
     def perform_build(self):
         self.build_configuration = ClangBuildConfiguration(self, self.debug)
-        self.unit = self.find_file("*.c")
+        self.unit = self.find_file_globally("*.c")
         self.file_ll = self.unit.with_suffix(".ll")
         self.file_o = self.unit.with_suffix(".o")
         self.file_export = self.unit.with_suffix(".export")
@@ -61,7 +61,7 @@ class ProjectClang(Project):
             tool,
             "--no-entry",
             str(self.file_o),
-            "-o", self.get_file_wasm(),
+            "-o", self.find_file_globally("*.c").with_suffix(".wasm"),
             "--strip-all",
             f"-allow-undefined-file={undefined_file}"
         ]
@@ -74,8 +74,9 @@ class ProjectClang(Project):
 
         myprocess.run_process(args)
 
-    def get_file_wasm(self):
-        return self.find_file("*.c").with_suffix(".wasm")
+    def _copy_build_artifacts_to_output(self):
+        wasm_file = self.find_file_globally("*.c").with_suffix(".wasm")
+        self._copy_to_output(wasm_file)
 
     def _get_llvm_path(self):
         return dependencies.get_install_directory("llvm")
@@ -92,7 +93,7 @@ class ClangBuildConfiguration:
         self.undefined_file = self._get_undefined_file()
 
     def _get_exports(self):
-        file_export = self.project.find_file("*.export")
+        file_export = self.project.find_file_globally("*.export")
         lines = utils.read_lines(file_export)
         return lines
 

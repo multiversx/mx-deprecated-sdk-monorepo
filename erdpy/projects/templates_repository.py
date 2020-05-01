@@ -1,8 +1,7 @@
-import os
 import shutil
 from os import path
 
-from erdpy import config, downloader, workstation, errors, utils
+from erdpy import downloader, errors, utils, workstation
 from erdpy.projects import shared
 
 
@@ -17,6 +16,10 @@ class TemplatesRepository:
         archive = self._get_archive_path()
         downloader.download(self.url, archive)
         templates_folder = self.get_folder()
+        try:
+            shutil.rmtree(templates_folder)
+        except FileNotFoundError:
+            pass
         utils.unzip(archive, templates_folder)
 
     def _get_archive_path(self):
@@ -51,7 +54,7 @@ class TemplatesRepository:
 
     def get_language(self, template):
         directory = self.get_template_folder(template)
-        
+
         if shared.is_source_clang(directory):
             return "C / C++"
         if shared.is_source_sol(directory):
