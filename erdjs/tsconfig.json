@@ -12,7 +12,10 @@
         "strict": true,
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
-        "skipLibCheck": true
+        "skipLibCheck": true,
+		     "noImplicitReturns": true,
+		     "noFallthroughCasesInSwitch": true,
+		     "noUnusedParameters": true
     },
     "include": [
         "src/**/*"

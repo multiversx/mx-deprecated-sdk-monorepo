@@ -1,6 +1,6 @@
 import * as valid from "./validation";
 import * as errors from "./errors";
-import { Signer, Signable, Provider } from "../providers/interface"
+import { Signer, Signable, Provider } from "../providers/interface";
 
 /* type Transaction struct { */
 /* 	Nonce     uint64 `form:"nonce" json:"nonce"` */
@@ -16,6 +16,7 @@ import { Signer, Signable, Provider } from "../providers/interface"
 export class Transaction implements Signable {
     // TODO Sender and Receiver should be of type Account, to
     // allow their validation before creating the transaction.
+    private hash: string = "";
     private sender: string = "";
     private receiver: string = "";
     private value: bigint = BigInt(0);
@@ -52,6 +53,43 @@ export class Transaction implements Signable {
 
         this.initialized = true;
         this.signed = false;
+    }
+
+    public setTxHash(txHash: string) {
+        // TODO validate against the transaction itself
+        this.hash = txHash;
+    }
+
+    public setSender(sender: string) {
+        this.sender = valid.Address(sender);
+    }
+
+    public setReceiver(receiver: string) {
+        this.receiver = valid.Address(receiver);
+    }
+
+    public setValue(txValue: string) {
+        this.value = valid.TxValue(txValue);
+    }
+
+    public setNonce(nonce: number) {
+        this.nonce = valid.Nonce(nonce);
+    }
+
+    public setGasPrice(gasPrice: number) {
+        this.gasPrice = valid.GasPrice(gasPrice);
+    }
+
+    public setGasLimit(gasLimit: number) {
+        this.gasLimit = valid.GasLimit(gasLimit);
+    }
+
+    public setData(data: string) {
+        this.data = valid.TxData(data);
+    }
+
+    public setProvider(provider: Provider) {
+        this.provider = provider;
     }
 
     // TODO change this method to take no arguments,
@@ -115,12 +153,10 @@ export class Transaction implements Signable {
     }
 
     public applySignature(signature: Buffer) {
+        // TODO throw error if the signature can't be validated against
+        // this.address (which is the public key)
         this.signature = signature.toString('hex');
         this.signed = true;
-    }
-
-    public setProvider(provider: Provider) {
-        this.provider = provider;
     }
 }
 

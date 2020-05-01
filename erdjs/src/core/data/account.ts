@@ -39,6 +39,10 @@ export class Account {
         return this.address.toString();
     }
 
+    public getAddressObject(): Address {
+        return this.address;
+    }
+
     public getSeed(): Buffer {
         return this.seed;
     }

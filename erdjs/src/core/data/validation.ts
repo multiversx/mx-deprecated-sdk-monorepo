@@ -109,6 +109,14 @@ export function TxData(txData: string): string {
     return txData;
 }
 
+export function FunctionName(name: string): string {
+    if (name.length == 0) {
+        throw errors.ErrInvalidFunctionName;
+    }
+    // TODO verify valid characters
+    return name
+}
+
 export function Seed(key: string): Buffer {
     if (key.length != 2 * SEED_STRING_LENGTH) {
         throw errors.ErrWrongSecretKeyLength;
@@ -120,7 +128,11 @@ export function Seed(key: string): Buffer {
 }
 
 function makeCodeHash(code: string) {
-    return "not_a_hash";
+    if (code.length > 0) {
+        return "not_a_hash";
+    } else {
+        return "";
+    }
 }
 
 function validNumber(n: number): number {

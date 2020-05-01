@@ -1,7 +1,7 @@
 import * as assert from "assert";
-import axios, { AxiosResponse } from "axios";
 import { Address, Account, AccountSigner } from "./data/account";
 import { Transaction, TransactionWatcher } from "./data/transaction";
+import { SmartContractCall } from "./data/scCall";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
 import * as fs from "fs";
@@ -32,6 +32,27 @@ describe("Preliminary try-out code", async () => {
             let n = BigInt("112oranges23");
         };
         assert.throws(testfunc, SyntaxError);
+    });
+});
+
+describe("SmartContractCalls", () => {
+    it("should add arguments properly", async () => {
+        let txgen = getTxGenConfiguration();
+        assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
+
+        const proxy: Provider = new ElrondProxy({
+            url: "http://zirconium:7950",
+            timeout: 1000
+        });
+        const sender = await proxy.getAccount(txgen.accounts[1].pubKey);
+        sender.setKeysFromRawData(txgen.accounts[1]);
+
+        let scCall = new SmartContractCall(null);
+        scCall.setFunctionName("transferToken");
+        scCall.addRawArgument(sender.getAddressObject().hex());
+        scCall.addBigIntArgument(BigInt(1024));
+
+        console.log(scCall.getArguments());
     });
 });
 
