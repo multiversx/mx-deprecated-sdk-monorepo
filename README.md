@@ -167,7 +167,7 @@ erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver
 
 ```
 
-### Other features
+### Miscellaneous features
 
 Get information such as the number of shards, the gas price, the chain ID and so on:
 
@@ -199,6 +199,13 @@ erdpy get-transaction-cost sc-deploy --sc-path="./examples/hello" --proxy="https
 erdpy get-transaction-cost sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://wallet-api.elrond.com"
 ```
 
+### Wallet features
+
+```
+erdpy wallet generate ./myaccount.pem
+erdpy wallet bech32 --encode 000000000000000005006e4f90488e27342f9a46e1809452c85ee7186566bd5e
+erdpy wallet bech32 --decode erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy
+```
 
 
 ## Contribute
