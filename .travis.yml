@@ -20,7 +20,7 @@ matrix:
         - make test-cli
         - SANDBOX=./sandbox make test-cli-external-contracts
         - python3 -m erdpy.cli install ARWENTOOLS
-        - npm --prefix ./erdjs test
+        - #npm --prefix ./erdjs test
         - npm --prefix ./erdtestjs test
 
     - language: generic
@@ -40,5 +40,5 @@ matrix:
         - make test-cli
         - SANDBOX=./sandbox make test-cli-external-contracts
         - python3 -m erdpy.cli install ARWENTOOLS
-        - npm --prefix ./erdjs test
+        - #npm --prefix ./erdjs test
         - npm --prefix ./erdtestjs test
