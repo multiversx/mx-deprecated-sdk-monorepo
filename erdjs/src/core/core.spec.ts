@@ -57,8 +57,6 @@ describe("SmartContractCalls", () => {
         scCall.setFunctionName("transferToken");
         scCall.addRawArgument(sender.getAddressObject().hex());
         scCall.addBigIntArgument(BigInt(1024));
-
-        console.log(scCall.getArguments());
     });
 });
 
@@ -89,7 +87,6 @@ describe("ERC20 client", () => {
     });
 
     it("should interact with an ERC20 smartcontract properly", async () => {
-        return;
         let txgen = getTxGenConfiguration();
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
@@ -113,47 +110,57 @@ describe("ERC20 client", () => {
         let totalSupply = await erc20.totalSupply();
         console.log(totalSupply);
 
+        console.log("address of sender:\t", sender.getAddressObject().hex());
+        console.log("address of receiver:\t", receiver.getAddressObject().hex());
+
         // Query the token balance of the accounts
         let balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
-        console.log("balance of sender:", balanceOfSender);
+        console.log("balance of sender:\t", balanceOfSender);
 
         let balanceOfReceiver = await erc20.balanceOf(receiver.getAddressObject().hex());
-        console.log("balance of receiver:", balanceOfReceiver);
+        console.log("balance of receiver:\t", balanceOfReceiver);
 
         // Send some tokens
         console.log("performing ERC20 transfer");
-        let initialDiff = balanceOfSender - balanceOfReceiver;
+        let initialDiff = Math.abs(Number(balanceOfSender - balanceOfReceiver));
+        console.log('initialDiff:\t', initialDiff);
+
+        let transferValue = 25;
         erc20.setGasPrice(100000000000000);
         erc20.setGasLimit(7e6);
-        let success = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(25));
+        let success = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(transferValue));
         console.log("erc20 transfer status:", success);
 
         // Verify transfer
         balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
         balanceOfReceiver = await erc20.balanceOf(receiver.getAddressObject().hex());
+        let diff = Math.abs(Number(balanceOfSender - balanceOfReceiver));
         console.log("balance of sender:\t", balanceOfSender);
         console.log("balance of receiver:\t", balanceOfReceiver);
+        console.log("difference:\t", diff);
         assert.equal(
-            Number(initialDiff + BigInt(25)), 
-            Number(balanceOfSender - balanceOfReceiver)
+            Number(initialDiff + 2*transferValue), 
+            diff
         );
 
         // Send some tokens back
         console.log("performing ERC20 transfer");
+        erc20 = new ElrondERC20client(proxy, scAddress, receiver);
         erc20.setGasPrice(100000000000000);
         erc20.setGasLimit(7e6);
-        erc20 = new ElrondERC20client(proxy, scAddress, receiver);
-        success = await erc20.transfer(sender.getAddressObject().hex(), BigInt(25));
+        success = await erc20.transfer(sender.getAddressObject().hex(), BigInt(transferValue));
         console.log("erc20 transfer status:", success);
 
         // Verify transfer
         balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
         balanceOfReceiver = await erc20.balanceOf(receiver.getAddressObject().hex());
-        console.log("balance of sender:", balanceOfSender);
-        console.log("balance of receiver:", balanceOfReceiver);
+        diff = Math.abs(Number(balanceOfSender - balanceOfReceiver));
+        console.log("balance of sender:\t", balanceOfSender);
+        console.log("balance of receiver:\t", balanceOfReceiver);
+        console.log("difference:\t", diff);
         assert.equal(
             Number(initialDiff), 
-            Number(balanceOfSender - balanceOfReceiver)
+            Math.abs(Number(balanceOfSender - balanceOfReceiver))
         );
     });
 });
@@ -230,6 +237,7 @@ describe("Proxy", () => {
         console.log('send tx');
         try {
             txHash = await proxy.sendTransaction(tx);
+            console.log('transaction hash', txHash);
         } catch(err) {
             assert.fail(err);
         }
@@ -239,8 +247,8 @@ describe("Proxy", () => {
         // Check transaction status
         console.log('check transaction status');
         try {
-            let result = await watcher.awaitExecuted(2000, 20000);
-            console.log('tx status executed:', result);
+            await watcher.awaitExecuted(1000, 20000);
+            console.log('tx executed');
         } catch (err) {
             console.log(err);
             assert.fail(err);
@@ -285,6 +293,7 @@ describe("Proxy", () => {
         console.log('send back transaction');
         try {
             txHash = await proxy.sendTransaction(tx);
+            console.log('transaction hash', txHash);
         } catch(err) {
             assert.fail(err);
         }
@@ -293,8 +302,8 @@ describe("Proxy", () => {
         watcher = new TransactionWatcher(txHash, proxy);
         console.log('check transaction status');
         try {
-            let result = await watcher.awaitExecuted(2000, 20000);
-            console.log('tx status executed:', result);
+            await watcher.awaitExecuted(1000, 20000);
+            console.log('tx executed');
         } catch (err) {
             console.log(err);
             assert.fail(err);
@@ -336,8 +345,4 @@ function getTxGenConfiguration(): any {
     };
 
     return txgenConfig;
-}
-
-function delay(ms: number) {
-    return new Promise( resolve => setTimeout(resolve, ms) );
 }

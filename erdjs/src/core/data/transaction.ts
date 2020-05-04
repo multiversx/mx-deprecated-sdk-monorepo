@@ -16,20 +16,20 @@ import { Signer, Signable, Provider } from "../providers/interface";
 export class Transaction implements Signable {
     // TODO Sender and Receiver should be of type Account, to
     // allow their validation before creating the transaction.
-    private hash: string = "";
-    private sender: string = "";
-    private receiver: string = "";
-    private value: bigint = BigInt(0);
-    private nonce: number = 0;
-    private gasPrice: number = 0;
-    private gasLimit: number = 0;
-    private data: string = "";
-    private signature: string = "";
+    protected hash: string = "";
+    protected sender: string = "";
+    protected receiver: string = "";
+    protected value: bigint = BigInt(0);
+    protected nonce: number = 0;
+    protected gasPrice: number = 0;
+    protected gasLimit: number = 0;
+    protected data: string = "";
+    protected signature: string = "";
 
-    private signed: boolean = false;
-    private initialized: boolean = false;
+    protected signed: boolean = false;
+    protected initialized: boolean = false;
 
-    private provider: Provider | null = null;
+    protected provider: Provider | null = null;
 
     public constructor(data: any) {
         this.set(data);
@@ -187,7 +187,7 @@ export class TransactionWatcher {
         let txStatus = "";
         let periodicTimer = new AsyncTimer();
         let timeoutTimer = new AsyncTimer();
-        timeoutTimer.start(timeout).finally(() => {timeoutTimer.stop(); this.stop = true;});
+        timeoutTimer.start(timeout).finally(() => {console.log('timeoutTimer.stop'); timeoutTimer.stop(); this.stop = true;});
 
         while (this.stop == false) {
             console.log('getting status for', this.txHash);
@@ -203,12 +203,14 @@ export class TransactionWatcher {
             }
         }
 
+        timeoutTimer.stop();
+
         let result = false;
         if (this.stop == false && txStatus == awaited_status) {
             result = true;
         }
 
-        console.log('exiting expectExecuted() with result = ', result);
+        console.log('exiting expectExecuted() with result =', result);
 
         if (result == false) {
             throw ErrExpectedTransactionStatusNotReached;
@@ -219,37 +221,45 @@ export class TransactionWatcher {
 // TODO add tests for this class
 class AsyncTimer {
     // TODO replace 'any' with a proper type
-    private timeoutTimer: any = null;
+    private timeout: any = null;
     private rejectTimeoutPromise: any = null;
 
     constructor() {
     }
 
     public start(timeout: number): Promise<void> {
-        if (this.timeoutTimer != null) {
+        if (this.timeout != null) {
             throw errors.ErrAsyncTimerAlreadyRunning;
         }
 
         return new Promise<void>((resolve, reject) => {
             this.rejectTimeoutPromise = reject;
             let resolutionCallback = () => {
+                console.log('async timer: resolution');
                 this.rejectTimeoutPromise = null;
                 this.stop();
                 resolve();
             };
 
-            this.timeoutTimer = setTimeout(resolutionCallback, timeout);
+            this.timeout = setTimeout(resolutionCallback, timeout);
         });
     }
 
-    public stop() {
+    public abort() {
         if (this.rejectTimeoutPromise != null) {
             this.rejectTimeoutPromise();
+            console.log('async timer: promise rejected');
             this.rejectTimeoutPromise = null;
         }
-        if (this.timeoutTimer != null) {
-            clearTimeout(this.timeoutTimer);
-            this.timeoutTimer = null;
+        this.stop();
+    }
+
+    public stop() {
+        console.log('async timer: stop');
+        if (this.timeout != null) {
+            clearTimeout(this.timeout);
+            console.log('async timer: clearTimeout');
+            this.timeout = null;
         }
     }
 }

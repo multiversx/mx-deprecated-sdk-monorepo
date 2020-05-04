@@ -14,13 +14,14 @@ export class SmartContractCall extends Transaction {
 
     public prepareData() {
         this.setData(this.generateArgumentString());
+        console.log("SmartContractCall data:\t", this.data);
     }
 
     public generateArgumentString(): string {
         // TODO ensure even length of every argument
         let output = "";
         output += this.functionName;
-        for (let argument in this.arguments) {
+        for (let argument of this.arguments) {
             output += "@";
             output += this.ensureEvenLength(argument);
         }
