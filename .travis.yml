@@ -13,6 +13,7 @@ matrix:
       install:
         - pip3 install -r requirements.txt
         - npm --prefix ./erdjs install
+        - npm --prefix ./erdtestjs install
       before_script:
       script:
         - make test-short
@@ -20,6 +21,7 @@ matrix:
         - SANDBOX=./sandbox make test-cli-external-contracts
         - python3 -m erdpy.cli install ARWENTOOLS
         - npm --prefix ./erdjs test
+        - npm --prefix ./erdtestjs test
 
     - language: generic
       os: osx
@@ -31,6 +33,7 @@ matrix:
       install:
         - pip3 install -r requirements.txt
         - npm --prefix ./erdjs install
+        - npm --prefix ./erdtestjs install
       before_script:
       script:
         - make test-short
@@ -38,3 +41,4 @@ matrix:
         - SANDBOX=./sandbox make test-cli-external-contracts
         - python3 -m erdpy.cli install ARWENTOOLS
         - npm --prefix ./erdjs test
+        - npm --prefix ./erdtestjs test
