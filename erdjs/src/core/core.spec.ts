@@ -1,9 +1,10 @@
 import * as assert from "assert";
 import { Address, Account, AccountSigner } from "./data/account";
 import { Transaction, TransactionWatcher } from "./data/transaction";
-import { SmartContractCall } from "./data/scCall";
+import { SmartContractCall } from "./data/smartcontracts/scCall";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
+import { ElrondERC20client } from "./data/smartcontracts/elrondERC20client";
 import * as fs from "fs";
 
 var ErrTestError1 = new Error("test error 1");
@@ -17,6 +18,7 @@ describe("Preliminary try-out code", async () => {
 
         assert.throws(testfunc, ErrTestError1);
     });
+
     it("should throw exception for invalid BigInts", () => {
         let testfunc = () => {
             let n = BigInt("oranges");
@@ -44,8 +46,12 @@ describe("SmartContractCalls", () => {
             url: "http://zirconium:7950",
             timeout: 1000
         });
+
         const sender = await proxy.getAccount(txgen.accounts[1].pubKey);
         sender.setKeysFromRawData(txgen.accounts[1]);
+
+        const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
+        receiver.setKeysFromRawData(txgen.accounts[2]);
 
         let scCall = new SmartContractCall(null);
         scCall.setFunctionName("transferToken");
@@ -53,6 +59,102 @@ describe("SmartContractCalls", () => {
         scCall.addBigIntArgument(BigInt(1024));
 
         console.log(scCall.getArguments());
+    });
+});
+
+describe("ERC20 client", () => {
+    it("should transferToken", async () => {
+        let txgen = getTxGenConfiguration();
+        assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
+
+        const proxy: Provider = new ElrondProxy({
+            url: "http://zirconium:7950",
+            timeout: 1000
+        });
+
+        const user = await proxy.getAccount(txgen.accounts[1].pubKey);
+        const sender = user;
+        user.setKeysFromRawData(txgen.accounts[1]);
+
+        const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
+        receiver.setKeysFromRawData(txgen.accounts[2]);
+
+        let scAddress = new Address(txgen.scAddress);
+        let erc20 = new ElrondERC20client(proxy, scAddress, user);
+
+        erc20.setGasPrice(100000000000000);
+        erc20.setGasLimit(7e6);
+        let success = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(25));
+        console.log("erc20 transfer status:", success);
+    });
+
+    it("should interact with an ERC20 smartcontract properly", async () => {
+        return;
+        let txgen = getTxGenConfiguration();
+        assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
+
+        const proxy: Provider = new ElrondProxy({
+            url: "http://zirconium:7950",
+            timeout: 1000
+        });
+
+        const user = await proxy.getAccount(txgen.accounts[1].pubKey);
+        const sender = user;
+        user.setKeysFromRawData(txgen.accounts[1]);
+
+        let scAddress = new Address(txgen.scAddress);
+        let erc20 = new ElrondERC20client(proxy, scAddress, user);
+
+        const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
+        receiver.setKeysFromRawData(txgen.accounts[2]);
+
+
+        // Query total supply
+        let totalSupply = await erc20.totalSupply();
+        console.log(totalSupply);
+
+        // Query the token balance of the accounts
+        let balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
+        console.log("balance of sender:", balanceOfSender);
+
+        let balanceOfReceiver = await erc20.balanceOf(receiver.getAddressObject().hex());
+        console.log("balance of receiver:", balanceOfReceiver);
+
+        // Send some tokens
+        console.log("performing ERC20 transfer");
+        let initialDiff = balanceOfSender - balanceOfReceiver;
+        erc20.setGasPrice(100000000000000);
+        erc20.setGasLimit(7e6);
+        let success = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(25));
+        console.log("erc20 transfer status:", success);
+
+        // Verify transfer
+        balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
+        balanceOfReceiver = await erc20.balanceOf(receiver.getAddressObject().hex());
+        console.log("balance of sender:\t", balanceOfSender);
+        console.log("balance of receiver:\t", balanceOfReceiver);
+        assert.equal(
+            Number(initialDiff + BigInt(25)), 
+            Number(balanceOfSender - balanceOfReceiver)
+        );
+
+        // Send some tokens back
+        console.log("performing ERC20 transfer");
+        erc20.setGasPrice(100000000000000);
+        erc20.setGasLimit(7e6);
+        erc20 = new ElrondERC20client(proxy, scAddress, receiver);
+        success = await erc20.transfer(sender.getAddressObject().hex(), BigInt(25));
+        console.log("erc20 transfer status:", success);
+
+        // Verify transfer
+        balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
+        balanceOfReceiver = await erc20.balanceOf(receiver.getAddressObject().hex());
+        console.log("balance of sender:", balanceOfSender);
+        console.log("balance of receiver:", balanceOfReceiver);
+        assert.equal(
+            Number(initialDiff), 
+            Number(balanceOfSender - balanceOfReceiver)
+        );
     });
 });
 

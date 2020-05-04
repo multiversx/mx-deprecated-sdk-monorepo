@@ -160,6 +160,8 @@ export class Transaction implements Signable {
     }
 }
 
+export var ErrExpectedTransactionStatusNotReached = new Error("expected transaction status not reached");
+
 export class TransactionWatcher {
     private txHash: string = "";
     private provider: Provider | null = null;
@@ -170,12 +172,12 @@ export class TransactionWatcher {
         this.provider = provider;
     }
 
-    public async awaitExecuted(period: number, timeout: number): Promise<boolean> {
+    public async awaitExecuted(period: number, timeout: number): Promise<void> {
         // TODO "executed" or later, not just "executed"
-        return this.awaitStatus("expected", period, timeout);
+        await this.awaitStatus("executed", period, timeout);
     }
 
-    public async awaitStatus(awaited_status: string, period: number, timeout: number): Promise<boolean> {
+    public async awaitStatus(awaited_status: string, period: number, timeout: number): Promise<void> {
         if (this.provider == null) {
             throw errors.ErrProviderNotSet;
         }
@@ -207,7 +209,10 @@ export class TransactionWatcher {
         }
 
         console.log('exiting expectExecuted() with result = ', result);
-        return result;
+
+        if (result == false) {
+            throw ErrExpectedTransactionStatusNotReached;
+        }
     }
 }
 
@@ -228,8 +233,9 @@ class AsyncTimer {
         return new Promise<void>((resolve, reject) => {
             this.rejectTimeoutPromise = reject;
             let resolutionCallback = () => {
-                resolve();
+                this.rejectTimeoutPromise = null;
                 this.stop();
+                resolve();
             };
 
             this.timeoutTimer = setTimeout(resolutionCallback, timeout);

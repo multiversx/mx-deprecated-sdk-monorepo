@@ -80,17 +80,21 @@ export function RootHash(hash: string | null): string {
 
 export function GasPrice(gasPrice: number): number {
     gasPrice = validNumber(gasPrice);
+
     if (gasPrice < 0) {
         throw errors.ErrNegativeGasPrice;
     }
+
     return gasPrice;
 }
 
 export function GasLimit(gasLimit: number): number {
     gasLimit = validNumber(gasLimit);
+
     if (gasLimit < 0) {
         throw errors.ErrNegativeGasLimit;
     }
+
     return gasLimit;
 }
 
@@ -98,10 +102,12 @@ export function TxValue(txValue: string): bigint {
     if (txValue.length == 0) {
         throw errors.ErrInvalidTxValueString;
     }
+
     let value = BigInt(txValue);
     if (value < 0) {
         throw errors.ErrNegativeValue;
     }
+
     return value;
 }
 

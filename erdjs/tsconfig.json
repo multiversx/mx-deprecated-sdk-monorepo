@@ -13,9 +13,9 @@
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-		     "noImplicitReturns": true,
-		     "noFallthroughCasesInSwitch": true,
-		     "noUnusedParameters": true
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedParameters": true
     },
     "include": [
         "src/**/*"

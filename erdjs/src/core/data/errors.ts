@@ -17,3 +17,7 @@ export var ErrProviderNotSet = new Error("provider not set");
 export var ErrAsyncTimerAlreadyRunning = new Error("async timer already running");
 export var ErrInvalidFunctionName = new Error("invalid function name");
 export var ErrInvalidArgument = new Error("invalid argument");
+export var ErrUserAccountNotSet = new Error("user account not set");
+export var ErrSCAddressNotSet = new Error("smart contract address not set");
+export var ErrGasPriceNotSet = new Error("gas price not set");
+export var ErrGasLimitNotSet = new Error("gas limit not set");
