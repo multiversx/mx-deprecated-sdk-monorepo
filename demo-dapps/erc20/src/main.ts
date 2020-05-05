@@ -12,9 +12,21 @@ $(document).ready(function() {
             var address = UserAddressInput.val();
             console.log(address);
             erc20.SetUserAddress(address);
-            await erc20.UpdateUserAccount();
-            var info = erc20.GetUserAccountInfo();
-            console.log(info);
+            erc20.UpdateUserAccount().then(info => {
+                console.log(info);
+                $('#UserBalance').text(info.balance.toString());
+                $('#UserNonce').text(info.nonce);
+
+                erc20.GetUserTokenBalance().then(tokenBalance => {
+                    console.log('token balance:', tokenBalance);
+                    $('#UserTokenBalance').text(tokenBalance.toString());
+                });
+
+                erc20.GetERC20TotalSupply().then(totalSupply => {
+                    $('#ERC20TotalSupply').text(totalSupply.toString());
+                });
+            });
+
         }
     });
 });

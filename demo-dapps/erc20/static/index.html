@@ -13,14 +13,24 @@
                     <div class="container d-flex flex-column flex-fill mb-4 wallet-body">
                         <div class="wallet-header mb-4">
                             <div class="row">
-                                <div class="col d-flex flex-row justify-content-center align-items-center address">
-                                    <form class="w-50">
+                                <div class="col-md-7 d-flex flex-row justify-content-center align-items-center address">
+                                    <form class="w-75">
                                         <div class="form-group">
                                             <label for >My address</label>
                                             <input type="text" class="form-control" id="UserAddressInput" placeholder="enter your Elrond Network address">
-                                            <small id="UserAddressInputHelp" class="form-text">Your address starts with "erd1" and has 62 characters.</small>
+                                            <span id="UserAddressInputHelp" class="form-text">Your address starts with "erd1" and has 62 characters. Write it here then press [Enter].</span>
                                         </div>
                                     </form>
+                                </div>
+                                <div class="col-md-4 address">
+                                    <div class="row">
+                                        <div class="col-md-4"><span>ERD Balance:</span></div>
+                                        <div class="col-md-8"><span id="UserBalance">0</span></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4"><span>Nonce:</span></div>
+                                        <div class="col-md-8"><span id="UserNonce">0</span></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -30,11 +40,14 @@
                                 <div class="col-12 d-flex flex-row justify-content-center align-items-center balance">
                                     <span class="amount">
                                         <span data-testid="balance">
-                                            <span>0</span>
+                                            <span id="UserTokenBalance">0</span>
                                         </span>
-                                        <span class="text-light">xBUSD</span>
+                                        <span class="text-light">test Tokens</span>
                                     </span>
                                 </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 d-flex flex-row justify-content-center text-light testnet">Total supply of &nbsp; <span id="ERC20TotalSupply">0</span>&nbsp; tokens</div>
                             </div>
                             <div class="row">
                                 <p></p>
