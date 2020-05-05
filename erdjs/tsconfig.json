@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
+        "moduleResolution": "Node",
         "target": "es6",
         "outDir": "out",
         "lib": [
@@ -13,9 +14,10 @@
         "strictPropertyInitialization": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-		"noUnusedParameters": true
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
+        "declaration": true
     },
     "include": [
         "src/**/*"
