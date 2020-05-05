@@ -110,8 +110,11 @@ describe("ERC20 client", () => {
         let totalSupply = await erc20.totalSupply();
         console.log(totalSupply);
 
-        console.log("address of sender:\t", sender.getAddressObject().hex());
-        console.log("address of receiver:\t", receiver.getAddressObject().hex());
+        console.log("address of sender:\t", sender.getAddress());
+        console.log("address of receiver:\t", receiver.getAddress());
+
+        console.log("address (hex) of sender:\t", sender.getAddressObject().hex());
+        console.log("address (hex) of receiver:\t", receiver.getAddressObject().hex());
 
         // Query the token balance of the accounts
         let balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());

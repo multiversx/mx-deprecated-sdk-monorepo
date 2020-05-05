@@ -43,6 +43,10 @@ export class Account {
         return this.address;
     }
 
+    public setAddress(address: string) {
+        this.address = new Address(address);
+    }
+
     public getSeed(): Buffer {
         return this.seed;
     }
@@ -93,6 +97,10 @@ export class Account {
     public setKeysFromRawData(data: any) {
         this.address = new Address(data.pubKey);
         this.seed = valid.Seed(data.privKey);
+    }
+
+    public isInitialized(): boolean {
+        return this.initialized;
     }
 }
 

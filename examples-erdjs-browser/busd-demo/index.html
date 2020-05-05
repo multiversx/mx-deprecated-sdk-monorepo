@@ -1,0 +1,64 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+		<title>BUSD dApp Demo</title>
+        <link rel="stylesheet" href="busd-demo/bootstrap.css">
+        <link rel="stylesheet" href="busd-demo/style.css">
+	</head>
+	<body>
+        <div id="root">
+            <div class="d-flex flex-column wallet-layout white-nav-bg wrapper">
+                <main class="d-flex flex-column flex-grow-1" role="main">
+                    <div class="container d-flex flex-column flex-fill mb-4 wallet-body">
+                        <div class="wallet-header mb-4">
+                            <div class="row">
+                                <div class="col d-flex flex-row justify-content-center align-items-center address">
+                                    <form class="w-50">
+                                        <div class="form-group">
+                                            <label for >My address</label>
+                                            <input type="text" class="form-control" id="UserAddressInput" placeholder="enter your Elrond Network address">
+                                            <small id="UserAddressInputHelp" class="form-text">Your address starts with "erd1" and has 62 characters.</small>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 d-flex flex-row justify-content-center text-light testnet">Elrond Testnet</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 d-flex flex-row justify-content-center align-items-center balance">
+                                    <span class="amount">
+                                        <span data-testid="balance">
+                                            <span>0</span>
+                                        </span>
+                                        <span class="text-light">xBUSD</span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <p></p>
+                            </div>
+                        </div>
+                        <div class="row flex-grow-1">
+                            <div class="col-12 d-flex flex-column">
+                                <div class="mx-auto my-auto text-center page-state">
+                                    <i>
+                                        <div class="icon "/>
+                                    </i>
+                                    <p class="h3 mt-3">No Transactions</p>
+                                    <p>No transactions found for this wallet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+        <script src="busd-demo/jquery-3.5.0.min.js"></script>
+        <script src="erdjs.js"></script>
+        <script src="busd-demo/demo.js"></script>
+        <script src="busd-demo/main.js"></script>
+	</body>
+</html>
