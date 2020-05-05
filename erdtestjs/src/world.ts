@@ -19,7 +19,7 @@ export class World {
 
     async deployContract(
         { impersonated, code, codePath, codeMetadata, args, value, gasLimit, gasPrice }
-            : { impersonated: string, code?: string, codePath?: string, codeMetadata?: string, args?: any, value?: string, gasLimit?: number, gasPrice?: number })
+            : { impersonated: string, code?: string, codePath?: string, codeMetadata?: string, args?: any[], value?: string, gasLimit?: number, gasPrice?: number })
         : Promise<DeployResponse> {
         return await this.provider.deployContract({
             databasePath: this.databasePath,
@@ -28,7 +28,7 @@ export class World {
             code: code || "",
             codeMetadata: codeMetadata || "",
             codePath: codePath || "",
-            arguments: args,
+            arguments: this.encodeArguments(args || []),
             value: value || "0",
             gasLimit: gasLimit || 0,
             gasPrice: gasPrice || 0
@@ -37,7 +37,7 @@ export class World {
 
     async runContract(
         { contract, impersonated, functionName, args, value, gasLimit, gasPrice }
-            : { contract: string, impersonated: string, functionName: string, args?: any, value?: string, gasLimit?: number, gasPrice?: number })
+            : { contract: string, impersonated: string, functionName: string, args?: any[], value?: string, gasLimit?: number, gasPrice?: number })
         : Promise<RunResponse> {
         return await this.provider.runContract({
             databasePath: this.databasePath,
@@ -45,7 +45,7 @@ export class World {
             contractAddress: contract,
             impersonated: impersonated,
             function: functionName,
-            arguments: args,
+            arguments: this.encodeArguments(args || []),
             value: value || "0",
             gasLimit: gasLimit || 0,
             gasPrice: gasPrice || 0
@@ -54,7 +54,7 @@ export class World {
 
     async queryContract(
         { contract, impersonated, functionName, args }
-            : { contract: string, impersonated: string, functionName: string, args?: any })
+            : { contract: string, impersonated: string, functionName: string, args?: any[] })
         : Promise<QueryResponse> {
         return await this.provider.queryContract({
             databasePath: this.databasePath,
@@ -62,7 +62,7 @@ export class World {
             contractAddress: contract,
             impersonated: impersonated,
             function: functionName,
-            arguments: args,
+            arguments: this.encodeArguments(args || []),
             value: "0",
             gasLimit: 0,
             gasPrice: 0
@@ -80,5 +80,28 @@ export class World {
             balance: balance || "100000000",
             nonce: nonce || 0
         });
+    }
+
+    private encodeArguments(args: any[]): string[] {
+        return args.map(this.encodeArgument);
+    }
+
+    private encodeArgument(arg: any): string {
+        let hexString = "";
+
+        if (typeof arg === "string") {
+            let argString = String(arg);
+            let buffer = Buffer.from(argString);
+            hexString = buffer.toString("hex");
+        } else if (typeof arg === "number") {
+            let argNumber = Number(arg);
+            hexString = argNumber.toString(16);
+        } else {
+            throw new Error("Cannot encode argument.");
+        }
+
+        let hexStringLength = hexString.length % 2 == 0 ? hexString.length : hexString.length + 1;
+        let paddedHexString = hexString.padStart(hexStringLength, "0");
+        return paddedHexString;
     }
 }
