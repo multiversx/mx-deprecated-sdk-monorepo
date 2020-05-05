@@ -7,17 +7,18 @@ https://wallet.elrond.com/hook
     &callbackUrl=https://elrond.com/
 */
 
-import { Account, Address } from "../core/data/account";
-import { ElrondProxy } from "../core/providers/elrondproxy";
-import { ElrondERC20client } from "../core/data/smartcontracts/elrondERC20client";
+/* import { Account, Address } from "../core/data/account"; */
+/* import { ElrondProxy } from "../core/providers/elrondproxy"; */
+/* import { ElrondERC20client } from "../core/data/smartcontracts/elrondERC20client"; */
 
+declare var erdjs: any;
 
-const Proxy = new ElrondProxy({
+const Proxy = new erdjs.providers.ElrondProxy({
     url: "http://zirconium:7950",
     timeout: 1000
 });
 
-const UserAccount: Account = new Account(Proxy, null);
+const UserAccount = new erdjs.account.Account(Proxy, null);
 
 
 export function SetUserAddress(address: string) {

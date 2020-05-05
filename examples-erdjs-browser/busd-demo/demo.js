@@ -1,1 +1,0 @@
-../../erdjs/out-browser/demo/demo.js
