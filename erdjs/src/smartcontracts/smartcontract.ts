@@ -1,9 +1,9 @@
-import { Provider } from "../../providers/interface";
-import { Account, Address, AccountSigner } from "../account";
+import { Provider } from "../providers/interface";
+import { Account, Address, AccountSigner } from "../data/account";
 import { SmartContractCall } from "./scCall";
-import * as valid from "../validation";
+import * as valid from "../data/validation";
 import * as errors from "../errors";
-import { TransactionWatcher } from "../transaction";
+import { TransactionWatcher } from "../data/transaction";
 
 export class SmartContract {
     protected provider: Provider | null = null;

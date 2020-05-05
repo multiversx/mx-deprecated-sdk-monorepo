@@ -1,5 +1,5 @@
 import * as valid from "./validation";
-import * as errors from "./errors";
+import * as errors from "../errors";
 import { Signer, Signable, Provider } from "../providers/interface";
 
 /* type Transaction struct { */

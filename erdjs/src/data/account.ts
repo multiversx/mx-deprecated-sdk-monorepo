@@ -1,7 +1,7 @@
 import * as tweetnacl from "tweetnacl";
 import * as valid from "./validation";
 import * as bech32 from "bech32";
-import * as errors from "./errors";
+import * as errors from "../errors";
 import { Provider, Signer, Signable } from "../providers/interface";
 
 export class Account {

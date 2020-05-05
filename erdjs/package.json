@@ -5,7 +5,7 @@
   "main": "out/index.js",
   "types": "out/index.d.js",
   "files": [
-    "out-node/**/*"
+    "out/**/*"
   ],
   "scripts": {
     "test": "mocha --timeout 80000",

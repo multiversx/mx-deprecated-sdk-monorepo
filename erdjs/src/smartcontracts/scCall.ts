@@ -1,7 +1,7 @@
-import * as valid from "../validation";
+import * as valid from "../data/validation";
 import * as errors from "../errors";
-import { Signer, Signable, Provider } from "../../providers/interface";
-import { Transaction } from "../transaction";
+import { Signer, Signable, Provider } from "../providers/interface";
+import { Transaction } from "../data/transaction";
 
 export class SmartContractCall extends Transaction {
     private functionName: string = "";

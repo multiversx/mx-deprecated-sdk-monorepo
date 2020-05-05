@@ -1,10 +1,10 @@
 import * as assert from "assert";
 import { Address, Account, AccountSigner } from "./data/account";
 import { Transaction, TransactionWatcher } from "./data/transaction";
-import { SmartContractCall } from "./data/smartcontracts/scCall";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
-import { ElrondERC20client } from "./data/smartcontracts/elrondERC20client";
+import { SmartContractCall } from "./smartcontracts/scCall";
+import { ElrondERC20client } from "./smartcontracts/elrondERC20client";
 import * as fs from "fs";
 
 var ErrTestError1 = new Error("test error 1");
