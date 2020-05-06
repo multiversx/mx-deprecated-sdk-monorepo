@@ -14,7 +14,17 @@
         "distribution/go": true,
         "erdjs/out": true,
         "erdjs/out-node": true,
-        "erdjs/out-browser": true
+        "erdjs/out-browser": true,
+        "erdtestjs/out": true,
+        "sandbox/sc-busd-rs": true
+    },
+    "files.watcherExclude": {
+        "**/.git": true,
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "build": true,
+        "dist": true
     },
     "python.pythonPath": "python3",
     "python.linting.pylintEnabled": false,

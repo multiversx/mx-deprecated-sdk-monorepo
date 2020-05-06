@@ -1,6 +1,6 @@
 import { describe } from "mocha"
 import { World } from "./world"
-import { loadContractCode } from "./testing"
+import { loadContractCode } from "./index"
 import { assert } from "chai";
 
 describe("test world", () => {

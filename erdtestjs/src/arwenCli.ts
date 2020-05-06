@@ -25,6 +25,10 @@ export class ArwenCLI implements ArwenDebugProvider {
             ]
         };
 
+        request.arguments.forEach(function (arg) {
+            options.args.push(`--argument="${arg}"`);
+        });
+
         await execute(options);
 
         let response = readJSONFile(DeployResponse, outcomePath);
@@ -50,6 +54,10 @@ export class ArwenCLI implements ArwenDebugProvider {
             ]
         };
 
+        request.arguments.forEach(function (arg) {
+            options.args.push(`--argument="${arg}"`);
+        });
+
         await execute(options);
 
         let response = readJSONFile(UpgradeResponse, outcomePath);
@@ -74,6 +82,10 @@ export class ArwenCLI implements ArwenDebugProvider {
             ]
         };
 
+        request.arguments.forEach(function (arg) {
+            options.args.push(`--argument="${arg}"`);
+        });
+
         await execute(options);
 
         let response = readJSONFile(RunResponse, outcomePath);
@@ -94,6 +106,10 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--function=${request.function}`
             ]
         };
+
+        request.arguments.forEach(function (arg) {
+            options.args.push(`--argument="${arg}"`);
+        });
 
         await execute(options);
 
