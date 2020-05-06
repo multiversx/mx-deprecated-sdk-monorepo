@@ -215,3 +215,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Extra exported function for C builds
+
+## [0.3.5]
+
+### Features
+
+- Stake, UnStake, UnBound, UnJail, ChangeRewardAddress
