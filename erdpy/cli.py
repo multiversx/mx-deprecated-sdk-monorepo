@@ -173,13 +173,13 @@ def setup_parser():
     tx_prepare_and_send_parser.add_argument("--proxy", required=True)
     tx_prepare_and_send_parser.set_defaults(func=tx_prepare_and_send)
 
-    bech32_parser = subparsers.add_parser("bech32")
-    bech32_parser.add_argument("value")
-    group = bech32_parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("--encode", action="store_true")
-    group.add_argument("--decode", action="store_true")
-    bech32_parser.set_defaults(func=do_bech32)
+    setup_parser_validators(subparsers)
+    setup_parser_wallet(subparsers)
 
+    return parser
+
+
+def setup_parser_validators(subparsers):
     stake_prepare_parser = subparsers.add_parser("stake-prepare")
     stake_prepare_parser.add_argument("--pem", required=True)
     stake_prepare_parser.add_argument("--nonce", required=True)
@@ -245,7 +245,21 @@ def setup_parser():
     change_reward_address_parser.add_argument("--proxy", required=True)
     change_reward_address_parser.set_defaults(func=change_reward_address)
 
-    return parser
+
+def setup_parser_wallet(subparsers):
+    wallet_parser = subparsers.add_parser("wallet")
+    wallet_subparsers = wallet_parser.add_subparsers()
+
+    generate_parser = wallet_subparsers.add_parser("generate")
+    generate_parser.add_argument("pem")
+    generate_parser.set_defaults(func=generate_pem)
+
+    bech32_parser = wallet_subparsers.add_parser("bech32")
+    bech32_parser.add_argument("value")
+    group = bech32_parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--encode", action="store_true")
+    group.add_argument("--decode", action="store_true")
+    bech32_parser.set_defaults(func=do_bech32)
 
 
 def install(args):
@@ -362,6 +376,10 @@ def tx_send(args):
 
 def tx_prepare_and_send(args):
     facade.prepare_and_send_transaction(args)
+
+
+def generate_pem(args):
+    facade.generate_pem(args)
 
 
 def do_bech32(args):

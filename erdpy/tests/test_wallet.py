@@ -5,7 +5,7 @@ from pathlib import Path
 import nacl.encoding
 import nacl.signing
 
-from erdpy.wallet import signing
+from erdpy.wallet import signing, pem, generate_pair
 from erdpy.transactions import PlainTransaction, TransactionPayloadToSign
 
 logging.basicConfig(level=logging.INFO)
@@ -14,6 +14,7 @@ logging.basicConfig(level=logging.INFO)
 class WalletTestCase(unittest.TestCase):
     def setUp(self):
         self.testdata = Path(__file__).parent.joinpath("testdata")
+        self.testdata_out = Path(__file__).parent.joinpath("testdata-out")
 
     def test_nacl_playground_signing(self):
         private_key_hex = "b8211b08edc8aca591bedf1b9aba47e4077e54ac7d4ceb2f1bc9e10c064d3e6c7a5679a427f6df7adf2310ddf5e570fd51e47e6b1511124d6b250b989b017588"
@@ -27,15 +28,15 @@ class WalletTestCase(unittest.TestCase):
         self.assertEqual("a4918458d874ca58893a1f92dac33e7b10e3bf46048ad5de5bc260487ca84e8e07603297120fdc018242f63bd8e87b13efd108f8ffa095f536b6eda03805590c", signed_bytes_hex)
         self.assertEqual(64, len(signature))
 
-    def test_get_pubkey_from_pem(self):
-        pem = self.testdata.joinpath("keys", "alice.pem")
-        address = signing.get_pubkey_from_pem(pem)
+    def test_pem_get_pubkey(self):
+        pem_file = self.testdata.joinpath("keys", "alice.pem")
+        address = pem.get_pubkey(pem_file)
 
         self.assertEqual("fd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293", address.hex())
 
-    def test_parse_pem(self):
-        pem = self.testdata.joinpath("keys", "alice.pem")
-        seed, address = signing.parse_pem(pem)
+    def test_pem_parse(self):
+        pem_file = self.testdata.joinpath("keys", "alice.pem")
+        seed, address = pem.parse(pem_file)
 
         self.assertEqual("1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf", seed.hex())
         self.assertEqual("fd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293", address.hex())
@@ -100,3 +101,12 @@ class WalletTestCase(unittest.TestCase):
         signature = signing.sign_transaction(payload, pem)
 
         self.assertEqual("4e160bcafb6cb8ab8fc3260d3faf24bf7ce1205b5685adb457803db6d67c648a614308d8354e40b40fbb90c227046d6997493f798b92acb1b4bc49173939e703", signature)
+
+    def test_generate_pair_pem(self):
+        seed, pubkey = generate_pair()
+        pem_file = Path(self.testdata_out, "foo.pem")
+        pem.write(pem_file, seed, pubkey)
+        parsed_seed, parsed_pubkey = pem.parse(pem_file)
+
+        self.assertEqual(seed, parsed_seed)
+        self.assertEqual(pubkey, parsed_pubkey)

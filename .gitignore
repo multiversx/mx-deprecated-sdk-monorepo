@@ -138,6 +138,7 @@ erdpy/tests/testdata/**/*.bc
 erdpy/tests/testdata/**/*.o
 erdpy/tests/testdata/**/Cargo.lock
 erdpy/tests/testdata/**/*.functions
+erdpy/tests/testdata-out/**
 
 examples/**/*.wat
 examples/**/*.ll

@@ -1,14 +1,13 @@
 import base64
 import json
 import logging
+from collections import OrderedDict
 from os import path
 
 from erdpy import utils
-from erdpy.validators.validators import parse_args_for_stake
-from erdpy.wallet import signing
-from collections import OrderedDict
 from erdpy.accounts import Address
-
+from erdpy.validators.validators import parse_args_for_stake
+from erdpy.wallet import pem, signing
 
 logger = logging.getLogger("transactions")
 
@@ -101,6 +100,40 @@ class PreparedTransaction(PlainTransaction):
         return tx_hash
 
 
+class BunchOfTransactions:
+    def __init__(self):
+        self.transactions = []
+
+    def add_prepared(self, transaction):
+        self.transactions.append(transaction)
+
+    def add(self, sender, receiver_address, nonce, value, data, gas_price, gas_limit):
+        plain = PlainTransaction()
+        plain.nonce = int(nonce)
+        plain.value = str(value)
+        plain.sender = sender.address.bech32()
+        plain.receiver = receiver_address
+        plain.gasPrice = gas_price
+        plain.gasLimit = gas_limit
+        plain.data = data
+
+        payload = TransactionPayloadToSign(plain)
+        signature = signing.sign_transaction(payload, sender.pem_file)
+        prepared = PreparedTransaction(plain, signature)
+
+        self.transactions.append(prepared)
+
+    def add_in_sequence(self):
+        pass
+
+    def send(self, proxy):
+        logger.info(f"BunchOfTransactions.send: {len(self.transactions)} transactions")
+        payload = [transaction.to_dictionary() for transaction in self.transactions]
+        num_sent = proxy.send_transactions(payload)
+        logger.info(f"Sent: {num_sent}")
+        return num_sent
+
+
 def stake_prepare(args):
     args = parse_args_for_stake(args)
     prepare(args)
@@ -118,7 +151,7 @@ def prepare(args):
 
 def do_prepare_transaction(args):
     # "sender" taken from the PEM file
-    sender_bytes = signing.get_pubkey_from_pem(args.pem)
+    sender_bytes = pem.get_pubkey(args.pem)
     sender_bech32 = Address(sender_bytes).bech32()
 
     plain = PlainTransaction()

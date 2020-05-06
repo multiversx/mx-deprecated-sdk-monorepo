@@ -1,3 +1,3 @@
-from erdpy.wallet.signing import parse_pem
+from erdpy.wallet.generator import generate_pair
 
-__all__ = ["parse_pem"]
+__all__ = ["generate_pair"]
