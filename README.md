@@ -167,6 +167,19 @@ erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver
 
 ```
 
+### Validators features
+
+Features: Stake, UnStake, UnBound, UnJail, ChangeRewardAddress
+
+```
+erdpy --verbose stake-prepare ./myplayground --tag="foobar" --nonce=100 --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://wallet-api.elrond.com --reward-address="bech32address--is-optional"
+erdpy --verbose stake-prepare-and-send --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://wallet-api.elrond.com --reward-address="bech32address--is-optional"
+erdpy --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
+erdpy --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
+erdpy --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
+erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward-address="newbech32address" --proxy=https://wallet-api.elrond.com
+```
+
 ### Other features
 
 Get information such as the number of shards, the gas price, the chain ID and so on:
