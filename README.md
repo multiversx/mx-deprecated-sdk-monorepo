@@ -1,5 +1,7 @@
 # erdpy
 
+[![Build Status](https://travis-ci.com/ElrondNetwork/erdpy.svg?branch=master)](https://travis-ci.com/ElrondNetwork/erdpy)
+
 **Development is in progress. See [CHANGELOG](CHANGELOG.md).**
 
 **For tutorials, go to [wiki](https://github.com/ElrondNetwork/erdpy/wiki).**
