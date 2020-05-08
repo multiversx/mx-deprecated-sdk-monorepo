@@ -1,5 +1,7 @@
 # erdpy
 
+[![Build Status](https://travis-ci.com/ElrondNetwork/erdpy.svg?branch=master)](https://travis-ci.com/ElrondNetwork/erdpy)
+
 **Development is in progress. See [CHANGELOG](CHANGELOG.md).**
 
 **For tutorials, go to [wiki](https://github.com/ElrondNetwork/erdpy/wiki).**
@@ -167,7 +169,20 @@ erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver
 
 ```
 
-### Other features
+### Validators features
+
+Features: Stake, UnStake, UnBound, UnJail, ChangeRewardAddress
+
+```
+erdpy --verbose stake-prepare ./myplayground --tag="foobar" --nonce=100 --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://wallet-api.elrond.com --reward-address="bech32address--is-optional"
+erdpy --verbose stake-prepare-and-send --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://wallet-api.elrond.com --reward-address="bech32address--is-optional"
+erdpy --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
+erdpy --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
+erdpy --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
+erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward-address="newbech32address" --proxy=https://wallet-api.elrond.com
+```
+
+### Miscellaneous features
 
 Get information such as the number of shards, the gas price, the chain ID and so on:
 
@@ -199,6 +214,13 @@ erdpy get-transaction-cost sc-deploy --sc-path="./examples/hello" --proxy="https
 erdpy get-transaction-cost sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://wallet-api.elrond.com"
 ```
 
+### Wallet features
+
+```
+erdpy wallet generate ./myaccount.pem
+erdpy wallet bech32 --encode 000000000000000005006e4f90488e27342f9a46e1809452c85ee7186566bd5e
+erdpy wallet bech32 --decode erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy
+```
 
 
 ## Contribute

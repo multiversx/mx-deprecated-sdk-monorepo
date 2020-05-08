@@ -1,12 +1,14 @@
 import logging
 
-from erdpy import guards
+from erdpy import wallet
 from erdpy.accounts import Account, Address
-from erdpy.contracts import SmartContract, CodeMetadata
+from erdpy.contracts import CodeMetadata, SmartContract
 from erdpy.environments import TestnetEnvironment
 from erdpy.projects import load_project
 from erdpy.proxy import ElrondProxy, TransactionCostEstimator
 from erdpy.transactions import PreparedTransaction, do_prepare_transaction
+from erdpy.validators import validators
+from erdpy.wallet import pem
 
 logger = logging.getLogger("facade")
 
@@ -200,6 +202,40 @@ def prepare_and_send_transaction(args):
     tx_hash = prepared.send(proxy)
     print(tx_hash)
     return tx_hash
+
+
+def prepare_and_send_stake_transaction(args):
+    args = validators.parse_args_for_stake(args)
+    return prepare_and_send_transaction(args)
+
+
+def prepare_and_send_un_stake_transaction(args):
+    args = validators.parse_args_for_un_stake(args)
+    return prepare_and_send_transaction(args)
+
+
+def prepare_and_send_un_jail_transaction(args):
+    args = validators.parse_args_for_un_jail(args)
+    return prepare_and_send_transaction(args)
+
+
+def prepare_and_send_un_bond_transaction(args):
+    args = validators.parse_args_for_un_bond(args)
+    return prepare_and_send_transaction(args)
+
+
+def prepare_and_send_change_reward_address_transaction(args):
+    args = validators.parse_args_for_changing_reward_address(args)
+    return prepare_and_send_transaction(args)
+
+
+def generate_pem(args):
+    pem_file = args.pem
+
+    seed, pubkey = wallet.generate_pair()
+    address = Address(pubkey)
+    pem.write(pem_file, seed, pubkey, name=address.bech32())
+    logger.info(f"Created PEM file [{pem_file}].")
 
 
 def do_bech32(args):

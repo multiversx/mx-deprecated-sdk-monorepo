@@ -209,3 +209,21 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Display address of smart contract upon deploy
 - Improve tests CLI
 - Copy build artifacts to "output" folder
+
+## [0.3.4]
+
+### Fixed
+
+- Extra exported function for C builds
+
+## [0.3.5]
+
+### Features
+
+- Stake, UnStake, UnBound, UnJail, ChangeRewardAddress
+
+## [0.3.6]
+
+### Fixed
+
+- Extra exported function for C builds

@@ -19,6 +19,7 @@ getArgumentLength
 storageGetValueLength
 storageStore
 storageLoad
+storageLoadLength
 getCaller
 getCallValue
 writeLog
@@ -79,3 +80,8 @@ bigIntGetExternalBalance
 
 sha256
 keccak256
+
+setStorageLock
+getStorageLock
+isStorageLocked
+clearStorageLock
