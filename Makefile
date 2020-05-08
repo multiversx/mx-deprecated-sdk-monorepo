@@ -22,11 +22,6 @@ arwendebug:
 	stat ./distribution/go/bin/arwendebug
 
 test-cli:
-	python3 -m erdpy.cli get-num-shards --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli get-gas-price --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli get-chain-id --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli get-last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
-
 	python3 -m erdpy.cli get-account --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
 	python3 -m erdpy.cli get-account --nonce --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
 	python3 -m erdpy.cli get-account --balance --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
