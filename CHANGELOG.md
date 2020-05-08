@@ -227,3 +227,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Extra exported function for C builds
+
+## [0.3.7]
+
+### Fixed
+
+- Serialization algorithm used for signing ("data as string")
+- Prettier CLI
