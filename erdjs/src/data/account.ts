@@ -172,4 +172,13 @@ export class Address {
         let address = bech32.encode(valid.ADDRESS_PREFIX, words);
         return address;
     }
+
+    public fromHex(addressHex: string) {
+        var addressBytes = Buffer.from(addressHex, 'hex');
+        if (addressBytes.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        this.buffer = addressBytes;
+    }
 }

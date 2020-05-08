@@ -4,7 +4,7 @@ import { Transaction, TransactionWatcher } from "./data/transaction";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
 import { SmartContractCall } from "./smartcontracts/scCall";
-import { ElrondERC20client } from "./smartcontracts/elrondERC20client";
+import { ElrondERC20Client } from "./smartcontracts/elrondERC20client";
 import * as fs from "fs";
 
 var ErrTestError1 = new Error("test error 1");
@@ -78,12 +78,13 @@ describe("ERC20 client", () => {
         receiver.setKeysFromRawData(txgen.accounts[2]);
 
         let scAddress = new Address(txgen.scAddress);
-        let erc20 = new ElrondERC20client(proxy, scAddress, user);
+        let erc20 = new ElrondERC20Client(proxy, scAddress, user);
+        erc20.enableSigning(true);
 
         erc20.setGasPrice(100000000000000);
         erc20.setGasLimit(7e6);
-        let success = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(25));
-        console.log("erc20 transfer status:", success);
+        let call = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(25));
+        console.log("erc20 transfer status:", call.getStatus());
     });
 
     it("should interact with an ERC20 smartcontract properly", async () => {
@@ -100,7 +101,8 @@ describe("ERC20 client", () => {
         user.setKeysFromRawData(txgen.accounts[1]);
 
         let scAddress = new Address(txgen.scAddress);
-        let erc20 = new ElrondERC20client(proxy, scAddress, user);
+        let erc20 = new ElrondERC20Client(proxy, scAddress, user);
+        erc20.enableSigning(true);
 
         const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
         receiver.setKeysFromRawData(txgen.accounts[2]);
@@ -131,8 +133,8 @@ describe("ERC20 client", () => {
         let transferValue = 25;
         erc20.setGasPrice(100000000000000);
         erc20.setGasLimit(7e6);
-        let success = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(transferValue));
-        console.log("erc20 transfer status:", success);
+        let call = await erc20.transfer(receiver.getAddressObject().hex(), BigInt(transferValue));
+        console.log("erc20 transfer status:", call.getStatus());
 
         // Verify transfer
         balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
@@ -148,11 +150,13 @@ describe("ERC20 client", () => {
 
         // Send some tokens back
         console.log("performing ERC20 transfer");
-        erc20 = new ElrondERC20client(proxy, scAddress, receiver);
+        erc20 = new ElrondERC20Client(proxy, scAddress, receiver);
+        erc20.enableSigning(true);
+
         erc20.setGasPrice(100000000000000);
         erc20.setGasLimit(7e6);
-        success = await erc20.transfer(sender.getAddressObject().hex(), BigInt(transferValue));
-        console.log("erc20 transfer status:", success);
+        call = await erc20.transfer(sender.getAddressObject().hex(), BigInt(transferValue));
+        console.log("erc20 transfer status:", call.getStatus());
 
         // Verify transfer
         balanceOfSender = await erc20.balanceOf(sender.getAddressObject().hex());
@@ -325,6 +329,7 @@ describe("Proxy", () => {
         assert.equal(initialDiff.toString(), postDiff.toString());
     });
 });
+
 
 function getTxGenConfiguration(): any {
     const txgenFolder = "/var/work/Elrond/testnet/txgen";

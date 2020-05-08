@@ -1,11 +1,11 @@
 import { ERC20Client } from "./interface";
 import { Provider } from "../providers/interface";
 import { Account, Address } from "../data/account";
-import { SmartContract } from "./smartcontract";
+import { SmartContractBase } from "./smartcontract";
 import { SmartContractCall } from "./scCall";
 import * as errors from "../errors";
 
-export class BasicERC20Client extends SmartContract implements ERC20Client {
+export class BasicERC20Client extends SmartContractBase implements ERC20Client {
     protected defaultDecimals = 18;
     protected functionName_totalSupply = "totalSupply";
     protected functionName_balanceOf = "balanceOf";
@@ -62,33 +62,28 @@ export class BasicERC20Client extends SmartContract implements ERC20Client {
         return result;
     }
 
-    public async transfer(receiver: string, value: bigint): Promise<boolean> {
+    public async transfer(receiver: string, value: bigint): Promise<SmartContractCall> {
         let call = new SmartContractCall(null);
         call.setFunctionName(this.functionName_transfer);
         call.addRawArgument(receiver);
         call.addBigIntArgument(value);
 
-        let result = false;
         try {
-            await this.performCall(call);
-            result = true;
+            call = await this.performCall(call);
         } catch(err) {
-            result = false;
             console.error(err);
-        } finally {
-            this.cleanupCall();
-            return result;
-        }
+        } 
+        return call;
     }
 
-    public transferFrom(sender: string, receiver: string, value: bigint): Promise<boolean> {
+    public transferFrom(sender: string, receiver: string, value: bigint): Promise<SmartContractCall> {
         sender;
         receiver;
         value;
         throw new Error("Method not implemented.");
     }
 
-    public approve(spender: string, value: bigint): Promise<boolean> {
+    public approve(spender: string, value: bigint): Promise<SmartContractCall> {
         spender;
         value;
         throw new Error("Method not implemented.");

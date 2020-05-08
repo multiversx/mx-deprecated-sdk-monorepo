@@ -8,7 +8,7 @@
             "es6",
             "DOM"
         ],
-        "sourceMap": false,
+        "sourceMap": true,
         "allowJs": false,
         "strict": true,
         "strictPropertyInitialization": true,

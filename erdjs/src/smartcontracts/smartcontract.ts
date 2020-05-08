@@ -4,8 +4,9 @@ import { SmartContractCall } from "./scCall";
 import * as valid from "../data/validation";
 import * as errors from "../errors";
 import { TransactionWatcher } from "../data/transaction";
+import { SmartContract } from "./interface";
 
-export class SmartContract {
+export class SmartContractBase implements SmartContract {
     protected provider: Provider | null = null;
     protected scAddress: Address | null = null;
     protected user: Account | null = null
@@ -16,10 +17,20 @@ export class SmartContract {
     protected callStatusQueryPeriod: number = 4000;
     protected callStatusQueryTimeout: number = 60000;
 
-    constructor(provider: Provider, scAddress: Address, user: Account) {
+    protected signingEnabled: boolean = false;
+
+    constructor(provider: Provider | null, scAddress: Address, user: Account) {
         this.provider = provider;
         this.scAddress = scAddress;
         this.user = user;
+    }
+
+    public enableSigning(enable: boolean) {
+        this.signingEnabled = enable;
+    }
+
+    setProvider(provider: Provider | null): void {
+        this.provider = provider;
     }
 
     public setGasPrice(gasPrice: number) {
@@ -51,33 +62,36 @@ export class SmartContract {
         call.setGasPrice(this.gasPrice);
         call.prepareData();
 
-        // TODO Replace this with external signing
-        let signer = new AccountSigner(this.user);
-        signer.sign(call);
+        if (this.signingEnabled) {
+            let signer = new AccountSigner(this.user);
+            signer.sign(call);
+        }
     }
 
-    public async performCall(call: SmartContractCall): Promise<void> {
-        if (this.provider == null) {
-            throw errors.ErrProviderNotSet;
-        }
-
+    public async performCall(call: SmartContractCall): Promise<SmartContractCall> {
         this.prepareCall(call);
 
-        try {
-            // TODO replace this with external sending
-            let txHash = await this.provider.sendTransaction(call);
-            call.setTxHash(txHash);
+        if (this.provider != null) {
+            try {
+                // TODO replace this with external sending
+                let txHash = await this.provider.sendTransaction(call);
+                call.setTxHash(txHash);
 
-            let watcher = new TransactionWatcher(txHash, this.provider);
-            let result = await watcher.awaitExecuted(
-                this.callStatusQueryPeriod,
-                this.callStatusQueryTimeout
-            );
-
-            // TODO return smart contract results
-        } catch (err) {
-            console.error(err);
+                let watcher = new TransactionWatcher(txHash, this.provider);
+                await watcher.awaitExecuted(
+                    this.callStatusQueryPeriod,
+                    this.callStatusQueryTimeout
+                );
+                call.setStatus("executed");
+                // TODO return smart contract results
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.cleanupCall();
+            }
         }
+
+        return call;
     }
 
     public cleanupCall() {

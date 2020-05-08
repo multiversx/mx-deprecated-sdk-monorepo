@@ -1,7 +1,7 @@
 {
-  "name": "erc20demo",
+  "name": "walletdemo",
   "version": "0.1.0",
-  "description": "Demonstrative ERC20 frontend based on erdjs",
+  "description": "Wallet-like demonstrative app",
   "main": "out/index.js",
   "types": "out/index.d.js",
   "files": [

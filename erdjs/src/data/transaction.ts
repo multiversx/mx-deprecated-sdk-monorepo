@@ -28,6 +28,7 @@ export class Transaction implements Signable {
 
     protected signed: boolean = false;
     protected initialized: boolean = false;
+    protected status: string = "unknown";
 
     protected provider: Provider | null = null;
 
@@ -92,6 +93,22 @@ export class Transaction implements Signable {
         this.provider = provider;
     }
 
+    public setStatus(status: string) {
+        this.status = status;
+    }
+
+    public getStatus(): string {
+        return this.status;
+    }
+
+    public getNonce(): number {
+        return this.nonce;
+    }
+
+    public getSender(): string {
+        return this.sender;
+    }
+
     // TODO change this method to take no arguments,
     // and to use this.Sender as the signer, because
     // Account implements the Signer interface.
@@ -114,7 +131,7 @@ export class Transaction implements Signable {
             plainTx.gasLimit = this.gasLimit;
         }
         if (this.data != "") {
-            plainTx.data = Buffer.from(this.data).toString('base64');
+            plainTx.data = this.data;
         }
 
         return plainTx;
@@ -125,29 +142,18 @@ export class Transaction implements Signable {
             throw errors.ErrTransactionNotSigned;
         }
 
-        let sendableTx: any = {
-            nonce: this.nonce,
-            value: this.value.toString(),
-            receiver: this.receiver,
-            sender: this.sender,
-            signature: this.signature
-        };
+        let tx = this.getPlain();
+        tx.signature = this.signature;
 
-        if (this.gasPrice > 0) {
-            sendableTx.gasPrice = this.gasPrice;
-        }
-        if (this.gasLimit > 0) {
-            sendableTx.gasLimit = this.gasLimit;
-        }
-        if (this.data != "") {
-            sendableTx.data = this.data;
-        }
-
-        return sendableTx;
+        return tx;
     }
 
     public serializeForSigning(): Buffer {
         let tx = this.getPlain();
+        if (this.data != "") {
+            tx.data = Buffer.from(this.data).toString('base64');
+        }
+
         let serializedTx = JSON.stringify(tx);
         return Buffer.from(serializedTx);
     }
@@ -170,6 +176,11 @@ export class TransactionWatcher {
     constructor(hash: string, provider: Provider) {
         this.txHash = hash;
         this.provider = provider;
+    }
+
+    public async awaitReceived(period: number, timeout: number): Promise<void> {
+        // TODO "executed" or later, not just "executed"
+        await this.awaitStatus("received", period, timeout);
     }
 
     public async awaitExecuted(period: number, timeout: number): Promise<void> {

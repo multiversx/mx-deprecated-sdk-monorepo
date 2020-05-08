@@ -3,8 +3,8 @@ import { Provider } from "../providers/interface";
 import { Account, Address } from "../data/account";
 import { BasicERC20Client } from "./erc20client";
 
-export class ElrondERC20client extends BasicERC20Client implements ERC20Client {
-    constructor(provider: Provider, scAddress: Address, user: Account) {
+export class ElrondERC20Client extends BasicERC20Client implements ERC20Client {
+    constructor(provider: Provider | null, scAddress: Address, user: Account) {
         super(provider, scAddress, user);
         this.functionName_transfer = "transferToken";
     }

@@ -11,13 +11,16 @@
             <div class="d-flex flex-column wallet-layout white-nav-bg wrapper">
                 <main class="d-flex flex-column flex-grow-1" role="main">
                     <div class="container d-flex flex-column flex-fill mb-4 wallet-body">
+
+
                         <div class="wallet-header mb-4">
+
                             <div class="row">
                                 <div class="col-md-7 d-flex flex-row justify-content-center align-items-center address">
                                     <form class="w-75">
                                         <div class="form-group">
-                                            <label for >My address</label>
-                                            <input type="text" class="form-control" id="UserAddressInput" placeholder="enter your Elrond Network address">
+                                            <label for="UserAddress">My address</label>
+                                            <input type="text" class="form-control" id="UserAddress" placeholder="enter your Elrond Network address">
                                             <span id="UserAddressInputHelp" class="form-text">An address starts with "erd1" and has 62 characters. Write it here then press [Enter].</span>
                                         </div>
                                     </form>
@@ -33,9 +36,11 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="col-12 d-flex flex-row justify-content-center text-light testnet">My ERC20 balance</div>
                             </div>
+
                             <div class="row">
                                 <div class="col-12 d-flex flex-row justify-content-center align-items-center balance">
                                     <span class="amount">
@@ -46,24 +51,49 @@
                                     </span>
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="col-12 d-flex flex-row justify-content-center text-light testnet">Total supply of &nbsp; <span id="ERC20TotalSupply">0</span>&nbsp; tokens</div>
                             </div>
+
                             <div class="row">
                                 <p></p>
                             </div>
+
                         </div>
-                        <div class="row flex-grow-1">
-                            <div class="col-12 d-flex flex-column">
-                                <div class="mx-auto my-auto text-center page-state">
-                                    <i>
-                                        <div class="icon "/>
-                                    </i>
-                                    <p class="h3 mt-3">No Transactions</p>
-                                    <p>No transactions found for this wallet.</p>
+
+
+                        <form id="TransferTokenForm" class="form-horizontal">
+                            <div class="form-group">
+                                <label for="TransferTokenReceiver" class="col-sm-2 control-label">Transfer receiver</label>
+                                <div class="col-sm-10">
+                                    <input type="text" disabled class="form-control" id="TransferTokenReceiver" placeholder="enter receiver address">
+                                    <small id="TransferTokenReceiverHelp" class="form-text text-muted">Whom do you want to send tokens to. An address starts with "erd1" and has 62 characters.</small>
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="TransferTokenAmount" class="col-sm-2 control-label">Transfer amount</label>
+                                <div class="col-sm-10">
+                                    <input type="text" disabled class="form-control" id="TransferTokenAmount" placeholder="enter amount">
+                                    <small id="TransferTokenValueHelp" class="form-text text-muted">How many tokens you want to send.</small>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-2">
+                                    <button type="submit" disabled id="TransferTokenSubmit" class="btn btn-default" style="color:#FFF;background-color:rgb(26, 71, 196);">Transfer</button>
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <div class="row">
+                            <div class="col">
+                                <ol id="RecentTransactionsList">
+                                </ol>
+                            </div>
                         </div>
+
+
                     </div>
                 </main>
             </div>
