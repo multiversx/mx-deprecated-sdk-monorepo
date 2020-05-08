@@ -40,6 +40,10 @@ test-cli:
 	python3 -m erdpy.cli cost gas-price --proxy=https://api.elrond.com
 	python3 -m erdpy.cli cost transaction move-balance --data="foobar" --proxy="https://api.elrond.com"
 
+	python3 -m erdpy.cli network num-shards --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network chain-id --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
+
 	python3 -m erdpy.cli --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
 	python3 -m erdpy.cli --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
 	python3 -m erdpy.cli --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
