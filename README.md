@@ -207,9 +207,9 @@ Get estimated costs for transactions, in gas units. Note that there are 3 types 
 
 
 ```
-erdpy get-transaction-cost move-balance --data="foobar" --proxy="https://wallet-api.elrond.com"
-erdpy get-transaction-cost sc-deploy --sc-path="./examples/hello" --proxy="https://wallet-api.elrond.com"
-erdpy get-transaction-cost sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://wallet-api.elrond.com"
+erdpy cost transaction move-balance --data="foobar" --proxy="https://wallet-api.elrond.com"
+erdpy cost transaction sc-deploy --sc-path="./examples/hello" --proxy="https://wallet-api.elrond.com"
+erdpy cost transaction sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://wallet-api.elrond.com"
 ```
 
 ### Wallet features

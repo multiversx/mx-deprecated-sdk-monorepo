@@ -37,6 +37,9 @@ test-cli:
 	python3 -m erdpy.cli wallet bech32 --encode 000000000000000005006e4f90488e27342f9a46e1809452c85ee7186566bd5e
 	python3 -m erdpy.cli wallet bech32 --decode erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy
 
+	python3 -m erdpy.cli cost gas-price --proxy=https://wallet-api.elrond.com
+	python3 -m erdpy.cli cost transaction move-balance --data="foobar" --proxy="https://wallet-api.elrond.com"
+
 	python3 -m erdpy.cli --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
 	python3 -m erdpy.cli --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
 	python3 -m erdpy.cli --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
