@@ -1,7 +1,7 @@
 import * as tweetnacl from "tweetnacl";
 import * as valid from "./validation";
 import * as bech32 from "bech32";
-import * as errors from "./errors";
+import * as errors from "../errors";
 import { Provider, Signer, Signable } from "../providers/interface";
 
 export class Account {
@@ -17,7 +17,8 @@ export class Account {
 
     private initialized: boolean = false;
 
-    public constructor(data: any) {
+    public constructor(provider: Provider, data: any) {
+        this.setProvider(provider);
         this.set(data);
     }
 
@@ -36,6 +37,14 @@ export class Account {
 
     public getAddress(): string {
         return this.address.toString();
+    }
+
+    public getAddressObject(): Address {
+        return this.address;
+    }
+
+    public setAddress(address: string) {
+        this.address = new Address(address);
     }
 
     public getSeed(): Buffer {
@@ -89,25 +98,31 @@ export class Account {
         this.address = new Address(data.pubKey);
         this.seed = valid.Seed(data.privKey);
     }
+
+    public isInitialized(): boolean {
+        return this.initialized;
+    }
 }
 
 export class AccountSigner implements Signer {
-    private account: Account = new Account(null);
+    private account: Account | null = null;
 
     public constructor(acc: Account) {
         this.account = acc;
     }
 
     public sign(signable: Signable): void {
-        let seed = this.account.getSeed();
-        let pair = tweetnacl.sign.keyPair.fromSeed(seed);
-        let signingKey = pair.secretKey;
+        if (this.account != null) {
+            let seed = this.account.getSeed();
+            let pair = tweetnacl.sign.keyPair.fromSeed(seed);
+            let signingKey = pair.secretKey;
 
-        let bufferToSign = signable.serializeForSigning();
-        let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
-        let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
+            let bufferToSign = signable.serializeForSigning();
+            let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
+            let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
 
-        signable.applySignature(signature);
+            signable.applySignature(signature);
+        }
     }
 }
 
@@ -156,5 +171,14 @@ export class Address {
         let words = bech32.toWords(this.buffer);
         let address = bech32.encode(valid.ADDRESS_PREFIX, words);
         return address;
+    }
+
+    public fromHex(addressHex: string) {
+        var addressBytes = Buffer.from(addressHex, 'hex');
+        if (addressBytes.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        this.buffer = addressBytes;
     }
 }

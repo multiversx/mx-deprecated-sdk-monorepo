@@ -1,4 +1,4 @@
-import * as errors from "./errors";
+import * as errors from "../errors";
 
 export const HASH_LENGTH = 32;
 export const ADDRESS_LENGTH = 32;
@@ -80,17 +80,21 @@ export function RootHash(hash: string | null): string {
 
 export function GasPrice(gasPrice: number): number {
     gasPrice = validNumber(gasPrice);
+
     if (gasPrice < 0) {
         throw errors.ErrNegativeGasPrice;
     }
+
     return gasPrice;
 }
 
 export function GasLimit(gasLimit: number): number {
     gasLimit = validNumber(gasLimit);
+
     if (gasLimit < 0) {
         throw errors.ErrNegativeGasLimit;
     }
+
     return gasLimit;
 }
 
@@ -98,15 +102,25 @@ export function TxValue(txValue: string): bigint {
     if (txValue.length == 0) {
         throw errors.ErrInvalidTxValueString;
     }
+
     let value = BigInt(txValue);
     if (value < 0) {
         throw errors.ErrNegativeValue;
     }
+
     return value;
 }
 
 export function TxData(txData: string): string {
     return txData;
+}
+
+export function FunctionName(name: string): string {
+    if (name.length == 0) {
+        throw errors.ErrInvalidFunctionName;
+    }
+    // TODO verify valid characters
+    return name
 }
 
 export function Seed(key: string): Buffer {
@@ -120,7 +134,11 @@ export function Seed(key: string): Buffer {
 }
 
 function makeCodeHash(code: string) {
-    return "not_a_hash";
+    if (code.length > 0) {
+        return "not_a_hash";
+    } else {
+        return "";
+    }
 }
 
 function validNumber(n: number): number {

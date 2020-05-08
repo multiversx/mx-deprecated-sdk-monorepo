@@ -2,8 +2,9 @@
 	"compilerOptions": {
 		"module": "CommonJS",
 		"target": "ES2015",
-		"outDir": "out-browser",
         "moduleResolution": "Node",
+		"outDir": "out",
+		"types": [],
 		"lib": [
 			"ES2015", "DOM"
 		],
@@ -14,10 +15,7 @@
         "strictNullChecks": true,
         "skipLibCheck": true
 	},
-	"exclude": [
-		"node_modules",
-		"out",
-		"out-browser",
-		"**/*.spec.ts"
+	"include": [
+		"src/**/*"
     ]
 }

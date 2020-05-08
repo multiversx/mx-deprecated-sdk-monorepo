@@ -1,23 +1,25 @@
 {
-  "compilerOptions": {
-    "module": "CommonJS",
-    "target": "es6",
-    "outDir": "out",
-    "lib": [
-      "es6",
-      "DOM"
-    ],
-    "sourceMap": false,
-    "allowJs": false,
-    "strict": true,
-    "strictPropertyInitialization": true,
-    "strictNullChecks": true,
-    "skipLibCheck": true
-  },
-  "exclude": [
-    "node_modules",
-    "out",
-    "out-node",
-    "out-browser"
-  ]
+    "compilerOptions": {
+        "module": "CommonJS",
+        "moduleResolution": "Node",
+        "target": "es6",
+        "outDir": "out",
+        "lib": [
+            "es6",
+            "DOM"
+        ],
+        "sourceMap": true,
+        "allowJs": false,
+        "strict": true,
+        "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "skipLibCheck": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
+        "declaration": true
+    },
+    "include": [
+        "src/**/*"
+    ]
 }
