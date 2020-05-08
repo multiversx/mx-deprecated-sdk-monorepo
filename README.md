@@ -187,10 +187,9 @@ erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward
 Get information such as the number of shards, the gas price, the chain ID and so on:
 
 ```
-erdpy get-num-shards --proxy="https://api.elrond.com"
-erdpy get-gas-price --proxy="https://api.elrond.com"
-erdpy get-chain-id --proxy="https://api.elrond.com"
-erdpy get-last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
+erdpy network num-shards --proxy="https://api.elrond.com"
+erdpy network chain-id --proxy="https://api.elrond.com"
+erdpy network last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
 ```
 
 Get details about a specific account (address on the blockchain):
@@ -209,6 +208,7 @@ Get estimated costs for transactions, in gas units. Note that there are 3 types 
 
 
 ```
+erdpy cost gas-price --proxy="https://api.elrond.com"
 erdpy cost transaction move-balance --data="foobar" --proxy="https://api.elrond.com"
 erdpy cost transaction sc-deploy --sc-path="./examples/hello" --proxy="https://api.elrond.com"
 erdpy cost transaction sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://api.elrond.com"
