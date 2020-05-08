@@ -135,7 +135,7 @@ erdpy --verbose test ./examples/hello --wildcard="*"
 Deploy a smart contract on the testnet (make sure the contract is built in advance):
 
 ```
-erdpy --verbose deploy ./examples/contracts/hello --pem="./examples/keys/alice.pem" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose deploy ./examples/contracts/hello --pem="./examples/keys/alice.pem" --proxy="https://api.elrond.com"
 ```
 
 ### Query contract values on testnet
@@ -143,7 +143,7 @@ erdpy --verbose deploy ./examples/contracts/hello --pem="./examples/keys/alice.p
 Inspect values stored in the smart contract by performing a call to a pure, getter function:
 
 ```
-erdpy --verbose query erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy --function="getUltimateAnswer" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose query erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy --function="getUltimateAnswer" --proxy="https://api.elrond.com"
 ```
 
 ### Call contract functions on testnet
@@ -151,7 +151,7 @@ erdpy --verbose query erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen
 Call a function of an existing smart contract:
 
 ```
-erdpy --verbose call erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy --pem="./examples/keys/alice.pem" --function="increment" --proxy="https://wallet-api.elrond.com"
+erdpy --verbose call erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy --pem="./examples/keys/alice.pem" --function="increment" --proxy="https://api.elrond.com"
 ```
 
 ### Issue regular transactions against the testnet
@@ -161,9 +161,9 @@ Prepare, then send transactions:
 ```
 erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="./examples/keys/alice.pem" --nonce=42 --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000
 
-erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy=https://wallet-api.elrond.com
+erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy=https://api.elrond.com
 
-erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000 --proxy=https://wallet-api.elrond.com
+erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000 --proxy=https://api.elrond.com
 
 ```
 
@@ -172,12 +172,12 @@ erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver
 Features: Stake, UnStake, UnBound, UnJail, ChangeRewardAddress
 
 ```
-erdpy --verbose stake-prepare ./myplayground --tag="foobar" --nonce=100 --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://wallet-api.elrond.com --reward-address="bech32address--is-optional"
-erdpy --verbose stake-prepare-and-send --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://wallet-api.elrond.com --reward-address="bech32address--is-optional"
-erdpy --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
-erdpy --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
-erdpy --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://wallet-api.elrond.com
-erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward-address="newbech32address" --proxy=https://wallet-api.elrond.com
+erdpy --verbose stake-prepare ./myplayground --tag="foobar" --nonce=100 --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://api.elrond.com --reward-address="bech32address--is-optional"
+erdpy --verbose stake-prepare-and-send --pem="./examples/keys/alice.pem" --number-of-nodes=1 --nodes-public-keys="blsKey1" --value="500000000000000000000000" --proxy=https://api.elrond.com --reward-address="bech32address--is-optional"
+erdpy --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
+erdpy --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
+erdpy --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
+erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward-address="newbech32address" --proxy=https://api.elrond.com
 ```
 
 ### Miscellaneous features
@@ -185,18 +185,18 @@ erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward
 Get information such as the number of shards, the gas price, the chain ID and so on:
 
 ```
-erdpy get-num-shards --proxy="https://wallet-api.elrond.com"
-erdpy get-gas-price --proxy="https://wallet-api.elrond.com"
-erdpy get-chain-id --proxy="https://wallet-api.elrond.com"
-erdpy get-last-block-nonce --shard-id="1" --proxy="https://wallet-api.elrond.com"
+erdpy get-num-shards --proxy="https://api.elrond.com"
+erdpy get-gas-price --proxy="https://api.elrond.com"
+erdpy get-chain-id --proxy="https://api.elrond.com"
+erdpy get-last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
 ```
 
 Get details about a specific account (address on the blockchain):
 
 ```
-erdpy get-account --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
-erdpy get-account --nonce --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
-erdpy get-account --balance --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://wallet-api.elrond.com"
+erdpy get-account --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
+erdpy get-account --nonce --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
+erdpy get-account --balance --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
 ```
 
 Get estimated costs for transactions, in gas units. Note that there are 3 types of transactions:
@@ -207,9 +207,9 @@ Get estimated costs for transactions, in gas units. Note that there are 3 types 
 
 
 ```
-erdpy cost transaction move-balance --data="foobar" --proxy="https://wallet-api.elrond.com"
-erdpy cost transaction sc-deploy --sc-path="./examples/hello" --proxy="https://wallet-api.elrond.com"
-erdpy cost transaction sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://wallet-api.elrond.com"
+erdpy cost transaction move-balance --data="foobar" --proxy="https://api.elrond.com"
+erdpy cost transaction sc-deploy --sc-path="./examples/hello" --proxy="https://api.elrond.com"
+erdpy cost transaction sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy" --function="increment" --proxy="https://api.elrond.com"
 ```
 
 ### Wallet features
