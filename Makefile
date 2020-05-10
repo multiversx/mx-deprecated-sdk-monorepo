@@ -49,6 +49,13 @@ test-cli-network:
 	python3 -m erdpy.cli network meta-nonce --proxy="https://api.elrond.com"
 	python3 -m erdpy.cli network meta-block --proxy="https://api.elrond.com"
 
+
+test-cli-blockatlas:
+	python3 -m erdpy.cli blockatlas --url="https://localhost:8420" --coin="elrond" current-block-number
+	python3 -m erdpy.cli blockatlas --url="https://localhost:8420" --coin="elrond" block-by-number --number=42
+	python3 -m erdpy.cli blockatlas --url="https://localhost:8420" --coin="elrond" transactions --address="alice" 
+
+
 test-cli-external-contracts:
 ifndef SANDBOX
 	$(error SANDBOX variable is undefined)
