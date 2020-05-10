@@ -21,7 +21,7 @@ arwendebug:
 	GO111MODULE=on GOPATH=$(shell pwd)/distribution/go go get github.com/ElrondNetwork/arwen-wasm-vm/cmd/arwendebug@a0e1bf5da9f57ffbc3596bc9631b0f18e7c34832
 	stat ./distribution/go/bin/arwendebug
 
-test-cli: test-cli-accounts
+test-cli: test-cli-accounts, test-cli-network
 	python3 -m erdpy.cli templates --json
 
 	python3 -m erdpy.cli wallet generate ./myaccount.pem
@@ -30,10 +30,6 @@ test-cli: test-cli-accounts
 
 	python3 -m erdpy.cli cost gas-price --proxy=https://api.elrond.com
 	python3 -m erdpy.cli cost transaction move-balance --data="foobar" --proxy="https://api.elrond.com"
-
-	python3 -m erdpy.cli network num-shards --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli network chain-id --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli network last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
 
 	python3 -m erdpy.cli --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
 	python3 -m erdpy.cli --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
@@ -46,6 +42,12 @@ test-cli-accounts:
 	python3 -m erdpy.cli account get --balance --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
 	python3 -m erdpy.cli account get-transactions --address="erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr" --proxy="https://api.elrond.com"
 
+test-cli-network:
+	#python3 -m erdpy.cli network num-shards --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network chain-id --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network meta-nonce --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network meta-block --proxy="https://api.elrond.com"
 
 test-cli-external-contracts:
 ifndef SANDBOX
