@@ -51,9 +51,9 @@ test-cli-network:
 
 
 test-cli-blockatlas:
-	python3 -m erdpy.cli blockatlas --url="https://localhost:8420" --coin="elrond" current-block-number
-	python3 -m erdpy.cli blockatlas --url="https://localhost:8420" --coin="elrond" block-by-number --number=42
-	python3 -m erdpy.cli blockatlas --url="https://localhost:8420" --coin="elrond" transactions --address="alice" 
+	python3 -m erdpy.cli blockatlas --url="http://localhost:8420" --coin="elrond" current-block-number
+	python3 -m erdpy.cli blockatlas --url="http://localhost:8420" --coin="elrond" block-by-number --number=42
+	python3 -m erdpy.cli blockatlas --url="http://localhost:8420" --coin="elrond" transactions --address="alice" 
 
 
 test-cli-external-contracts:
