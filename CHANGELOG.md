@@ -234,3 +234,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Serialization algorithm used for signing ("data as string")
 - Prettier CLI
+
+## [0.3.8]
+
+### Fixed
+
+- Long description for setup (temporary workaround).
