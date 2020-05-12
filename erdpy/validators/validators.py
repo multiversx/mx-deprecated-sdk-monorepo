@@ -52,6 +52,12 @@ def parse_args_for_changing_reward_address(args):
     return args
 
 
+def parse_args_for_claim(args):
+    args.data = 'claim'
+    args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
+    return args
+
+
 def parse_keys(bls_public_keys):
     keys = bls_public_keys.split(',')
     parsed_keys = ''
