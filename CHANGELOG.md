@@ -252,3 +252,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Fixed action of CLI / network.
+
+## [0.4.1]
+
