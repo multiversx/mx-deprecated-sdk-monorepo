@@ -240,3 +240,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Long description for setup (temporary workaround).
+
+## [0.3.9]
+
+### Fixed
+
+- Add `claim` function for validators
