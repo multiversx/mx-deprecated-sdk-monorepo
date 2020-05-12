@@ -246,3 +246,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Add `claim` function for validators
+
+## [0.4.0]
+
+### Fixed
+
+- Fixed action of CLI / network.
