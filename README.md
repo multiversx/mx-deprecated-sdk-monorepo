@@ -180,7 +180,7 @@ erdpy --verbose unstake --pem="./examples/keys/alice.pem" --nodes-public-keys="b
 erdpy --verbose unbond --pem="./examples/keys/alice.pem" --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
 erdpy --verbose unjail --pem="./examples/keys/alice.pem" --value=500000000000000000000 --nodes-public-keys="blsKey1" --proxy=https://api.elrond.com
 erdpy --verbose change-reward-address --pem="./examples/keys/alice.pem" --reward-address="newbech32address" --proxy=https://api.elrond.com
-erdpy --verbose claim --pem="./examples/keys/alice.pem" --claim-address="newbech32address" --proxy=https://api.elrond.com
+erdpy --verbose claim --pem="./examples/keys/alice.pem" --proxy=https://api.elrond.com
 ```
 
 ### Miscellaneous features
