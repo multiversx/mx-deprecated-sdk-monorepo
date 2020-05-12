@@ -44,10 +44,12 @@ test-cli-accounts:
 
 test-cli-network:
 	#python3 -m erdpy.cli network num-shards --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli network chain-id --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli network last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
+	#python3 -m erdpy.cli network chain-id --proxy="https://api.elrond.com"
+	#python3 -m erdpy.cli network last-block-nonce --shard-id="1" --proxy="https://api.elrond.com"
 	python3 -m erdpy.cli network meta-nonce --proxy="https://api.elrond.com"
-	python3 -m erdpy.cli network meta-block --proxy="https://api.elrond.com"
+	python3 -m erdpy.cli network meta-block --proxy="https://api.elrond.com" --nonce=1
+	#python3 -m erdpy.cli network meta-nonce --proxy="http://localhost:8001"
+	#python3 -m erdpy.cli network meta-block --proxy="http://localhost:8001" --nonce=1
 
 
 test-cli-blockatlas:
