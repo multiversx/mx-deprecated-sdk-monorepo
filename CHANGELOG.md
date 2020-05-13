@@ -227,3 +227,31 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Extra exported function for C builds
+
+## [0.3.7]
+
+### Fixed
+
+- Serialization algorithm used for signing ("data as string")
+- Prettier CLI
+
+## [0.3.8]
+
+### Fixed
+
+- Long description for setup (temporary workaround).
+
+## [0.3.9]
+
+### Fixed
+
+- Add `claim` function for validators
+
+## [0.4.0]
+
+### Fixed
+
+- Fixed action of CLI / network.
+
+## [0.4.1]
+

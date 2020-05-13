@@ -54,7 +54,6 @@ def setup_parser():
     build_parser.set_defaults(func=build)
 
     deploy_parser = subparsers.add_parser("deploy")
-    # TODO: path to project or path to bytecode (hex.arwen).
     deploy_parser.add_argument("project", nargs='?', default=os.getcwd())
     deploy_parser.add_argument("--proxy", required=True)
     deploy_parser.add_argument("--pem", required=True)
@@ -94,41 +93,6 @@ def setup_parser():
     query_parser.add_argument("--function", required=True)
     query_parser.add_argument("--arguments", nargs='+')
     query_parser.set_defaults(func=query)
-
-    get_account_parser = subparsers.add_parser("get-account")
-    get_account_parser.add_argument("--proxy", required=True)
-    get_account_parser.add_argument("--address", required=True)
-    get_account_parser.add_argument("--balance", required=False, nargs='?', const=True, default=False)
-    get_account_parser.add_argument("--nonce", required=False, nargs='?', const=True, default=False)
-    get_account_parser.set_defaults(func=get_account)
-
-    get_num_shard_parser = subparsers.add_parser("get-num-shards")
-    get_num_shard_parser.add_argument("--proxy", required=True)
-    get_num_shard_parser.set_defaults(func=get_num_shards)
-
-    get_last_block_nonce_parser = subparsers.add_parser("get-last-block-nonce")
-    get_last_block_nonce_parser.add_argument("--proxy", required=True)
-    get_last_block_nonce_parser.add_argument("--shard-id", required=True)
-    get_last_block_nonce_parser.set_defaults(func=get_last_block_nonce)
-
-    get_gas_price_parser = subparsers.add_parser("get-gas-price")
-    get_gas_price_parser.add_argument("--proxy", required=True)
-    get_gas_price_parser.set_defaults(func=get_gas_price)
-
-    get_chain_id_parser = subparsers.add_parser("get-chain-id")
-    get_chain_id_parser.add_argument("--proxy", required=True)
-    get_chain_id_parser.set_defaults(func=get_chain_id)
-
-    get_transaction_cost_parser = subparsers.add_parser("get-transaction-cost")
-    tx_types = [proxy.TxTypes.SC_CALL, proxy.TxTypes.MOVE_BALANCE, proxy.TxTypes.SC_DEPLOY]
-    get_transaction_cost_parser.add_argument("tx_type", choices=tx_types)
-    get_transaction_cost_parser.add_argument("--proxy", required=True)
-    get_transaction_cost_parser.add_argument("--data", required=False)
-    get_transaction_cost_parser.add_argument("--sc-address", required=False)
-    get_transaction_cost_parser.add_argument("--sc-path", required=False)
-    get_transaction_cost_parser.add_argument("--function", required=False)
-    get_transaction_cost_parser.add_argument("--arguments", nargs='+', required=False)
-    get_transaction_cost_parser.set_defaults(func=get_transaction_cost)
 
     node_parser = subparsers.add_parser("nodedebug")
     group = node_parser.add_mutually_exclusive_group()
@@ -173,10 +137,31 @@ def setup_parser():
     tx_prepare_and_send_parser.add_argument("--proxy", required=True)
     tx_prepare_and_send_parser.set_defaults(func=tx_prepare_and_send)
 
+    setup_parser_accounts(subparsers)
     setup_parser_validators(subparsers)
     setup_parser_wallet(subparsers)
+    setup_parser_cost(subparsers)
+    setup_parser_network(subparsers)
+    setup_parser_blockatlas(subparsers)
 
     return parser
+
+
+def setup_parser_accounts(subparsers):
+    accounts_parser = subparsers.add_parser("account")
+    accounts_subparsers = accounts_parser.add_subparsers()
+
+    get = accounts_subparsers.add_parser("get")
+    get.add_argument("--proxy", required=True)
+    get.add_argument("--address", required=True)
+    get.add_argument("--balance", required=False, nargs='?', const=True, default=False)
+    get.add_argument("--nonce", required=False, nargs='?', const=True, default=False)
+    get.set_defaults(func=get_account)
+
+    get_transactions = accounts_subparsers.add_parser("get-transactions")
+    get_transactions.add_argument("--proxy", required=True)
+    get_transactions.add_argument("--address", required=True)
+    get_transactions.set_defaults(func=get_account_transactions)
 
 
 def setup_parser_validators(subparsers):
@@ -245,6 +230,14 @@ def setup_parser_validators(subparsers):
     change_reward_address_parser.add_argument("--proxy", required=True)
     change_reward_address_parser.set_defaults(func=change_reward_address)
 
+    claim_parser = subparsers.add_parser("claim")
+    claim_parser.add_argument("--value", default="0")
+    claim_parser.add_argument("--pem", required=True)
+    claim_parser.add_argument("--gas-price", default=config.DEFAULT_GASPRICE)
+    claim_parser.add_argument("--gas-limit", default=config.DEFAULT_GASLIMIT)
+    claim_parser.add_argument("--proxy", required=True)
+    claim_parser.set_defaults(func=do_claim)
+
 
 def setup_parser_wallet(subparsers):
     wallet_parser = subparsers.add_parser("wallet")
@@ -260,6 +253,72 @@ def setup_parser_wallet(subparsers):
     group.add_argument("--encode", action="store_true")
     group.add_argument("--decode", action="store_true")
     bech32_parser.set_defaults(func=do_bech32)
+
+
+def setup_parser_cost(subparsers):
+    cost_parser = subparsers.add_parser("cost")
+    cost_subparsers = cost_parser.add_subparsers()
+
+    get_gas_price_parser = cost_subparsers.add_parser("gas-price")
+    get_gas_price_parser.add_argument("--proxy", required=True)
+    get_gas_price_parser.set_defaults(func=get_gas_price)
+
+    get_transaction_cost_parser = cost_subparsers.add_parser("transaction")
+    tx_types = [proxy.TxTypes.SC_CALL, proxy.TxTypes.MOVE_BALANCE, proxy.TxTypes.SC_DEPLOY]
+    get_transaction_cost_parser.add_argument("tx_type", choices=tx_types)
+    get_transaction_cost_parser.add_argument("--proxy", required=True)
+    get_transaction_cost_parser.add_argument("--data", required=False)
+    get_transaction_cost_parser.add_argument("--sc-address", required=False)
+    get_transaction_cost_parser.add_argument("--sc-path", required=False)
+    get_transaction_cost_parser.add_argument("--function", required=False)
+    get_transaction_cost_parser.add_argument("--arguments", nargs='+', required=False)
+    get_transaction_cost_parser.set_defaults(func=get_transaction_cost)
+
+
+def setup_parser_network(subparsers):
+    network_parser = subparsers.add_parser("network")
+    network_subparsers = network_parser.add_subparsers()
+
+    subparser = network_subparsers.add_parser("num-shards")
+    subparser.add_argument("--proxy", required=True)
+    subparser.set_defaults(func=get_num_shards)
+
+    subparser = network_subparsers.add_parser("last-block-nonce")
+    subparser.add_argument("--proxy", required=True)
+    subparser.add_argument("--shard-id", required=True)
+    subparser.set_defaults(func=get_last_block_nonce)
+
+    subparser = network_subparsers.add_parser("chain-id")
+    subparser.add_argument("--proxy", required=True)
+    subparser.set_defaults(func=get_chain_id)
+
+    subparser = network_subparsers.add_parser("meta-nonce")
+    subparser.add_argument("--proxy", required=True)
+    subparser.set_defaults(func=get_meta_nonce)
+
+    subparser = network_subparsers.add_parser("meta-block")
+    subparser.add_argument("--proxy", required=True)
+    subparser.add_argument("--nonce", required=True, type=int)
+    subparser.set_defaults(func=get_meta_block)
+
+
+def setup_parser_blockatlas(subparsers):
+    parser = subparsers.add_parser("blockatlas")
+    subparsers = parser.add_subparsers()
+
+    parser.add_argument("--url", required=True)
+    parser.add_argument("--coin", required=True)
+
+    sub = subparsers.add_parser("current-block-number")
+    sub.set_defaults(func=facade.blockatlas_get_current_block_number)
+
+    sub = subparsers.add_parser("block-by-number")
+    sub.add_argument("--number", required=True)
+    sub.set_defaults(func=facade.blockatlas_get_block_by_number)
+
+    sub = subparsers.add_parser("transactions")
+    sub.add_argument("--address", required=True)
+    sub.set_defaults(func=facade.blockatlas_get_txs_by_address)
 
 
 def install(args):
@@ -308,15 +367,16 @@ def query(args):
 
 
 def get_account(args):
-    proxy_url = args.proxy
-    address = args.address
-
     if args.balance:
-        facade.get_account_balance(proxy_url, address)
+        facade.get_account_balance(args)
     elif args.nonce:
-        facade.get_account_nonce(proxy_url, address)
+        facade.get_account_nonce(args)
     else:
-        facade.get_account(proxy_url, address)
+        facade.get_account(args)
+
+
+def get_account_transactions(args):
+    facade.get_account_transactions(args)
 
 
 def get_transaction_cost(args):
@@ -324,24 +384,27 @@ def get_transaction_cost(args):
 
 
 def get_num_shards(args):
-    proxy_url = args.proxy
-    facade.get_num_shards(proxy_url)
+    facade.get_num_shards(args)
 
 
 def get_last_block_nonce(args):
-    proxy_url = args.proxy
-    shard_id = args.shard_id
-    facade.get_last_block_nonce(proxy_url, shard_id)
+    facade.get_last_block_nonce(args)
 
 
 def get_gas_price(args):
-    proxy_url = args.proxy
-    facade.get_gas_price(proxy_url)
+    facade.get_gas_price(args)
 
 
 def get_chain_id(args):
-    proxy_url = args.proxy
-    facade.get_chain_id(proxy_url)
+    facade.get_chain_id(args)
+
+
+def get_meta_nonce(args):
+    facade.get_meta_nonce(args)
+
+
+def get_meta_block(args):
+    facade.get_meta_block(args)
 
 
 def do_nodedebug(args):
@@ -412,6 +475,10 @@ def do_un_jail(args):
 
 def change_reward_address(args):
     facade.prepare_and_send_change_reward_address_transaction(args)
+
+
+def do_claim(args):
+    facade.prepare_and_send_claim_transaction(args)
 
 
 if __name__ == "__main__":

@@ -29,12 +29,16 @@ class ElrondProxy:
         response = do_get(url)
         return response
 
+    def get_account_transactions(self, address):
+        url = f"{self.url}/address/{address.bech32()}/transactions"
+        response = do_get(url)
+        return response
+
     def get_num_shards(self):
-        metrics = self._get_status_metrics(METACHAIN_ID)
-        metric = metrics["erd_metric_cross_check_block_height"]
-        # + 1 for metachain
-        num_shards = metric.count(":") + 1
-        return num_shards
+        url = f"{self.url}/network/config"
+        response = do_get(url)
+        num_shards_without_meta = response["message"]["config"]["erd_num_shards_without_meta"] or 0
+        return num_shards_without_meta + 1
 
     def get_last_block_nonce(self, shard_id):
         if shard_id == "metachain":
@@ -43,6 +47,18 @@ class ElrondProxy:
             metrics = self._get_status_metrics(shard_id)
 
         nonce = metrics["erd_probable_highest_nonce"]
+        return nonce
+
+    def get_meta_nonce(self):
+        url = f"{self.url}/block/meta-nonce"
+        response = do_get(url)
+        nonce = response["nonce"]
+        return nonce
+
+    def get_meta_block(self, nonce):
+        url = f"{self.url}/block/meta/{nonce}"
+        response = do_get(url)
+        nonce = response["block"]
         return nonce
 
     def get_gas_price(self):
