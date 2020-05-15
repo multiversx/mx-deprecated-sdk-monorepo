@@ -255,3 +255,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [0.4.1]
 
+## [0.4.2]
+
+### Fixed
+
+- Fixed passing arguments for stake.
+
