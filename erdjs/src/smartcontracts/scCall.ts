@@ -4,11 +4,11 @@ import { Signer, Signable, Provider } from "../providers/interface";
 import { Transaction } from "../data/transaction";
 
 export class SmartContractCall extends Transaction {
-    private functionName: string = "";
-    private arguments: string[] = [];
+    protected functionName: string = "";
+    protected arguments: string[] = [];
 
-    constructor(data: any) {
-        super(data);
+    constructor() {
+        super(null);
         this.arguments = [];
     }
 

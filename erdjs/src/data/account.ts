@@ -181,4 +181,12 @@ export class Address {
 
         this.buffer = addressBytes;
     }
+
+    public fromBytes(bytes: Buffer) {
+        if (bytes.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        this.buffer = bytes;
+    }
 }

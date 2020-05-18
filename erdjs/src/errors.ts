@@ -21,3 +21,5 @@ export var ErrUserAccountNotSet = new Error("user account not set");
 export var ErrSCAddressNotSet = new Error("smart contract address not set");
 export var ErrGasPriceNotSet = new Error("gas price not set");
 export var ErrGasLimitNotSet = new Error("gas limit not set");
+export var ErrInvalidVMType = new Error("invalid vm type");
+export var ErrInvalidSmartContractCode = new Error("invalid smart contract code");

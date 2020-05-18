@@ -150,9 +150,6 @@ export class Transaction implements Signable {
 
     public serializeForSigning(): Buffer {
         let tx = this.getPlain();
-        if (this.data != "") {
-            tx.data = Buffer.from(this.data).toString('base64');
-        }
 
         let serializedTx = JSON.stringify(tx);
         return Buffer.from(serializedTx);

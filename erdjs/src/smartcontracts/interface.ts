@@ -6,6 +6,7 @@ export interface SmartContract {
     setProvider(provider: Provider | null): void;
     setGasPrice(gasPrice: number): void;
     setGasLimit(gasLimit: number): void;
+    getAddress(): string;
 }
 
 export interface ERC20Client extends SmartContract {

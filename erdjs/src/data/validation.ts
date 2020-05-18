@@ -6,6 +6,7 @@ export const SEED_STRING_LENGTH = 64;
 export const SEED_LENGTH = 32;
 export const CODE_HASH_LENGTH = HASH_LENGTH;
 export const ADDRESS_PREFIX = "erd";
+export const VMTYPES = ["0500"];
 
 export function Address(address: string): string {
     if (address.length != ADDRESS_LENGTH) {
@@ -131,6 +132,27 @@ export function Seed(key: string): Buffer {
     let keyBytes = Buffer.from(key, 'hex');
     let seedBytes = keyBytes.slice(0, SEED_LENGTH);
     return seedBytes;
+}
+
+export function VMType(vmType: string): string {
+    if (VMTYPES.indexOf(vmType) < 0) {
+        throw errors.ErrInvalidVMType;
+    }
+    return vmType;
+}
+
+export function SCCode(code: string): string {
+    if (code.length == 0) {
+        throw errors.ErrInvalidSmartContractCode;
+    }
+    return code;
+}
+
+export function SCCodeMetadata(metadata: string): string {
+    if (metadata.length == 0) {
+        throw errors.ErrInvalidSmartContractCode;
+    }
+    return metadata;
 }
 
 function makeCodeHash(code: string) {

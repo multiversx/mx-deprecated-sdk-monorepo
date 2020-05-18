@@ -4,8 +4,12 @@ import { Transaction, TransactionWatcher } from "./data/transaction";
 import { Provider } from "./providers/interface";
 import { ElrondProxy } from "./providers/elrondproxy";
 import { SmartContractCall } from "./smartcontracts/scCall";
+import { SmartContractDeploy } from "./smartcontracts/scDeploy";
 import { ElrondERC20Client } from "./smartcontracts/elrondERC20client";
 import * as fs from "fs";
+import { SmartContractBase } from "./smartcontracts/smartcontract";
+
+import keccak from "keccak";
 
 var ErrTestError1 = new Error("test error 1");
 var ErrTestError2 = new Error("test error 1");
@@ -35,6 +39,11 @@ describe("Preliminary try-out code", async () => {
         };
         assert.throws(testfunc, SyntaxError);
     });
+
+    it("should make keccak hashing work", () => {
+        let hash = keccak('keccak256').update("albatrosses").digest();
+        assert.equal(32, hash.length);
+    });
 });
 
 describe("SmartContractCalls", () => {
@@ -53,10 +62,39 @@ describe("SmartContractCalls", () => {
         const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
         receiver.setKeysFromRawData(txgen.accounts[2]);
 
-        let scCall = new SmartContractCall(null);
+        let scCall = new SmartContractCall();
         scCall.setFunctionName("transferToken");
         scCall.addRawArgument(sender.getAddressObject().hex());
         scCall.addBigIntArgument(BigInt(1024));
+    });
+});
+
+describe("SmartContractDeployment", () => {
+    it.only("should deploy a SC", async () => {
+        let txgen = getTxGenConfiguration();
+        assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
+
+        const proxy: Provider = new ElrondProxy({
+            url: "http://zirconium:7950",
+            timeout: 1000
+        });
+
+        const user = await proxy.getAccount(txgen.accounts[1].pubKey);
+        user.setKeysFromRawData(txgen.accounts[1]);
+
+        let codeFilename = "/var/work/Elrond/erdpy/demo-dapps/erc20/smartcontract/erc20.wasm";
+        let code = fs.readFileSync(codeFilename).toString('hex');
+
+        let deployment = new SmartContractDeploy();
+        deployment.setCode(code);
+        deployment.addBigIntArgument(BigInt(512));
+
+        let smartContract = new SmartContractBase(proxy, null, user);
+        smartContract.enableSigning(true);
+        smartContract.setGasPrice(100000000000000);
+        smartContract.setGasLimit(7e8);
+        await smartContract.performDeployment(deployment);
+        console.log(smartContract.getAddress());
     });
 });
 
@@ -184,7 +222,7 @@ describe("Proxy", () => {
 
         let minter = new Address(txgen.mintingAddress);
         let minterNonce = await proxy.getNonce(minter.toString());
-        assert.deepStrictEqual(minterNonce, 2 * nAccounts + 1);
+        assert.deepStrictEqual(minterNonce, 2 * nAccounts + 2);
     });
 
     it("should retrieve VM values", async () => {

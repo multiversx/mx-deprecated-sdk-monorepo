@@ -12,8 +12,8 @@ import { SmartContractCall } from "erdjs";
 
 
 const Proxy = new erdjs.ElrondProxy({
-    url: "http://zirconium:7950",
-    timeout: 2000
+    url: "https://api.elrond.com",
+    timeout: 4000
 });
 
 const UserAccount = new erdjs.Account(Proxy, null);
@@ -27,18 +27,22 @@ export function CreateWalletURL(call: erdjs.SmartContractCall): string {
     }
 
     let plainCall: any = call.getPlain();
-    var url = "http://zirconium:35931/static";
+    var url = "https://wallet.elrond.com/hook";
     url += "?sender=" + plainCall.sender;
     url += "&receiver=" + ERC20Address.toString();
     url += "&value=" + plainCall.value;
     url += "&gasLimit=" + plainCall.gasLimit.toString();
     url += "&data=" + plainCall.data;
-    url += "&callbackUrl=" + "http://zirconium:5000/static?sender=" + plainCall.sender;
+
+    let callbackUrl = ("https://dapps.elrond.com/index.html?sender=" + plainCall.sender);
+    console.log(callbackUrl);
+    url += "&callbackUrl=" + callbackUrl;
     return url;
 }
 
 
 export function SetERC20Address(address: string) {
+    console.log('ERC20 address:', address);
     ERC20Address = new erdjs.Address(address);
 }
 
@@ -54,7 +58,7 @@ export async function UpdateUserAccount(): Promise<any> {
     }
 
     await UserAccount.update();
-    ERC20SmartContract = new erdjs.ElrondERC20Client(Proxy, ERC20Address, UserAccount);
+    ERC20SmartContract = new erdjs.BasicERC20Client(Proxy, ERC20Address, UserAccount);
 
     return GetUserAccountInfo();
 }
@@ -95,8 +99,8 @@ export function CreateERC20Transfer(receiver: string, amount: bigint): Promise<S
     }
 
     var receiverAsHex = (new erdjs.Address(receiver)).hex();
-    ERC20SmartContract.setGasPrice(100000000000000);
-    ERC20SmartContract.setGasLimit(7e6);
+    ERC20SmartContract.setGasPrice(200000000000);
+    ERC20SmartContract.setGasLimit(1000000000);
     ERC20SmartContract.setProvider(null);
     return ERC20SmartContract.transfer(receiverAsHex, amount).finally(() => {
         if (ERC20SmartContract == null) {

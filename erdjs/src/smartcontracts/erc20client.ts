@@ -63,7 +63,7 @@ export class BasicERC20Client extends SmartContractBase implements ERC20Client {
     }
 
     public async transfer(receiver: string, value: bigint): Promise<SmartContractCall> {
-        let call = new SmartContractCall(null);
+        let call = new SmartContractCall();
         call.setFunctionName(this.functionName_transfer);
         call.addRawArgument(receiver);
         call.addBigIntArgument(value);

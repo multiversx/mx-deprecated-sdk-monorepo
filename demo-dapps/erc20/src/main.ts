@@ -98,9 +98,10 @@ function updateTransactionFromUrl() {
         return null;
     }
     let txHash = url.searchParams.get('txHash');
-    let nonce = Number(url.searchParams.get('nonce'));
+    let nonce = Number(url.searchParams.get('nonce')) - 1;
     let success = url.searchParams.get('success');
     
+    console.log('nonce', nonce);
     let transaction = erc20.retrieveTransaction(nonce);
     transaction.hash = txHash;
     erc20.persistTransaction(transaction);
@@ -198,7 +199,7 @@ async function getERC20Address(): Promise<string> {
             'dataType': 'text',
             'cache': false,
             'success': function(scAddress: string) {
-                resolve(scAddress);
+                resolve(scAddress.replace(/^\s+|\s+$/g, ''));
             },
             'error': function(request: any, text: string, err: any) {
                 console.log(request);

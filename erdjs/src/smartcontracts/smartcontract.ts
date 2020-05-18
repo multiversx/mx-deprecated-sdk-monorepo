@@ -1,10 +1,12 @@
-import { Provider } from "../providers/interface";
-import { Account, Address, AccountSigner } from "../data/account";
-import { SmartContractCall } from "./scCall";
-import * as valid from "../data/validation";
+import keccak from "keccak";
 import * as errors from "../errors";
-import { TransactionWatcher } from "../data/transaction";
+import * as valid from "../data/validation";
+import { Account, Address, AccountSigner } from "../data/account";
+import { Provider } from "../providers/interface";
 import { SmartContract } from "./interface";
+import { SmartContractCall } from "./scCall";
+import { SmartContractDeploy } from "./scDeploy";
+import { TransactionWatcher } from "../data/transaction";
 
 export class SmartContractBase implements SmartContract {
     protected provider: Provider | null = null;
@@ -19,7 +21,7 @@ export class SmartContractBase implements SmartContract {
 
     protected signingEnabled: boolean = false;
 
-    constructor(provider: Provider | null, scAddress: Address, user: Account) {
+    constructor(provider: Provider | null, scAddress: Address | null, user: Account) {
         this.provider = provider;
         this.scAddress = scAddress;
         this.user = user;
@@ -39,6 +41,116 @@ export class SmartContractBase implements SmartContract {
 
     public setGasLimit(gasLimit: number) {
         this.gasLimit = valid.GasLimit(gasLimit);
+    }
+
+    public getAddress(): string {
+        if (this.scAddress == null) {
+            throw errors.ErrSCAddressNotSet;
+        }
+        return this.scAddress.toString();
+    }
+
+    public async performDeployment(deployment: SmartContractDeploy): Promise<SmartContractDeploy> {
+        this.prepareDeployment(deployment);
+
+        if (this.provider != null) {
+            try {
+                let txHash = await this.provider.sendTransaction(deployment);
+                deployment.setTxHash(txHash);
+
+                let watcher = new TransactionWatcher(txHash, this.provider);
+                await watcher.awaitExecuted(
+                    this.callStatusQueryPeriod,
+                    this.callStatusQueryTimeout
+                );
+                deployment.setStatus("executed");
+                this.scAddress = this.computeAddress(deployment);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.cleanup();
+            }
+        }
+
+        return deployment;
+    }
+
+    protected computeAddress(deployment: SmartContractDeploy): Address {
+        if (this.user == null) {
+            throw errors.ErrUserAccountNotSet;
+        }
+
+        let initialPadding = Buffer.alloc(8, 0);
+        let ownerAddressBytes = this.user.getAddressObject().bytes();
+        let shardSelector = ownerAddressBytes.slice(30);
+        let ownerNonceBytes = Buffer.alloc(8);
+        ownerNonceBytes.writeBigUInt64LE(BigInt(this.user.getNonce()));
+        let bytesToHash = Buffer.concat([ownerAddressBytes, ownerNonceBytes]);
+        let hash = keccak('keccak256').update(bytesToHash).digest();
+        let vmTypeBytes = Buffer.from(deployment.getVMType(), 'hex');
+
+        let addressBytes = Buffer.concat([
+            initialPadding,
+            vmTypeBytes,
+            hash.slice(10, 30),
+            shardSelector
+        ]);
+
+        let address= new Address("");
+        address.fromBytes(addressBytes);
+        return address;
+    }
+
+    public async performCall(call: SmartContractCall): Promise<SmartContractCall> {
+        this.prepareCall(call);
+
+        if (this.provider != null) {
+            try {
+                let txHash = await this.provider.sendTransaction(call);
+                call.setTxHash(txHash);
+
+                let watcher = new TransactionWatcher(txHash, this.provider);
+                await watcher.awaitExecuted(
+                    this.callStatusQueryPeriod,
+                    this.callStatusQueryTimeout
+                );
+                call.setStatus("executed");
+                // TODO return smart contract results
+            } catch (err) {
+                console.error(err);
+            } finally {
+                this.cleanup();
+            }
+        }
+
+        return call;
+    }
+
+    public prepareDeployment(deployment: SmartContractDeploy) {
+        if (this.user == null) {
+            throw errors.ErrUserAccountNotSet;
+        }
+        if (this.gasPrice == null) {
+            throw errors.ErrGasPriceNotSet;
+        }
+        if (this.gasLimit == null) {
+            throw errors.ErrGasLimitNotSet;
+        }
+
+        let deploymentAddress = new Address("");
+        deploymentAddress.fromBytes(Buffer.alloc(32, 0));
+
+        deployment.setNonce(this.user.getNonce());
+        deployment.setSender(this.user.getAddress());
+        deployment.setReceiver(deploymentAddress.toString());
+        deployment.setGasLimit(this.gasLimit);
+        deployment.setGasPrice(this.gasPrice);
+        deployment.prepareData();
+
+        if (this.signingEnabled) {
+            let signer = new AccountSigner(this.user);
+            signer.sign(deployment);
+        }
     }
 
     public prepareCall(call: SmartContractCall) {
@@ -68,33 +180,7 @@ export class SmartContractBase implements SmartContract {
         }
     }
 
-    public async performCall(call: SmartContractCall): Promise<SmartContractCall> {
-        this.prepareCall(call);
-
-        if (this.provider != null) {
-            try {
-                // TODO replace this with external sending
-                let txHash = await this.provider.sendTransaction(call);
-                call.setTxHash(txHash);
-
-                let watcher = new TransactionWatcher(txHash, this.provider);
-                await watcher.awaitExecuted(
-                    this.callStatusQueryPeriod,
-                    this.callStatusQueryTimeout
-                );
-                call.setStatus("executed");
-                // TODO return smart contract results
-            } catch (err) {
-                console.error(err);
-            } finally {
-                this.cleanupCall();
-            }
-        }
-
-        return call;
-    }
-
-    public cleanupCall() {
+    public cleanup() {
         this.gasPrice = null;
         this.gasLimit = null;
     }
