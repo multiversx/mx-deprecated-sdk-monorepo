@@ -11,6 +11,8 @@ import { SmartContractBase } from "./smartcontracts/smartcontract";
 
 import keccak from "keccak";
 
+var DEFAULT_PROXY_ADDRESS = "http://localhost:7950";
+
 var ErrTestError1 = new Error("test error 1");
 var ErrTestError2 = new Error("test error 1");
 
@@ -52,7 +54,7 @@ describe("SmartContractCalls", () => {
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 
@@ -75,7 +77,7 @@ describe("SmartContractDeployment", () => {
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 
@@ -104,7 +106,7 @@ describe("ERC20 client", () => {
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 
@@ -130,7 +132,7 @@ describe("ERC20 client", () => {
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 
@@ -213,7 +215,7 @@ describe("ERC20 client", () => {
 describe("Proxy", () => {
     it("should retrieve nonce of account", async () => {
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 
@@ -227,7 +229,7 @@ describe("Proxy", () => {
 
     it("should retrieve VM values", async () => {
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 
@@ -241,7 +243,7 @@ describe("Proxy", () => {
 
     it("should transfer some ERD between accounts", async () => {
         const proxy: Provider = new ElrondProxy({
-            url: "http://zirconium:7950",
+            url: DEFAULT_PROXY_ADDRESS,
             timeout: 1000
         });
 

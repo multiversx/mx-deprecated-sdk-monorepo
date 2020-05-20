@@ -13,8 +13,9 @@ const erdjs = require("erdjs");
 var Accounts = null;
 var ERC20Address = "";
 var CallbackURL = "";
+var DEFAULT_PROXY_ADDRESS = "http://localhost:7950";
 const Proxy = new erdjs.ElrondProxy({
-    url: "http://zirconium:7950",
+    url: DEFAULT_PROXY_ADDRESS,
     timeout: 1000
 });
 $(document).ready(() => __awaiter(void 0, void 0, void 0, function* () {

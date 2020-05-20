@@ -8,8 +8,10 @@ var ERC20Address: string = "";
 
 var CallbackURL: string = "";
 
+var DEFAULT_PROXY_ADDRESS =  "http://localhost:7950"
+
 const Proxy = new erdjs.ElrondProxy({
-    url: "http://zirconium:7950",
+    url: DEFAULT_PROXY_ADDRESS,
     timeout: 1000
 });
 
