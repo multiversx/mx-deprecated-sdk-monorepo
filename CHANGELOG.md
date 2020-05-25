@@ -266,3 +266,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Features
 
 - First implementation of the transactions dispatcher.
+
+## [0.4.4]
+
+### Features
+
+- Fix packaging.
