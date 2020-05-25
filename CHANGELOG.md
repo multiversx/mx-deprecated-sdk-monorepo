@@ -261,3 +261,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Fixed passing arguments for stake.
 
+## [0.4.3]
+
+### Features
+
+- First implementation of the transactions dispatcher.
