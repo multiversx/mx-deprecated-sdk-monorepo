@@ -1,10 +1,10 @@
 clean:
 	rm -rf ./dist
 
-build: clean
+build-erdpy: clean
 	python3 setup.py sdist
 
-publish: build
+publish-erdpy: build
 	twine upload dist/*
 
 test-short:
