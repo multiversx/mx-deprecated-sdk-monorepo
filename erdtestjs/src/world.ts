@@ -1,6 +1,7 @@
 import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse, RunResponse, QueryResponse } from "./arwen";
 import { ArwenCLI } from "./arwenCli";
 import { getToolsSubfolder } from "./workstation";
+import { Address } from "@elrondnetwork/erdjs"
 
 export class World {
     private uniqueName: string;
@@ -71,7 +72,7 @@ export class World {
 
     async createAccount(
         { address, balance, nonce }
-            : { address: string, balance?: string, nonce?: number })
+            : { address: Address, balance?: string, nonce?: number })
         : Promise<CreateAccountResponse> {
         return await this.provider.createAccount({
             databasePath: this.databasePath,

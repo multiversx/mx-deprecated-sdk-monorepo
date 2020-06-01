@@ -1,3 +1,5 @@
+import { Address } from "@elrondnetwork/erdjs"
+
 export interface ArwenDebugProvider {
     deployContract(request: DeployRequest): Promise<DeployResponse>;
     upgradeContract(request: UpgradeRequest): Promise<UpgradeResponse>;
@@ -75,7 +77,7 @@ export class QueryResponse extends ContractResponseBase {
 }
 
 export class CreateAccountRequest extends RequestBase {
-    address: string = "";
+    address: Address = new Address("");
     balance: string = "";
     nonce: number = 0;
 }
