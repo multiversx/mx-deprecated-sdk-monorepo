@@ -1,6 +1,6 @@
 {
   "name": "@elrondnetwork/erdjs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Smart Contracts interaction framework",
   "main": "out/index.js",
   "types": "out/index.d.js",
@@ -19,6 +19,7 @@
     "@types/keccak": "^3.0.1",
     "abort-controller": "^3.0.0",
     "axios": "^0.19.2",
+    "bech32": "^1.1.4",
     "keccak": "^3.0.0",
     "tweetnacl": "^1.0.3",
     "underscore": "^1.10.2"
@@ -30,7 +31,6 @@
     "@types/node": "^13.13.2",
     "@types/underscore": "^1.9.4",
     "assert": "^2.0.0",
-    "bech32": "^1.1.4",
     "chai": "^4.2.0",
     "mocha": "^7.1.1",
     "ts-node": "^8.8.2",
