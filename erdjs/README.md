@@ -7,7 +7,7 @@ sudo npm install --global browserify
 sudo npm install --global http-server
 
 npm install
-npm run compile-node
+npm run compile
 npm run compile-browser
 npm test
 ```

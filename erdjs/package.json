@@ -9,9 +9,10 @@
   ],
   "scripts": {
     "test": "mocha --timeout 80000",
-    "compile-browser": "tsc -p tsconfig.browser.json && browserify out-browser/index.js -o out-browser/erdjs.js --standalone erdjs",
-    "compile": "tsc -p ./",
-    "pretest": "npm run compile"
+    "compile-browser": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.js --standalone erdjs",
+    "compile": "tsc -p tsconfig.json",
+    "pretest": "npm run compile",
+    "prepublish": "npm run compile-browser"
   },
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",

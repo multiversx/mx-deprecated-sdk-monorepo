@@ -1,11 +1,10 @@
 {
     "compilerOptions": {
         "module": "CommonJS",
-        "moduleResolution": "Node",
-        "target": "es6",
+        "target": "ES2015",
         "outDir": "out",
         "lib": [
-            "es6",
+            "ES2015",
             "DOM"
         ],
         "sourceMap": true,
@@ -17,10 +16,16 @@
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
         "noUnusedParameters": true,
-        "declaration": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "declaration": true
     },
     "include": [
         "src/**/*"
+    ],
+    "exclude": [
+		"node_modules",
+        "out",
+        "out-browser",
+		"**/*.spec.ts"
     ]
 }

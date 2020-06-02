@@ -15,7 +15,7 @@
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
   "dependencies": {
-    "@elrondnetwork/erdjs": "^1.0.1",
+    "@elrondnetwork/erdjs": "file:../erdjs",
     "underscore": "^1.10.2"
   },
   "devDependencies": {
