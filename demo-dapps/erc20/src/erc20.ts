@@ -7,8 +7,8 @@ https://wallet.elrond.com/hook
     &callbackUrl=https://elrond.com/
 */
 
-import * as erdjs from "erdjs";
-import { SmartContractCall } from "erdjs";
+import * as erdjs from "@elrondnetwork/erdjs";
+import { SmartContractCall } from "@elrondnetwork/erdjs";
 
 
 const Proxy = new erdjs.ElrondProxy({
