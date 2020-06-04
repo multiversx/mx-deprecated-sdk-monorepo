@@ -1,0 +1,6 @@
+@baseUrl = https://api.elrond.com
+
+###
+
+// Get heartbeat status
+GET {{baseUrl}}/node/heartbeatstatus HTTP/1.1
