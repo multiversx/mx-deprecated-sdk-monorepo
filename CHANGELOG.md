@@ -272,3 +272,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Features
 
 - Fix packaging.
+
+
+## [0.4.5]
+
+### Features
+
+- Fix gas estimators for staking.
+- Add mnemonic to PEM converter.
