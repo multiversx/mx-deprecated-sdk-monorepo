@@ -1,5 +1,5 @@
 @baseUrl = https://api.elrond.com
-@alice = erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz
+@exampleTx = fa8195bae93d4609a6fc5972a7a6176feece39a6c4821acae2276701aee12fb0
 
 
 // Send transaction
@@ -18,3 +18,53 @@ Content-Type: application/json
 }
 
 ###
+
+// Send multiple transactions
+POST {{baseUrl}}/transaction/send-multiple HTTP/1.1
+Content-Type: application/json
+
+[
+    {
+        "nonce": 0,
+        "value": "100000",
+        "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
+        "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
+        "gasPrice": 200000000000,
+        "gasLimit": 50000000,
+        "data": "",
+        "signature": "730adffa16af2c8e7e4b80235ca0c337faa27e08571ba64792b25173966d9d29ce5d0b34a826cf8ca3f0ea76a08e8cff448ab1174c19a3247fb703ac0d1a6003"
+    },
+    {
+        "nonce": 1,
+        "value": "200000",
+        "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
+        "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
+        "gasPrice": 200000000000,
+        "gasLimit": 50000000,
+        "data": "",
+        "signature": "5dad7b04678092cb9a6f592a87ca4c5bf3d92fbbc8452dfa10ebbcf789f389b0fb4a1a9d698d07d93cb298e7ed3c99382d95a1afe4b1dbc6421b718a2da8cb0b"
+    }
+]
+
+###
+
+// Estimate cost of transaction
+POST {{baseUrl}}/transaction/cost HTTP/1.1
+Content-Type: application/json
+
+{
+    "value": "100000",
+    "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
+    "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
+    "data": "this is an example"
+}
+
+###
+
+// Get transaction
+GET {{baseUrl}}/transaction/{{exampleTx}} HTTP/1.1
+
+###
+
+// Get transaction status
+GET {{baseUrl}}/transaction/{{exampleTx}}/status HTTP/1.1
