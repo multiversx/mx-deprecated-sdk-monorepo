@@ -1,0 +1,20 @@
+@baseUrl = https://api.elrond.com
+@alice = erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz
+
+
+// Send transaction
+POST {{baseUrl}}/transaction/send HTTP/1.1
+Content-Type: application/json
+
+{
+    "nonce": 0,
+    "value": "100000",
+    "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
+    "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
+    "gasPrice": 200000000000,
+    "gasLimit": 50000000,
+    "data": "",
+    "signature": "730adffa16af2c8e7e4b80235ca0c337faa27e08571ba64792b25173966d9d29ce5d0b34a826cf8ca3f0ea76a08e8cff448ab1174c19a3247fb703ac0d1a6003"
+}
+
+###
