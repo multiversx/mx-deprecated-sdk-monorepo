@@ -1,0 +1,10 @@
+It would be nice to have a group of settings that references the common arguments used by erdpy.
+
+First one that comes to mind is the proxy: --proxy="https://api.elrond.com". If not set, flag would be needed.
+
+Also, once the key management feature is enabled (i understand a feature is under development, where we can recover a bech32 address and save it under a key name), the default key to be used could be a setting. 
+If default key is not set, we could still use the flag to specify it.
+
+I'm sure more settings can be added as <common> in the future. This would make CLI more user friendly.
+
+Thanks!
