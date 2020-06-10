@@ -2,94 +2,11 @@
 
 [![Build Status](https://travis-ci.com/ElrondNetwork/erdpy.svg?branch=master)](https://travis-ci.com/ElrondNetwork/erdpy)
 
+**erdpy** overview and **installation steps** are on [docs.elrond.com](https://docs.elrond.com/tools/erdpy).
+
 **Development is in progress. See [CHANGELOG](CHANGELOG.md).**
 
-**For tutorials, go to [wiki](https://github.com/ElrondNetwork/erdpy/wiki).**
-
-**For Python SDK examples, see [examples](examples).**
-
-Elrond - Command Line Tools and Python SDK for interacting with Smart Contracts.
-
-One can use **erdpy** to build, test and debug Elrond smart contracts, deploy them on the testnet and interact with contracts by issuing function calls (transactions).
-
-**Erdpy** also acts as a wrapper over the Elrond REST API.
-
-
-## Installation
-
-### Ubuntu
-
-Make sure that you have installed **Python3** (version **3.6** or later) and **Pip3** in advance:
-
-```
-python3 --version
-pip3 --version
-```
-
-Then issue the following command:
-
-```
-pip3 install --user --upgrade --no-cache-dir erdpy
-```
-
-Test installation as follows:
-
-```
-pip3 show erdpy
-erdpy --version
-```
-
-If `erdpy` command is not found (not registered correctly), issue the command:
-
-```
-source ~/.profile
-```
-
-If you encounter encoding-related issues at installation time, such as:
-
-```
-UnicodeDecodeError: 'ascii' codec can't decode byte
-```
-
-Then please set `PYTHONIOENCODING` before running the install command:
-
-```
-PYTHONIOENCODING=utf8 pip3 install --user --upgrade --no-cache-dir erdpy
-```
-
-### MacOS
-
-Make sure that you have installed **Python3** (version **3.6** or later) and **Pip3** in advance:
-
-```
-python3 --version
-pip3 --version
-```
-
-Add this line to `~/.bash_profile` or `~/.zshrc` (if you’re using zsh) **before installing the package** (make sure to replace the placeholders below):
-
-```
-export PATH=/Users/YOUR_USERNAME/Library/Python/YOUR_PYTHON_VERSION/bin:${PATH}
-```
-
-For example:
-
-```
-export PATH=/Users/elrond/Library/Python/3.7/bin:${PATH}
-```
-
-Then issue the following command:
-
-```
-pip3 install --user --upgrade --no-cache-dir erdpy
-```
-
-Test installation as follows:
-
-```
-pip3 show erdpy
-erdpy --version
-```
+For tutorials, go to [wiki](https://github.com/ElrondNetwork/erdpy/wiki). For Python SDK examples, see [examples](examples).
 
 ## Command-line interface
 
