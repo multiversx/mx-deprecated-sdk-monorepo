@@ -219,6 +219,7 @@ erdpy cost transaction sc-call --sc-address="erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxj
 
 ```
 erdpy wallet generate ./myaccount.pem
+erdpy wallet generate ./myaccount.pem --mnemonic="foo bar ..."
 erdpy wallet bech32 --encode 000000000000000005006e4f90488e27342f9a46e1809452c85ee7186566bd5e
 erdpy wallet bech32 --decode erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy
 ```
