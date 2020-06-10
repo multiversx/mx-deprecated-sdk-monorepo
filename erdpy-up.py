@@ -66,7 +66,10 @@ Then, restart the user session and retry the [erdpy] installer.
 
     logger.info("Perform actual installation via pip.")
     try:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "--user", "--no-cache-dir", "erdpy"])
+        env = {
+            "PYTHONIOENCODING": "utf8"
+        }
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "--user", "--no-cache-dir", "erdpy"], env=env)
     except Exception:
         raise Exception("Could not install [erdpy].")
 
