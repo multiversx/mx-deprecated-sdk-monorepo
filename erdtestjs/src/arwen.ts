@@ -22,7 +22,7 @@ export class ResponseBase {
 }
 
 export class ContractRequestBase extends RequestBase {
-    impersonated: string = "";
+    impersonated: Address = new Address("");
     value: string = "";
     gasPrice: number = 0;
     gasLimit: number = 0;
@@ -51,7 +51,7 @@ export class DeployRequest extends ContractRequestBase {
 }
 
 export class DeployResponse extends ContractResponseBase {
-    ContractAddress: string = ""
+    ContractAddressHex: string = ""
 }
 
 export class UpgradeRequest extends DeployRequest {

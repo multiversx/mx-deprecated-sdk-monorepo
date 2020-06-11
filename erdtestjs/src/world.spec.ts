@@ -5,29 +5,32 @@ import { assert } from "chai";
 import { Address } from "@elrondnetwork/erdjs"
 
 describe("test world", () => {
+    let aliceBech32 = "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz";
+    let bobBech32 = "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r";
+    let alice = new Address(aliceBech32);
+    let bob = new Address(bobBech32);
+
     it("should create account", async () => {
         let world = new World("foo");
-        let result = await world.createAccount({ address: new Address("alice"), nonce: 42 });
+        let result = await world.createAccount({ address: alice, nonce: 42 });
         assert.equal(result.Account?.Nonce, 42);
     });
 
     it("should interact well with contract [counter]", async () => {
-        let alice = new Address("alice");
-        let bob = new Address("bob");
         let code = loadContractCode("../examples/contracts/mycounter/counter.wasm");
         let world = new World("foo");
         await world.createAccount({ address: alice, nonce: 42 });
         await world.createAccount({ address: bob, nonce: 7 });
 
-        let deployResponse = await world.deployContract({ impersonated: "alice", code: code });
-        let contract = deployResponse.ContractAddress;
+        let deployResponse = await world.deployContract({ impersonated: alice, code: code });
+        let contract = deployResponse.ContractAddressHex;
 
-        let runResponse = await world.runContract({ contract: contract, impersonated: "alice", functionName: "increment" });
+        let runResponse = await world.runContract({ contract: contract, impersonated: alice, functionName: "increment" });
         assert.isTrue(runResponse.isSuccess());
-        runResponse = await world.runContract({ contract: contract, impersonated: "bob", functionName: "increment" });
+        runResponse = await world.runContract({ contract: contract, impersonated: bob, functionName: "increment" });
         assert.isTrue(runResponse.isSuccess());
 
-        let queryResponse = await world.queryContract({ contract: contract, impersonated: "alice", functionName: "get" });
+        let queryResponse = await world.queryContract({ contract: contract, impersonated: alice, functionName: "get" });
         assert.equal(queryResponse.firstResult().asNumber, 2);
     });
 });

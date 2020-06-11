@@ -15,7 +15,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--impersonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated.hex()}`,
                 `--code=${request.code}`,
                 `--code-path=${request.codePath}`,
                 `--code-metadata=${request.codeMetadata}`,
@@ -44,7 +44,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--impersonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated.hex()}`,
                 `--code=${request.code}`,
                 `--code-path=${request.codePath}`,
                 `--code-metadata=${request.codeMetadata}`,
@@ -74,7 +74,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress}`,
-                `--impersonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated.hex()}`,
                 `--function=${request.function}`,
                 `--value=${request.value}`,
                 `--gas-limit=${request.gasLimit}`,
@@ -102,7 +102,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress}`,
-                `--impersonated=${request.impersonated}`,
+                `--impersonated=${request.impersonated.hex()}`,
                 `--function=${request.function}`
             ]
         };
@@ -126,7 +126,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--address=${request.address}`,
+                `--address=${request.address.hex()}`,
                 `--balance=${request.balance}`,
                 `--nonce=${request.nonce}`
             ]
