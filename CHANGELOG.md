@@ -280,3 +280,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Fix gas estimators for staking.
 - Add mnemonic to PEM converter.
+
+
+## [0.4.6]
+
+### Fixed
+
+- Fixed `new` command (default directory).
+- Improved `deploy` command (add parameter `outfile`).
