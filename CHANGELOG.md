@@ -288,3 +288,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Fixed `new` command (default directory).
 - Improved `deploy` command (add parameter `outfile`).
+
+## [0.4.7]
+
+### Fixed
+
+- Mark `gas-limit` field as required.
