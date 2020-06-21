@@ -90,3 +90,6 @@ endif
 
 test-deployment:
 	python3 -m examples.mycounter_testnet --proxy=https://api.elrond.com --pem=./examples/keys/alice.pem
+
+list-s3:
+	aws s3 ls s3://ide.elrond.com --recursive --human-readable --summarize
