@@ -294,3 +294,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Fixed
 
 - Mark `gas-limit` field as required.
+
+## [0.4.8]
+
+### Fixed
+
+- Update reference to `mandos`, fix templating for tests.
+
