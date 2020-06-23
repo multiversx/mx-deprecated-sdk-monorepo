@@ -19,6 +19,9 @@ def main():
     parser = ArgumentParser()
     parser.add_argument("--proxy", default="https://api.elrond.com")
     parser.add_argument("--pem", required=True)
+    parser.add_argument("--batch-size", type=int, default=50, help="how many transactions to send before recalling nonce")
+    parser.add_argument("--sleep-before-recall", type=int, default=15, help="how many seconds to sleep before recalling nonce")
+    parser.add_argument("--sleep-after-tx", required=True, help="how many seconds to sleep after sending a transaction")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.WARNING)
@@ -27,26 +30,32 @@ def main():
 
     proxy = ElrondProxy(args.proxy)
     sender = Account(pem_file=args.pem)
+    batch_size = int(args.batch_size)
+    sleep_after_tx = int(args.sleep_after_tx)
+    sleep_before_recall = int(args.sleep_before_recall)
 
     while True:
-        sleep_time = 15
-        print(f"Sleeping {sleep_time} seconds...")
-        time.sleep(sleep_time)
+        print(f"Sleeping {sleep_before_recall} seconds before recalling nonce and sending {batch_size} transactions...")
+        time.sleep(sleep_before_recall)
 
         try:
             sender.sync_nonce(proxy)
             print(f"Sender nonce recalled: nonce={sender.nonce}.")
-            send_txs(proxy, sender, 100)
+            send_txs(proxy, sender, batch_size, sleep_after_tx)
         except errors.ProxyRequestError as err:
             logger.error(err)
 
 
-def send_txs(proxy, sender, num):
+def send_txs(proxy, sender, num, sleep_after):
+    print(f"Will send {num} transactions. Will also sleep {sleep_after} after each transaction.")
     for i in range(0, num):
         send_one_tx(proxy, sender, "erd1hqplnafrhnd4zv846wumat2462jy9jkmwxtp3nwmw8ye9eclr6fq40f044")
         sender.nonce += 1
+        time.sleep(sleep_after)
+
         send_one_tx(proxy, sender, "erd1utftdvycwgl3xt0r44ekncentlxgmhucxfq3jt6cjz0w7h6qjchsjarml6")
         sender.nonce += 1
+        time.sleep(sleep_after)
 
 
 def send_one_tx(proxy, sender, receiver_address):
