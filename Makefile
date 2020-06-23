@@ -7,11 +7,6 @@ build-erdpy: clean
 publish-erdpy: build
 	twine upload dist/*
 
-test-short:
-	python3 -m unittest -v erdpy.tests.test_wallet
-	python3 -m unittest -v erdpy.tests.test_accounts
-	python3 -m unittest -v erdpy.tests.test_contracts
-
 test-all:
 	python3 -m unittest discover -s erdpy/tests
 
@@ -64,29 +59,6 @@ test-cli-dispatcher:
 	python3 -m erdpy.cli dispatcher enqueue --value="300" --receiver="erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r" --data="foo" --gas-price=200000000000 --gas-limit=50000000
 	python3 -m erdpy.cli --verbose dispatcher dispatch --proxy="https://api.elrond.com" --pem="./examples/keys/alice.pem"
 	#python3 -m erdpy.cli --verbose dispatcher dispatch-continuously --interval=1 --proxy="https://api.elrond.com" --pem="./examples/keys/alice.pem"
-
-test-cli-external-contracts:
-ifndef SANDBOX
-	$(error SANDBOX variable is undefined)
-endif
-	rm -rf ${SANDBOX}/myanswer
-	rm -rf ${SANDBOX}/myadder
-	rm -rf ${SANDBOX}/sc-busd-rs
-
-	# Ultimate answer (C)
-	python3 -m erdpy.cli new --template ultimate-answer --directory ${SANDBOX} myanswer
-	python3 -m erdpy.cli build ${SANDBOX}/myanswer
-
-	# Adder (rust)
-	python3 -m erdpy.cli new --template adder --directory ${SANDBOX} myadder
-	python3 -m erdpy.cli build ${SANDBOX}/myadder
-	python3 -m erdpy.cli test --directory="test" ${SANDBOX}/myadder
-
-	# BUSD (rust)
-	git clone --depth=1 --branch=master https://github.com/ElrondNetwork/sc-busd-rs.git ${SANDBOX}/sc-busd-rs
-	rm -rf ${SANDBOX}/sc-busd-rs/.git
-	python3 -m erdpy.cli build ${SANDBOX}/sc-busd-rs
-	python3 -m erdpy.cli test --directory="tests" ${SANDBOX}/sc-busd-rs
 
 test-deployment:
 	python3 -m examples.mycounter_testnet --proxy=https://api.elrond.com --pem=./examples/keys/alice.pem
