@@ -1,7 +1,6 @@
 [
     {
         "type": "StandaloneModule",
-        "key": "llvm",
         "name": "llvm",
         "tag": "v9",
         "groups": [
@@ -15,7 +14,6 @@
     },
     {
         "type": "ArwenToolsModule",
-        "key": "arwentools",
         "name": "arwentools",
         "tag": "g03d0b3f",
         "groups": [
@@ -29,7 +27,6 @@
     },
     {
         "type": "Rust",
-        "key": "rust",
         "name": "rust",
         "tag": "initial",
         "groups": [
