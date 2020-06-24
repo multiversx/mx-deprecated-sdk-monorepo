@@ -301,3 +301,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Update reference to `mandos`, fix templating for tests.
 
+
+## [0.4.9]
+
+### Fixed
+
+- Improved CLI for contracts (added CLI group of actions)
+- Fixed response handling for `send-multiple`
