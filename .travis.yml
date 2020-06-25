@@ -17,12 +17,12 @@ matrix:
         - npm --prefix ./erdtestjs install
       before_script:
       script:
-        cd ${TRAVIS_BUILD_DIR}/erdpy/tests
-        source ./tests.sh && runShortTests
-        source ./test_cli_wallet.sh && testAll
-        source ./test_cli_contracts.sh && testContracts
-        source ./test_cli_validators.sh && testAll
-        source ./test_cli_tx.sh && testAll
+        - cd ${TRAVIS_BUILD_DIR}/erdpy/tests
+        - source ./tests.sh && runShortTests
+        - source ./test_cli_wallet.sh && testAll
+        - source ./test_cli_contracts.sh && testContracts
+        - source ./test_cli_validators.sh && testAll
+        - source ./test_cli_tx.sh && testAll
 
         #- make test-short
         #- make test-cli
@@ -45,8 +45,8 @@ matrix:
         - npm --prefix ./erdtestjs install
       before_script:
       script:
-        cd ${TRAVIS_BUILD_DIR}/erdpy/tests
-        source ./tests.sh && runShortTests
+        - cd ${TRAVIS_BUILD_DIR}/erdpy/tests
+        - source ./tests.sh && runShortTests
 
         # - make test-short
         # - make test-cli
