@@ -302,15 +302,26 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Update reference to `mandos`, fix templating for tests.
 
 
-## [0.4.9]
+## [0.4.9] - 24.06.2020
 
 ### Fixed
 
 - Improved CLI for contracts (added CLI group of actions)
 - Fixed response handling for `send-multiple`
 
-## [0.5.0]
+## [0.5.0] - 25.06.2020
 
 ### Fixed
 
 - Fixed list of `elrondei` functions.
+
+## [0.5.1] - 25.06.2020
+
+### Fixed
+
+- Fix passing `--nonce` argument to validator commands.
+- Add flag `--recall-nonce`, as an alternative to specifying the `--nonce=42`.
+
+### Other
+
+- Deprecated commands `stake-prepare` and `stake-send`. Will be replaced soon by `stake --prepare` and `tx send`.
