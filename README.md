@@ -75,14 +75,16 @@ erdpy --verbose call erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8
 
 ### Issue regular transactions against the testnet
 
+Prepare and send transactions:
+```
+erdpy --verbose tx-prepare-and-send --pem="alice.pem" --receiver="..." --value="..." --gas-limit=50000 --recall-nonce --proxy="..."
+```
+
 Prepare, then send transactions:
 
 ```
-erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="./examples/keys/alice.pem" --nonce=42 --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000
-
-erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy=https://api.elrond.com
-
-erdpy --verbose tx-prepare-and-send --pem="./examples/keys/alice.pem" --receiver=erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr --value=100000 --proxy=https://api.elrond.com
+erdpy --verbose tx-prepare ./myplayground --tag="foobar" --pem="alice.pem" --nonce=42 --receiver="..." --value=100000 --gas-limit=50000
+erdpy --verbose tx-send ./myplayground/tx-foobar.json --proxy="..."
 
 ```
 
