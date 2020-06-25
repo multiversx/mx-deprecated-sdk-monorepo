@@ -16,12 +16,19 @@ matrix:
         - npm --prefix ./erdtestjs install
       before_script:
       script:
-        - make test-short
-        - make test-cli
-        - SANDBOX=./sandbox make test-cli-external-contracts
-        - python3 -m erdpy.cli install ARWENTOOLS
-        - #npm --prefix ./erdjs test
-        - npm --prefix ./erdtestjs test
+        cd ${TRAVIS_BUILD_DIR}/erdpy/tests
+        source ./tests.sh && runShortTests
+        source ./test_cli_wallet.sh && testAll
+        source ./test_cli_contracts.sh && testContracts
+        source ./test_cli_validators.sh && testAll
+        source ./test_cli_tx.sh && testAll
+
+        #- make test-short
+        #- make test-cli
+        #- SANDBOX=./sandbox make test-cli-external-contracts
+        #- python3 -m erdpy.cli install arwentools
+        #- npm --prefix ./erdjs test
+        #- npm --prefix ./erdtestjs test
 
     - language: generic
       os: osx
@@ -36,9 +43,12 @@ matrix:
         - npm --prefix ./erdtestjs install
       before_script:
       script:
-        - make test-short
-        - make test-cli
-        - SANDBOX=./sandbox make test-cli-external-contracts
-        - python3 -m erdpy.cli install ARWENTOOLS
-        - #npm --prefix ./erdjs test
-        - npm --prefix ./erdtestjs test
+        cd ${TRAVIS_BUILD_DIR}/erdpy/tests
+        source ./tests.sh && runShortTests
+
+        # - make test-short
+        # - make test-cli
+        # - SANDBOX=./sandbox make test-cli-external-contracts
+        # - python3 -m erdpy.cli install ARWENTOOLS
+        # - #npm --prefix ./erdjs test
+        # - npm --prefix ./erdtestjs test
