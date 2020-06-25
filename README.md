@@ -19,7 +19,7 @@ $ erdpy templates
 $ erdpy templates --json
 ```
 
-These templates are downloaded from different sources, as configured in [templates_config.py](erdpy/projects/templates_config.py) and are written in **rust**, **C** or **Solidity**.
+These templates are downloaded from different sources, as configured in [templates_config.py](erdpy/projects/templates_config.py) and are written in **rust**, **C** or **C++**.
 
 ### Create new project
 
