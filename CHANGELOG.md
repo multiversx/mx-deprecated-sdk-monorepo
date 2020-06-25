@@ -308,3 +308,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Improved CLI for contracts (added CLI group of actions)
 - Fixed response handling for `send-multiple`
+
+## [0.5.0]
+
+### Fixed
+
+- Fixed list of `elrondei` functions.
