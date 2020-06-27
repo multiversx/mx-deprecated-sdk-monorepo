@@ -1,8 +1,8 @@
-import { describe } from "mocha"
-import { World } from "./world"
-import { loadContractCode } from "./index"
+import { describe } from "mocha";
+import { World } from "./world";
+import { loadContractCode } from "./index";
 import { assert } from "chai";
-import { Address } from "@elrondnetwork/erdjs"
+import { Address } from "@elrondnetwork/erdjs";
 
 describe("test world", () => {
     let aliceBech32 = "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz";
