@@ -121,7 +121,7 @@ export function FunctionName(name: string): string {
         throw errors.ErrInvalidFunctionName;
     }
     // TODO verify valid characters
-    return name
+    return name;
 }
 
 export function Seed(key: string): Buffer {

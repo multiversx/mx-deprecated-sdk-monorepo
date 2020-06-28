@@ -8,36 +8,26 @@ import { SmartContractDeploy } from "./smartcontracts/scDeploy";
 import { ElrondERC20Client } from "./smartcontracts/elrondERC20client";
 import * as fs from "fs";
 import { SmartContractBase } from "./smartcontracts/smartcontract";
+import { describe } from "mocha";
 
 import keccak from "keccak";
 
 var DEFAULT_PROXY_ADDRESS = "http://localhost:7950";
 
-var ErrTestError1 = new Error("test error 1");
-var ErrTestError2 = new Error("test error 1");
-
 describe("Preliminary try-out code", async () => {
-    it("should verify error equality", () => {
-        let testfunc = () => {
-            throw ErrTestError1;
-        };
-
-        assert.throws(testfunc, ErrTestError1);
-    });
-
     it("should throw exception for invalid BigInts", () => {
         let testfunc = () => {
-            let n = BigInt("oranges");
+            BigInt("oranges");
         };
         assert.throws(testfunc, SyntaxError);
 
         testfunc = () => {
-            let n = BigInt("112oranges");
+            BigInt("112oranges");
         };
         assert.throws(testfunc, SyntaxError);
 
         testfunc = () => {
-            let n = BigInt("112oranges23");
+            BigInt("112oranges23");
         };
         assert.throws(testfunc, SyntaxError);
     });
@@ -48,7 +38,7 @@ describe("Preliminary try-out code", async () => {
     });
 });
 
-describe("SmartContractCalls", () => {
+describe.skip("SmartContractCalls", () => {
     it("should add arguments properly", async () => {
         let txgen = getTxGenConfiguration();
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
@@ -63,16 +53,11 @@ describe("SmartContractCalls", () => {
 
         const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
         receiver.setKeysFromRawData(txgen.accounts[2]);
-
-        let scCall = new SmartContractCall();
-        scCall.setFunctionName("transferToken");
-        scCall.addRawArgument(sender.getAddressObject().hex());
-        scCall.addBigIntArgument(BigInt(1024));
     });
 });
 
-describe("SmartContractDeployment", () => {
-    it.only("should deploy a SC", async () => {
+describe.skip("SmartContractDeployment", () => {
+    it("should deploy a SC", async () => {
         let txgen = getTxGenConfiguration();
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
 
@@ -100,7 +85,7 @@ describe("SmartContractDeployment", () => {
     });
 });
 
-describe("ERC20 client", () => {
+describe.skip("ERC20 client", () => {
     it("should transferToken", async () => {
         let txgen = getTxGenConfiguration();
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
@@ -184,7 +169,7 @@ describe("ERC20 client", () => {
         console.log("balance of receiver:\t", balanceOfReceiver);
         console.log("difference:\t", diff);
         assert.equal(
-            Number(initialDiff + 2*transferValue), 
+            Number(initialDiff + 2 * transferValue),
             diff
         );
 
@@ -206,13 +191,13 @@ describe("ERC20 client", () => {
         console.log("balance of receiver:\t", balanceOfReceiver);
         console.log("difference:\t", diff);
         assert.equal(
-            Number(initialDiff), 
+            Number(initialDiff),
             Math.abs(Number(balanceOfSender - balanceOfReceiver))
         );
     });
 });
 
-describe("Proxy", () => {
+describe.skip("Proxy", () => {
     it("should retrieve nonce of account", async () => {
         const proxy: Provider = new ElrondProxy({
             url: DEFAULT_PROXY_ADDRESS,
@@ -257,7 +242,7 @@ describe("Proxy", () => {
         receiver.setKeysFromRawData(txgen.accounts[2]);
 
         let senderBalanceBeforeTx = sender.getBalance();
-        let receiverBalanceBeforeTx = receiver.getBalance()
+        let receiverBalanceBeforeTx = receiver.getBalance();
         let initialDiff = senderBalanceBeforeTx - receiverBalanceBeforeTx;
 
         let transferValue = BigInt("25000000000000000000");
@@ -278,14 +263,14 @@ describe("Proxy", () => {
 
         let signer = new AccountSigner(sender);
         signer.sign(tx);
-        
+
         let txHash = "";
 
         console.log('send tx');
         try {
             txHash = await proxy.sendTransaction(tx);
             console.log('transaction hash', txHash);
-        } catch(err) {
+        } catch (err) {
             assert.fail(err);
         }
 
@@ -313,12 +298,12 @@ describe("Proxy", () => {
         console.log('after', sender.getBalance());
         console.log('diff', sender.getBalance() - senderBalanceBeforeTx);
         assert.equal(
-            (senderBalanceBeforeTx - transferValue - transactionCost).toString(), 
+            (senderBalanceBeforeTx - transferValue - transactionCost).toString(),
             sender.getBalance().toString()
         );
 
         assert.equal(
-            (receiverBalanceBeforeTx + transferValue).toString(), 
+            (receiverBalanceBeforeTx + transferValue).toString(),
             receiver.getBalance().toString()
         );
 
@@ -341,7 +326,7 @@ describe("Proxy", () => {
         try {
             txHash = await proxy.sendTransaction(tx);
             console.log('transaction hash', txHash);
-        } catch(err) {
+        } catch (err) {
             assert.fail(err);
         }
 
@@ -364,7 +349,7 @@ describe("Proxy", () => {
         } catch (err) {
             assert.fail(err);
         }
-        
+
         let postDiff = sender.getBalance() - receiver.getBalance();
         assert.equal(initialDiff.toString(), postDiff.toString());
     });

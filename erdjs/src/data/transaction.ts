@@ -109,6 +109,10 @@ export class Transaction implements Signable {
         return this.sender;
     }
 
+    public getData(): string {
+        return this.data;
+    }
+
     // TODO change this method to take no arguments,
     // and to use this.Sender as the signer, because
     // Account implements the Signer interface.
