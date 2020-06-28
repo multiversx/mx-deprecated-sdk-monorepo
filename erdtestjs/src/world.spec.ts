@@ -24,7 +24,7 @@ describe("test world", () => {
         await world.createAccount({ address: bob, nonce: 7 });
 
         let deployResponse = await world.deployContract({ impersonated: alice, code: code, gasLimit: GAS_LIMIT });
-        let contract = deployResponse.ContractAddressHex;
+        let contract = deployResponse.getContractAddress();
 
         let runResponse = await world.runContract({ contract: contract, impersonated: alice, functionName: "increment", gasLimit: GAS_LIMIT });
         assert.isTrue(runResponse.isSuccess());
@@ -33,5 +33,9 @@ describe("test world", () => {
 
         let queryResponse = await world.queryContract({ contract: contract, impersonated: alice, functionName: "get", gasLimit: GAS_LIMIT });
         assert.equal(queryResponse.firstResult().asNumber, 2);
+
+        let storage = world.getAccountStorage(contract);
+        let value = storage?.byString("COUNTER");
+        assert.equal(value?.asNumber(), 2);
     });
 });

@@ -1,7 +1,10 @@
+import path = require("path");
 import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse, RunResponse, QueryResponse } from "./arwen";
 import { ArwenCLI } from "./arwenCli";
 import { getToolsSubfolder } from "./workstation";
-import { Address } from "@elrondnetwork/erdjs"
+import { Address } from "@elrondnetwork/erdjs";
+import { readJSONFileAsAny } from "./ioutils";
+
 
 export class World {
     private uniqueName: string;
@@ -16,6 +19,10 @@ export class World {
 
     private getDefaultDatabasePath(): string {
         return getToolsSubfolder("tests-db");
+    }
+
+    private getPath(): string {
+        return path.join(this.databasePath, "worlds", `${this.uniqueName}.json`);
     }
 
     async deployContract(
@@ -38,7 +45,7 @@ export class World {
 
     async runContract(
         { contract, impersonated, functionName, args, value, gasLimit, gasPrice }
-            : { contract: string, impersonated: Address, functionName: string, args?: any[], value?: string, gasLimit?: number, gasPrice?: number })
+            : { contract: Address, impersonated: Address, functionName: string, args?: any[], value?: string, gasLimit?: number, gasPrice?: number })
         : Promise<RunResponse> {
         return await this.provider.runContract({
             databasePath: this.databasePath,
@@ -55,7 +62,7 @@ export class World {
 
     async queryContract(
         { contract, impersonated, functionName, args, gasLimit }
-            : { contract: string, impersonated: Address, functionName: string, args?: any[], gasLimit?: number })
+            : { contract: Address, impersonated: Address, functionName: string, args?: any[], gasLimit?: number })
         : Promise<QueryResponse> {
         return await this.provider.queryContract({
             databasePath: this.databasePath,
@@ -104,5 +111,96 @@ export class World {
         let hexStringLength = hexString.length % 2 == 0 ? hexString.length : hexString.length + 1;
         let paddedHexString = hexString.padStart(hexStringLength, "0");
         return paddedHexString;
+    }
+
+    getAccountStorage(address: Address): WorldAccountStorage | null {
+        let accounts = this.loadAccounts();
+        let account = accounts.getByAddress(address);
+        if (!account) {
+            return null;
+        }
+
+        return account.Storage;
+    }
+
+    loadAccounts(): WorldAccounts {
+        let worldState = readJSONFileAsAny(this.getPath());
+        let accountsMap = worldState.Accounts || {};
+        let accounts = [];
+        for (const [, value] of Object.entries(accountsMap)) {
+            accounts.push(new WorldAccount(value));
+        }
+
+        return new WorldAccounts(accounts);
+    }
+}
+
+export class WorldAccounts {
+    private accounts: WorldAccount[];
+
+    constructor(accounts: WorldAccount[]) {
+        this.accounts = accounts;
+    }
+
+    getByAddress(address: Address): WorldAccount | null {
+        return this.accounts.find(item => item.Address.equals(address)) || null;
+    }
+}
+
+export class WorldAccount {
+    Address: Address;
+    Nonce: number;
+    Balance: BigInt;
+    Storage: any;
+
+    constructor(obj: any) {
+        this.Address = new Address().setHex(obj.AddressHex);
+        this.Nonce = obj.Nonce;
+        this.Balance = BigInt(obj.Balance.toString());
+        this.Storage = new WorldAccountStorage(obj.Storage);
+    }
+}
+
+export class WorldAccountStorage {
+    private map: any;
+
+    constructor(storageMap: any) {
+        this.map = storageMap;
+    }
+
+    byHex(hexKey: string): StorageValue | null {
+        let item = this.map[hexKey];
+        return item ? new StorageValue(item) : null;
+    }
+
+    byString(key: string): StorageValue | null {
+        let buffer = Buffer.from(key);
+        let hexKey = buffer.toString("hex");
+        return this.byHex(hexKey);
+    }
+}
+
+export class StorageValue {
+    hex: string;
+
+    constructor(hexValue: any) {
+        this.hex = hexValue;
+    }
+
+    asHex(): string {
+        return this.hex;
+    }
+
+    asAddress(): Address | null {
+        return new Address().setHex(this.hex);
+    }
+
+    asNumber(): number {
+        return parseInt(this.hex, 16) || 0;
+    }
+
+    asString(): string {
+        let buffer = Buffer.from(this.hex, "hex");
+        return buffer.toString();
     }
 }
