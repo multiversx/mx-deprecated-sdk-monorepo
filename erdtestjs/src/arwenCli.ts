@@ -103,7 +103,8 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress}`,
                 `--impersonated=${request.impersonated.hex()}`,
-                `--function=${request.function}`
+                `--function=${request.function}`,
+                `--gas-limit=${request.gasLimit}`,
             ]
         };
 

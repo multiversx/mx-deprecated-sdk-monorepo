@@ -54,8 +54,8 @@ export class World {
     }
 
     async queryContract(
-        { contract, impersonated, functionName, args }
-            : { contract: string, impersonated: Address, functionName: string, args?: any[] })
+        { contract, impersonated, functionName, args, gasLimit }
+            : { contract: string, impersonated: Address, functionName: string, args?: any[], gasLimit?: number })
         : Promise<QueryResponse> {
         return await this.provider.queryContract({
             databasePath: this.databasePath,
@@ -65,7 +65,7 @@ export class World {
             function: functionName,
             arguments: this.encodeArguments(args || []),
             value: "0",
-            gasLimit: 0,
+            gasLimit: gasLimit || 0,
             gasPrice: 0
         });
     }
