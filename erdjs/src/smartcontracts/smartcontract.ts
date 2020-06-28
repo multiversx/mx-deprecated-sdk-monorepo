@@ -11,7 +11,7 @@ import { TransactionWatcher } from "../data/transaction";
 export class SmartContractBase implements SmartContract {
     protected provider: Provider | null = null;
     protected scAddress: Address | null = null;
-    protected user: Account | null = null
+    protected user: Account | null = null;
 
     protected gasPrice: number | null = null;
     protected gasLimit: number | null = null;
@@ -96,8 +96,7 @@ export class SmartContractBase implements SmartContract {
             shardSelector
         ]);
 
-        let address= new Address("");
-        address.fromBytes(addressBytes);
+        let address= new Address().setBytes(addressBytes);
         return address;
     }
 
@@ -137,8 +136,7 @@ export class SmartContractBase implements SmartContract {
             throw errors.ErrGasLimitNotSet;
         }
 
-        let deploymentAddress = new Address("");
-        deploymentAddress.fromBytes(Buffer.alloc(32, 0));
+        let deploymentAddress = new Address().setBytes(Buffer.alloc(32, 0));
 
         deployment.setNonce(this.user.getNonce());
         deployment.setSender(this.user.getAddress());
