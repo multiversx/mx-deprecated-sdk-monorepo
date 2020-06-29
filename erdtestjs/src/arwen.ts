@@ -106,6 +106,7 @@ export class VMOutput {
     DeletedAccounts: any[] = [];
     TouchedAccounts: any[] = [];
     Logs: any[] = [];
+    // TODO: Storage updates for OutputAccounts. Decode base64.
 }
 
 export class WrappedContractReturnData {
