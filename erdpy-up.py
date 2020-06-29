@@ -53,6 +53,12 @@ def main():
     install_erdpy()
     if modify_path:
         add_sdk_to_path()
+        logger.info("""
+###############################################################################
+Upon restarting the user session, [$ erdpy] command should be available in your shell.
+Furthermore, after restarting the user session, you can use [$ source erdpy-activate] to activate the Python virtual environment containing erdpy.
+###############################################################################
+""")
 
 
 def get_operating_system():
@@ -138,7 +144,7 @@ def install_erdpy():
     if os.path.exists(link_path):
         os.remove(link_path)
     os.symlink(os.path.join(get_erdpy_path(), "bin", "erdpy"), link_path)
-    logger.info("You have successfully installed erdpy. For more information go to https://docs.elrond.com.")
+    logger.info("You have successfully installed erdpy.")
 
 
 def run_in_venv(args):
@@ -158,7 +164,7 @@ def add_sdk_to_path():
     PATH = os.environ["PATH"]
     if elrondsdk_path in PATH:
         logger.info(f"elrond-sdk path ({elrondsdk_path}) already in $PATH variable.")
-        return
+        #return
 
     profile_file = get_profile_file()
     logger.info(f"Adding elrond-sdk path [{elrondsdk_path}] to $PATH variable.")
@@ -167,7 +173,12 @@ def add_sdk_to_path():
     with open(profile_file, "a") as file:
         file.write(f'\nexport PATH="{elrondsdk_path}:$PATH"\t# elrond-sdk\n')
 
-    logger.info(f"[{profile_file}] has been modified. Please restart the user session.")
+    logger.info(f"""
+###############################################################################
+[{profile_file}] has been modified.
+Please RESTART THE USER SESSION.
+###############################################################################
+""")
 
 
 def get_profile_file():
@@ -191,3 +202,9 @@ if __name__ == "__main__":
     except Exception as err:
         logger.fatal(err)
         sys.exit(1)
+
+    logger.info("""
+
+For more information go to https://docs.elrond.com.
+For support, please contact us at https://t.me/ElrondDevelopers.
+""")
