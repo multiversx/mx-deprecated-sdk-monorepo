@@ -164,7 +164,7 @@ def add_sdk_to_path():
     PATH = os.environ["PATH"]
     if elrondsdk_path in PATH:
         logger.info(f"elrond-sdk path ({elrondsdk_path}) already in $PATH variable.")
-        #return
+        return
 
     profile_file = get_profile_file()
     logger.info(f"Adding elrond-sdk path [{elrondsdk_path}] to $PATH variable.")
