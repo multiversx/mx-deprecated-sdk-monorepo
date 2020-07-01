@@ -20,9 +20,11 @@ def main():
     global exact_version
 
     parser = ArgumentParser()
-    parser.add_argument("--modify-path", action="store_true", default=True, help="whether to modify $PATH (in profile file)")
+    parser.add_argument("--modify-path", dest="modify_path", action="store_true", help="whether to modify $PATH (in profile file)")
+    parser.add_argument("--no-modify-path", dest="modify_path", action="store_false", help="whether to modify $PATH (in profile file)")
     parser.add_argument("--elrondsdk-path", default=get_elrond_sdk_path_default(), help="where to install elrond-sdk")
     parser.add_argument("--exact-version", help="the exact version of erdpy to install")
+    parser.set_defaults(modify_path=True)
     args = parser.parse_args()
 
     elrondsdk_path = os.path.expanduser(args.elrondsdk_path)
