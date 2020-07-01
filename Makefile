@@ -4,7 +4,7 @@ clean:
 build-erdpy: clean
 	python3 setup.py sdist
 
-publish-erdpy: build
+publish-erdpy: build-erdpy
 	twine upload dist/*
 
 test-all:
