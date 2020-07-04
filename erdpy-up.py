@@ -190,7 +190,15 @@ def get_profile_file():
     if operating_system == "linux":
         file = "~/.profile"
     else:
-        if "ZSH_VERSION" in os.environ:
+        value = input("""Please choose your preferred shell:
+1) zsh
+2) bash
+""")
+        if value not in ["1", "2"]:
+            raise Exception("Invalid choice.")
+
+        value = int(value)
+        if value == 1:
             file = "~/.zshrc"
         else:
             file = "~/.bash_profile"
