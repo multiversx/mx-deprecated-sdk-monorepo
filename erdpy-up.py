@@ -2,6 +2,7 @@ import logging
 import os
 import os.path
 import pathlib
+import shutil
 import subprocess
 import sys
 from argparse import ArgumentParser
@@ -82,8 +83,11 @@ def get_operating_system():
 
 
 def create_venv():
-    require_venv()
     folder = get_erdpy_path()
+    if os.path.isdir(folder):
+        shutil.rmtree(folder)
+        logger.info("Removed previous installation (virtual environment).")
+    require_venv()
     ensure_folder(folder)
 
     logger.info(f"Creating virtual environment in: {folder}.")
@@ -104,19 +108,20 @@ def require_venv():
     operating_system = get_operating_system()
 
     try:
+        import ensurepip
         import venv
-        logger.info(f"Package [venv] found: {venv}.")
+        logger.info(f"Packages found: {ensurepip}, {venv}.")
     except ModuleNotFoundError:
         if operating_system == "linux":
-            logger.info("Package [venv] not found, will be installed.")
+            logger.info("Package [venv] or [ensurepip] not found, will be installed.")
             logger.info("Running [$ sudo apt-get install python3-venv]:")
             return_code = os.system("sudo apt-get install python3-venv")
             if return_code == 0:
                 logger.info("Done installing [python3-venv].")
             else:
-                raise Exception("Package [venv] not installed correctly.")
+                raise Exception("Packages [venv] or [ensurepip] not installed correctly.")
         else:
-            raise Exception("Package [venv] not found, please install it first. See https://docs.python.org/3/tutorial/venv.html.")
+            raise Exception("Packages [venv] or [ensurepip] not found, please install them first. See https://docs.python.org/3/tutorial/venv.html.")
 
 
 def get_erdpy_path():
