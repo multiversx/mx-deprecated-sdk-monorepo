@@ -52,6 +52,7 @@ def main():
     if operating_system != "linux" and operating_system != "osx":
         raise Exception("Your operating system is not supported yet.")
 
+    remove_installation()
     create_venv()
     install_erdpy()
     if modify_path:
@@ -82,12 +83,16 @@ def get_operating_system():
     return operating_system
 
 
-def create_venv():
+def remove_installation():
     folder = get_erdpy_path()
     if os.path.isdir(folder):
         shutil.rmtree(folder)
         logger.info("Removed previous installation (virtual environment).")
+
+
+def create_venv():
     require_venv()
+    folder = get_erdpy_path()
     ensure_folder(folder)
 
     logger.info(f"Creating virtual environment in: {folder}.")
