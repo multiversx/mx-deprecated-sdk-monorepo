@@ -146,7 +146,7 @@ export class ArwenCLI implements ArwenDebugProvider {
     }
 
     private getArwenDebugPath(): string {
-        return process.env.ARWENDEBUG_PATH || getToolsPath("arwentools/(TODO)/arwendebug");
+        return process.env.ARWENDEBUG_PATH || getToolsPath("arwentools/arwendebug");
     }
 }
 

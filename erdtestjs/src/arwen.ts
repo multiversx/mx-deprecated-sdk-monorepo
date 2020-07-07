@@ -31,9 +31,10 @@ export class ContractRequestBase extends RequestBase {
 export class ContractResponseBase extends ResponseBase {
     Input: any = {};
     Output: VMOutput = new VMOutput();
+    ReturnCodeString: string = "";
 
     isSuccess(): Boolean {
-        let ok = this.Output.ReturnCode == 0;
+        let ok = this.ReturnCodeString == "ok";
         return ok && super.isSuccess();
     }
 
