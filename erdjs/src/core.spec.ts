@@ -56,7 +56,8 @@ describe.skip("SmartContractCalls", () => {
     });
 });
 
-describe.skip("SmartContractDeployment", () => {
+describe.skip("SmartContractDeployment", function() {
+    this.timeout(100000);
     it("should deploy a SC", async () => {
         let txgen = getTxGenConfiguration();
         assert.ok(txgen.accounts.length >= 3, "not enough accounts in txgen");
@@ -69,14 +70,18 @@ describe.skip("SmartContractDeployment", () => {
         const user = await proxy.getAccount(txgen.accounts[1].pubKey);
         user.setKeysFromRawData(txgen.accounts[1]);
 
-        let codeFilename = "/var/work/Elrond/erdpy/demo-dapps/erc20/smartcontract/erc20.wasm";
+        // to run this test correct this path with your pc path
+        let codeFilename = "/home/miiu/Projects/elrond-sdk/demo-dapps/erc20/smartcontract/erc20.wasm";
         let code = fs.readFileSync(codeFilename).toString('hex');
 
         let deployment = new SmartContractDeploy();
         deployment.setCode(code);
         deployment.addBigIntArgument(BigInt(512));
 
-        let smartContract = new SmartContractBase(proxy, null, user);
+        let chainID = await proxy.getChainID();
+        let version = await proxy.getMinTransactionVersion()
+
+        let smartContract = new SmartContractBase(proxy, null, user, chainID, version);
         smartContract.enableSigning(true);
         smartContract.setGasPrice(100000000000000);
         smartContract.setGasLimit(7e8);
@@ -102,8 +107,11 @@ describe.skip("ERC20 client", () => {
         const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
         receiver.setKeysFromRawData(txgen.accounts[2]);
 
+        let chainID = await proxy.getChainID();
+        let version = await proxy.getMinTransactionVersion()
+
         let scAddress = new Address(txgen.scAddress);
-        let erc20 = new ElrondERC20Client(proxy, scAddress, user);
+        let erc20 = new ElrondERC20Client(proxy, scAddress, user, chainID, version);
         erc20.enableSigning(true);
 
         erc20.setGasPrice(100000000000000);
@@ -125,8 +133,11 @@ describe.skip("ERC20 client", () => {
         const sender = user;
         user.setKeysFromRawData(txgen.accounts[1]);
 
+        let chainID = await proxy.getChainID();
+        let version = await proxy.getMinTransactionVersion()
+
         let scAddress = new Address(txgen.scAddress);
-        let erc20 = new ElrondERC20Client(proxy, scAddress, user);
+        let erc20 = new ElrondERC20Client(proxy, scAddress, user, chainID, version);
         erc20.enableSigning(true);
 
         const receiver = await proxy.getAccount(txgen.accounts[2].pubKey);
@@ -175,7 +186,7 @@ describe.skip("ERC20 client", () => {
 
         // Send some tokens back
         console.log("performing ERC20 transfer");
-        erc20 = new ElrondERC20Client(proxy, scAddress, receiver);
+        erc20 = new ElrondERC20Client(proxy, scAddress, receiver, chainID, version);
         erc20.enableSigning(true);
 
         erc20.setGasPrice(100000000000000);
@@ -357,9 +368,9 @@ describe.skip("Proxy", () => {
 
 
 function getTxGenConfiguration(): any {
-    const txgenFolder = "/var/work/Elrond/testnet/txgen";
+    const txgenFolder = "/home/miiu/go/src/github.com/ElrondNetwork/elrond-txgen-go/cmd/txgen/";
 
-    const accountsDataFilename = txgenFolder + "/data/accounts.json";
+    const accountsDataFilename = txgenFolder + "/data/accounts-basic.json";
     const scAddressFilename = txgenFolder + "/deployedSCAddress.txt";
     const minterAddressFilename = txgenFolder + "/minterAddress.txt";
 
