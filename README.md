@@ -142,6 +142,16 @@ erdpy wallet bech32 --encode 000000000000000005006e4f90488e27342f9a46e1809452c85
 erdpy wallet bech32 --decode erd1qqqqqqqqqqqqqpgqde8eqjywyu6zlxjxuxqfg5kgtmn3setxh40qen8egy
 ```
 
+## Developers
+
+**The Elrond Team.**
+
+## Community Contributions
+
+Thanks and credits go to:
+
+- [Elrond Developers Group on Telegram](https://t.me/ElrondDevelopers) for testing, reporting issues and having very good suggestions and feature requests.
+-  **[@flyingbasalt](https://github.com/flyingbasalt)** for implementing [json2pem](https://github.com/flyingbasalt/erdkeys/blob/master/erdkeys/json2pem.py). For more details, go to [erdkeys](https://github.com/flyingbasalt/erdkeys).
 
 ## Contribute
 
