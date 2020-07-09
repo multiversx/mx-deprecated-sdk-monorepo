@@ -1,6 +1,6 @@
 # erdpy
 
-[![Build Status](https://travis-ci.com/ElrondNetwork/erdpy.svg?branch=master)](https://travis-ci.com/ElrondNetwork/erdpy)
+[![Build Status](https://travis-ci.com/ElrondNetwork/elrond-sdk.svg?branch=master)](https://travis-ci.com/ElrondNetwork/elrond-sdk)
 
 **erdpy** overview and **installation steps** are on [docs.elrond.com](https://docs.elrond.com/tools/erdpy).
 
