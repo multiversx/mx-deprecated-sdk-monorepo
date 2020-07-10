@@ -2,7 +2,7 @@ import base64
 import logging
 
 from Cryptodome.Hash import keccak
-
+from binascii import unhexlify
 from erdpy import config, errors, utils
 from erdpy.accounts import Address
 from erdpy.transactions import (PlainTransaction, PreparedTransaction,
@@ -45,7 +45,7 @@ class SmartContract:
         plain.version = version
 
         payload = TransactionPayloadToSign(plain)
-        signature = signing.sign_transaction(payload, owner.pem_file)
+        signature = signing.sign_transaction_with_seed(payload, unhexlify(owner.private_key_seed))
         prepared = PreparedTransaction(plain, signature)
         return prepared
 
@@ -92,7 +92,7 @@ class SmartContract:
         plain.version = version
 
         payload = TransactionPayloadToSign(plain)
-        signature = signing.sign_transaction(payload, caller.pem_file)
+        signature = signing.sign_transaction_with_seed(payload, unhexlify(caller.private_key_seed))
         prepared = PreparedTransaction(plain, signature)
         return prepared
 
@@ -128,7 +128,7 @@ class SmartContract:
         plain.version = version
 
         payload = TransactionPayloadToSign(plain)
-        signature = signing.sign_transaction(payload, owner.pem_file)
+        signature = signing.sign_transaction_with_seed(payload, unhexlify(owner.private_key_seed))
         prepared = PreparedTransaction(plain, signature)
         return prepared
 

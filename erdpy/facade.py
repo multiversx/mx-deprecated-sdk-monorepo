@@ -19,7 +19,6 @@ def deploy_smart_contract(args):
     logger.debug("deploy_smart_contract")
 
     project_directory = args.project
-    pem_file = args.pem
     proxy_url = args.proxy
     arguments = args.arguments
     gas_price = args.gas_price
@@ -36,7 +35,11 @@ def deploy_smart_contract(args):
     metadata = CodeMetadata(metadata_upgradeable)
     contract = SmartContract(bytecode=bytecode, metadata=metadata)
     environment = TestnetEnvironment(proxy_url)
-    owner = Account(pem_file=pem_file)
+
+    if args.pem:
+        owner = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        owner = Account(key_file=args.keyfile, pass_file=args.passfile)
 
     owner.nonce = args.nonce
     if args.recall_nonce:
@@ -55,7 +58,6 @@ def call_smart_contract(args):
     logger.debug("call_smart_contract")
 
     contract_address = args.contract
-    pem_file = args.pem
     proxy_url = args.proxy
     function = args.function
     arguments = args.arguments
@@ -67,7 +69,11 @@ def call_smart_contract(args):
 
     contract = SmartContract(contract_address)
     environment = TestnetEnvironment(proxy_url)
-    caller = Account(pem_file=pem_file)
+
+    if args.pem:
+        caller = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        caller = Account(key_file=args.keyfile, pass_file=args.passfile)
 
     caller.nonce = args.nonce
     if args.recall_nonce:
@@ -85,7 +91,6 @@ def upgrade_smart_contract(args):
 
     contract_address = args.contract
     project_directory = args.project
-    pem_file = args.pem
     proxy_url = args.proxy
     arguments = args.arguments
     gas_price = args.gas_price
@@ -100,7 +105,11 @@ def upgrade_smart_contract(args):
     metadata = CodeMetadata(metadata_upgradeable)
     contract = SmartContract(contract_address, bytecode=bytecode, metadata=metadata)
     environment = TestnetEnvironment(proxy_url)
-    caller = Account(pem_file=pem_file)
+
+    if args.pem:
+        caller = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        caller = Account(key_file=args.keyfile, pass_file=args.passfile)
 
     caller.nonce = args.nonce
     if args.recall_nonce:
@@ -234,7 +243,10 @@ def prepare_and_send_transaction(args):
     proxy = ElrondProxy(args.proxy)
 
     if args.recall_nonce:
-        owner = Account(pem_file=args.pem)
+        if args.pem:
+            owner = Account(pem_file=args.pem)
+        elif args.keyfile and args.passfile:
+            owner = Account(key_file=args.keyfile, pass_file=args.passfile)
         owner.sync_nonce(proxy)
         args.nonce = owner.nonce
 
@@ -250,7 +262,11 @@ def create_transaction(args):
     proxy = ElrondProxy(args.proxy)
 
     if args.recall_nonce:
-        owner = Account(pem_file=args.pem)
+        if args.pem:
+            owner = Account(pem_file=args.pem)
+        elif args.keyfile and args.passfile:
+            owner = Account(key_file=args.keyfile, pass_file=args.passfile)
+
         owner.sync_nonce(proxy)
         args.nonce = owner.nonce
 

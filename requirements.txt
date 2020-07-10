@@ -1,6 +1,9 @@
-toml
-texttable
-bottle
-requests
+toml~=0.10.1
+texttable~=1.6.2
+bottle~=0.12.18
+requests~=2.24.0
 pynacl
 pycryptodomex
+
+cryptography~=2.9.2
+setuptools~=44.1.0
