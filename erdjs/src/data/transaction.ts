@@ -37,7 +37,6 @@ export class Transaction implements Signable {
     protected provider: Provider | null = null;
 
     public constructor(data: any) {
-        // fetch chainID and transaction version
         this.set(data);
     }
 
@@ -218,7 +217,6 @@ export class TransactionWatcher {
         let periodicTimer = new AsyncTimer();
         let timeoutTimer = new AsyncTimer();
         timeoutTimer.start(timeout).finally(() => {console.log('timeoutTimer.stop'); timeoutTimer.stop(); this.stop = true;});
-        await periodicTimer.start(period);
         while (!this.stop) {
             console.log('getting status for', this.txHash);
             txStatus = await this.provider.getTransactionStatus(this.txHash);

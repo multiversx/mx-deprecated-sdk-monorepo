@@ -71,7 +71,7 @@ describe.skip("SmartContractDeployment", function() {
         user.setKeysFromRawData(txgen.accounts[1]);
 
         // to run this test correct this path with your pc path
-        let codeFilename = "/home/miiu/Projects/elrond-sdk/demo-dapps/erc20/smartcontract/erc20.wasm";
+        let codeFilename = "/home/work/elrond-sdk/demo-dapps/erc20/smartcontract/erc20.wasm";
         let code = fs.readFileSync(codeFilename).toString('hex');
 
         let deployment = new SmartContractDeploy();
@@ -368,7 +368,7 @@ describe.skip("Proxy", () => {
 
 
 function getTxGenConfiguration(): any {
-    const txgenFolder = "/home/miiu/go/src/github.com/ElrondNetwork/elrond-txgen-go/cmd/txgen/";
+    const txgenFolder = "/home/work/ElrondNetwork/elrond-txgen-go/cmd/txgen/";
 
     const accountsDataFilename = txgenFolder + "/data/accounts-basic.json";
     const scAddressFilename = txgenFolder + "/deployedSCAddress.txt";
