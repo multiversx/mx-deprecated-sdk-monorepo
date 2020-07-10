@@ -17,7 +17,7 @@ setuptools.setup(
         include=["erdpy*"], exclude=["examples*"]),
     include_package_data=True,
     install_requires=[
-        "toml", "texttable", "bottle", "requests", "pynacl", "pycryptodomex"
+        "toml", "texttable", "bottle", "requests", "pynacl", "pycryptodomex", "cryptography"
     ],
     zip_safe=False,
     keywords=["Elrond"],
