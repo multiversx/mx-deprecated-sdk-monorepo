@@ -21,9 +21,13 @@ import { Provider } from "./interface";
 import { Account } from "../data/account";
 import { Transaction } from "../data/transaction";
 
+const chainIDKey = "erd_chain_id";
+const minTransactionVersionKey = "erd_min_transaction_version";
+
 export class ElrondProxy implements Provider {
     private url: string;
     private timeoutLimit: number;
+
 
     constructor(config: any) {
         // TODO validate proper structure of url
@@ -39,7 +43,7 @@ export class ElrondProxy implements Provider {
             this.url + `/address/${address}`,
             { timeout: this.timeoutLimit }
         ).then(response => {
-            let account = new Account(this, response.data.account);
+            let account = new Account(this, response.data.data.account);
             return account;
         });
     }
@@ -51,7 +55,7 @@ export class ElrondProxy implements Provider {
         return axios.get(
             this.url + `/address/${address}/balance`,
             { timeout: this.timeoutLimit }
-        ).then(response => BigInt(response.data.balance));
+        ).then(response => BigInt(response.data.data.balance));
     }
 
     getNonce(address: string): Promise<number> {
@@ -125,17 +129,62 @@ export class ElrondProxy implements Provider {
     }
 
     sendTransaction(tx: Transaction): Promise<string> {
+        // TODO add error handling:
+        //  * if the POST request fails
         return axios.post(
             this.url + '/transaction/send',
             JSON.stringify(tx.getAsSendable()),
             { timeout: this.timeoutLimit }
-        ).then(response => response.data.txHash);
+        ).then(response => {
+            return response.data.data.txHash
+        });
     }
 
     getTransactionStatus(txHash: string): Promise<string> {
+        // TODO add error handling:
+        //  * if the POST request fails
         return axios.get(
             this.url + `/transaction/${txHash}/status`,
             { timeout: this.timeoutLimit }
-        ).then(response => response.data.status);
+        ).then(response => response.data.data.status);
+    }
+
+    getNetworkConfig(): Promise<any> {
+        return axios.get(
+            this.url + `/network/config`,
+            {timeout: this.timeoutLimit}
+        ).then( response => {
+            let error = response.data.error
+            if (error != "") {
+                throw Error(`cannot get response from proxy ${error}`)
+            }
+            return response.data.data.config
+        });
+    }
+
+    getChainID(): Promise<any> {
+        return axios.get(
+            this.url + `/network/config`,
+            {timeout: this.timeoutLimit}
+        ).then( response => {
+            let error = response.data.error
+            if (error != "") {
+                throw Error(`cannot get response from proxy ${error}`)
+            }
+            return response.data.data.config[chainIDKey]
+        });
+    }
+
+    getMinTransactionVersion(): Promise<number> {
+        return axios.get(
+            this.url + `/network/config`,
+            {timeout: this.timeoutLimit}
+        ).then( response => {
+            let error = response.data.error
+            if (error != "") {
+                throw Error(`cannot get response from proxy ${error}`)
+            }
+            return response.data.data.config[minTransactionVersionKey]
+        });
     }
 }

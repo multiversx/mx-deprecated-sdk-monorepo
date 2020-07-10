@@ -130,8 +130,7 @@ export function Seed(key: string): Buffer {
     }
 
     let keyBytes = Buffer.from(key, 'hex');
-    let seedBytes = keyBytes.slice(0, SEED_LENGTH);
-    return seedBytes;
+    return keyBytes.slice(0, SEED_LENGTH);
 }
 
 export function VMType(vmType: string): string {
@@ -153,6 +152,20 @@ export function SCCodeMetadata(metadata: string): string {
         throw errors.ErrInvalidSmartContractCode;
     }
     return metadata;
+}
+
+export function ChainID(chainID: string): string {
+    if (chainID.length == 0) {
+        throw errors.ErrInvalidChainID
+    }
+    return chainID
+}
+
+export function Version(version: number): number {
+    if (version == 0) {
+        throw errors.ErrInvalidTransactionVersion
+    }
+    return version
 }
 
 function makeCodeHash(code: string) {

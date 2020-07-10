@@ -9,6 +9,8 @@ import { Signer, Signable, Provider } from "../providers/interface";
 /* 	Sender    string `form:"sender" json:"sender"` */
 /* 	GasPrice  uint64 `form:"gasPrice" json:"gasPrice,omitempty"` */
 /* 	GasLimit  uint64 `form:"gasLimit" json:"gasLimit,omitempty"` */
+/* 	ChainID   string `form:"chainID" json:"chainID"` */
+/* 	Version   uint32 `form:"version" json:"version"` */
 /* 	Data      string `form:"data" json:"data,omitempty"` */
 /* 	Signature string `form:"signature" json:"signature,omitempty"` */
 /* } */
@@ -24,6 +26,8 @@ export class Transaction implements Signable {
     protected gasPrice: number = 0;
     protected gasLimit: number = 0;
     protected data: string = "";
+    protected chainID: string = "";
+    protected version: number = 0;
     protected signature: string = "";
 
     protected signed: boolean = false;
@@ -51,6 +55,8 @@ export class Transaction implements Signable {
         this.gasPrice = valid.GasPrice(data.gasPrice);
         this.gasLimit = valid.GasLimit(data.gasLimit);
         this.data = valid.TxData(data.data);
+        this.chainID = valid.ChainID(data.chainID);
+        this.version = valid.Version(data.version)
 
         this.initialized = true;
         this.signed = false;
@@ -97,6 +103,14 @@ export class Transaction implements Signable {
         this.status = status;
     }
 
+    public setChainID(chainID: string) {
+        this.chainID = valid.ChainID(chainID);
+    }
+
+    public setVersion(version: number) {
+        this.version = valid.Version(version);
+    }
+
     public getStatus(): string {
         return this.status;
     }
@@ -137,6 +151,9 @@ export class Transaction implements Signable {
         if (this.data != "") {
             plainTx.data = this.data;
         }
+
+        plainTx.chainID = this.chainID;
+        plainTx.version = this.version;
 
         return plainTx;
     }
@@ -200,12 +217,11 @@ export class TransactionWatcher {
         let periodicTimer = new AsyncTimer();
         let timeoutTimer = new AsyncTimer();
         timeoutTimer.start(timeout).finally(() => {console.log('timeoutTimer.stop'); timeoutTimer.stop(); this.stop = true;});
-
-        while (this.stop == false) {
+        while (!this.stop) {
             console.log('getting status for', this.txHash);
             txStatus = await this.provider.getTransactionStatus(this.txHash);
             console.log('status', txStatus);
-            if (txStatus != awaited_status && this.stop == false) {
+            if (txStatus != awaited_status && !this.stop) {
                 console.log('not done yet, and stop =', this.stop, ', waiting');
                 await periodicTimer.start(period);
                 console.log('done waiting');
@@ -218,13 +234,13 @@ export class TransactionWatcher {
         timeoutTimer.stop();
 
         let result = false;
-        if (this.stop == false && txStatus == awaited_status) {
+        if (!this.stop && txStatus == awaited_status) {
             result = true;
         }
 
         console.log('exiting expectExecuted() with result =', result);
 
-        if (result == false) {
+        if (!result) {
             throw ErrExpectedTransactionStatusNotReached;
         }
     }
