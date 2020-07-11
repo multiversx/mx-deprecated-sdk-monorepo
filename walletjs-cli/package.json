@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "Light CLI wrapper over @elrondnetwork/elrond-core-js",
   "repository": {
-    "url": "https://github.com/ElrondNetwork/elrond-sdk"
+    "type" : "git",
+    "url": "https://github.com/ElrondNetwork/elrond-sdk.git",
+    "directory": "walletjs-cli"
   },
   "main": "index.js",
   "bin": {
