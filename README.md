@@ -17,7 +17,7 @@ For developing Smart Contracts, [Elrond IDE](https://marketplace.visualstudio.co
 
 ## Developers
 
-**The Elrond Team.**
+The [Elrond Team](https://elrond.com/team/).
 
 ## Community Contributions
 
