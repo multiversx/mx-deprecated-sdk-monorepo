@@ -7,9 +7,9 @@ This is a monorepo containing the following:
 | Component   |      Type      |  Documentation | Changelog | CLI |
 |----------|:-------------:|:-------------:|:-------------:|:-------------:|
 | erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/tools/erdpy) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) |
-| erdjs |    TypeScript SDK   |  [docs.elrond.com](https://docs.elrond.com/tools/erdjs) | [CHANGELOG](erdjs/CHANGELOG.md) | |
-| erdtestjs |    TypeScript SDK   |  [docs.elrond.com](https://docs.elrond.com/tools/erdtestjs) | [CHANGELOG](erdtestjs/CHANGELOG.md) | |
-| walletjs-cli | NodeJS CLI |    TBD | [CLI](walletjs-cli/CLI.md) |
+| erdjs |    TypeScript SDK   |  TBD | TBD | N / A |
+| erdtestjs |    TypeScript SDK   |  TBD | TBD | N / A |
+| walletjs-cli | NodeJS CLI |    TBD | TBD | TBD |
 
 
 For developing Smart Contracts, [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide), which is a frontend for erdpy, should be a good start. 
