@@ -1,0 +1,25 @@
+{
+  "name": "walletjs-cli",
+  "version": "1.0.0",
+  "description": "Light CLI wrapper over @elrondnetwork/elrond-core-js",
+  "repository": {
+    "type" : "git",
+    "url": "https://github.com/ElrondNetwork/elrond-sdk.git",
+    "directory": "walletjs-cli"
+  },
+  "main": "index.js",
+  "bin": {
+    "walletjs-cli": "./index.js"
+  },
+  "scripts": {},
+  "keywords": [
+    "crypto"
+  ],
+  "author": "ElrondNetwork",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/runtime": "^7.10.4",
+    "@elrondnetwork/elrond-core-js": "^1.26.0",
+    "commander": "^5.1.0"
+  }
+}

@@ -3,7 +3,6 @@
 source "./shared.sh"
 
 testTrivialCommands() {
-    ${ERDPY} contract --help
     ${ERDPY} contract templates
 }
 
@@ -27,9 +26,13 @@ testRunMandos() {
 }
 
 testContracts() {
+    set -x
+
     cleanSandbox
     testTrivialCommands
     testCreateContracts
     testBuildContracts
     testRunMandos
+
+    set +x
 }

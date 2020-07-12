@@ -1,20 +1,17 @@
 import json
 import logging
 import os
-import shutil
 from os import path
-from pathlib import Path
 
-from erdpy import dependencies, errors, utils
+from erdpy import errors, utils
 from erdpy.projects import shared
 from erdpy.projects.project_rust import CargoFile
 from erdpy.projects.templates_config import get_templates_repositories
-from texttable import Texttable
 
 logger = logging.getLogger("projects.templates")
 
 
-def list_project_templates(as_json=False):
+def list_project_templates():
     templates = []
 
     for repository in get_templates_repositories():
@@ -24,15 +21,8 @@ def list_project_templates(as_json=False):
 
     templates = sorted(templates, key=lambda item: item.name)
 
-    if as_json:
-        pretty_json = json.dumps([item.__dict__ for item in templates], indent=4)
-        print(pretty_json)
-    else:
-        table = Texttable()
-        table_data = [["Name", "Github", "Language"]]
-        table_data.extend([[item.name, item.github, item.language] for item in templates])
-        table.add_rows(table_data)
-        print(table.draw())
+    pretty_json = json.dumps([item.__dict__ for item in templates], indent=4)
+    print(pretty_json)
 
 
 class TemplateSummary():
@@ -42,7 +32,7 @@ class TemplateSummary():
         self.language = repository.get_language(name)
 
 
-def create_from_template(name, template_name, directory):
+def create_from_template(name: str, template_name: str, directory: str):
     directory = path.expanduser(directory)
 
     logger.info("create_from_template.name: %s", name)
@@ -114,28 +104,12 @@ class TemplateRust(Template):
     def _extend(self):
         logger.info("TemplateRust._extend")
 
-        package_path = Path(__file__).parent
-        launch_file = package_path.joinpath("vscode_launch_rust.json")
-        tasks_file = package_path.joinpath("vscode_tasks_rust.json")
-        vscode_directory = path.join(self.directory, ".vscode")
-
-        logger.info("Creating directory [.vscode]...")
-        os.mkdir(vscode_directory)
-        logger.info("Adding files: [launch.json], [tasks.json]")
-        shutil.copy(launch_file, path.join(vscode_directory, "launch.json"))
-        shutil.copy(tasks_file, path.join(vscode_directory, "tasks.json"))
-
     def _replace_placeholders(self):
-        rust_module = dependencies.get_module_by_key("rust")
-        self.rust_directory = rust_module.get_directory()
-        self.rust_bin_directory = path.join(self.rust_directory, "bin")
-
         cargo_path = path.join(self.directory, "Cargo.toml")
         cargo_debug_path = path.join(self.directory, "debug", "Cargo.toml")
-        launch_path = path.join(self.directory, ".vscode", "launch.json")
-        tasks_path = path.join(self.directory, ".vscode", "tasks.json")
         debug_main_path = path.join(self.directory, "debug", "src", "main.rs")
-        test_paths = utils.list_files(path.join(self.directory, "test"))
+        test_dir_path = path.join(self.directory, "test")
+        test_paths = utils.list_files(test_dir_path) if os.path.isdir(test_dir_path) else []
 
         logger.info("Updating cargo files...")
 
@@ -157,15 +131,6 @@ class TemplateRust(Template):
         logger.info("Applying replacements...")
 
         self._replace_in_files(
-            [launch_path, tasks_path],
-            [
-                ("{{PROJECT_NAME}}", self.project_name),
-                ("{{PATH_RUST_BIN}}", self.rust_bin_directory),
-                ("{{RUSTUP_HOME}}", self.rust_directory),
-                ("{{CARGO_HOME}}", self.rust_directory)
-            ])
-
-        self._replace_in_files(
             [debug_main_path],
             [
                 # Example "use simple_coin::*" to "use my_project::*"
@@ -183,7 +148,7 @@ class TemplateRust(Template):
         self._replace_in_files(
             test_paths,
             [
-                (f"adder.wasm", f"myadder.wasm")
+                (f"{self.template_name}.wasm", f"{self.project_name}.wasm")
             ]
         )
 

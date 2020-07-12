@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 from os import path
 from pathlib import Path
@@ -75,11 +76,14 @@ class ProjectClang(Project):
         myprocess.run_process(args)
 
     def _copy_build_artifacts_to_output(self):
-        wasm_file = self.find_file_globally("*.c").with_suffix(".wasm")
-        self._copy_to_output(wasm_file)
+        source_file = self.find_file_globally("*.c")
+        self._copy_to_output(source_file.with_suffix(".wasm"))
+        os.remove(source_file.with_suffix(".wasm"))
+        os.remove(source_file.with_suffix(".ll"))
+        os.remove(source_file.with_suffix(".o"))
 
     def _get_llvm_path(self):
-        return dependencies.get_install_directory("llvm")
+        return dependencies.get_module_directory("llvm")
 
     def get_dependencies(self):
         return ["llvm"]
@@ -100,7 +104,4 @@ class ClangBuildConfiguration:
     def _get_undefined_file(self):
         package_path = Path(__file__).parent
         # TODO: remove this logic
-        if self.debug:
-            return package_path.joinpath("list_api_debug.txt")
-        else:
-            return package_path.joinpath("list_api.txt")
+        return package_path.joinpath("list_api.txt")

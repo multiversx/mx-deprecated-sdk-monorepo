@@ -9,9 +9,9 @@ testAll() {
 
 testGeneration() {
     echo "testGeneration"
-    ${ERDPY} wallet generate ./testdata-out/myaccount.pem
+    ${ERDPY} wallet derive ./testdata-out/myaccount.pem
     assertFileExists "./testdata-out/myaccount.pem"
-    ${ERDPY} wallet generate --mnemonic="foo bar" ./testdata-out/myaccount-from-mnemonic.pem
+    echo "foo bar\n" | ${ERDPY} wallet derive --mnemonic ./testdata-out/myaccount-from-mnemonic.pem
     assertFileExists "./testdata-out/myaccount-from-mnemonic.pem"
 }
 

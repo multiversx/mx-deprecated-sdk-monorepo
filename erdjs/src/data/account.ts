@@ -5,7 +5,7 @@ import * as errors from "../errors";
 import { Provider, Signer, Signable } from "../providers/interface";
 
 export class Account {
-    private address: Address = new Address("");
+    private address: Address = new Address();
     private seed: Buffer = Buffer.from("");
     private nonce: number = 0;
     private balance: bigint = BigInt(0);
@@ -91,7 +91,7 @@ export class Account {
             code: this.code,
             codeHash: this.codeHash,
             rootHash: this.rootHash
-        }
+        };
     }
 
     public setKeysFromRawData(data: any) {
@@ -130,8 +130,8 @@ export class Address {
     private buffer: Buffer = Buffer.from("");
     private prefix: string = "";
 
-    public constructor(address: string) {
-        if (address != "") {
+    public constructor(address?: string) {
+        if (address) {
             this.set(address);
         }
     }
@@ -151,6 +151,25 @@ export class Address {
         this.prefix = decodedAddress.prefix;
     }
 
+    public setHex(addressHex: string): Address {
+        var addressBytes = Buffer.from(addressHex, 'hex');
+        if (addressBytes.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        this.buffer = addressBytes;
+        return this;
+    }
+
+    public setBytes(bytes: Buffer): Address {
+        if (bytes.length != valid.ADDRESS_LENGTH) {
+            throw errors.ErrWrongAddressLength;
+        }
+
+        this.buffer = bytes;
+        return this;
+    }
+
     public getPrefix(): string {
         return this.prefix;
     }
@@ -163,6 +182,14 @@ export class Address {
         return this.buffer.toString('hex');
     }
 
+    public equals(other: Address | null): boolean {
+        if (!other) {
+            return false;
+        }
+
+        return this.hex() == other.hex();
+    }
+
     public toString(): string {
         if (this.buffer.length != valid.ADDRESS_LENGTH) {
             throw errors.ErrWrongAddressLength;
@@ -171,22 +198,5 @@ export class Address {
         let words = bech32.toWords(this.buffer);
         let address = bech32.encode(valid.ADDRESS_PREFIX, words);
         return address;
-    }
-
-    public fromHex(addressHex: string) {
-        var addressBytes = Buffer.from(addressHex, 'hex');
-        if (addressBytes.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
-        }
-
-        this.buffer = addressBytes;
-    }
-
-    public fromBytes(bytes: Buffer) {
-        if (bytes.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
-        }
-
-        this.buffer = bytes;
     }
 }

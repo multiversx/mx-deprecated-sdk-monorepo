@@ -1,10 +1,10 @@
 import binascii
-import glob
 import logging
 from os import path
 from pathlib import Path
+from typing import List
 
-from erdpy import dependencies, errors, myprocess, utils
+from erdpy import dependencies, errors, utils
 import shutil
 
 logger = logging.getLogger("Project")
@@ -22,15 +22,18 @@ class Project:
         self._copy_build_artifacts_to_output()
         self._create_deploy_files()
 
+    def clean(self):
+        utils.remove_folder(self._get_output_folder())
+
     def _ensure_dependencies_installed(self):
         module_keys = self.get_dependencies()
         for module_key in module_keys:
             dependencies.install_module(module_key)
 
-    def get_dependencies(self):
+    def get_dependencies(self) -> List[str]:
         raise NotImplementedError()
 
-    def perform_build(self):
+    def perform_build(self) -> None:
         raise NotImplementedError()
 
     def get_file_wasm(self):
@@ -55,13 +58,15 @@ class Project:
         file = path.join(folder, files[0])
         return Path(file).resolve()
 
-    def _copy_build_artifacts_to_output(self):
+    def _copy_build_artifacts_to_output(self) -> None:
         raise NotImplementedError()
 
     def _copy_to_output(self, file):
-        output_dir = path.join(self.directory, "output")
-        utils.ensure_folder(output_dir)
-        shutil.copy(file, output_dir)
+        utils.ensure_folder(self._get_output_folder())
+        shutil.copy(file, self._get_output_folder())
+
+    def _get_output_folder(self):
+        return path.join(self.directory, "output")
 
     def _create_deploy_files(self):
         file_wasm = self.get_file_wasm()
@@ -75,23 +80,3 @@ class Project:
     def get_bytecode(self):
         bytecode = utils.read_file(self.get_file_wasm().with_suffix(".hex"))
         return bytecode
-
-    def run_tests(self, tests_directory, wildcard=None):
-        testrunner_module = dependencies.get_module_by_key("arwentools")
-        tool_directory = testrunner_module.get_directory()
-        tool_env = testrunner_module.get_env()
-
-        tool = path.join(tool_directory, "test")
-        test_folder = path.join(self.directory, tests_directory)
-
-        if not wildcard:
-            args = [tool, test_folder]
-            myprocess.run_process(args, env=tool_env)
-        else:
-            pattern = path.join(test_folder, wildcard)
-            test_files = glob.glob(pattern)
-
-            for test_file in test_files:
-                print("Run test for:", test_file)
-                args = [tool, test_file]
-                myprocess.run_process(args, env=tool_env)

@@ -1,6 +1,6 @@
 import child_process = require("child_process");
 import { ArwenDebugProvider, DeployRequest, DeployResponse, UpgradeRequest, UpgradeResponse, RunRequest, RunResponse, CreateAccountResponse, CreateAccountRequest, QueryRequest, QueryResponse } from "./arwen";
-import { getToolsPath } from "./workstation"
+import { getToolsPath } from "./workstation";
 import { MyExecError } from "./errors";
 import { readJSONFile } from "./ioutils";
 import path = require("path");
@@ -73,7 +73,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--contract=${request.contractAddress}`,
+                `--contract=${request.contractAddress.hex()}`,
                 `--impersonated=${request.impersonated.hex()}`,
                 `--function=${request.function}`,
                 `--value=${request.value}`,
@@ -101,9 +101,10 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
-                `--contract=${request.contractAddress}`,
+                `--contract=${request.contractAddress.hex()}`,
                 `--impersonated=${request.impersonated.hex()}`,
-                `--function=${request.function}`
+                `--function=${request.function}`,
+                `--gas-limit=${request.gasLimit}`,
             ]
         };
 
@@ -145,7 +146,7 @@ export class ArwenCLI implements ArwenDebugProvider {
     }
 
     private getArwenDebugPath(): string {
-        return process.env.ARWENDEBUG_PATH || getToolsPath("arwentools/(TODO)/arwendebug");
+        return process.env.ARWENDEBUG_PATH || getToolsPath("arwentools/arwendebug");
     }
 }
 

@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from erdpy import utils, wallet
 from erdpy.accounts import Account, Address
@@ -15,17 +16,18 @@ from erdpy.wallet import pem
 logger = logging.getLogger("facade")
 
 
-def deploy_smart_contract(args):
+def deploy_smart_contract(args: Any):
     logger.debug("deploy_smart_contract")
 
     project_directory = args.project
-    pem_file = args.pem
     proxy_url = args.proxy
     arguments = args.arguments
     gas_price = args.gas_price
     gas_limit = args.gas_limit
     value = args.value
     metadata_upgradeable = args.metadata_upgradeable
+    chain = args.chain
+    version = args.version
 
     # TODO: apply guards
 
@@ -34,10 +36,18 @@ def deploy_smart_contract(args):
     metadata = CodeMetadata(metadata_upgradeable)
     contract = SmartContract(bytecode=bytecode, metadata=metadata)
     environment = TestnetEnvironment(proxy_url)
-    owner = Account(pem_file=pem_file)
+
+    if args.pem:
+        owner = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        owner = Account(key_file=args.keyfile, pass_file=args.passfile)
+
+    owner.nonce = args.nonce
+    if args.recall_nonce:
+        owner.sync_nonce(ElrondProxy(proxy_url))
 
     def flow():
-        tx_hash, address = environment.deploy_contract(contract, owner, arguments, gas_price, gas_limit, value)
+        tx_hash, address = environment.deploy_contract(contract, owner, arguments, gas_price, gas_limit, value, chain, version)
         logger.info("Tx hash: %s", tx_hash)
         logger.info("Contract address: %s", address)
         utils.dump_out_json({"tx": tx_hash, "contract": address.bech32()}, args.outfile)
@@ -45,57 +55,75 @@ def deploy_smart_contract(args):
     environment.run_flow(flow)
 
 
-def call_smart_contract(args):
+def call_smart_contract(args: Any):
     logger.debug("call_smart_contract")
 
     contract_address = args.contract
-    pem_file = args.pem
     proxy_url = args.proxy
     function = args.function
     arguments = args.arguments
     gas_price = args.gas_price
     gas_limit = args.gas_limit
     value = args.value
+    chain = args.chain
+    version = args.version
 
     contract = SmartContract(contract_address)
     environment = TestnetEnvironment(proxy_url)
-    caller = Account(pem_file=pem_file)
+
+    if args.pem:
+        caller = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        caller = Account(key_file=args.keyfile, pass_file=args.passfile)
+
+    caller.nonce = args.nonce
+    if args.recall_nonce:
+        caller.sync_nonce(ElrondProxy(proxy_url))
 
     def flow():
-        tx_hash = environment.execute_contract(contract, caller, function, arguments, gas_price, gas_limit, value)
+        tx_hash = environment.execute_contract(contract, caller, function, arguments, gas_price, gas_limit, value, chain, version)
         logger.info("Tx hash: %s", tx_hash)
 
     environment.run_flow(flow)
 
 
-def upgrade_smart_contract(args):
+def upgrade_smart_contract(args: Any):
     logger.debug("upgrade_smart_contract")
 
     contract_address = args.contract
     project_directory = args.project
-    pem_file = args.pem
     proxy_url = args.proxy
     arguments = args.arguments
     gas_price = args.gas_price
     gas_limit = args.gas_limit
     value = args.value
     metadata_upgradeable = args.metadata_upgradeable
+    chain = args.chain
+    version = args.version
 
     project = load_project(project_directory)
     bytecode = project.get_bytecode()
     metadata = CodeMetadata(metadata_upgradeable)
     contract = SmartContract(contract_address, bytecode=bytecode, metadata=metadata)
     environment = TestnetEnvironment(proxy_url)
-    caller = Account(pem_file=pem_file)
+
+    if args.pem:
+        caller = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        caller = Account(key_file=args.keyfile, pass_file=args.passfile)
+
+    caller.nonce = args.nonce
+    if args.recall_nonce:
+        caller.sync_nonce(ElrondProxy(proxy_url))
 
     def flow():
-        tx_hash = environment.upgrade_contract(contract, caller, arguments, gas_price, gas_limit, value)
+        tx_hash = environment.upgrade_contract(contract, caller, arguments, gas_price, gas_limit, value, chain, version)
         logger.info("Tx hash: %s", tx_hash)
 
     environment.run_flow(flow)
 
 
-def query_smart_contract(args):
+def query_smart_contract(args: Any):
     logger.debug("query_smart_contract")
 
     contract_address = args.contract
@@ -113,7 +141,7 @@ def query_smart_contract(args):
     environment.run_flow(flow)
 
 
-def get_account_nonce(args):
+def get_account_nonce(args: Any) -> Any:
     proxy_url = args.proxy
     address = args.address
 
@@ -123,7 +151,7 @@ def get_account_nonce(args):
     return nonce
 
 
-def get_account_balance(args):
+def get_account_balance(args: Any) -> Any:
     proxy_url = args.proxy
     address = args.address
 
@@ -133,7 +161,7 @@ def get_account_balance(args):
     return balance
 
 
-def get_account(args):
+def get_account(args: Any) -> Any:
     proxy_url = args.proxy
     address = args.address
 
@@ -143,14 +171,14 @@ def get_account(args):
     return account
 
 
-def get_account_transactions(args):
+def get_account_transactions(args: Any) -> Any:
     proxy_url = args.proxy
     address = args.address
 
     proxy = ElrondProxy(proxy_url)
-    account = proxy.get_account_transactions(Address(address))
-    print(account)
-    return account
+    response = proxy.get_account_transactions(Address(address))
+    utils.dump_out_json(response, args.outfile)
+    return response
 
 
 def get_num_shards(args):
@@ -163,14 +191,14 @@ def get_num_shards(args):
 
 def get_last_block_nonce(args):
     proxy_url = args.proxy
-    shard_id = args.shard_id
+    shard = args.shard
     proxy = ElrondProxy(proxy_url)
-    nonce = proxy.get_last_block_nonce(shard_id)
+    nonce = proxy.get_last_block_nonce(shard)
     print(nonce)
     return nonce
 
 
-def get_gas_price(args):
+def get_gas_price(args: Any) -> Any:
     proxy_url = args.proxy
     proxy = ElrondProxy(proxy_url)
     price = proxy.get_gas_price()
@@ -186,29 +214,17 @@ def get_chain_id(args):
     return chain_id
 
 
-def get_meta_nonce(args):
-    proxy = ElrondProxy(args.proxy)
-    nonce = proxy.get_meta_nonce()
-    print(nonce)
-    return nonce
-
-
-def get_meta_block(args):
-    proxy = ElrondProxy(args.proxy)
-    block = proxy.get_meta_block(args.nonce)
-    print(block)
-    return block
-
-
-def get_transaction_cost(args):
+def get_transaction_cost(args: Any, tx_type: Any) -> Any:
     logger.debug("call_get_transaction_cost")
 
     cost_estimator = TransactionCostEstimator(args.proxy)
-    result = cost_estimator.estimate_tx_cost(args)
+    result = cost_estimator.estimate_tx_cost(args, tx_type)
+    print("Note: gas estimator is deprecated, will be updated on a future release.")
     print(result)
     return result
 
 
+# DEPRECATED
 def send_prepared_transaction(args):
     proxy = ElrondProxy(args.proxy)
     prepared = PreparedTransaction.from_file(args.tx)
@@ -217,11 +233,15 @@ def send_prepared_transaction(args):
     return tx_hash
 
 
+# DEPRECATED
 def prepare_and_send_transaction(args):
     proxy = ElrondProxy(args.proxy)
 
     if args.recall_nonce:
-        owner = Account(pem_file=args.pem)
+        if args.pem:
+            owner = Account(pem_file=args.pem)
+        elif args.keyfile and args.passfile:
+            owner = Account(key_file=args.keyfile, pass_file=args.passfile)
         owner.sync_nonce(proxy)
         args.nonce = owner.nonce
 
@@ -229,6 +249,47 @@ def prepare_and_send_transaction(args):
     tx_hash = prepared.send(proxy)
     print(tx_hash)
     return tx_hash
+
+
+def create_transaction(args):
+    args = utils.as_object(args)
+
+    proxy = ElrondProxy(args.proxy)
+
+    if args.recall_nonce:
+        if args.pem:
+            owner = Account(pem_file=args.pem)
+        elif args.keyfile and args.passfile:
+            owner = Account(key_file=args.keyfile, pass_file=args.passfile)
+
+        owner.sync_nonce(proxy)
+        args.nonce = owner.nonce
+
+    if args.data_file:
+        args.data = utils.read_file(args.data_file)
+
+    output = utils.Object()
+    prepared = do_prepare_transaction(args)
+    output.tx = prepared.to_dictionary()
+
+    try:
+        if args.send:
+            output.hash = prepared.send(proxy)
+    finally:
+        # Save output even if there's an error during the actual send
+        args.outfile.writelines([output.to_json(), "\n"])
+
+
+def send_transaction(args):
+    args = utils.as_object(args)
+
+    proxy = ElrondProxy(args.proxy)
+
+    output = utils.Object()
+    prepared = PreparedTransaction.from_file(args.infile)
+    output.tx = prepared.to_dictionary()
+    output.hash = prepared.send(proxy)
+    args.outfile.writelines([output.to_json(), "\n"])
 
 
 def prepare_and_send_stake_transaction(args):
@@ -287,6 +348,7 @@ def generate_pem(args):
 
     seed, pubkey = wallet.generate_pair()
     if mnemonic:
+        mnemonic = input("Enter mnemonic:\n")
         seed, pubkey = wallet.derive_keys(mnemonic)
 
     address = Address(pubkey)
@@ -304,22 +366,22 @@ def do_bech32(args):
     return result
 
 
-def blockatlas_get_current_block_number(args):
+def blockatlas_get_current_block_number(args: Any) -> Any:
     client = BlockAtlas(args.url, args.coin)
     number = client.get_current_block_number()
     print(number)
     return number
 
 
-def blockatlas_get_block_by_number(args):
+def blockatlas_get_block_by_number(args: Any) -> Any:
     client = BlockAtlas(args.url, args.coin)
     block = client.get_block_by_number(args.number)
     print(block)
     return block
 
 
-def blockatlas_get_txs_by_address(args):
+def blockatlas_get_txs_by_address(args: Any) -> Any:
     client = BlockAtlas(args.url, args.coin)
     transactions = client.get_txs_by_address(args.address)
-    print(transactions)
+    utils.dump_out_json(transactions, args.outfile)
     return transactions

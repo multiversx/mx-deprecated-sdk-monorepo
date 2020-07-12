@@ -14,6 +14,10 @@ class ProjectRust(Project):
         super().__init__(directory)
         self.cargo_file = self._get_cargo_file()
 
+    def clean(self):
+        super().clean()
+        utils.remove_folder(path.join(self.directory, "target"))
+
     def _get_cargo_file(self):
         cargo_path = path.join(self.directory, "Cargo.toml")
         return CargoFile(cargo_path)
@@ -63,8 +67,8 @@ class CargoFile:
 
         try:
             self._parse_file()
-        except Exception:
-            raise errors.BuildError("Can't read cargo file.")
+        except Exception as err:
+            raise errors.BuildError("Can't read or parse [Cargo.toml] file", err)
 
     def _parse_file(self):
         self.data = utils.read_toml_file(self.path)

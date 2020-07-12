@@ -2,13 +2,14 @@ import asyncio
 import logging
 import subprocess
 import traceback
+from typing import Any, List
 
 from erdpy import feedback, errors
 
 logger = logging.getLogger("myprocess")
 
 
-def run_process(args, env=None):
+def run_process(args: List[str], env: Any = None):
     logger.info(f"run_process: {args}")
 
     try:
@@ -20,7 +21,7 @@ def run_process(args, env=None):
         raise errors.ExternalProcessError(error.cmd, error.output)
 
 
-def run_process_async(args, env=None):
+def run_process_async(args: List[str], env: Any = None):
     loop = asyncio.get_event_loop()
     result = loop.run_until_complete(async_subprocess(args, env))
     loop.close()
@@ -51,5 +52,5 @@ async def _read_stream(stream, sinks=None):
                         feedback.get_sink(sink).write(line)
             else:
                 break
-        except:
+        except Exception:
             print(traceback.format_exc())

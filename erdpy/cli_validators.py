@@ -1,71 +1,76 @@
-import sys
+from typing import Any
 
-from erdpy import config, facade
+from erdpy import cli_shared, facade
 
 
-def setup_parser(subparsers):
-    sub = subparsers.add_parser("stake")
+def setup_parser(subparsers: Any) -> Any:
+    parser = cli_shared.add_group_subparser(subparsers, "validator", "Stake, Unjail and other actions useful for Validators")
+    subparsers = parser.add_subparsers()
+
+    sub = cli_shared.add_command_subparser(subparsers, "validator", "stake", "Stake value into the Network")
     _add_common_arguments(sub)
-    sub.add_argument("--number-of-nodes", required=True)
-    sub.add_argument("--nodes-public-keys", required=True)
-    sub.add_argument("--reward-address", default="")
+    sub.add_argument("--number-of-nodes", required=True, help="number of nodes to register")
+    _add_nodes_arg(sub)
+    sub.add_argument("--reward-address", default="", help="the reward address")
     sub.set_defaults(func=do_stake)
 
-    sub = subparsers.add_parser("unstake")
+    sub = cli_shared.add_command_subparser(subparsers, "validator", "unstake", "Unstake value")
     _add_common_arguments(sub)
-    sub.add_argument("--nodes-public-keys", required=True)
+    _add_nodes_arg(sub)
     sub.set_defaults(func=do_unstake)
 
-    sub = subparsers.add_parser("unjail")
+    sub = cli_shared.add_command_subparser(subparsers, "validator", "unjail", "Unjail a Validator Node")
     _add_common_arguments(sub)
-    sub.add_argument("--nodes-public-keys", required=True)
+    _add_nodes_arg(sub)
     sub.set_defaults(func=do_unjail)
 
-    sub = subparsers.add_parser("unbond")
+    sub = cli_shared.add_command_subparser(subparsers, "validator", "unbond", "Unbond")
     _add_common_arguments(sub)
-    sub.add_argument("--nodes-public-keys", required=True)
+    _add_nodes_arg(sub)
     sub.set_defaults(func=do_unbond)
 
-    sub = subparsers.add_parser("change-reward-address")
+    sub = cli_shared.add_command_subparser(subparsers, "validator", "change-reward-address", "Change the reward address")
     _add_common_arguments(sub)
-    sub.add_argument("--reward-address", required=True)
+    sub.add_argument("--reward-address", required=True, help="the new reward address")
     sub.set_defaults(func=change_reward_address)
 
-    sub = subparsers.add_parser("claim")
+    sub = cli_shared.add_command_subparser(subparsers, "validator", "claim", "Claim rewards")
     _add_common_arguments(sub)
     sub.set_defaults(func=do_claim)
 
-
-def _add_common_arguments(sub):
-    sub.add_argument("--pem", required=True)
-    sub.add_argument("--nonce", type=int, required=not("--recall-nonce" in sys.argv))
-    sub.add_argument("--recall-nonce", action="store_true", default=False)
-    sub.add_argument("--value", default="0")
-    sub.add_argument("--gas-price", default=config.DEFAULT_GAS_PRICE)
-    sub.add_argument("--gas-limit", required=not("--estimate-gas" in sys.argv))
-    sub.add_argument("--estimate-gas", action="store_true", default=False)
-    sub.add_argument("--proxy", required=True)
+    parser.epilog = cli_shared.build_group_epilog(subparsers)
+    return subparsers
 
 
-def do_stake(args):
+def _add_common_arguments(sub: Any):
+    cli_shared.add_proxy_arg(sub)
+    cli_shared.add_wallet_args(sub)
+    cli_shared.add_tx_args(sub, with_receiver=False, with_data=False, with_estimate_gas=True)
+
+
+def _add_nodes_arg(sub: Any):
+    sub.add_argument("--nodes-public-keys", required=True, help="the public keys of the nodes as CSV (addrA,addrB)")
+
+
+def do_stake(args: Any):
     facade.prepare_and_send_stake_transaction(args)
 
 
-def do_unstake(args):
+def do_unstake(args: Any):
     facade.prepare_and_send_unstake_transaction(args)
 
 
-def do_unbond(args):
+def do_unbond(args: Any):
     facade.prepare_and_send_unbond_transaction(args)
 
 
-def do_unjail(args):
+def do_unjail(args: Any):
     facade.prepare_and_send_unjail_transaction(args)
 
 
-def change_reward_address(args):
+def change_reward_address(args: Any):
     facade.prepare_and_send_change_reward_address_transaction(args)
 
 
-def do_claim(args):
+def do_claim(args: Any):
     facade.prepare_and_send_claim_transaction(args)

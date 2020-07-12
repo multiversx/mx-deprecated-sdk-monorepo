@@ -1,11 +1,13 @@
 import json
 import logging
+from binascii import unhexlify
 from collections import OrderedDict
 from os import path
+from typing import Any
 
 from erdpy import config, utils
-from erdpy.accounts import Address
-from erdpy.wallet import pem, signing
+from erdpy.accounts import Account
+from erdpy.wallet import signing
 
 logger = logging.getLogger("transactions")
 
@@ -19,8 +21,8 @@ class PlainTransaction:
         self.gasPrice = 0
         self.gasLimit = 0
         self.data = ""
-        self.chainID = config.CHAIN_ID
-        self.version = config.TX_VERSION
+        self.chainID = ""
+        self.version = 0
 
     def payload(self):
         return self.__dict__.copy()
@@ -46,9 +48,9 @@ class TransactionPayloadToSign:
         if self.data:
             ordered_fields["data"] = self.data
 
-        if config.WITH_CHAIN_ID_AND_TX_VERSION:
-            ordered_fields["chainID"] = config.CHAIN_ID
-            ordered_fields["version"] = config.TX_VERSION
+        if config.get_with_chain_and_version():
+            ordered_fields["chainID"] = self.chainID
+            ordered_fields["version"] = int(self.version)
 
         data_json = json.dumps(ordered_fields, separators=(',', ':')).encode("utf8")
         return data_json
@@ -72,16 +74,18 @@ class PreparedTransaction(PlainTransaction):
             self.data = transaction.data
 
     @classmethod
-    def from_file(cls, filename):
-        data_json = utils.read_file(filename).encode()
+    def from_file(cls, f):
+        data_json = utils.read_file(f).encode()
         return cls.from_json(data_json)
 
-    def save_to_file(self, filename):
-        utils.write_file(filename, self.to_json())
+    def save_to_file(self, f):
+        utils.write_file(f, self.to_json())
 
     @classmethod
     def from_json(cls, json_data):
         dictionary = json.loads(json_data)
+        # Handle both the old and the new format (wrapped tx or unwrapped)
+        dictionary = dictionary.get("tx", dictionary)
         return cls.from_dictionary(dictionary)
 
     def to_json(self):
@@ -96,7 +100,7 @@ class PreparedTransaction(PlainTransaction):
         return self.__dict__.copy()
 
     def send(self, proxy):
-        logger.info(f"PreparedTransaction.send:\n{self.to_json()}")
+        logger.info(f"PreparedTransaction.send: nonce={self.nonce}")
         tx_hash = proxy.send_transaction(self.to_dictionary())
         logger.info(f"Hash: {tx_hash}")
         return tx_hash
@@ -120,7 +124,7 @@ class BunchOfTransactions:
         plain.data = data
 
         payload = TransactionPayloadToSign(plain)
-        signature = signing.sign_transaction(payload, sender.pem_file)
+        signature = signing.sign_transaction_with_seed(payload, unhexlify(sender.private_key_seed))
         prepared = PreparedTransaction(plain, signature)
 
         self.transactions.append(prepared)
@@ -137,7 +141,7 @@ class BunchOfTransactions:
         return num_sent, hashes
 
 
-def prepare(args):
+def prepare(args: Any) -> None:
     workspace = args.workspace
     utils.ensure_folder(workspace)
 
@@ -148,20 +152,24 @@ def prepare(args):
 
 
 def do_prepare_transaction(args):
-    # "sender" taken from the PEM file
-    sender_bytes = pem.get_pubkey(args.pem)
-    sender_bech32 = Address(sender_bytes).bech32()
+    if args.pem:
+        account = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        account = Account(key_file=args.keyfile, pass_file=args.passfile)
 
     plain = PlainTransaction()
     plain.nonce = int(args.nonce)
     plain.value = args.value
-    plain.sender = sender_bech32
+    plain.sender = account.address.bech32()
     plain.receiver = args.receiver
     plain.gasPrice = int(args.gas_price)
     plain.gasLimit = int(args.gas_limit)
     plain.data = args.data
+    plain.chainID = args.chain
+    plain.version = int(args.version)
 
     payload = TransactionPayloadToSign(plain)
-    signature = signing.sign_transaction(payload, args.pem)
+    signature = signing.sign_transaction_with_seed(payload, unhexlify(account.private_key_seed))
+
     prepared = PreparedTransaction(plain, signature)
     return prepared

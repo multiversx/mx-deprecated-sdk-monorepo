@@ -1,22 +1,43 @@
 import logging
 import os
+import os.path
+import pathlib
+import shutil
 import subprocess
 import sys
+from argparse import ArgumentParser
 
 logger = logging.getLogger("installer")
 
 MIN_REQUIRED_PYTHON_MAJOR_VERSION = 3
 MIN_REQUIRED_PYTHON_MINOR_VERSION = 6
+MIN_REQUIRED_PYTHON_MINOR_VERSION_MACOS = 8
+
+elrondsdk_path = None
+exact_version = None
 
 
 def main():
+    global elrondsdk_path
+    global exact_version
+
+    parser = ArgumentParser()
+    parser.add_argument("--modify-path", dest="modify_path", action="store_true", help="whether to modify $PATH (in profile file)")
+    parser.add_argument("--no-modify-path", dest="modify_path", action="store_false", help="whether to modify $PATH (in profile file)")
+    parser.add_argument("--elrondsdk-path", default=get_elrond_sdk_path_default(), help="where to install elrond-sdk")
+    parser.add_argument("--exact-version", help="the exact version of erdpy to install")
+    parser.set_defaults(modify_path=True)
+    args = parser.parse_args()
+
+    elrondsdk_path = os.path.expanduser(args.elrondsdk_path)
+    modify_path = args.modify_path
+    exact_version = args.exact_version
+
     logging.basicConfig(level=logging.DEBUG)
 
     operating_system = get_operating_system()
-
     python_major_version = sys.version_info.major
     python_minor_version = sys.version_info.minor
-    python_version_string = f"{python_major_version}.{python_minor_version}"
 
     logger.info("Checking user.")
     if os.getuid() == 0:
@@ -26,60 +47,26 @@ def main():
     logger.info(f"Python version: {sys.version_info}")
     if python_major_version < MIN_REQUIRED_PYTHON_MAJOR_VERSION or (python_major_version >= MIN_REQUIRED_PYTHON_MAJOR_VERSION and python_minor_version < MIN_REQUIRED_PYTHON_MINOR_VERSION):
         raise Exception("You need Python 3.6 or later.")
+    if operating_system == "osx":
+        if python_minor_version < MIN_REQUIRED_PYTHON_MINOR_VERSION_MACOS:
+            raise Exception("On MacOS, you need Python 3.8 or later.")
 
     logger.info("Checking operating system.")
     logger.info(f"Operating system: {operating_system}")
     if operating_system != "linux" and operating_system != "osx":
         raise Exception("Your operating system is not supported yet.")
 
-    logger.info("Checking pip.")
-    try:
-        import pip
-        print("pip", pip.__version__)
-    except ImportError:
-        raise Exception("[pip] is not installed. Please install [pip3] first.")
-
-    logger.info("Checking PATH variable.")
-    PATH = os.environ["PATH"]
-
-    if operating_system == "linux":
-        required_path = "${HOME}/.local/bin"
-        required_path_expanded = os.path.expanduser("~/.local/bin")
-    else:
-        required_path = "${HOME}/Library/Python/{python_version_string}/bin"
-        required_path_expanded = os.path.expanduser(f"~/Library/Python/{python_version_string}/bin")
-
-    if required_path_expanded not in PATH:
-        profile_file = get_profile_file()
-
-        logger.info(f"""
-In order to register [erdpy] as a command, your [$PATH] environment variable should include the folder [{required_path_expanded}].
-Please edit the file "{profile_file}" and add the following line:
-
-    export PATH={required_path}:${{PATH}}
-
-Then, restart the user session and retry the [erdpy] installer.
-        """)
-        return
-    else:
-        logger.info(f"Your $PATH environment variable contains the necessary path [{required_path_expanded}].")
-
-    logger.info("Perform actual installation via pip.")
-    try:
-        env = {
-            "PYTHONIOENCODING": "utf8"
-        }
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "--user", "--no-cache-dir", "erdpy"], env=env)
-    except Exception:
-        raise Exception("Could not install [erdpy].")
-
-    logger.info("Checking if [erdpy] command is registered correctly.")
-    try:
-        subprocess.check_call(["erdpy", "--version"])
-    except Exception:
-        raise Exception("[erdpy] command not registered correctly. Please contact us at https://t.me/ElrondDevelopers.")
-
-    logger.info("You have successfully installed erdpy. For more information go to https://docs.elrond.com.")
+    remove_installation()
+    create_venv()
+    install_erdpy()
+    if modify_path:
+        add_sdk_to_path()
+        logger.info("""
+###############################################################################
+Upon restarting the user session, [$ erdpy] command should be available in your shell.
+Furthermore, after restarting the user session, you can use [$ source erdpy-activate] to activate the Python virtual environment containing erdpy.
+###############################################################################
+""")
 
 
 def get_operating_system():
@@ -100,16 +87,145 @@ def get_operating_system():
     return operating_system
 
 
-def get_profile_file():
+def remove_installation():
+    old_folder = os.path.expanduser("~/ElrondSCTools")
+    if os.path.isdir(old_folder):
+        answer = input(f"Older installation in {old_folder} has to be removed. Allow? (y/n)")
+        if answer.lower() not in ["y", "yes"]:
+            raise Exception("Installation will not continue.")
+        shutil.rmtree(old_folder)
+        logger.info("Removed previous installation (ElrondSCTools).")
+
+    folder = get_erdpy_path()
+    if os.path.isdir(folder):
+        shutil.rmtree(folder)
+        logger.info("Removed previous installation (virtual environment).")
+
+
+def create_venv():
+    require_venv()
+    folder = get_erdpy_path()
+    ensure_folder(folder)
+
+    logger.info(f"Creating virtual environment in: {folder}.")
+    import venv
+    builder = venv.EnvBuilder(with_pip=True)
+    builder.clear_directory(folder)
+    builder.create(folder)
+
+    # Create symlink to "bin/activate"
+    link_path = os.path.join(elrondsdk_path, "erdpy-activate")
+    if os.path.exists(link_path):
+        os.remove(link_path)
+    os.symlink(os.path.join(folder, "bin", "activate"), link_path)
+    logger.info(f"Virtual environment has been created in: {folder}.")
+
+
+def require_venv():
     operating_system = get_operating_system()
 
-    if operating_system == "linux":
-        return "~/.profile"
-    else:
-        if "ZSH_VERSION" in os.environ:
-            return "~/.zshrc"
+    try:
+        import ensurepip
+        import venv
+        logger.info(f"Packages found: {ensurepip}, {venv}.")
+    except ModuleNotFoundError:
+        if operating_system == "linux":
+            logger.info("Package [venv] or [ensurepip] not found, will be installed.")
+            logger.info("Running [$ sudo apt-get install python3-venv]:")
+            return_code = os.system("sudo apt-get install python3-venv")
+            if return_code == 0:
+                logger.info("Done installing [python3-venv].")
+            else:
+                raise Exception("Packages [venv] or [ensurepip] not installed correctly.")
         else:
-            return "~/.bash_profile"
+            raise Exception("Packages [venv] or [ensurepip] not found, please install them first. See https://docs.python.org/3/tutorial/venv.html.")
+
+
+def get_erdpy_path():
+    return os.path.join(elrondsdk_path, "erdpy-venv")
+
+
+def get_elrond_sdk_path_default():
+    return os.path.expanduser("~/elrondsdk")
+
+
+def ensure_folder(folder):
+    pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
+
+
+def install_erdpy():
+    logger.info("Installing erdpy in virtual environment...")
+    erpy_versioned = "erdpy" if not exact_version else f"erdpy=={exact_version}"
+    return_code = run_in_venv(["pip", "install", "--no-cache-dir", erpy_versioned])
+    if return_code != 0:
+        raise Exception("Could not install erdpy.")
+    return_code = run_in_venv(["erdpy", "--version"])
+    if return_code != 0:
+        raise Exception("Could not install erdpy.")
+
+    # Create symlink to "bin/erdpy"
+    link_path = os.path.join(elrondsdk_path, "erdpy")
+    if os.path.exists(link_path):
+        os.remove(link_path)
+    os.symlink(os.path.join(get_erdpy_path(), "bin", "erdpy"), link_path)
+    logger.info("You have successfully installed erdpy.")
+
+
+def run_in_venv(args):
+    if "PYTHONHOME" in os.environ:
+        del os.environ["PYTHONHOME"]
+
+    process = subprocess.Popen(args, env={
+        "PATH": os.path.join(get_erdpy_path(), "bin"),
+        "VIRTUAL_ENV": get_erdpy_path()
+    })
+
+    return process.wait()
+
+
+def add_sdk_to_path():
+    logger.info("Checking PATH variable.")
+    PATH = os.environ["PATH"]
+    if elrondsdk_path in PATH:
+        logger.info(f"elrond-sdk path ({elrondsdk_path}) already in $PATH variable.")
+        return
+
+    profile_file = get_profile_file()
+    logger.info(f"Adding elrond-sdk path [{elrondsdk_path}] to $PATH variable.")
+    logger.info(f"[{profile_file}] will be modified.")
+
+    with open(profile_file, "a") as file:
+        file.write(f'\nexport PATH="{elrondsdk_path}:$PATH"\t# elrond-sdk\n')
+
+    logger.info(f"""
+###############################################################################
+[{profile_file}] has been modified.
+Please RESTART THE USER SESSION.
+###############################################################################
+""")
+
+
+def get_profile_file():
+    operating_system = get_operating_system()
+    file = None
+
+    if operating_system == "linux":
+        file = "~/.profile"
+    else:
+        value = input("""Please choose your preferred shell:
+1) zsh
+2) bash
+""")
+        if value not in ["1", "2"]:
+            raise Exception("Invalid choice.")
+
+        value = int(value)
+        if value == 1:
+            file = "~/.zshrc"
+        else:
+            file = "~/.bash_profile"
+
+    return os.path.expanduser(file)
 
 
 if __name__ == "__main__":
@@ -118,3 +234,9 @@ if __name__ == "__main__":
     except Exception as err:
         logger.fatal(err)
         sys.exit(1)
+
+    logger.info("""
+
+For more information go to https://docs.elrond.com.
+For support, please contact us at https://t.me/ElrondDevelopers.
+""")
