@@ -88,6 +88,14 @@ def get_operating_system():
 
 
 def remove_installation():
+    old_folder = os.path.expanduser("~/ElrondSCTools")
+    if os.path.isdir(old_folder):
+        answer = input(f"Older installation in {old_folder} has to be removed. Allow? (y/n)")
+        if answer.lower() not in ["y", "yes"]:
+            raise Exception("Installation will not continue.")
+        shutil.rmtree(old_folder)
+        logger.info("Removed previous installation (ElrondSCTools).")
+
     folder = get_erdpy_path()
     if os.path.isdir(folder):
         shutil.rmtree(folder)
