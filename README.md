@@ -4,7 +4,7 @@
 
 **erdpy** overview and **installation steps** are on [docs.elrond.com](https://docs.elrond.com/tools/erdpy).
 
-**Development is in progress. See [CHANGELOG](CHANGELOG.md).**
+**Development is in progress. See erdpy's [CHANGELOG](erdpy/CHANGELOG.md).**
 
 For tutorials, go to [wiki](https://github.com/ElrondNetwork/erdpy/wiki). For Python SDK examples, see [examples](examples).
 
