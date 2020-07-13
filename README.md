@@ -4,13 +4,12 @@
 
 This is a monorepo containing the following:
 
-| Component   |      Type      |  Documentation | Changelog | CLI |
-|----------|:-------------:|:-------------:|:-------------:|:-------------:|
-| erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/tools/erdpy) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) |
-| erdjs |    TypeScript SDK   |  TBD | TBD | N / A |
-| erdtestjs |    TypeScript SDK   |  TBD | TBD | N / A |
-| walletjs-cli | NodeJS CLI |    TBD | TBD | TBD |
-
+| Component   |      Type      |  Documentation | Changelog | CLI | Distribution
+|----------|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
+| erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/tools/erdpy) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) | [erdpy-up](https://docs.elrond.com/tools/erdpy/installing-erdpy#install-using-erdpy-up) and [PyPi](https://pypi.org/project/erdpy/#history)
+| erdjs |    TypeScript SDK   |  TBD | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdjs)
+| erdtestjs |    TypeScript SDK   |  TBD | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdtestjs)
+| walletjs-cli | NodeJS CLI |    TBD | TBD | TBD | TBD
 
 For developing Smart Contracts, [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide), which is a frontend for erdpy, should be a good start. 
 
