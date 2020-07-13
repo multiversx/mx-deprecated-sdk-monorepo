@@ -1,5 +1,5 @@
 {
-  "name": "erdwalletjs-cli",
+  "name": "@elrondnetwork/erdwalletjs-cli",
   "version": "1.0.0-beta.0",
   "description": "Light CLI wrapper over @elrondnetwork/elrond-core-js",
   "repository": {
