@@ -2,16 +2,16 @@ SANDBOX=./testdata-out
 WALLETJS="../index.js"
 
 testAll() {
-    set -x
-
     cleanSandbox
-    ${WALLETJS} generate-mnemonic -o ${SANDBOX}/mnemonicOfAlice.txt
-    ${WALLETJS} generate-key-file -o ${SANDBOX}/walletOfAlice.json -m ${SANDBOX}/mnemonicOfAlice.txt -p ./testdata/passwordOfAlice.txt
-    ${WALLETJS} generate-key-file -o ${SANDBOX}/walletOfAlice-sCat.json -m ${SANDBOX}/mnemonicOfAlice.txt -p ./testdata/passwordOfAlice.txt --index=1
+    echo "Alice creates a mnemonic"
+    ${WALLETJS} new --out-mnemonic-file ${SANDBOX}/mnemonicOfAlice.txt
+    echo "Alice derives a key, index = 0"
+    ${WALLETJS} new --key-file ${SANDBOX}/walletOfAlice.json --password-file ./testdata/passwordOfAlice.txt --in-mnemonic-file ${SANDBOX}/mnemonicOfAlice.txt
+    echo "Alice derives another key, index = 1"
+    ${WALLETJS} new --key-file ${SANDBOX}/walletOfAlice-sCat.json --password-file ./testdata/passwordOfAlice.txt --in-mnemonic-file ${SANDBOX}/mnemonicOfAlice.txt
+    echo "Alice signs a transaction"
     ${WALLETJS} sign -i ./testdata/aliceToBob.json -o ${SANDBOX}/aliceToBobSigned.json -k ${SANDBOX}/walletOfAlice.json -p ./testdata/passwordOfAlice.txt
 
-    set +x
-    
     assertFileExists ${SANDBOX}/mnemonicOfAlice.txt
     assertFileExists ${SANDBOX}/walletOfAlice.json
     assertFileExists ${SANDBOX}/walletOfAlice-sCat.json

@@ -9,7 +9,7 @@
   },
   "main": "index.js",
   "bin": {
-    "walletjs-cli": "./index.js"
+    "erd-walletjs-cli": "./index.js"
   },
   "scripts": {},
   "keywords": [

@@ -21,63 +21,73 @@ function main() {
 }
 
 function setupCli(program) {
-    program
-        .command("generate-mnemonic")
-        .description("Generate a new mnemonic phrase (24 words) and write it to a file")
-        .requiredOption("-o, --out-file <outFile>", "where to write the mnemonic")
-        .option("-d, --display", "also display mnemonic in stdout")
-        .action(generateMnemonic);
+    program.name("erd-walletjs-cli")
 
     program
-        .command("generate-key-file")
-        .description("Generate a new JSON key-file from a given mnemonic")
-        .requiredOption("-m, --mnemonic-file <mnemonicFile>", "the file containing the mnemonic")
-        .requiredOption("-p, --password-file <passwordFile>", "the file containing the password for the key-file")
-        .requiredOption("-o, --out-file <outFile>", "where to save the key-file")
-        .option("-i, --index <index>", "the index of the wallet to derive", "0")
-        .action(generateKeyFile);
+        .command("new")
+        .description("Create a wallet based on a new or existing mnemonic phrase")
+        .option("--in-mnemonic-file <inMnemonicFile>", "the file containing an existing mnemonic")
+        .option("--out-mnemonic-file <outMnemonicFile>", "where to save the new mnemonic, if it's the case")
+        .option("--account-index <accountIndex>", "the index of the wallet to derive", "0")
+        .option("--password-file <passwordFile>", "the file containing the key-file password")
+        .option("--key-file <keyFile>", "where to save the key-file")
+        .action(newWallet);
 
     program
         .command("sign")
-        .description("Read a JSON message (transaction), sign it, then write it to a file")
-        .requiredOption("-i, --in-file <inFile>", "the file containing the JSON message (transaction)")
-        .requiredOption("-o, --out-file <outFile>", "where to save the signed JSON message (transaction)")
-        .requiredOption("-k, --key-file <keyFile>", "the JSON key-file (the wallet)")
-        .requiredOption("-p, --password-file <passwordFile>", "a file containing the password in clear text")
+        .description("Sign a JSON transaction")
+        .requiredOption("-i, --in-file <inFile>", "the file containing the JSON transaction")
+        .requiredOption("-o, --out-file <outFile>", "where to save the signed JSON transaction")
+        .requiredOption("-k, --key-file <keyFile>", "the key-file (the wallet)")
+        .requiredOption("-p, --password-file <passwordFile>", "the file containing the key-file password")
         .action(signMessage);
 }
 
-function generateMnemonic(cmdObj) {
-    let outFile = asUserPath(cmdObj.outFile);
-    let display = cmdObj.display;
-    let account = new core.account();
-    let mnemonic = account.generateMnemonic();
+function newWallet(cmdObj) {
+    let passwordFile = asUserPath(cmdObj.passwordFile);
+    let keyFile = asUserPath(cmdObj.keyFile);
+    let accountIndex = parseInt(cmdObj.index) || 0;
 
-    guardFileNotExists(outFile);
-    fs.writeFileSync(outFile, `${mnemonic}\n`);
+    let mnemonic = getOrGenerateMnemonic(cmdObj);
 
-    if (display) {
-        console.log(mnemonic);
+    if (!keyFile) {
+        // Mnemonic generated and displayed, but no keyfile will be generated.
+        return;
     }
+
+    let password = readText(passwordFile);
+    let keyFileJson = deriveWallet(mnemonic, accountIndex, password);
+
+    writeToNewFile(keyFile, `${keyFileJson}\n`)
 }
 
-function generateKeyFile(cmdObj) {
-    let mnemonicFile = asUserPath(cmdObj.mnemonicFile);
-    let passwordFile = asUserPath(cmdObj.passwordFile);
-    let outFile = asUserPath(cmdObj.outFile);
-    let index = parseInt(cmdObj.index) || 0;
+function getOrGenerateMnemonic(cmdObj) {
+    let inMnemonicFile = asUserPath(cmdObj.inMnemonicFile);
+    let outMnemonicFile = asUserPath(cmdObj.outMnemonicFile);
 
-    let mnemonic = readText(mnemonicFile);
-    let password = readText(passwordFile);
+    if (inMnemonicFile) {
+        return readText(inMnemonicFile);
+    }
 
     let account = new core.account();
-    let privateKeyHex = account.privateKeyFromMnemonic(mnemonic, false, index.toString(), "");
-    let privateKey = Buffer.from(privateKeyHex, "hex");
-    let keyFile = account.generateKeyFileFromPrivateKey(privateKey, password);
-    let keyFileJson = JSON.stringify(keyFile, null, 4);
+    let mnemonic = account.generateMnemonic();
+    
+    console.log("Write down these words in this exact order. You can use them to access your wallet. So could anyone else, if they had them.")
+    console.log(`\n${mnemonic}\n`);
 
-    guardFileNotExists(outFile);
-    fs.writeFileSync(outFile, `${keyFileJson}\n`);
+    writeToNewFile(outMnemonicFile, `${mnemonic}\n`)
+    console.log(`Mnemonic saved to file as well: ${outMnemonicFile}.`);
+
+    return mnemonic;
+}
+
+function deriveWallet(mnemonic, accountIndex, password) {
+    let account = new core.account();
+    let privateKeyHex = account.privateKeyFromMnemonic(mnemonic, false, accountIndex.toString(), "");
+    let privateKey = Buffer.from(privateKeyHex, "hex");
+    let keyFileObject = account.generateKeyFileFromPrivateKey(privateKey, password);
+    let keyFileJson = JSON.stringify(keyFileObject, null, 4);
+    return keyFileJson;
 }
 
 function signMessage(cmdObj) {
@@ -112,20 +122,21 @@ function signMessage(cmdObj) {
     let signedTransaction = transaction.prepareForNode();
     let signedTransactionJson = JSON.stringify(signedTransaction, null, 4);
 
-    guardFileNotExists(outFile);
-    fs.writeFileSync(outFile, `${signedTransactionJson}\n`);
+    writeToNewFile(outFile, `${signedTransactionJson}\n`);
 }
 
 function asUserPath(userPath) {
-    return userPath.replace("~", os.homedir);
+    return (userPath || "").replace("~", os.homedir);
 }
 
 function readText(filePath) {
     return fs.readFileSync(filePath, { encoding: "utf8" }).trim();
 }
 
-function guardFileNotExists(filePath) {
+function writeToNewFile(filePath, content) {
     if (fs.existsSync(filePath)) {
         throw Error(`File ${filePath} must not exist, it won't be overwritten.`);
     }
+    
+    fs.writeFileSync(filePath, content);
 }
