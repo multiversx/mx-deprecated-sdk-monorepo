@@ -3,12 +3,12 @@ import sys
 import time
 from argparse import ArgumentParser
 
+from erdpy import config, errors
 from erdpy.accounts import Account
 from erdpy.proxy import ElrondProxy
 from erdpy.transactions import (PlainTransaction, PreparedTransaction,
                                 TransactionPayloadToSign)
 from erdpy.wallet import signing
-from erdpy import errors
 
 logger = logging.getLogger("bon_mission4")
 
@@ -67,6 +67,8 @@ def send_one_tx(proxy, sender, receiver_address):
     plain.gasPrice = 200000000000
     plain.gasLimit = 50000
     plain.data = ""
+    plain.chainID = config.get_chain_id()
+    plain.version = config.get_tx_version()
 
     payload = TransactionPayloadToSign(plain)
     signature = signing.sign_transaction(payload, sender.pem_file)
