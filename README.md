@@ -11,7 +11,7 @@ This is a monorepo containing the following:
 | erdtestjs |    TypeScript SDK   |  TBD | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdtestjs)
 | walletjs-cli | NodeJS CLI |    TBD | TBD | TBD | TBD
 
-For developing Smart Contracts, [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide), which is a frontend for erdpy, should be a good start. 
+For developing Smart Contracts, [our tutorials](https://docs.elrond.com/developers/dev-tutorials), plus [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide) - which is a frontend for erdpy - should be a good start. 
 
 
 ## Developers
