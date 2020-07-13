@@ -1,15 +1,15 @@
 {
-  "name": "walletjs-cli",
-  "version": "1.0.0",
+  "name": "@elrondnetwork/erdwalletjs-cli",
+  "version": "1.0.0-beta.0",
   "description": "Light CLI wrapper over @elrondnetwork/elrond-core-js",
   "repository": {
-    "type" : "git",
+    "type": "git",
     "url": "https://github.com/ElrondNetwork/elrond-sdk.git",
-    "directory": "walletjs-cli"
+    "directory": "erdwalletjs-cli"
   },
   "main": "index.js",
   "bin": {
-    "walletjs-cli": "./index.js"
+    "erdwalletjs": "./index.js"
   },
   "scripts": {},
   "keywords": [

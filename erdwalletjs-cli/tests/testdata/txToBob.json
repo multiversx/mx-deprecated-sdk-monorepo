@@ -1,6 +1,5 @@
 {
     "nonce": 42,
-    "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
     "receiver": "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r",
     "value": "100000000000000000",
     "gasPrice": 200000000000,
