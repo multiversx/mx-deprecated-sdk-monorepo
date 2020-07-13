@@ -5,11 +5,11 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ElrondNetwork/elrond-sdk.git",
-    "directory": "walletjs-cli"
+    "directory": "erdwalletjs-cli"
   },
   "main": "index.js",
   "bin": {
-    "erd-walletjs-cli": "./index.js"
+    "erdwalletjs": "./index.js"
   },
   "scripts": {},
   "keywords": [

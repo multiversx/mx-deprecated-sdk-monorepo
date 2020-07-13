@@ -20,7 +20,7 @@ function main() {
 }
 
 function setupCli(program) {
-    program.name("erd-walletjs-cli")
+    program.name("erdwalletjs")
 
     program
         .command("new")
