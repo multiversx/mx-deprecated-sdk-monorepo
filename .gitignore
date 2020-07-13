@@ -153,4 +153,4 @@ db/**
 tags
 **/node_modules
 
-walletjs-cli/tests/testdata-out/**
+erdwalletjs-cli/tests/testdata-out/**

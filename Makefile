@@ -7,6 +7,9 @@ build-erdpy: clean
 publish-erdpy: build-erdpy
 	twine upload dist/*
 
+publish-erdwalletjs-cli-beta:
+	cd ./erdwalletjs-cli && npm publish --tag=beta --access=public
+
 test-all:
 	python3 -m unittest discover -s erdpy/tests
 
