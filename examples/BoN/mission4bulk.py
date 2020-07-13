@@ -7,7 +7,7 @@ from erdpy.accounts import Account
 from erdpy.proxy import ElrondProxy
 from erdpy.transactions import BunchOfTransactions
 
-from erdpy import errors
+from erdpy import config, errors
 
 logger = logging.getLogger("bon_mission4")
 
@@ -55,9 +55,9 @@ def send_txs(proxy, sender, num, sleep_after):
     bunch = BunchOfTransactions()
 
     for i in range(0, int(num / 2)):
-        bunch.add(sender, "erd1hqplnafrhnd4zv846wumat2462jy9jkmwxtp3nwmw8ye9eclr6fq40f044", sender.nonce, VALUE, "", GAS_PRICE, GAS_LIMIT)
+        bunch.add(sender, "erd1hqplnafrhnd4zv846wumat2462jy9jkmwxtp3nwmw8ye9eclr6fq40f044", sender.nonce, VALUE, "", GAS_PRICE, GAS_LIMIT, config.get_chain_id(), config.get_tx_version())
         sender.nonce += 1
-        bunch.add(sender, "erd1utftdvycwgl3xt0r44ekncentlxgmhucxfq3jt6cjz0w7h6qjchsjarml6", sender.nonce, VALUE, "", GAS_PRICE, GAS_LIMIT)
+        bunch.add(sender, "erd1utftdvycwgl3xt0r44ekncentlxgmhucxfq3jt6cjz0w7h6qjchsjarml6", sender.nonce, VALUE, "", GAS_PRICE, GAS_LIMIT, config.get_chain_id(), config.get_tx_version())
         sender.nonce += 1
 
     num_sent, _ = bunch.send(proxy)
