@@ -1,5 +1,5 @@
 {
-  "name": "walletjs-cli",
+  "name": "erdwalletjs-cli",
   "version": "1.0.0",
   "description": "Light CLI wrapper over @elrondnetwork/elrond-core-js",
   "repository": {
