@@ -21,7 +21,8 @@ generate() {
     printf "# Command Line Interface\n\n" >> README.md
 
     printf "## Overview\n\n" >> README.md
-    printf "**erdwalletjs** exposes the following **commands**:\n\n" >> README.md
+    printf "**erdwalletjs** is a light CLI wrapper over [elrond-core-js](https://www.npmjs.com/package/@elrondnetwork/elrond-core-js) and allows one to generate mnemonics, derive key files and sign Elrond transactions.\n" >> README.md
+    printf "It exposes the following **commands**:\n\n" >> README.md
 
     code
     printf "$ erdwalletjs --help\n" >> README.md

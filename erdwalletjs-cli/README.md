@@ -2,7 +2,8 @@
 
 ## Overview
 
-**erdwalletjs** exposes the following **commands**:
+**erdwalletjs** is a light CLI wrapper over [elrond-core-js](https://www.npmjs.com/package/@elrondnetwork/elrond-core-js) and allows one to generate mnemonics, derive key files and sign Elrond transactions.
+It exposes the following **commands**:
 
 
 ```
