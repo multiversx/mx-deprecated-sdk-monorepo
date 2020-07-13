@@ -18,6 +18,19 @@ testAll() {
     assertFileExists ${SANDBOX}/aliceToBobSigned.json
 }
 
+testErrors() {
+    cleanSandbox
+    echo "> Mnemonic overwrite"
+    echo "foo" > ${SANDBOX}/mnemonicOfAlice.txt
+    ${WALLETJS} new --out-mnemonic-file ${SANDBOX}/mnemonicOfAlice.txt
+
+    echo "> No new mnemonic file, no existing mnemonic file"
+    ${WALLETJS} new
+
+    echo "> Bad account index"
+    ${WALLETJS} new --out-mnemonic-file ${SANDBOX}/newMnemonic.txt --account-index=42
+}
+
 cleanSandbox() {
     rm -rf ${SANDBOX}
     mkdir ${SANDBOX}

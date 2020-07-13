@@ -15,8 +15,7 @@ function main() {
     try {
         program.parse(process.argv)
     } catch (error) {
-        console.error(error.toString());
-        throw error;
+        console.error(`Error: ${error.message}`);
     }
 }
 
@@ -31,7 +30,7 @@ function setupCli(program) {
         .option("--account-index <accountIndex>", "the index of the wallet to derive", "0")
         .option("--password-file <passwordFile>", "the file containing the key-file password")
         .option("--key-file <keyFile>", "where to save the key-file")
-        .action(newWallet);
+        .action(tryAction(newWallet));
 
     program
         .command("sign")
@@ -40,7 +39,22 @@ function setupCli(program) {
         .requiredOption("-o, --out-file <outFile>", "where to save the signed JSON transaction")
         .requiredOption("-k, --key-file <keyFile>", "the key-file (the wallet)")
         .requiredOption("-p, --password-file <passwordFile>", "the file containing the key-file password")
-        .action(signMessage);
+        .action(tryAction(signMessage));
+}
+
+function tryAction(action) {
+    return function (cmdObj) {
+        try {
+            action(cmdObj);
+        } catch (error) {
+            if (error instanceof UsageError) {
+                console.error(`Usage error: ${error.message}`);
+                cmdObj.help();
+            } else {
+                throw error;
+            }
+        }
+    }
 }
 
 function newWallet(cmdObj) {
@@ -69,14 +83,16 @@ function getOrGenerateMnemonic(cmdObj) {
         return readText(inMnemonicFile);
     }
 
+    if (!outMnemonicFile) {
+        throw new UsageError("Should specify where to save the mnemonic.");
+    }
+
     let account = new core.account();
     let mnemonic = account.generateMnemonic();
-    
-    console.log("Write down these words in this exact order. You can use them to access your wallet. So could anyone else, if they had them.")
-    console.log(`\n${mnemonic}\n`);
 
     writeToNewFile(outMnemonicFile, `${mnemonic}\n`)
-    console.log(`Mnemonic saved to file as well: ${outMnemonicFile}.`);
+    console.log(`Mnemonic saved to file: ${outMnemonicFile}.`);
+    console.log(`\n${mnemonic}\n`);
 
     return mnemonic;
 }
@@ -135,8 +151,16 @@ function readText(filePath) {
 
 function writeToNewFile(filePath, content) {
     if (fs.existsSync(filePath)) {
-        throw Error(`File ${filePath} must not exist, it won't be overwritten.`);
+        throw new Error(`File ${filePath} must not exist, it won't be overwritten.`);
     }
-    
+
     fs.writeFileSync(filePath, content);
+}
+
+function UsageError(message) {
+    this.message = message;
+
+    this.toString = function () {
+        return message;
+    }
 }
