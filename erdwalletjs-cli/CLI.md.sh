@@ -28,7 +28,8 @@ generate() {
     ${WALLETJS} --help >> CLI.md
     code
 
-    cliCommand "New" "new"
+    cliCommand "New Mnemonic" "new-mnemonic"
+    cliCommand "Derive Key File" "derive-key"
     cliCommand "Sign" "sign"
 }
 

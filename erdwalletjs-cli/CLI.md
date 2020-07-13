@@ -2,39 +2,58 @@
 
 ## Overview
 
-**erd-walletjs-cli** exposes the following **commands**:
+**erdwalletjs** exposes the following **commands**:
 
 
 ```
-$ erd-walletjs-cli --help
-Usage: erd-walletjs-cli [options] [command]
+$ erdwalletjs --help
+Usage: erdwalletjs [options] [command]
 
 Options:
-  -V, --version   output the version number
-  -h, --help      display help for command
+  -V, --version           output the version number
+  -h, --help              display help for command
 
 Commands:
-  new [options]   Create a wallet based on a new or existing mnemonic phrase
-  sign [options]  Sign a JSON transaction
-  help [command]  display help for command
+  new-mnemonic [options]  Create a new mnemonic phrase (24 words)
+  derive-key [options]    Derive a JSON key-file from an existing mnemonic
+                          phrase
+  sign [options]          Sign a JSON transaction
+  help [command]          display help for command
 
 ```
-### New
+### New Mnemonic
 
 
 ```
-$ erd-walletjs-cli new --help
-Usage: erd-walletjs-cli new [options]
+$ erdwalletjs new-mnemonic --help
+Usage: erdwalletjs new-mnemonic [options]
 
-Create a wallet based on a new or existing mnemonic phrase
+Create a new mnemonic phrase (24 words)
 
 Options:
-  --in-mnemonic-file <inMnemonicFile>    the file containing an existing mnemonic
-  --out-mnemonic-file <outMnemonicFile>  where to save the new mnemonic, if it's the case
-  --account-index <accountIndex>         the index of the wallet to derive (default: "0")
-  --password-file <passwordFile>         the file containing the key-file password
-  --key-file <keyFile>                   where to save the key-file
-  -h, --help                             display help for command
+  -m, --mnemonic-file <mnemonicFile>  where to save the mnemonic
+  -h, --help                          display help for command
+
+```
+
+
+### Derive Key File
+
+
+```
+$ erdwalletjs derive-key --help
+Usage: erdwalletjs derive-key [options]
+
+Derive a JSON key-file from an existing mnemonic phrase
+
+Options:
+  -m, --mnemonic-file <mnemonicFile>  a file containing the mnemonic
+  -n, --account-index <accountIndex>  the account index to derive (default:
+                                      "0")
+  -k, --key-file <keyFile>            the key-file to create
+  -p, --password-file <passwordFile>  a file containing the password for the
+                                      key-file
+  -h, --help                          display help for command
 
 ```
 
@@ -43,8 +62,8 @@ Options:
 
 
 ```
-$ erd-walletjs-cli sign --help
-Usage: erd-walletjs-cli sign [options]
+$ erdwalletjs sign --help
+Usage: erdwalletjs sign [options]
 
 Sign a JSON transaction
 
