@@ -7,15 +7,18 @@ POST {{baseUrl}}/transaction/send HTTP/1.1
 Content-Type: application/json
 
 {
-    "nonce": 0,
-    "value": "100000",
-    "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
-    "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
-    "gasPrice": 200000000000,
-    "gasLimit": 50000000,
-    "data": "",
-    "signature": "730adffa16af2c8e7e4b80235ca0c337faa27e08571ba64792b25173966d9d29ce5d0b34a826cf8ca3f0ea76a08e8cff448ab1174c19a3247fb703ac0d1a6003"
+    "nonce": 42,
+    "value": "100000000000000000",
+    "receiver": "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r",
+    "sender": "erd1njqj2zggfup4nl83x0nfgqjkjserm7mjyxdx5vzkm8k0gkh40ezqtfz9lg",
+    "gasPrice": 1000000000,
+    "gasLimit": 70000,
+    "data": "food for cats",
+    "chainId": "v1.0.141",
+    "version": 1,
+    "signature": "93207c579bf57be03add632b0e1624a73576eeda8a1687e0fa286f03eb1a17ffb125ccdb008a264c402f074a360442c7a034e237679322f62268b614e926d10f"
 }
+
 
 ###
 
@@ -25,24 +28,28 @@ Content-Type: application/json
 
 [
     {
-        "nonce": 0,
-        "value": "100000",
-        "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
-        "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
-        "gasPrice": 200000000000,
-        "gasLimit": 50000000,
-        "data": "",
-        "signature": "730adffa16af2c8e7e4b80235ca0c337faa27e08571ba64792b25173966d9d29ce5d0b34a826cf8ca3f0ea76a08e8cff448ab1174c19a3247fb703ac0d1a6003"
+        "nonce": 42,
+        "value": "100000000000000000",
+        "receiver": "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r",
+        "sender": "erd1njqj2zggfup4nl83x0nfgqjkjserm7mjyxdx5vzkm8k0gkh40ezqtfz9lg",
+        "gasPrice": 1000000000,
+        "gasLimit": 70000,
+        "data": "food for cats",
+        "chainId": "v1.0.141",
+        "version": 1,
+        "signature": "93207c579bf57be03add632b0e1624a73576eeda8a1687e0fa286f03eb1a17ffb125ccdb008a264c402f074a360442c7a034e237679322f62268b614e926d10f"
     },
     {
-        "nonce": 1,
-        "value": "200000",
-        "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
-        "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
-        "gasPrice": 200000000000,
-        "gasLimit": 50000000,
-        "data": "",
-        "signature": "5dad7b04678092cb9a6f592a87ca4c5bf3d92fbbc8452dfa10ebbcf789f389b0fb4a1a9d698d07d93cb298e7ed3c99382d95a1afe4b1dbc6421b718a2da8cb0b"
+        "nonce": 43,
+        "value": "100000000000000000",
+        "receiver": "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r",
+        "sender": "erd1rhp4q3qlydyrrjt7dgpfzxk8n4f7yrat4wc6hmkmcnmj0vgc543s8h7hyl",
+        "gasPrice": 1000000000,
+        "gasLimit": 70000,
+        "data": "bus tickets",
+        "chainID": "v1.0.141",
+        "version": 1,
+        "signature": "01535fd1d40d98b7178ccfd1729b3f526ee4542482eb9f591d83433f9df97ce7b91db07298b1d14308e020bba80dbe4bba8617a96dd7743f91ee4b03d7f43e00"
     }
 ]
 
@@ -56,7 +63,9 @@ Content-Type: application/json
     "value": "100000",
     "sender": "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz",
     "receiver": "erd188nydpkagtpwvfklkl2tn0w6g40zdxkwfgwpjqc2a2m2n7ne9g8q2t22sr",
-    "data": "this is an example"
+    "data": "this is an example",
+    "chainID": "v1.0.141",
+    "version": 1
 }
 
 ###

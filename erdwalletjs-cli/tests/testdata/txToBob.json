@@ -2,9 +2,9 @@
     "nonce": 42,
     "receiver": "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r",
     "value": "100000000000000000",
-    "gasPrice": 200000000000,
-    "gasLimit": 50000,
+    "gasPrice": 1000000000,
+    "gasLimit": 70000,
     "data": "food for cats",
-    "chainID": "BoN",
+    "chainID": "v1.0.141",
     "version": 1
 }
