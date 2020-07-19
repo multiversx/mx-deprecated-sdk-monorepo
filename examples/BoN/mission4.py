@@ -84,5 +84,5 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as err:
-        logger.fatal(err)
+        logger.critical(err)
         sys.exit(1)
