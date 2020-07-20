@@ -14,36 +14,36 @@ func main(){
 	args := os.Args
 
 	if len(os.Args) != 3 {
-	    fmt.Printf("invalid number of arguments: got %d expected 2 \n", len(os.Args)-1)
-	    return
+		_, _ = fmt.Fprintln(os.Stderr, fmt.Sprintf("invalid number of arguments: got %d expected 2 \n", len(os.Args)-1))
+		os.Exit(1)
 	}
 
 	singleSigner := singlesig.BlsSingleSigner{}
 
 	messageToSign, err := hex.DecodeString(args[1])
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		_, _ = fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 
 	seed, err := hex.DecodeString(args[2])
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		_, _ = fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 
 	keyGenerator := signing.NewKeyGenerator(mcl.NewSuiteBLS12())
 	privKey, err := keyGenerator.PrivateKeyFromByteArray(seed)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		_, _ = fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 
-	signedMessage, err := singleSigner.Sign(privKey, messageToSign)
+	signature, err := singleSigner.Sign(privKey, messageToSign)
 	if err != nil {
-		fmt.Println(err.Error())
-		return
+		_, _ = fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
 	}
 
-	fmt.Print(hex.EncodeToString(signedMessage))
+	fmt.Print(hex.EncodeToString(signature))
 }
