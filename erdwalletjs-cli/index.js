@@ -107,6 +107,7 @@ function signMessage(cmdObj) {
     let serializedTransaction = transaction.prepareForSigning();
     transaction.signature = account.sign(serializedTransaction);
     let signedTransaction = transaction.prepareForNode();
+    signedTransaction.version = message.version;
     let signedTransactionJson = JSON.stringify(signedTransaction, null, 4);
 
     writeToNewFile(outFile, `${signedTransactionJson}\n`);
