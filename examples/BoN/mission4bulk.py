@@ -14,7 +14,7 @@ logger = logging.getLogger("bon_mission4")
 counter = 0
 
 VALUE = 20000000000000000
-GAS_PRICE = 200000000000
+GAS_PRICE = 1000000000
 GAS_LIMIT = 50000
 
 
@@ -23,7 +23,7 @@ def main():
     parser.add_argument("--proxy", default="https://api.elrond.com")
     parser.add_argument("--pem", required=True)
     parser.add_argument("--bulk-size", type=int, default=50, help="how many transactions to send in bulk")
-    parser.add_argument("--sleep-before-recall", type=int, default=25, help="how many seconds to sleep before recalling nonce")
+    parser.add_argument("--sleep-before-recall", type=int, default=5, help="how many seconds to sleep before recalling nonce")
     parser.add_argument("--sleep-after-bulk", required=True, help="how many seconds to sleep after sending a bulk")
     args = parser.parse_args()
 
@@ -49,14 +49,14 @@ def main():
             logger.error(err)
 
 
-def send_txs(proxy, sender, num, sleep_after):
+def send_txs(proxy: ElrondProxy, sender: Account, num: int, sleep_after: int):
     print(f"Will send {num} transactions in bulk ({int(num / 2)} for each destination address). Will also sleep {sleep_after} seconds after each bulk.")
 
     bunch = BunchOfTransactions()
     chain_id = config.get_chain_id()
     tx_version = config.get_tx_version()
 
-    for i in range(0, int(num / 2)):
+    for _ in range(0, int(num / 2)):
         bunch.add(sender, "erd1hqplnafrhnd4zv846wumat2462jy9jkmwxtp3nwmw8ye9eclr6fq40f044", sender.nonce, VALUE, "", GAS_PRICE, GAS_LIMIT, chain_id, tx_version)
         sender.nonce += 1
         bunch.add(sender, "erd1utftdvycwgl3xt0r44ekncentlxgmhucxfq3jt6cjz0w7h6qjchsjarml6", sender.nonce, VALUE, "", GAS_PRICE, GAS_LIMIT, chain_id, tx_version)
