@@ -19,7 +19,7 @@
   "license": "ISC",
   "dependencies": {
     "@babel/runtime": "^7.10.4",
-    "@elrondnetwork/elrond-core-js": "^1.26.0",
+    "@elrondnetwork/elrond-core-js": "^1.26.2",
     "commander": "^5.1.0"
   }
 }
