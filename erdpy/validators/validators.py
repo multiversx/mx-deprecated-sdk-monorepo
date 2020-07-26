@@ -1,11 +1,15 @@
 import binascii
+import json
 import logging
-from typing import Any
 
-from erdpy import errors
-from erdpy.accounts import Address
-from erdpy.config import (GAS_PER_DATA_BYTE, MIN_GAS_LIMIT,
-                          MetaChainSystemSCsCost)
+from typing import Any
+from os import path
+from erdpy import guards
+from erdpy.accounts import Address, Account
+from erdpy.config import MIN_GAS_LIMIT, GAS_PER_DATA_BYTE, MetaChainSystemSCsCost
+from erdpy.errors import CannotReadValidatorsData
+from erdpy.wallet.pem import parse_validator_pem
+from erdpy.wallet.signing import sign_message_with_bls_key
 
 logger = logging.getLogger("validators")
 
@@ -19,18 +23,37 @@ def estimate_system_sc_call(args, base_cost, factor=1):
     return gas_limit
 
 
+def _read_json_file(file_path):
+    val_file = path.expanduser(file_path)
+    guards.is_file(val_file)
+    with open(file_path,  "r") as json_file:
+        try:
+            data = json.load(json_file)
+        except Exception:
+            raise CannotReadValidatorsData()
+        return data
+
+
 def parse_args_for_stake(args: Any):
-    num_of_nodes = int(args.number_of_nodes)
-    keys = args.nodes_public_keys.split(',')
-    if num_of_nodes != len(keys):
-        raise errors.BadUserInput("check number of nodes")
-        return
+    validators_file = args.validators_file
+    validators_data = _read_json_file(validators_file)
 
     reward_address = args.reward_address
 
+    if args.pem:
+        account = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        account = Account(key_file=args.keyfile, pass_file=args.passfile)
+
+    num_of_nodes = len(validators_data["validators"])
     stake_data = 'stake@' + binascii.hexlify(num_of_nodes.to_bytes(1, byteorder="little")).decode()
-    for key in keys:
-        stake_data += '@' + key + '@' + convert_to_hex('genesis')
+    for validator in validators_data["validators"]:
+        # get validator
+        validator_pem = validator.get("pemFilePath", None)
+        validator_pem = path.join(path.dirname(validators_file), validator_pem)
+        seed, bls_key = parse_validator_pem(validator_pem)
+        signed_message = sign_message_with_bls_key(account.address.pubkey().hex(), seed.hex())
+        stake_data += f"@{bls_key}@{signed_message}"
 
     if reward_address:
         reward_address = Address(args.reward_address)
@@ -40,12 +63,12 @@ def parse_args_for_stake(args: Any):
     args.data = stake_data
 
     if args.estimate_gas:
-        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.STAKE, len(keys))
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.STAKE, num_of_nodes)
 
     return args
 
 
-def parse_args_for_un_stake(args):
+def parse_args_for_un_stake(args: Any):
     parsed_keys, num_keys = parse_keys(args.nodes_public_keys)
     args.data = 'unStake' + parsed_keys
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
@@ -56,7 +79,7 @@ def parse_args_for_un_stake(args):
     return args
 
 
-def parse_args_for_un_bond(args):
+def parse_args_for_un_bond(args: Any):
     parsed_keys, num_keys = parse_keys(args.nodes_public_keys)
     args.data = 'unBond' + parsed_keys
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
@@ -67,7 +90,7 @@ def parse_args_for_un_bond(args):
     return args
 
 
-def parse_args_for_un_jail(args):
+def parse_args_for_un_jail(args: Any):
     parsed_keys, num_keys = parse_keys(args.nodes_public_keys)
     args.data = 'unJail' + parsed_keys
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
@@ -78,7 +101,7 @@ def parse_args_for_un_jail(args):
     return args
 
 
-def parse_args_for_changing_reward_address(args):
+def parse_args_for_changing_reward_address(args: Any):
     reward_address = Address(args.reward_address)
     args.data = 'changeRewardAddress@' + reward_address.hex()
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
@@ -89,7 +112,7 @@ def parse_args_for_changing_reward_address(args):
     return args
 
 
-def parse_args_for_claim(args):
+def parse_args_for_claim(args: Any):
     args.data = 'claim'
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
 

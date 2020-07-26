@@ -62,7 +62,7 @@ class PlatformNotSupported(KnownError):
 
 
 class BuildError(KnownError):
-    def __init__(self, message: str, inner: Union[Error, None] = None):
+    def __init__(self, message, inner=None):
         super().__init__(f"Build error: {message}.", inner)
 
 
@@ -131,3 +131,23 @@ class InvalidKeystoreFilePassword(KnownError):
 class BadUserInput(KnownError):
     def __init__(self, message: str):
         super().__init__(f"Bad user input: {message}.")
+
+
+class CannotSignMessageWithBLSKey(KnownError):
+    def __init__(self):
+        super(CannotSignMessageWithBLSKey, self).__init__("cannot sign message with BLS key")
+
+
+class CannotReadValidatorsData(KnownError):
+    def __init__(self):
+        super(CannotReadValidatorsData, self).__init__("cannot read validators data")
+
+
+class TransactionIsNotSigned(KnownError):
+    def __init__(self):
+        super().__init__("Transaction is not signed.")
+
+
+class NoWalletProvided(KnownError):
+    def __init__(self):
+        super().__init__("No wallet provided.")

@@ -16,6 +16,3 @@ class TestDecode(unittest.TestCase):
         self.assertEqual("Erdpy#123", password)
 
 
-
-
-

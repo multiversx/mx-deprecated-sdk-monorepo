@@ -6,8 +6,7 @@ from argparse import ArgumentParser
 from erdpy import config, errors
 from erdpy.accounts import Account
 from erdpy.proxy import ElrondProxy
-from erdpy.transactions import (PlainTransaction, PreparedTransaction,
-                                TransactionPayloadToSign)
+from erdpy.transactions import Transaction
 from erdpy.wallet import signing
 
 logger = logging.getLogger("bon_mission4")
@@ -46,9 +45,9 @@ def main():
             logger.error(err)
 
 
-def send_txs(proxy, sender, num, sleep_after):
+def send_txs(proxy: ElrondProxy, sender: Account, num: int, sleep_after: int):
     print(f"Will send {num} transactions. Will also sleep {sleep_after} after each transaction.")
-    for i in range(0, num):
+    for _ in range(0, num):
         send_one_tx(proxy, sender, "erd1hqplnafrhnd4zv846wumat2462jy9jkmwxtp3nwmw8ye9eclr6fq40f044")
         sender.nonce += 1
         time.sleep(sleep_after)
@@ -58,26 +57,24 @@ def send_txs(proxy, sender, num, sleep_after):
         time.sleep(sleep_after)
 
 
-def send_one_tx(proxy, sender, receiver_address):
-    plain = PlainTransaction()
-    plain.nonce = sender.nonce
-    plain.value = "20000000000000000"  # 0.02 ERD
-    plain.sender = sender.address.bech32()
-    plain.receiver = receiver_address
-    plain.gasPrice = 200000000000
-    plain.gasLimit = 50000
-    plain.data = ""
-    plain.chainID = config.get_chain_id()
-    plain.version = config.get_tx_version()
+def send_one_tx(proxy: ElrondProxy, sender: Account, receiver_address: str):
+    tx = Transaction()
+    tx.nonce = sender.nonce
+    tx.value = "20000000000000000"  # 0.02 ERD
+    tx.sender = sender.address.bech32()
+    tx.receiver = receiver_address
+    tx.gasPrice = 1000000000
+    tx.gasLimit = 50000
+    tx.data = ""
+    tx.chainID = config.get_chain_id()
+    tx.version = config.get_tx_version()
 
-    payload = TransactionPayloadToSign(plain)
-    signature = signing.sign_transaction(payload, sender.pem_file)
-    prepared = PreparedTransaction(plain, signature)
-    prepared.send(proxy)
+    tx.signature = signing.sign_transaction(tx, sender)
+    tx.send(proxy)
 
     global counter
     counter += 1
-    print(f"Sent transaction #{counter}, with nonce = {plain.nonce}.")
+    print(f"Sent transaction #{counter}, with nonce = {tx.nonce}.")
 
 
 if __name__ == "__main__":
