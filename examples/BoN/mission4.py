@@ -69,7 +69,7 @@ def send_one_tx(proxy: ElrondProxy, sender: Account, receiver_address: str):
     tx.chainID = config.get_chain_id()
     tx.version = config.get_tx_version()
 
-    tx.signature = signing.sign_transaction(tx, sender.pem_file)
+    tx.signature = signing.sign_transaction(tx, sender)
     tx.send(proxy)
 
     global counter
