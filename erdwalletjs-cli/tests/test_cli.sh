@@ -15,15 +15,15 @@ testHappyCases() {
     echo "> Alice derives another key, index = 1"
     ${WALLETJS} derive-key -m ${SANDBOX}/mnemonicOfAlice.txt -n 1 -k ${SANDBOX}/keyOfAlice-sCat.json -p ./testdata/passwordOfAlice-sCat.txt
     echo "> Alice signs a transaction"
-    ${WALLETJS} sign -i ./testdata/txToBob.json -o ${SANDBOX}/aliceToBobSigned.json -k ${SANDBOX}/keyOfAlice.json -p ./testdata/passwordOfAlice.txt
+    ${WALLETJS} sign -i ./testdata/txToBob42.json -o ${SANDBOX}/txToBob42Signed.json -k ${SANDBOX}/keyOfAlice.json -p ./testdata/passwordOfAlice.txt
     echo "> Alice's cat signs a transaction"
-    ${WALLETJS} sign -i ./testdata/txToBob.json -o ${SANDBOX}/alice-sCatToBobSigned.json -k ${SANDBOX}/keyOfAlice-sCat.json -p ./testdata/passwordOfAlice-sCat.txt
+    ${WALLETJS} sign -i ./testdata/txToBob43.json -o ${SANDBOX}/txToBob43Signed.json -k ${SANDBOX}/keyOfAlice-sCat.json -p ./testdata/passwordOfAlice-sCat.txt
 
     assertFileExists ${SANDBOX}/mnemonicOfAlice.txt
     assertFileExists ${SANDBOX}/keyOfAlice.json
     assertFileExists ${SANDBOX}/keyOfAlice-sCat.json
-    assertFileExists ${SANDBOX}/aliceToBobSigned.json
-    assertFileExists ${SANDBOX}/alice-sCatToBobSigned.json
+    assertFileExists ${SANDBOX}/txToBob42Signed.json
+    assertFileExists ${SANDBOX}/txToBob43Signed.json
 }
 
 testErrors() {
