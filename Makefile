@@ -10,6 +10,9 @@ publish-erdpy: build-erdpy
 publish-erdwalletjs-cli-beta:
 	cd ./erdwalletjs-cli && npm publish --tag=beta --access=public
 
+publish-erdwalletjs-cli:
+	cd ./erdwalletjs-cli && npm publish --access=public
+
 test-all:
 	python3 -m unittest discover -s erdpy/tests
 
