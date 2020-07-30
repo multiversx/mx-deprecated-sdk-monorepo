@@ -12,7 +12,7 @@ import { SmartContractCall } from "@elrondnetwork/erdjs";
 
 
 const Proxy = new erdjs.ElrondProxy({
-    url: "https://api.elrond.com",
+    url: "https://testnet-api.elrond.com",
     timeout: 4000
 });
 
