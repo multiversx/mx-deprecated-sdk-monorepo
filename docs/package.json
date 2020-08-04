@@ -1,0 +1,22 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "",
+  "main": "out/index.js",
+  "files": [
+    "out/**/*"
+  ],
+  "scripts": {
+    "compile": "tsc -p tsconfig.json && browserify out/main.js -o out/app.js",
+    "serve": "http-server"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@elrondnetwork/erdjs": "^1.0.3-beta.0"
+  },
+  "devDependencies": {
+    "tslint": "^6.1.1",
+    "typescript": "^3.8.3"
+  }
+}
