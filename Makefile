@@ -13,6 +13,9 @@ publish-erdwalletjs-cli-beta:
 publish-erdwalletjs-cli:
 	cd ./erdwalletjs-cli && npm publish --access=public
 
+publish-erdjs-beta:
+	cd ./erdjs && npm publish --tag=beta --access=public
+
 test-all:
 	python3 -m unittest discover -s erdpy/tests
 
