@@ -1,14 +1,14 @@
 import base64
 import logging
+from typing import Any, List
 
 from Cryptodome.Hash import keccak
-from binascii import unhexlify
-from erdpy import config, errors, utils
-from erdpy.accounts import Account, Address
-from erdpy.transactions import Transaction
-from erdpy.wallet import signing
 
-logger = logging.getLogger("cli.deps")
+from erdpy import config, errors, utils
+from erdpy.accounts import Address
+from erdpy.transactions import Transaction
+
+logger = logging.getLogger("contracts")
 
 VM_TYPE_ARWEN = "0500"
 
@@ -19,14 +19,10 @@ class SmartContract:
         self.bytecode = bytecode
         self.metadata = metadata or CodeMetadata()
 
-    def deploy(self, proxy, owner, arguments, gas_price, gas_limit, value, chain, version):
+    def deploy(self, owner, arguments, gas_price, gas_limit, value, chain, version) -> Transaction:
         self.owner = owner
         self.compute_address()
-        transaction = self.prepare_deploy_transaction(owner, arguments, gas_price, gas_limit, value, chain, version)
-        tx_hash = transaction.send(proxy)
-        return tx_hash, self.address
 
-    def prepare_deploy_transaction(self, owner: Account, arguments, gas_price, gas_limit, value, chain, version):
         arguments = arguments or []
         gas_price = int(gas_price)
         gas_limit = int(gas_limit)
@@ -65,13 +61,9 @@ class SmartContract:
         address = bytes([0] * 8) + bytes([5, 0]) + address[10:30] + owner_bytes[30:]
         self.address = Address(address)
 
-    def execute(self, proxy, caller, function, arguments, gas_price, gas_limit, value, chain, version):
+    def execute(self, caller, function, arguments, gas_price, gas_limit, value, chain, version) -> Transaction:
         self.caller = caller
-        transaction = self.prepare_execute_transaction(caller, function, arguments, gas_price, gas_limit, value, chain, version)
-        tx_hash = transaction.send(proxy)
-        return tx_hash
 
-    def prepare_execute_transaction(self, caller: Account, function, arguments, gas_price, gas_limit, value, chain, version):
         arguments = arguments or []
         gas_price = int(gas_price)
         gas_limit = int(gas_limit)
@@ -99,13 +91,9 @@ class SmartContract:
 
         return tx_data
 
-    def upgrade(self, proxy, caller, arguments, gas_price, gas_limit, value, chain, version):
-        self.caller = caller
-        transaction = self.prepare_upgrade_transaction(caller, arguments, gas_price, gas_limit, value, chain, version)
-        tx_hash = transaction.send(proxy)
-        return tx_hash
+    def upgrade(self, owner, arguments, gas_price, gas_limit, value, chain, version) -> Transaction:
+        self.owner = owner
 
-    def prepare_upgrade_transaction(self, owner: Account, arguments, gas_price, gas_limit, value, chain, version):
         arguments = arguments or []
         gas_price = int(gas_price or config.DEFAULT_GAS_PRICE)
         gas_limit = int(gas_limit)
@@ -133,11 +121,10 @@ class SmartContract:
 
         return tx_data
 
-    def query(self, proxy, function, arguments):
+    def query(self, proxy, function, arguments) -> List[Any]:
         arguments = arguments or []
         prepared_arguments = [_prepare_argument(argument) for argument in arguments]
 
-        # TODO: move to proxy/core.py?
         payload = {
             "ScAddress": self.address.bech32(),
             "FuncName": function,
@@ -183,10 +170,9 @@ def _prepare_argument(argument):
 
 
 class CodeMetadata:
-    def __init__(self, upgradeable=False):
+    def __init__(self, upgradeable=True, payable=False):
         self.upgradeable = upgradeable
+        self.payable = payable
 
     def to_hex(self):
-        if self.upgradeable:
-            return "0100"
-        return "0000"
+        return ("01" if self.upgradeable else "00") + ("02" if self.payable else "00")

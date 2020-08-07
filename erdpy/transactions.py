@@ -57,11 +57,12 @@ class Transaction(ITransaction):
         instance.data = instance.data_decoded()
         return instance
 
-    def dump_to(self, f: Any):
+    def dump_to(self, f: Any, extra: Any = {}):
         dump: Any = utils.Object()
         dump.tx = self.to_dictionary()
         dump.hash = self.hash or ""
         dump.data = self.data
+        dump.__dict__.update(extra)
         f.writelines([dump.to_json(), "\n"])
 
     def send(self, proxy: IElrondProxy):
@@ -150,7 +151,7 @@ class BunchOfTransactions:
 def do_prepare_transaction(args: Any) -> Transaction:
     account = Account()
     if args.pem:
-        account = Account(pem_file=args.pem)
+        account = Account(pem_file=args.pem, pem_index=args.pem_index)
     elif args.keyfile and args.passfile:
         account = Account(key_file=args.keyfile, pass_file=args.passfile)
 

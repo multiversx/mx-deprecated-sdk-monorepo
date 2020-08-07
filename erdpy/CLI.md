@@ -14,6 +14,8 @@
     - [Transactions.New](#transactionsnew)
     - [Transactions.Send](#transactionssend)
     - [Transactions.Get](#transactionsget)
+  - [Group **Blocks**](#group-blocks)
+    - [Blocks.Get](#blocksget)
   - [Group **Validator**](#group-validator)
     - [Validator.Stake](#validatorstake)
     - [Validator.Unstake](#validatorunstake)
@@ -45,8 +47,6 @@
     - [BlockAtlas.CurrentBlockNumber](#blockatlascurrentblocknumber)
     - [BlockAtlas.BlockByNumber](#blockatlasblockbynumber)
     - [BlockAtlas.Transactions](#blockatlastransactions)
-  - [Group **Block**](#group-block)
-    - [Block.Get](#blockget) 
   - [Group **Dependencies**](#group-dependencies)
     - [Dependencies.Install](#dependenciesinstall)
     - [Dependencies.Check](#dependenciescheck)
@@ -75,7 +75,7 @@ https://docs.elrond.com/tools/erdpy.
         
 
 COMMAND GROUPS:
-  {contract,tx,validator,account,wallet,network,cost,dispatcher,blockatlas,deps,config}
+  {contract,tx,validator,account,wallet,network,cost,dispatcher,blockatlas,deps,config,block}
 
 TOP-LEVEL OPTIONS:
   -h, --help            show this help message and exit
@@ -96,6 +96,7 @@ dispatcher                     Enqueue transactions, then bulk dispatch them
 blockatlas                     Interact with an Block Atlas instance
 deps                           Manage dependencies or elrond-sdk modules
 config                         Configure elrond-sdk (default values etc.)
+block                          Get Block data from the Network
 
 ```
 ## Group **Contract**
@@ -201,14 +202,15 @@ usage: erdpy contract deploy [-h] ...
 
 Deploy a Smart Contract.
 
-positional arguments:
-  project                                🗀 the project directory (default: current directory)
-
 optional arguments:
   -h, --help                             show this help message and exit
-  --metadata-upgradeable                 ⚙ whether the contract is upgradeable (default: False)
+  --project PROJECT                      🗀 the project directory (default: current directory)
+  --bytecode BYTECODE                    the WASM file
+  --metadata-not-upgradeable             ‼ mark the contract as NOT upgradeable (default: upgradeable)
+  --metadata-payable                     ‼ mark the contract as payable (default: not payable)
   --outfile OUTFILE                      where to save the output (default: stdout)
   --pem PEM                              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
@@ -221,6 +223,7 @@ optional arguments:
   --version VERSION                      the transaction version (default: 1)
   --arguments ARGUMENTS [ARGUMENTS ...]  arguments for the contract transaction, as numbers or hex-encoded. E.g.
                                          --arguments 42 0x64 1000 0xabba
+  --send                                 ✓ whether to broadcast the transaction (default: False)
 
 ```
 ### Contract.Call
@@ -238,6 +241,7 @@ positional arguments:
 optional arguments:
   -h, --help                             show this help message and exit
   --pem PEM                              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
@@ -251,6 +255,7 @@ optional arguments:
   --function FUNCTION                    the function to call
   --arguments ARGUMENTS [ARGUMENTS ...]  arguments for the contract transaction, as numbers or hex-encoded. E.g.
                                          --arguments 42 0x64 1000 0xabba
+  --send                                 ✓ whether to broadcast the transaction (default: False)
 
 ```
 ### Contract.Upgrade
@@ -264,12 +269,15 @@ Upgrade a previously-deployed Smart Contract
 
 positional arguments:
   contract                               🖄 the address of the Smart Contract
-  project                                🗀 the project directory (default: current directory)
 
 optional arguments:
   -h, --help                             show this help message and exit
-  --metadata-upgradeable                 ⚙ whether the contract is upgradeable (default: False)
+  --project PROJECT                      🗀 the project directory (default: current directory)
+  --bytecode BYTECODE                    the WASM file
+  --metadata-not-upgradeable             ‼ mark the contract as NOT upgradeable (default: upgradeable)
+  --metadata-payable                     ‼ mark the contract as payable (default: not payable)
   --pem PEM                              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
@@ -282,6 +290,7 @@ optional arguments:
   --version VERSION                      the transaction version (default: 1)
   --arguments ARGUMENTS [ARGUMENTS ...]  arguments for the contract transaction, as numbers or hex-encoded. E.g.
                                          --arguments 42 0x64 1000 0xabba
+  --send                                 ✓ whether to broadcast the transaction (default: False)
 
 ```
 ### Contract.Query
@@ -317,14 +326,14 @@ COMMANDS:
   {new,send,get}
 
 OPTIONS:
-  -h, --help  show this help message and exit
+  -h, --help      show this help message and exit
 
 ----------------
 COMMANDS summary
 ----------------
 new                            Create a new transaction
 send                           Send a previously saved transaction
-get                            Get a transaction by hash
+get                            Get a transaction
 
 ```
 ### Transactions.New
@@ -339,6 +348,7 @@ Create a new transaction
 optional arguments:
   -h, --help             show this help message and exit
   --pem PEM              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE    🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE          # the nonce for the transaction
@@ -373,19 +383,55 @@ optional arguments:
 
 ```
 ### Transactions.Get
+
+
 ```
 $ erdpy tx get --help
 usage: erdpy tx get [-h] ...
 
-Get a transaction by hash
+Get a transaction
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --hash HASH        the hash of transaction
-  --sender SENDER    🖧 the sender adress of transaction (default: "", if this argument is provided the response will be faster)
-  --proxy PROXY      🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
-```
+  -h, --help       show this help message and exit
+  --hash HASH      the hash
+  --sender SENDER  the sender address
+  --proxy PROXY    🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
 
+```
+## Group **Blocks**
+
+
+```
+$ erdpy block --help
+usage: erdpy block COMMAND [-h] ...
+
+Get Block data from the Network
+
+COMMANDS:
+  {get}
+
+OPTIONS:
+  -h, --help  show this help message and exit
+
+```
+### Blocks.Get
+
+
+```
+$ erdpy block get --help
+usage: erdpy block get [-h] ...
+
+Get block
+
+optional arguments:
+  -h, --help     show this help message and exit
+  --proxy PROXY  🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
+  --hash HASH    the hash of block
+  --nonce NONCE  the nonce of block
+  --shard SHARD  the shard of block
+  --with-txs     the returned block will contains all transactions
+
+```
 ## Group **Validator**
 
 
@@ -425,6 +471,7 @@ optional arguments:
   -h, --help                         show this help message and exit
   --proxy PROXY                      🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
   --pem PEM                          🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX              🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                  🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE                      # the nonce for the transaction
@@ -453,6 +500,7 @@ optional arguments:
   -h, --help                             show this help message and exit
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
   --pem PEM                              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE                          # the nonce for the transaction
@@ -480,6 +528,7 @@ optional arguments:
   -h, --help                             show this help message and exit
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
   --pem PEM                              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE                          # the nonce for the transaction
@@ -507,6 +556,7 @@ optional arguments:
   -h, --help                             show this help message and exit
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
   --pem PEM                              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE                          # the nonce for the transaction
@@ -534,6 +584,7 @@ optional arguments:
   -h, --help                       show this help message and exit
   --proxy PROXY                    🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
   --pem PEM                        🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX            🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE                🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE              🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE                    # the nonce for the transaction
@@ -561,6 +612,7 @@ optional arguments:
   -h, --help             show this help message and exit
   --proxy PROXY          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
   --pem PEM              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX  🔑 the index in the PEM file (default: 0)
   --keyfile KEYFILE      🔑 a JSON keyfile, if PEM not provided
   --passfile PASSFILE    🔑 a file containing keyfile's password, if keyfile provided
   --nonce NONCE          # the nonce for the transaction
@@ -814,12 +866,11 @@ usage: erdpy cost sc-deploy [-h] ...
 
 Query cost of Smart Contract deploy transaction
 
-positional arguments:
-  project                                🗀 the project directory (default: current directory)
-
 optional arguments:
   -h, --help                             show this help message and exit
   --proxy PROXY                          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
+  --project PROJECT                      🗀 the project directory (default: current directory)
+  --bytecode BYTECODE                    the WASM file
   --arguments ARGUMENTS [ARGUMENTS ...]  arguments for the contract transaction, as numbers or hex-encoded. E.g.
                                          --arguments 42 0x64 1000 0xabba
 
@@ -898,11 +949,12 @@ usage: erdpy dispatcher dispatch [-h] ...
 Dispatch queued transactions
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --proxy PROXY        🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
-  --pem PEM            🔑 the PEM file, if keyfile not provided
-  --keyfile KEYFILE    🔑 a JSON keyfile, if PEM not provided
-  --passfile PASSFILE  🔑 a file containing keyfile's password, if keyfile provided
+  -h, --help             show this help message and exit
+  --proxy PROXY          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
+  --pem PEM              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX  🔑 the index in the PEM file (default: 0)
+  --keyfile KEYFILE      🔑 a JSON keyfile, if PEM not provided
+  --passfile PASSFILE    🔑 a file containing keyfile's password, if keyfile provided
 
 ```
 ### Dispatcher.DispatchContinuously
@@ -915,12 +967,13 @@ usage: erdpy dispatcher dispatch-continuously [-h] ...
 Continuously dispatch queued transactions
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --proxy PROXY        🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
-  --pem PEM            🔑 the PEM file, if keyfile not provided
-  --keyfile KEYFILE    🔑 a JSON keyfile, if PEM not provided
-  --passfile PASSFILE  🔑 a file containing keyfile's password, if keyfile provided
-  --interval INTERVAL  the interval to retrieve transactions from the queue, in seconds
+  -h, --help             show this help message and exit
+  --proxy PROXY          🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
+  --pem PEM              🔑 the PEM file, if keyfile not provided
+  --pem-index PEM_INDEX  🔑 the index in the PEM file (default: 0)
+  --keyfile KEYFILE      🔑 a JSON keyfile, if PEM not provided
+  --passfile PASSFILE    🔑 a file containing keyfile's password, if keyfile provided
+  --interval INTERVAL    the interval to retrieve transactions from the queue, in seconds
 
 ```
 ### Dispatcher.Clean
@@ -1003,43 +1056,6 @@ optional arguments:
   --outfile OUTFILE  where to save the output (default: stdout)
 
 ```
-## Group **Block**
-
-
-
-```
-$ erdpy block --help
-usage: erdpy block COMMAND [-h] ...
-
-COMMANDS:
-  {get}
-
-OPTIONS:
-  -h, --help  show this help message and exit
-
-----------------
-COMMANDS summary
-----------------
-get                            Get a block by hash or nonce
-```
-
-### Block.Get
-
-
-```
-$ erdpy block get --help
-usage: erdpy block get [-h] ...
-
-Get a block by hash or nonce
-
-optional arguments:
-  -h, --help         show this help message and exit
-  --hash HASH        🖧 the hash of block
-  --nonce NONCE      🖧 the nonce of block
-  --shard SHARDID    🖧 the shard of block
-  --proxy PROXY      🖧 the URL of the proxy (default: https://testnet-api.elrond.com)
-```
-
 ## Group **Dependencies**
 
 

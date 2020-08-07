@@ -1,7 +1,14 @@
+import logging
 import os
 from typing import Any
 
-from erdpy import cli_shared, facade, projects
+from erdpy import cli_shared, errors, projects, utils
+from erdpy.accounts import Account, Address
+from erdpy.contracts import CodeMetadata, SmartContract
+from erdpy.projects import load_project
+from erdpy.proxy.core import ElrondProxy
+
+logger = logging.getLogger("cli.contracts")
 
 
 def setup_parser(subparsers: Any) -> Any:
@@ -34,34 +41,39 @@ def setup_parser(subparsers: Any) -> Any:
     sub.set_defaults(func=run_tests)
 
     sub = cli_shared.add_command_subparser(subparsers, "contract", "deploy", "Deploy a Smart Contract.")
-    _add_project_arg(sub)
+    _add_project_or_bytecode_arg(sub)
     _add_metadata_arg(sub)
     cli_shared.add_outfile_arg(sub)
     cli_shared.add_wallet_args(sub)
     cli_shared.add_proxy_arg(sub)
     cli_shared.add_tx_args(sub, with_receiver=False, with_data=False)
     _add_arguments_arg(sub)
+    _add_send_arg(sub)
 
     sub.set_defaults(func=deploy)
 
     sub = cli_shared.add_command_subparser(subparsers, "contract", "call", "Interact with a Smart Contract (execute function).")
     _add_contract_arg(sub)
+    cli_shared.add_outfile_arg(sub)
     cli_shared.add_wallet_args(sub)
     cli_shared.add_proxy_arg(sub)
     cli_shared.add_tx_args(sub, with_receiver=False, with_data=False)
     _add_function_arg(sub)
     _add_arguments_arg(sub)
+    _add_send_arg(sub)
 
     sub.set_defaults(func=call)
 
     sub = cli_shared.add_command_subparser(subparsers, "contract", "upgrade", "Upgrade a previously-deployed Smart Contract")
     _add_contract_arg(sub)
-    _add_project_arg(sub)
+    cli_shared.add_outfile_arg(sub)
+    _add_project_or_bytecode_arg(sub)
     _add_metadata_arg(sub)
     cli_shared.add_wallet_args(sub)
     cli_shared.add_proxy_arg(sub)
     cli_shared.add_tx_args(sub, with_receiver=False, with_data=False)
     _add_arguments_arg(sub)
+    _add_send_arg(sub)
 
     sub.set_defaults(func=upgrade)
 
@@ -80,6 +92,12 @@ def _add_project_arg(sub: Any):
     sub.add_argument("project", nargs='?', default=os.getcwd(), help="🗀 the project directory (default: current directory)")
 
 
+def _add_project_or_bytecode_arg(sub: Any):
+    group = sub.add_mutually_exclusive_group(required=True)
+    group.add_argument("--project", default=os.getcwd(), help="🗀 the project directory (default: current directory)")
+    group.add_argument("--bytecode", help="the WASM file")
+
+
 def _add_contract_arg(sub: Any):
     sub.add_argument("contract", help="🖄 the address of the Smart Contract")
 
@@ -93,7 +111,13 @@ def _add_arguments_arg(sub: Any):
 
 
 def _add_metadata_arg(sub: Any):
-    sub.add_argument("--metadata-upgradeable", action="store_true", default=False, help="⚙ whether the contract is upgradeable (default: %(default)s)")
+    sub.add_argument("--metadata-not-upgradeable", dest="metadata_upgradeable", action="store_false", help="‼ mark the contract as NOT upgradeable (default: upgradeable)")
+    sub.add_argument("--metadata-payable", dest="metadata_payable", action="store_true", help="‼ mark the contract as payable (default: not payable)")
+    sub.set_defaults(metadata_upgradeable=True, metadata_payable=False)
+
+
+def _add_send_arg(sub: Any):
+    sub.add_argument("--send", action="store_true", default=False, help="✓ whether to broadcast the transaction (default: %(default)s)")
 
 
 def list_templates(args: Any):
@@ -129,16 +153,108 @@ def run_tests(args: Any):
 
 
 def deploy(args: Any):
-    facade.deploy_smart_contract(args)
+    logger.debug("deploy")
+
+    arguments = args.arguments
+    gas_price = args.gas_price
+    gas_limit = args.gas_limit
+    value = args.value
+    chain = args.chain
+    version = args.version
+
+    contract = _prepare_contract(args)
+    sender = _prepare_sender(args)
+
+    tx = contract.deploy(sender, arguments, gas_price, gas_limit, value, chain, version)
+    logger.info("Contract address: %s", contract.address)
+
+    try:
+        if args.send:
+            tx.send(ElrondProxy(args.proxy))
+    finally:
+        tx.dump_to(args.outfile, extra={"address": contract.address.bech32()})
+
+
+def _prepare_contract(args: Any) -> SmartContract:
+    if args.bytecode:
+        bytecode = utils.read_file(args.bytecode, binary=True).hex()
+    else:
+        project = load_project(args.project)
+        bytecode = project.get_bytecode()
+
+    metadata = CodeMetadata(args.metadata_upgradeable, args.metadata_payable)
+    contract = SmartContract(bytecode=bytecode, metadata=metadata)
+    return contract
+
+
+def _prepare_sender(args: Any) -> Account:
+    if args.pem:
+        sender = Account(pem_file=args.pem, pem_index=args.pem_index)
+    elif args.keyfile and args.passfile:
+        sender = Account(key_file=args.keyfile, pass_file=args.passfile)
+    else:
+        raise errors.NoWalletProvided()
+
+    sender.nonce = args.nonce
+    if args.recall_nonce:
+        sender.sync_nonce(ElrondProxy(args.proxy))
+
+    return sender
 
 
 def call(args: Any):
-    facade.call_smart_contract(args)
+    logger.debug("call")
+
+    contract_address = args.contract
+    function = args.function
+    arguments = args.arguments
+    gas_price = args.gas_price
+    gas_limit = args.gas_limit
+    value = args.value
+    chain = args.chain
+    version = args.version
+
+    contract = SmartContract(contract_address)
+    sender = _prepare_sender(args)
+
+    tx = contract.execute(sender, function, arguments, gas_price, gas_limit, value, chain, version)
+    try:
+        if args.send:
+            tx.send(ElrondProxy(args.proxy))
+    finally:
+        tx.dump_to(args.outfile)
 
 
 def upgrade(args: Any):
-    facade.upgrade_smart_contract(args)
+    logger.debug("upgrade")
+
+    contract_address = args.contract
+    arguments = args.arguments
+    gas_price = args.gas_price
+    gas_limit = args.gas_limit
+    value = args.value
+    chain = args.chain
+    version = args.version
+
+    contract = _prepare_contract(args)
+    contract.address = Address(contract_address)
+    sender = _prepare_sender(args)
+
+    tx = contract.upgrade(sender, arguments, gas_price, gas_limit, value, chain, version)
+    try:
+        if args.send:
+            tx.send(ElrondProxy(args.proxy))
+    finally:
+        tx.dump_to(args.outfile)
 
 
 def query(args: Any):
-    facade.query_smart_contract(args)
+    logger.debug("query")
+
+    contract_address = args.contract
+    function = args.function
+    arguments = args.arguments
+
+    contract = SmartContract(contract_address)
+    result = contract.query(ElrondProxy(args.proxy), function, arguments)
+    print(result)
