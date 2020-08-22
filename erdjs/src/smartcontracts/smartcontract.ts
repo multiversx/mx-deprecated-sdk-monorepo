@@ -11,20 +11,24 @@ import { TransactionWatcher } from "../data/transaction";
 export class SmartContractBase implements SmartContract {
     protected provider: Provider | null = null;
     protected scAddress: Address | null = null;
-    protected user: Account | null = null
+    protected user: Account | null = null;
 
     protected gasPrice: number | null = null;
     protected gasLimit: number | null = null;
+    protected chainID: string
+    protected version: number
 
-    protected callStatusQueryPeriod: number = 4000;
+    protected callStatusQueryPeriod: number = 6000;
     protected callStatusQueryTimeout: number = 60000;
 
     protected signingEnabled: boolean = false;
 
-    constructor(provider: Provider | null, scAddress: Address | null, user: Account) {
+    constructor(provider: Provider | null, scAddress: Address | null, user: Account, chainID: string, txVersion: number) {
         this.provider = provider;
         this.scAddress = scAddress;
         this.user = user;
+        this.chainID = chainID;
+        this.version = txVersion;
     }
 
     public enableSigning(enable: boolean) {
@@ -96,8 +100,7 @@ export class SmartContractBase implements SmartContract {
             shardSelector
         ]);
 
-        let address= new Address("");
-        address.fromBytes(addressBytes);
+        let address = new Address().setBytes(addressBytes);
         return address;
     }
 
@@ -137,14 +140,15 @@ export class SmartContractBase implements SmartContract {
             throw errors.ErrGasLimitNotSet;
         }
 
-        let deploymentAddress = new Address("");
-        deploymentAddress.fromBytes(Buffer.alloc(32, 0));
+        let deploymentAddress = new Address().setBytes(Buffer.alloc(32, 0));
 
         deployment.setNonce(this.user.getNonce());
         deployment.setSender(this.user.getAddress());
         deployment.setReceiver(deploymentAddress.toString());
         deployment.setGasLimit(this.gasLimit);
         deployment.setGasPrice(this.gasPrice);
+        deployment.setChainID(this.chainID);
+        deployment.setVersion(this.version);
         deployment.prepareData();
 
         if (this.signingEnabled) {
@@ -172,6 +176,8 @@ export class SmartContractBase implements SmartContract {
         call.setReceiver(this.scAddress.toString());
         call.setGasLimit(this.gasLimit);
         call.setGasPrice(this.gasPrice);
+        call.setChainID(this.chainID);
+        call.setVersion(this.version);
         call.prepareData();
 
         if (this.signingEnabled) {

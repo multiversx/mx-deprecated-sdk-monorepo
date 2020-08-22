@@ -1,5 +1,4 @@
 import requests
-
 from erdpy import errors
 
 
@@ -8,7 +7,7 @@ def do_get(url):
         response = requests.get(url)
         response.raise_for_status()
         parsed = response.json()
-        return parsed
+        return get_data(parsed, url)
     except requests.HTTPError as err:
         error_data = _extract_error_from_response(err.response)
         raise errors.ProxyRequestError(url, error_data)
@@ -23,7 +22,7 @@ def do_post(url, payload):
         response = requests.post(url, json=payload)
         response.raise_for_status()
         parsed = response.json()
-        return parsed
+        return get_data(parsed, url)
     except requests.HTTPError as err:
         error_data = _extract_error_from_response(err.response)
         raise errors.ProxyRequestError(url, error_data)
@@ -31,6 +30,16 @@ def do_post(url, payload):
         raise errors.ProxyRequestError(url, err)
     except Exception as err:
         raise errors.ProxyRequestError(url, err)
+
+
+def get_data(parsed, url):
+    err = parsed.get("error", None)
+    code = parsed.get("code", None)
+
+    if not err and code == "successful":
+        return parsed.get("data", dict())
+
+    raise errors.ProxyRequestError(url, f"code:{code}, error: {err}")
 
 
 def _extract_error_from_response(response):

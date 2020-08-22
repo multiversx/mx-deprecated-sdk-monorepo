@@ -1,17 +1,30 @@
 import json
 import logging
 import os
+import os.path
 import pathlib
+import shutil
 import stat
 import tarfile
 import zipfile
+from pathlib import Path
+from typing import Any, Dict, List, Union
 
 import toml
 
 logger = logging.getLogger("utils")
 
 
-def untar(archive_path, destination_folder):
+class Object:
+    def __repr__(self):
+        return str(self.__dict__)
+
+    def to_json(self):
+        data_json = json.dumps(self.__dict__, indent=4)
+        return data_json
+
+
+def untar(archive_path: str, destination_folder: str) -> None:
     logger.debug(f"untar [{archive_path}] to [{destination_folder}].")
 
     ensure_folder(destination_folder)
@@ -32,11 +45,11 @@ def unzip(archive_path, destination_folder):
     logger.debug("unzip done.")
 
 
-def ensure_folder(folder):
+def ensure_folder(folder: Union[str, Path]):
     pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
 
 
-def read_lines(file):
+def read_lines(file: str):
     with open(file) as f:
         lines = f.readlines()
     lines = [line.strip() for line in lines]
@@ -44,14 +57,19 @@ def read_lines(file):
     return lines
 
 
-def read_file(filename):
-    with open(filename) as f:
-        return f.read()
+def read_file(f: Any, binary=False) -> Union[str, bytes]:
+    mode = "rb" if binary else "r"
+    if isinstance(f, str) or isinstance(f, pathlib.PosixPath):
+        with open(f, mode) as f:
+            return f.read()
+    return f.read()
 
 
-def write_file(filename, text):
-    with open(filename, "w") as f:
-        return f.write(text)
+def write_file(f: Any, text: str):
+    if isinstance(f, str) or isinstance(f, pathlib.PosixPath):
+        with open(f, "w") as f:
+            return f.write(text)
+    return f.write(text)
 
 
 def read_toml_file(filename):
@@ -63,11 +81,25 @@ def write_toml_file(filename, data):
         toml.dump(data, f)
 
 
+def read_json_file(filename: str) -> Dict[str, Any]:
+    with open(filename) as f:
+        return json.load(f)
+
+
+def write_json_file(filename: str, data: Any):
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+def dump_out_json(data: Any, outfile: Any):
+    json.dump(data, outfile, indent=4)
+
+
 def get_subfolders(folder):
     return [item.name for item in os.scandir(folder) if item.is_dir() and not item.name.startswith(".")]
 
 
-def mark_executable(file):
+def mark_executable(file: str) -> None:
     logger.debug(f"Mark [{file}] as executable")
     st = os.stat(file)
     os.chmod(file, st.st_mode | stat.S_IEXEC)
@@ -82,3 +114,52 @@ def find_in_dictionary(dictionary, compound_path):
             break
 
     return node
+
+
+def list_files(folder: str) -> List[str]:
+    files = os.listdir(folder)
+    files = [os.path.join(folder, f) for f in files]
+    return files
+
+
+def remove_folder(folder):
+    shutil.rmtree(folder, ignore_errors=True)
+
+
+def symlink(real: str, link: str) -> None:
+    if os.path.exists(link):
+        os.remove(link)
+    os.symlink(real, link)
+
+
+def str_to_bool(input: str) -> bool:
+    return str(input).lower() in ["true", "1", "t", "y", "yes"]
+
+
+def as_object(input: Any) -> Object:
+    if isinstance(input, dict):
+        result = Object()
+        result.__dict__.update(input)
+        return result
+
+    return input
+
+
+def is_arg_present(key: str, args: List[str]) -> bool:
+    for arg in args:
+        if arg.find("--data") != -1:
+            continue
+        if arg.find(key) != -1:
+            return True
+
+    return False
+
+
+# https://code.visualstudio.com/docs/python/debugging
+# https://code.visualstudio.com/docs/python/debugging
+def breakpoint():
+    import debugpy
+    debugpy.listen(5678)
+    print("Waiting for debugger attach")
+    debugpy.wait_for_client()
+    debugpy.breakpoint()

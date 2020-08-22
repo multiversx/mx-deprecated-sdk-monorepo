@@ -153,4 +153,4 @@ db/**
 tags
 **/node_modules
 
-distribution/go
+erdwalletjs-cli/tests/testdata-out/**

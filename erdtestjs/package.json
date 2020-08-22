@@ -1,6 +1,6 @@
 {
-  "name": "erdtestjs",
-  "version": "1.0.0",
+  "name": "@elrondnetwork/erdtestjs",
+  "version": "1.0.1-beta.4",
   "description": "Smart Contracts testing framework based on Arwen Debug",
   "main": "out/index.js",
   "types": "out/index.d.js",
@@ -10,11 +10,13 @@
   "scripts": {
     "test": "mocha",
     "compile": "tsc -p ./",
-    "pretest": "npm run compile"
+    "pretest": "npm run compile",
+    "prepublish": "npm run compile"
   },
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@elrondnetwork/erdjs": "^1.0.3-beta.0",
     "underscore": "^1.10.2"
   },
   "devDependencies": {

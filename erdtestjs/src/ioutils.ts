@@ -1,12 +1,17 @@
 import fs = require("fs");
-import { MyError } from "./errors"
+import { MyError } from "./errors";
 
 export function readJSONFile<T>(ctor: new () => T, filePath: string): T {
-    let text = readTextFile(filePath);
-    let plainObject = JSON.parse(text);
+    let plainObject = readJSONFileAsAny(filePath);
     let result = new ctor();
     Object.assign(result, plainObject);
     return result;
+}
+
+export function readJSONFileAsAny(filePath: string) {
+    let text = readTextFile(filePath);
+    let plainObject = JSON.parse(text);
+    return plainObject;
 }
 
 export function readTextFile(filePath: string): string {

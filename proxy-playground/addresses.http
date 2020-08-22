@@ -1,0 +1,27 @@
+@baseUrl = https://testnet-api.elrond.com
+@alice = erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz
+@randomUser = erd1sea63y47u569ns3x5mqjf4vnygn9whkk7p6ry4rfpqyd6rd5addqyd9lf2
+
+// Get address
+GET {{baseUrl}}/address/{{alice}} HTTP/1.1
+
+###
+
+// Get address nonce
+GET {{baseUrl}}/address/{{alice}}/nonce HTTP/1.1
+
+###
+
+// Get address balance
+GET {{baseUrl}}/address/{{alice}}/balance HTTP/1.1
+
+###
+
+// Get address transactions
+GET {{baseUrl}}/address/{{randomUser}}/transactions HTTP/1.1
+
+###
+
+// Get address storage value (by key)
+GET {{baseUrl}}/address/{{alice}}/storage/foobar HTTP/1.1
+

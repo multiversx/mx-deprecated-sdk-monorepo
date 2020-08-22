@@ -1,6 +1,8 @@
 import base64
 import logging
+from os import confstr
 
+from erdpy import config
 from erdpy.projects import load_project
 from erdpy.proxy.http_facade import do_post
 from erdpy.proxy.tx_types import TxTypes
@@ -17,15 +19,13 @@ class TransactionCostEstimator:
     def __init__(self, proxy_url):
         self.proxy_url = proxy_url
 
-    def estimate_tx_cost(self, arguments):
-        tx_type = arguments.tx_type
-
+    def estimate_tx_cost(self, arguments, tx_type):
         if tx_type == TxTypes.MOVE_BALANCE:
             return self._estimate_move_balance(arguments.data)
         elif tx_type == TxTypes.SC_DEPLOY:
-            return self._estimate_sc_deploy(arguments.sc_path)
+            return self._estimate_sc_deploy(arguments.project)
         else:
-            return self._estimate_sc_call(arguments.sc_address, arguments.function, arguments.arguments)
+            return self._estimate_sc_call(arguments.contract, arguments.function, arguments.arguments)
 
     def _estimate_move_balance(self, data):
         sender = self._SENDER_ADDRESS
@@ -77,7 +77,9 @@ class TransactionCostEstimator:
             "value": "0",
             "receiver": receiver,
             "sender": sender,
-            "data": data
+            "data": data,
+            "chainID": config.get_chain_id(),
+            "version": config.get_tx_version()
         }
 
         url = f"{self.proxy_url}/transaction/cost"

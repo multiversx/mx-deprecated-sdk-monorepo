@@ -1,10 +1,13 @@
 import logging
 import os
+from binascii import unhexlify
 from os import path
+from typing import Any, Union
 
-from erdpy import errors
-from erdpy.wallet import bech32, pem, generate_pair
-from erdpy import utils
+from erdpy import errors, utils
+from erdpy.interfaces import IAccount, IAddress
+from erdpy.wallet import bech32, generate_pair, pem
+from erdpy.wallet.keyfile import get_password, load_from_key_file
 
 logger = logging.getLogger("accounts")
 
@@ -40,25 +43,33 @@ class AccountsRepository:
         return accounts
 
 
-class Account:
-    def __init__(self, address=None, pem_file=None):
-        self.private_key_seed = None
+class Account(IAccount):
+    def __init__(self, address: Any = None, pem_file: Union[str, None] = None, pem_index: int = 0, key_file: str = "", pass_file: str = ""):
         self.address = Address(address)
         self.pem_file = pem_file
-        self.nonce = 0
+        self.pem_index = int(pem_index)
+        self.nonce: int = 0
 
         if pem_file:
-            seed, pubkey = pem.parse(pem_file)
+            seed, pubkey = pem.parse(self.pem_file, self.pem_index)
             self.private_key_seed = seed.hex()
             self.address = Address(pubkey)
+        elif key_file and pass_file:
+            password = get_password(pass_file)
+            address_from_key_file, seed = load_from_key_file(key_file, password)
+            self.private_key_seed = seed.hex()
+            self.address = Address(address_from_key_file)
 
-    def sync_nonce(self, proxy):
-        logger.info(f"Account.sync_nonce()")
+    def sync_nonce(self, proxy: Any):
+        logger.info("Account.sync_nonce()")
         self.nonce = proxy.get_account_nonce(self.address)
         logger.info(f"Account.sync_nonce() done: {self.nonce}")
 
+    def get_seed(self) -> bytes:
+        return unhexlify(self.private_key_seed)
 
-class Address:
+
+class Address(IAddress):
     HRP = "erd"
     PUBKEY_LENGTH = 32
     PUBKEY_STRING_LENGTH = PUBKEY_LENGTH * 2    # hex-encoded
@@ -84,11 +95,11 @@ class Address:
         else:
             raise errors.BadAddressFormatError(value)
 
-    def hex(self):
+    def hex(self) -> str:
         self._assert_validity()
         return self._value_hex
 
-    def bech32(self):
+    def bech32(self) -> str:
         self._assert_validity()
         pubkey = self.pubkey()
         return bech32.bech32_encode(self.HRP, bech32.convertbits(pubkey, 8, 5))
@@ -121,5 +132,5 @@ def _decode_bech32(value):
     hrp, value_bytes = bech32.bech32_decode(bech32_string)
     if hrp != Address.HRP:
         raise errors.BadAddressFormatError(value)
-    decodedBytes = bech32.convertbits(value_bytes, 5, 8, False)
-    return bytearray(decodedBytes)
+    decoded_bytes = bech32.convertbits(value_bytes, 5, 8, False)
+    return bytearray(decoded_bytes)

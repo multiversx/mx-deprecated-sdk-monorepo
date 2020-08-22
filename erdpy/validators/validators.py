@@ -1,25 +1,59 @@
 import binascii
+import json
 import logging
 
-from erdpy.accounts import Address
+from typing import Any
+from os import path
+from erdpy import guards
+from erdpy.accounts import Address, Account
+from erdpy.config import MIN_GAS_LIMIT, GAS_PER_DATA_BYTE, MetaChainSystemSCsCost
+from erdpy.errors import CannotReadValidatorsData
+from erdpy.wallet.pem import parse_validator_pem
+from erdpy.wallet.signing import sign_message_with_bls_key
 
 logger = logging.getLogger("validators")
 
 _STAKE_SMART_CONTRACT_ADDRESS = "erd1qqqqqqqqqqqqqqqpqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqplllst77y4l"
 
 
-def parse_args_for_stake(args):
-    num_of_nodes = int(args.number_of_nodes)
-    keys = args.nodes_public_keys.split(',')
-    if num_of_nodes != len(keys):
-        logger.info("number of nodes is not equals with number of provided validators keys")
-        return
+def estimate_system_sc_call(args, base_cost, factor=1):
+    num_bytes = len(args.data)
+    gas_limit = MIN_GAS_LIMIT + num_bytes * GAS_PER_DATA_BYTE
+    gas_limit += factor * base_cost
+    return gas_limit
+
+
+def _read_json_file(file_path):
+    val_file = path.expanduser(file_path)
+    guards.is_file(val_file)
+    with open(file_path,  "r") as json_file:
+        try:
+            data = json.load(json_file)
+        except Exception:
+            raise CannotReadValidatorsData()
+        return data
+
+
+def parse_args_for_stake(args: Any):
+    validators_file = args.validators_file
+    validators_data = _read_json_file(validators_file)
 
     reward_address = args.reward_address
 
+    if args.pem:
+        account = Account(pem_file=args.pem)
+    elif args.keyfile and args.passfile:
+        account = Account(key_file=args.keyfile, pass_file=args.passfile)
+
+    num_of_nodes = len(validators_data["validators"])
     stake_data = 'stake@' + binascii.hexlify(num_of_nodes.to_bytes(1, byteorder="little")).decode()
-    for key in keys:
-        stake_data += '@' + key + '@' + convert_to_hex('genesis')
+    for validator in validators_data["validators"]:
+        # get validator
+        validator_pem = validator.get("pemFile", None)
+        validator_pem = path.join(path.dirname(validators_file), validator_pem)
+        seed, bls_key = parse_validator_pem(validator_pem)
+        signed_message = sign_message_with_bls_key(account.address.pubkey().hex(), seed.hex())
+        stake_data += f"@{bls_key}@{signed_message}"
 
     if reward_address:
         reward_address = Address(args.reward_address)
@@ -28,37 +62,63 @@ def parse_args_for_stake(args):
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
     args.data = stake_data
 
+    if args.estimate_gas:
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.STAKE, num_of_nodes)
+
     return args
 
 
-def parse_args_for_un_stake(args):
-    args.data = 'unStake' + parse_keys(args.nodes_public_keys)
+def parse_args_for_un_stake(args: Any):
+    parsed_keys, num_keys = parse_keys(args.nodes_public_keys)
+    args.data = 'unStake' + parsed_keys
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
+
+    if args.estimate_gas:
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.UNSTAKE, num_keys)
+
     return args
 
 
-def parse_args_for_un_bond(args):
-    args.data = 'unBond' + parse_keys(args.nodes_public_keys)
+def parse_args_for_un_bond(args: Any):
+    parsed_keys, num_keys = parse_keys(args.nodes_public_keys)
+    args.data = 'unBond' + parsed_keys
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
+
+    if args.estimate_gas:
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.UNBOND, num_keys)
+
     return args
 
 
-def parse_args_for_un_jail(args):
-    args.data = 'unJail' + parse_keys(args.nodes_public_keys)
+def parse_args_for_un_jail(args: Any):
+    parsed_keys, num_keys = parse_keys(args.nodes_public_keys)
+    args.data = 'unJail' + parsed_keys
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
+
+    if args.estimate_gas:
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.UNJAIL, num_keys)
+
     return args
 
 
-def parse_args_for_changing_reward_address(args):
+def parse_args_for_changing_reward_address(args: Any):
     reward_address = Address(args.reward_address)
     args.data = 'changeRewardAddress@' + reward_address.hex()
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
+
+    if args.estimate_gas:
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.CHANGE_REWARD_ADDRESS)
+
     return args
 
 
-def parse_args_for_claim(args):
+def parse_args_for_claim(args: Any):
     args.data = 'claim'
     args.receiver = _STAKE_SMART_CONTRACT_ADDRESS
+
+    if args.estimate_gas:
+        args.gas_limit = estimate_system_sc_call(args, MetaChainSystemSCsCost.CLAIM)
+
     return args
 
 
@@ -67,7 +127,7 @@ def parse_keys(bls_public_keys):
     parsed_keys = ''
     for key in keys:
         parsed_keys += '@' + key
-    return parsed_keys
+    return parsed_keys, len(keys)
 
 
 def convert_to_hex(key):

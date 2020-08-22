@@ -1,3 +1,5 @@
+import { Address } from "@elrondnetwork/erdjs";
+
 export interface ArwenDebugProvider {
     deployContract(request: DeployRequest): Promise<DeployResponse>;
     upgradeContract(request: UpgradeRequest): Promise<UpgradeResponse>;
@@ -20,7 +22,7 @@ export class ResponseBase {
 }
 
 export class ContractRequestBase extends RequestBase {
-    impersonated: string = "";
+    impersonated: Address = new Address();
     value: string = "";
     gasPrice: number = 0;
     gasLimit: number = 0;
@@ -29,9 +31,10 @@ export class ContractRequestBase extends RequestBase {
 export class ContractResponseBase extends ResponseBase {
     Input: any = {};
     Output: VMOutput = new VMOutput();
+    ReturnCodeString: string = "";
 
     isSuccess(): Boolean {
-        let ok = this.Output.ReturnCode == 0;
+        let ok = this.ReturnCodeString == "ok";
         return ok && super.isSuccess();
     }
 
@@ -49,7 +52,11 @@ export class DeployRequest extends ContractRequestBase {
 }
 
 export class DeployResponse extends ContractResponseBase {
-    ContractAddress: string = ""
+    ContractAddressHex: string = "";
+
+    getContractAddress(): Address {
+        return new Address().setHex(this.ContractAddressHex);
+    }
 }
 
 export class UpgradeRequest extends DeployRequest {
@@ -60,7 +67,7 @@ export class UpgradeResponse extends ContractResponseBase {
 }
 
 export class RunRequest extends ContractRequestBase {
-    contractAddress: string = "";
+    contractAddress: Address = new Address();
     function: string = "";
     arguments: string[] = [];
 }
@@ -75,7 +82,7 @@ export class QueryResponse extends ContractResponseBase {
 }
 
 export class CreateAccountRequest extends RequestBase {
-    address: string = "";
+    address: Address = new Address();
     balance: string = "";
     nonce: number = 0;
 }
@@ -100,6 +107,7 @@ export class VMOutput {
     DeletedAccounts: any[] = [];
     TouchedAccounts: any[] = [];
     Logs: any[] = [];
+    // TODO: Storage updates for OutputAccounts. Decode base64.
 }
 
 export class WrappedContractReturnData {
@@ -113,7 +121,7 @@ export class WrappedContractReturnData {
 
         this.raw = raw;
         this.asHex = buffer.toString("hex");
-        this.asNumber = parseInt(this.asHex, 16);
+        this.asNumber = parseInt(this.asHex, 16) || 0;
         this.asString = buffer.toString();
     }
 }

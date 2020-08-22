@@ -1,5 +1,6 @@
 {
     "configurations": [
+
         {
             "name": "Python: erdpy ide",
             "type": "python",
@@ -15,6 +16,13 @@
             "request": "launch",
             "args": ["--debug", "--reload", "--bind=0.0.0.0:8081", "erdpy.ide.core:app"],
             "console": "integratedTerminal"
-        }
+        },
+        {
+            "name": "Attach",
+            "type": "python",
+            "request": "attach",
+            "host": "localhost",
+            "port": 5678
+          }
     ]
 }

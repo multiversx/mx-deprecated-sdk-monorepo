@@ -1,7 +1,9 @@
+from erdpy import dependencies
 import logging
 from os import path
+from typing import Any, Dict
 
-from erdpy import dependencies, errors, utils, guards
+from erdpy import errors, utils, guards
 from erdpy.projects import shared
 from erdpy.projects.project_clang import ProjectClang
 from erdpy.projects.project_cpp import ProjectCpp
@@ -26,7 +28,7 @@ def load_project(directory):
         raise errors.NotSupportedProject(directory)
 
 
-def build_project(directory, options):
+def build_project(directory: str, options: Dict[str, Any]):
     directory = path.expanduser(directory)
 
     logger.info("build_project.directory: %s", directory)
@@ -35,9 +37,18 @@ def build_project(directory, options):
     guards.is_directory(directory)
     project = load_project(directory)
     project.build(options)
+    logger.info("Build ran.")
 
 
-def run_tests(args):
+def clean_project(directory: str):
+    directory = path.expanduser(directory)
+    guards.is_directory(directory)
+    project = load_project(directory)
+    project.clean()
+    logger.info("Project cleaned.")
+
+
+def run_tests(args: Any):
     project = args.project
     directory = args.directory
     wildcard = args.wildcard

@@ -1,5 +1,5 @@
 import * as erc20 from "./erc20";
-import * as erdjs from "erdjs";
+import * as erdjs from "@elrondnetwork/erdjs";
 
 declare var $: any;
 var UserAddress: any = null;

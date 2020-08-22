@@ -2,23 +2,27 @@ import asyncio
 import logging
 import subprocess
 import traceback
+from typing import Any, List
 
-from erdpy import feedback
+from erdpy import feedback, errors
 
 logger = logging.getLogger("myprocess")
 
 
-def run_process(args, env=None):
+def run_process(args: List[str], env: Any = None, dump_to_stdout: bool = True):
     logger.info(f"run_process: {args}")
 
-    output = subprocess.check_output(
-        args, shell=False, universal_newlines=True, stderr=subprocess.STDOUT, env=env)
-    logger.info("Successful run. Output:")
-    print(output or "[No output]")
-    return output
+    try:
+        output = subprocess.check_output(args, shell=False, universal_newlines=True, stderr=subprocess.STDOUT, env=env)
+        logger.info("Successful run. Output:")
+        if dump_to_stdout:
+            print(output or "[No output]")
+        return output
+    except subprocess.CalledProcessError as error:
+        raise errors.ExternalProcessError(error.cmd, error.output)
 
 
-def run_process_async(args, env=None):
+def run_process_async(args: List[str], env: Any = None):
     loop = asyncio.get_event_loop()
     result = loop.run_until_complete(async_subprocess(args, env))
     loop.close()
@@ -27,7 +31,8 @@ def run_process_async(args, env=None):
 
 
 async def async_subprocess(args, env=None, sinks=None):
-    process = await asyncio.create_subprocess_exec(*args, env=env, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    process = await asyncio.create_subprocess_exec(*args, env=env, stdout=asyncio.subprocess.PIPE,
+                                                   stderr=asyncio.subprocess.PIPE)
 
     await asyncio.wait([
         _read_stream(process.stdout, sinks),
@@ -49,5 +54,5 @@ async def _read_stream(stream, sinks=None):
                         feedback.get_sink(sink).write(line)
             else:
                 break
-        except:
+        except Exception:
             print(traceback.format_exc())

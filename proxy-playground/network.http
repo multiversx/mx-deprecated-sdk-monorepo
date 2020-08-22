@@ -1,0 +1,16 @@
+@baseUrl = https://testnet-api.elrond.com
+
+###
+
+// Get network config
+GET {{baseUrl}}/network/config HTTP/1.1
+
+###
+
+// Get network status (shard)
+GET {{baseUrl}}/network/status/1 HTTP/1.1
+
+###
+
+// Get network status (metachain)
+GET {{baseUrl}}/network/status/4294967295 HTTP/1.1

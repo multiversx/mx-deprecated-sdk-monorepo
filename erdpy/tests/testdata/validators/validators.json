@@ -1,0 +1,13 @@
+{
+  "validators" : [
+    {
+      "pemFile": "valPem1.pem"
+    },
+    {
+      "pemFile": "valPem2.pem"
+    },
+      {
+      "pemFile": "valPem3.pem"
+    }
+  ]
+}
