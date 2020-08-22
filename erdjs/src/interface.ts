@@ -1,5 +1,5 @@
-import { Account } from "../account";
-import { Transaction } from "../transaction";
+import { Account } from "./account";
+import { Transaction } from "./transaction";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;

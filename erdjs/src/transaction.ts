@@ -1,6 +1,6 @@
 import * as valid from "./validation";
 import * as errors from "./errors";
-import { Signer, Signable, Provider } from "./providers/interface";
+import { Signer, Signable, Provider } from "./interface";
 
 /* type Transaction struct { */
 /* 	Nonce     uint64 `form:"nonce" json:"nonce"` */

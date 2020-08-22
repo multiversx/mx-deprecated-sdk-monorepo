@@ -2,7 +2,7 @@ export * from "./account";
 export * from "./transaction";
 export * as valid from "./validation";
 export * as errors from "./errors";
-export * from "./providers/elrondproxy";
+export * from "./elrondproxy";
 export * from "./smartcontracts/elrondERC20client";
 export * from "./smartcontracts/erc20client";
 export * from "./smartcontracts/smartcontract";
