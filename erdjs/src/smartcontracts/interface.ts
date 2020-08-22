@@ -1,5 +1,5 @@
 import { SmartContractCall } from "./scCall";
-import { Provider } from "../providers/interface";
+import { Provider } from "../interface";
 
 export interface SmartContract {
     enableSigning(enable: boolean): void;

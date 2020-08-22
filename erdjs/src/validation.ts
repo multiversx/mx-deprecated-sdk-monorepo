@@ -1,4 +1,4 @@
-import * as errors from "../errors";
+import * as errors from "./errors";
 
 export const HASH_LENGTH = 32;
 export const ADDRESS_LENGTH = 32;

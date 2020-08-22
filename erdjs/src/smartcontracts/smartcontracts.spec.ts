@@ -1,7 +1,7 @@
 import { describe } from "mocha";
 import { assert } from "chai";
-import { Address } from "../data/account";
 import { SmartContractCall } from "./scCall";
+import { Address } from "../address";
 
 
 describe.only("test address", () => {

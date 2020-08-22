@@ -1,7 +1,4 @@
-import * as valid from "../data/validation";
-import * as errors from "../errors";
-import { Address } from "../account";
-import { Signer, Signable, Provider } from "../providers/interface";
+import * as valid from "../validation";
 import { SmartContractCall } from "./scCall";
 
 export class SmartContractDeploy extends SmartContractCall {

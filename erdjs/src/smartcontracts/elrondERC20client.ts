@@ -1,7 +1,8 @@
 import { ERC20Client } from "./interface";
-import { Provider } from "../providers/interface";
-import { Account, Address } from "../account";
+import { Provider } from "../interface";
 import { BasicERC20Client } from "./erc20client";
+import { Address } from "../address";
+import { Account } from "../account";
 
 export class ElrondERC20Client extends BasicERC20Client implements ERC20Client {
     constructor(provider: Provider | null, scAddress: Address, user: Account, chainID: string, version: number) {

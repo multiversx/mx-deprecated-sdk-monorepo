@@ -1,12 +1,13 @@
 import keccak from "keccak";
 import * as errors from "../errors";
-import * as valid from "../data/validation";
-import { Account, Address, AccountSigner } from "../account";
-import { Provider } from "../providers/interface";
+import * as valid from "../validation";
+import { Account, AccountSigner } from "../account";
+import { Provider } from "../interface";
 import { SmartContract } from "./interface";
 import { SmartContractCall } from "./scCall";
 import { SmartContractDeploy } from "./scDeploy";
-import { TransactionWatcher } from "../data/transaction";
+import { TransactionWatcher } from "../transaction";
+import { Address } from "../address";
 
 export class SmartContractBase implements SmartContract {
     protected provider: Provider | null = null;
@@ -15,8 +16,8 @@ export class SmartContractBase implements SmartContract {
 
     protected gasPrice: number | null = null;
     protected gasLimit: number | null = null;
-    protected chainID: string
-    protected version: number
+    protected chainID: string;
+    protected version: number;
 
     protected callStatusQueryPeriod: number = 6000;
     protected callStatusQueryTimeout: number = 60000;
