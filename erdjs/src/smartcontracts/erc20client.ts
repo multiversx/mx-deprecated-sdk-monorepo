@@ -1,6 +1,6 @@
 import { ERC20Client } from "./interface";
 import { Provider } from "../providers/interface";
-import { Account, Address } from "../data/account";
+import { Account, Address } from "../account";
 import { SmartContractBase } from "./smartcontract";
 import { SmartContractCall } from "./scCall";
 import * as errors from "../errors";

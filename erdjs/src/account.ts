@@ -1,8 +1,8 @@
 import * as tweetnacl from "tweetnacl";
 import * as valid from "./validation";
 import * as bech32 from "bech32";
-import * as errors from "../errors";
-import { Provider, Signer, Signable } from "../providers/interface";
+import * as errors from "./errors";
+import { Provider, Signer, Signable } from "./providers/interface";
 
 export class Account {
     private address: Address = new Address();

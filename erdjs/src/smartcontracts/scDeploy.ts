@@ -1,6 +1,6 @@
 import * as valid from "../data/validation";
 import * as errors from "../errors";
-import { Address } from "../data/account";
+import { Address } from "../account";
 import { Signer, Signable, Provider } from "../providers/interface";
 import { SmartContractCall } from "./scCall";
 

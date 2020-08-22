@@ -1,7 +1,7 @@
 import keccak from "keccak";
 import * as errors from "../errors";
 import * as valid from "../data/validation";
-import { Account, Address, AccountSigner } from "../data/account";
+import { Account, Address, AccountSigner } from "../account";
 import { Provider } from "../providers/interface";
 import { SmartContract } from "./interface";
 import { SmartContractCall } from "./scCall";

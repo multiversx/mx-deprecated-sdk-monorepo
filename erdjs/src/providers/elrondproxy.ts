@@ -18,8 +18,8 @@ GET    /validator/statistics        --> github.com/ElrondNetwork/elrond-proxy-go
 
 import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
-import { Account } from "../data/account";
-import { Transaction } from "../data/transaction";
+import { Account } from "../account";
+import { Transaction } from "../transaction";
 
 const chainIDKey = "erd_chain_id";
 const minTransactionVersionKey = "erd_min_transaction_version";
