@@ -2,19 +2,6 @@ import * as valid from "./validation";
 import * as errors from "./errors";
 import { Signer, Signable, Provider } from "./interface";
 
-/* type Transaction struct { */
-/* 	Nonce     uint64 `form:"nonce" json:"nonce"` */
-/* 	Value     string `form:"value" json:"value"` */
-/* 	Receiver  string `form:"receiver" json:"receiver"` */
-/* 	Sender    string `form:"sender" json:"sender"` */
-/* 	GasPrice  uint64 `form:"gasPrice" json:"gasPrice,omitempty"` */
-/* 	GasLimit  uint64 `form:"gasLimit" json:"gasLimit,omitempty"` */
-/* 	ChainID   string `form:"chainID" json:"chainID"` */
-/* 	Version   uint32 `form:"version" json:"version"` */
-/* 	Data      string `form:"data" json:"data,omitempty"` */
-/* 	Signature string `form:"signature" json:"signature,omitempty"` */
-/* } */
-
 export class Transaction implements Signable {
     // TODO Sender and Receiver should be of type Account, to
     // allow their validation before creating the transaction.
