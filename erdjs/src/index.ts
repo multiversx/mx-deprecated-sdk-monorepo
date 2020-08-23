@@ -1,8 +1,8 @@
 export * from "./account";
 export * from "./transaction";
-export * as valid from "./validation";
+export * as valid from "./utils";
 export * as errors from "./errors";
-export * from "./elrondproxy";
+export * from "./proxyProvider";
 export * from "./smartcontracts/elrondERC20client";
 export * from "./smartcontracts/erc20client";
 export * from "./smartcontracts/smartcontract";

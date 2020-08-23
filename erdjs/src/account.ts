@@ -1,5 +1,4 @@
-import * as tweetnacl from "tweetnacl";
-import * as valid from "./validation";
+import * as valid from "./utils";
 import * as errors from "./errors";
 import { Provider, Signer, Signable } from "./interface";
 import { Address } from "./address";
@@ -10,8 +9,6 @@ export class Account {
     private nonce: number = 0;
     private balance: bigint = BigInt(0);
     private code: string = "";
-    private codeHash: string = "";
-    private rootHash: string = "";
 
     private provider: Provider | null = null;
 
@@ -70,12 +67,9 @@ export class Account {
         }
 
         this.address = new Address(data.address);
-        this.nonce = valid.Nonce(data.nonce);
-        this.balance = valid.BalanceString(data.balance);
-        this.codeHash = valid.CodeHash(data.codeHash);
-        this.code = valid.Code(data.code, this.codeHash);
-        this.rootHash = valid.RootHash(data.rootHash);
-
+        //this.nonce = valid.Nonce(data.nonce);
+        //this.balance = valid.BalanceString(data.balance);
+        
         this.initialized = true;
     }
 
@@ -89,39 +83,10 @@ export class Account {
             nonce: this.getNonce(),
             balance: this.getBalance(),
             code: this.code,
-            codeHash: this.codeHash,
-            rootHash: this.rootHash
         };
-    }
-
-    public setKeysFromRawData(data: any) {
-        this.address = new Address(data.pubKey);
-        this.seed = valid.Seed(data.privKey);
     }
 
     public isInitialized(): boolean {
         return this.initialized;
-    }
-}
-
-export class AccountSigner implements Signer {
-    private account: Account | null = null;
-
-    public constructor(acc: Account) {
-        this.account = acc;
-    }
-
-    public sign(signable: Signable): void {
-        if (this.account != null) {
-            let seed = this.account.getSeed();
-            let pair = tweetnacl.sign.keyPair.fromSeed(seed);
-            let signingKey = pair.secretKey;
-
-            let bufferToSign = signable.serializeForSigning();
-            let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
-            let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
-
-            signable.applySignature(signature);
-        }
     }
 }

@@ -4,8 +4,8 @@ import { Provider } from "../interface";
 export interface SmartContract {
     enableSigning(enable: boolean): void;
     setProvider(provider: Provider | null): void;
-    setGasPrice(gasPrice: number): void;
-    setGasLimit(gasLimit: number): void;
+    //setGasPrice(gasPrice: number): void;
+    //setGasLimit(gasLimit: number): void;
     getAddress(): string;
 }
 

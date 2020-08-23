@@ -1,4 +1,4 @@
-import * as valid from "../validation";
+import * as valid from "../utils";
 import { SmartContractCall } from "./scCall";
 
 export class SmartContractDeploy extends SmartContractCall {

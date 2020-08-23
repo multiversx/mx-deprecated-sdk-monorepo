@@ -1,13 +1,14 @@
 import keccak from "keccak";
 import * as errors from "../errors";
-import * as valid from "../validation";
-import { Account, AccountSigner } from "../account";
+import * as valid from "../utils";
+import { Account } from "../account";
 import { Provider } from "../interface";
 import { SmartContract } from "./interface";
 import { SmartContractCall } from "./scCall";
 import { SmartContractDeploy } from "./scDeploy";
 import { TransactionWatcher } from "../transactionWatcher";
 import { Address } from "../address";
+import { SimpleSigner } from "../simpleSigner";
 
 export class SmartContractBase implements SmartContract {
     protected provider: Provider | null = null;
@@ -40,13 +41,13 @@ export class SmartContractBase implements SmartContract {
         this.provider = provider;
     }
 
-    public setGasPrice(gasPrice: number) {
-        this.gasPrice = valid.GasPrice(gasPrice);
-    }
+    // public setGasPrice(gasPrice: number) {
+    //     //this.gasPrice = valid.GasPrice(gasPrice);
+    // }
 
-    public setGasLimit(gasLimit: number) {
-        this.gasLimit = valid.GasLimit(gasLimit);
-    }
+    // public setGasLimit(gasLimit: number) {
+    //     //this.gasLimit = valid.GasLimit(gasLimit);
+    // }
 
     public getAddress(): string {
         if (this.scAddress == null) {
@@ -61,7 +62,7 @@ export class SmartContractBase implements SmartContract {
         if (this.provider != null) {
             try {
                 let txHash = await this.provider.sendTransaction(deployment);
-                deployment.setTxHash(txHash);
+                //deployment.setTxHash(txHash);
 
                 let watcher = new TransactionWatcher(txHash, this.provider);
                 await watcher.awaitExecuted(
@@ -111,7 +112,7 @@ export class SmartContractBase implements SmartContract {
         if (this.provider != null) {
             try {
                 let txHash = await this.provider.sendTransaction(call);
-                call.setTxHash(txHash);
+                //call.setTxHash(txHash);
 
                 let watcher = new TransactionWatcher(txHash, this.provider);
                 await watcher.awaitExecuted(
@@ -151,7 +152,7 @@ export class SmartContractBase implements SmartContract {
         // deployment.prepareData();
 
         if (this.signingEnabled) {
-            let signer = new AccountSigner(this.user);
+            let signer = new SimpleSigner("");
             signer.sign(deployment);
         }
     }
@@ -180,7 +181,7 @@ export class SmartContractBase implements SmartContract {
         // call.prepareData();
 
         if (this.signingEnabled) {
-            let signer = new AccountSigner(this.user);
+            let signer = new SimpleSigner("");
             signer.sign(call);
         }
     }

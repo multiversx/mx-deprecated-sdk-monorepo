@@ -1,4 +1,4 @@
-import * as valid from "../validation";
+import * as valid from "../utils";
 import * as errors from "../errors";
 import { Transaction } from "../transaction";
 
@@ -7,12 +7,12 @@ export class SmartContractCall extends Transaction {
     protected arguments: string[] = [];
 
     constructor() {
-        super(null);
-        this.arguments = [];
+        super();
+        //this.arguments = [];
     }
 
     public prepareData() {
-        this.setData(this.generateArgumentString());
+        //this.setData(this.generateArgumentString());
         console.log("SmartContractCall data:\t", this.data);
     }
 

@@ -4,10 +4,7 @@ import { Provider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
 
-const chainIDKey = "erd_chain_id";
-const minTransactionVersionKey = "erd_min_transaction_version";
-
-export class ElrondProxy implements Provider {
+export class ProxyProvider implements Provider {
     private url: string;
     private timeoutLimit: number;
 
@@ -142,32 +139,6 @@ export class ElrondProxy implements Provider {
                 throw Error(`cannot get response from proxy ${error}`)
             }
             return response.data.data.config
-        });
-    }
-
-    getChainID(): Promise<any> {
-        return axios.get(
-            this.url + `/network/config`,
-            {timeout: this.timeoutLimit}
-        ).then( response => {
-            let error = response.data.error
-            if (error != "") {
-                throw Error(`cannot get response from proxy ${error}`)
-            }
-            return response.data.data.config[chainIDKey]
-        });
-    }
-
-    getMinTransactionVersion(): Promise<number> {
-        return axios.get(
-            this.url + `/network/config`,
-            {timeout: this.timeoutLimit}
-        ).then( response => {
-            let error = response.data.error
-            if (error != "") {
-                throw Error(`cannot get response from proxy ${error}`)
-            }
-            return response.data.data.config[minTransactionVersionKey]
         });
     }
 }

@@ -1,21 +1,10 @@
 
-export var ErrNegativeNonce = new Error("negative nonce");
-export var ErrInvalidBalanceString = new Error("invalid balance string");
-export var ErrNegativeBalance = new Error("negative balance");
-export var ErrInvalidCodeHash = new Error("invalid code hash");
-export var ErrInvalidRootHash = new Error("invalid code root hash");
-export var ErrCodeHasUnexpectedHash = new Error("code has unexpected hash");
-export var ErrNegativeGasPrice = new Error("negative gas price");
-export var ErrNegativeGasLimit = new Error("negative gas limit");
-export var ErrWrongSecretKeyLength = new Error("wrong secret key length");
-export var ErrInvalidTxValueString = new Error("invalid tx value string");
-export var ErrNegativeValue = new Error("negative value");
-export var ErrNotANumber = new Error("not a number");
+
 export var ErrTransactionNotSigned = new Error("transaction not signed");
 export var ErrProviderNotSet = new Error("provider not set");
 export var ErrAsyncTimerAlreadyRunning = new Error("async timer already running");
 export var ErrInvalidFunctionName = new Error("invalid function name");
-export var ErrInvalidArgument = new Error("invalid argument");
+//export var ErrInvalidArgument = new Error("invalid argument");
 export var ErrUserAccountNotSet = new Error("user account not set");
 export var ErrSCAddressNotSet = new Error("smart contract address not set");
 export var ErrGasPriceNotSet = new Error("gas price not set");
@@ -35,6 +24,12 @@ export class Err extends Error {
     }
 }
 
+export class ErrInvalidArgument extends Err {
+    public constructor(name: string, value: any, inner?: Error) {
+        super(`Invalid argument "${name}: ${value}"`, inner);
+    }
+}
+
 export class ErrAddressCannotCreate extends Err {
     public constructor(input: any, inner?: Error) {
         let message = `Cannot create address from: ${input}`;
@@ -51,5 +46,35 @@ export class ErrAddressBadHrp extends Err {
 export class ErrAddressEmpty extends Err {
     public constructor() {
         super(`Address is empty`);
+    }
+}
+
+export class ErrSignerCannotSign extends Err {
+    public constructor(inner: Error) {
+        super(`Cannot sign`, inner);
+    }
+}
+
+export class ErrBalanceInvalid extends Err {
+    public constructor(value: bigint) {
+        super(`Invalid balance: ${value}`);
+    }
+}
+
+export class ErrGasPriceInvalid extends Err {
+    public constructor(value: number) {
+        super(`Invalid gas price: ${value}`);
+    }
+}
+
+export class ErrGasLimitInvalid extends Err {
+    public constructor(value: number) {
+        super(`Invalid gas limit: ${value}`);
+    }
+}
+
+export class ErrNonceInvalid extends Err {
+    public constructor(value: number) {
+        super(`Invalid nonce: ${value}`);
     }
 }

@@ -1,5 +1,6 @@
 import { Account } from "./account";
 import { Transaction } from "./transaction";
+import { NetworkConfig } from "./networkConfig";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;
@@ -11,13 +12,11 @@ export interface Provider {
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
     sendTransaction(tx: Transaction): Promise<string>;
     getTransactionStatus(txHash: string): Promise<string>;
-    getNetworkConfig(): Promise<any>;
-    getChainID(): Promise<string>;
-    getMinTransactionVersion(): Promise<number>
+    getNetworkConfig(): Promise<NetworkConfig>;
 }
 
 export interface Signer {
-    sign(signable: Signable): void;
+    sign(signable: Signable): Promise<void>;
 }
 
 export interface Signable {
