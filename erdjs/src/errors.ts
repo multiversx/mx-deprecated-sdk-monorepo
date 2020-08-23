@@ -24,6 +24,7 @@ export var ErrInvalidVMType = new Error("invalid vm type");
 export var ErrInvalidSmartContractCode = new Error("invalid smart contract code");
 export var ErrInvalidChainID = new Error("invalid chain ID");
 export var ErrInvalidTransactionVersion = new Error("invalid transaction version");
+export var ErrExpectedTransactionStatusNotReached = new Error("expected transaction status not reached");
 
 export class Err extends Error {
     inner: Error | undefined = undefined;

@@ -6,7 +6,7 @@ import { Provider } from "../interface";
 import { SmartContract } from "./interface";
 import { SmartContractCall } from "./scCall";
 import { SmartContractDeploy } from "./scDeploy";
-import { TransactionWatcher } from "../transaction";
+import { TransactionWatcher } from "../transactionWatcher";
 import { Address } from "../address";
 
 export class SmartContractBase implements SmartContract {
