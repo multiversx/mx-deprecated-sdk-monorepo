@@ -26,24 +26,17 @@ export var ErrInvalidChainID = new Error("invalid chain ID");
 export var ErrInvalidTransactionVersion = new Error("invalid transaction version");
 
 export class Err extends Error {
-    inner: Err | undefined = undefined;
+    inner: Error | undefined = undefined;
 
-    public constructor(message: string, inner?: Err) {
+    public constructor(message: string, inner?: Error) {
         super(message);
         this.inner = inner;
     }
 }
 
-export class ErrAddressWrongLength extends Err {
-    public constructor(expected: number, got: number) {
-        let message = `Wrong address length. Expected: ${expected}, got ${got}`;
-        super(message); 
-    }
-}
-
 export class ErrAddressCannotCreate extends Err {
-    public constructor(input: any, inner?: Err) {
-        let message = `Cannot create address from ${input}`;
+    public constructor(input: any, inner?: Error) {
+        let message = `Cannot create address from: ${input}`;
         super(message, inner);
     }
 }

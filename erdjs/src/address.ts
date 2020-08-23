@@ -4,7 +4,6 @@ import * as errors from "./errors";
 
 const HRP = "erd";
 const PUBKEY_LENGTH = 32;
-const PUBKEY_STRING_LENGTH = PUBKEY_LENGTH * 2;
 
 /**
  * An Elrond Address, as an immutable object.
@@ -17,54 +16,107 @@ export class Address {
         if (!value) {
             return;
         }
-
-        // Copy-constructor
         if (value instanceof Address) {
-            this.valueHex = value.valueHex;
-            return;
+            return Address.fromAddress(value);
         }
-
-        // From buffer (bytes)
         if (value instanceof Buffer) {
-            let buffer = value as Buffer;
-            let length = buffer.length;
-            if (length != PUBKEY_LENGTH) {
-                throw new errors.ErrAddressWrongLength(PUBKEY_LENGTH, length);
-            }
-
-            this.valueHex = buffer.toString("hex");
-            return;
+            return Address.fromBuffer(value);
         }
-
-        // From string
         if (typeof value === "string") {
-            let asString = (value as string).toLowerCase();
-            let length = asString.length;
-
-            // From HEX
-            if (length == PUBKEY_STRING_LENGTH) {
-                let isValidHex = Buffer.from(asString, "hex").length == PUBKEY_LENGTH;
-                if (isValidHex) {
-                    this.valueHex = asString;
-                    return;
-                }
-            }
-
-            // From BECH32
-            this.valueHex = decodeBech32(asString);
-            return;
+            return Address.fromString(value);
         }
 
         throw new errors.ErrAddressCannotCreate(value);
     }
 
-    public hex(): string {
+    /**
+     * Creates an address object from another address object
+     */
+    static fromAddress(address: Address): Address {
+        return Address.fromValidHex(address.valueHex);
+    }
+
+    private static fromValidHex(value: string): Address {
+        let result = new Address();
+        result.valueHex = value;
+        return result;
+    }
+
+    /**
+     * Creates an address object from a Buffer
+     */
+    static fromBuffer(buffer: Buffer): Address {
+        if (buffer.length != PUBKEY_LENGTH) {
+            throw new errors.ErrAddressCannotCreate(buffer);
+        }
+
+        return Address.fromValidHex(buffer.toString("hex"));
+    }
+
+    /**
+     * Creates an address object from a string (hex or bech32)
+     */
+    static fromString(value: string): Address {
+        if (Address.isValidHex(value)) {
+            return Address.fromValidHex(value);
+        }
+
+        return Address.fromBech32(value);
+    }
+
+    private static isValidHex(value: string) {
+        return Buffer.from(value, "hex").length == PUBKEY_LENGTH;
+    }
+
+    /**
+     * Creates an address object from a hex-encoded string
+     */
+    static fromHex(value: string): Address {
+        if (!Address.isValidHex(value)) {
+            throw new errors.ErrAddressCannotCreate(value);
+        }
+
+        return Address.fromValidHex(value);
+    }
+
+    /**
+     * Creates an address object from a bech32-encoded string
+     */
+    static fromBech32(value: string): Address {
+        let decoded;
+
+        try {
+            decoded = bech32.decode(value);
+        } catch (err) {
+            throw new errors.ErrAddressCannotCreate(value, err);
+        }
+
+        let prefix = decoded.prefix;
+        if (prefix != HRP) {
+            throw new errors.ErrAddressBadHrp(HRP, prefix);
+        }
+
+        let pubkey = Buffer.from(bech32.fromWords(decoded.words));
+        if (pubkey.length != PUBKEY_LENGTH) {
+            throw new errors.ErrAddressCannotCreate(value);
+        }
+
+        return Address.fromValidHex(pubkey.toString("hex"));
+    }
+
+    /**
+     * Returns the hex representation of the address (pubkey)
+     */
+    hex(): string {
         this.assertNotEmpty();
 
         return this.valueHex;
     }
 
-    public bech32(): string {
+    /**
+     * Returns the bech32 representation of the address
+     */
+    bech32(): string {
         this.assertNotEmpty();
 
         let words = bech32.toWords(this.pubkey());
@@ -72,7 +124,10 @@ export class Address {
         return address;
     }
 
-    public pubkey(): Buffer {
+    /**
+     * Returns the pubkey as raw bytes (buffer)
+     */
+    pubkey(): Buffer {
         this.assertNotEmpty();
 
         return Buffer.from(this.valueHex, "hex");
@@ -84,7 +139,10 @@ export class Address {
         }
     }
 
-    public equals(other: Address | null): boolean {
+    /**
+     * Compares the address to another address
+     */
+    equals(other: Address | null): boolean {
         if (!other) {
             return false;
         }
@@ -92,27 +150,17 @@ export class Address {
         return this.valueHex == other.valueHex;
     }
 
-    public toString(): string {
+    /**
+     * Returns the bech32 representation of the address
+     */
+    toString(): string {
         return this.bech32();
     }
 
-    public static Zero(): Address {
+    /**
+     * Creates the Zero address (the one that should be used when deploying smart contracts)
+     */
+    static Zero(): Address {
         return new Address("0".repeat(64));
     }
-}
-
-function decodeBech32(value: string): string {
-    let decoded = bech32.decode(value);
-    let prefix = decoded.prefix;
-    if (prefix != HRP) {
-        throw new errors.ErrAddressBadHrp(HRP, prefix);
-    }
-
-    let pubkey = Buffer.from(bech32.fromWords(decoded.words));
-    let length = pubkey.length;
-    if (length != PUBKEY_LENGTH) {
-        throw new errors.ErrAddressWrongLength(PUBKEY_LENGTH, length);
-    }
-
-    return pubkey.toString("hex");
 }
