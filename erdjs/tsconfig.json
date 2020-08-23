@@ -27,5 +27,9 @@
         "out",
         "out-browser",
 		"**/*.spec.ts"
-    ]
+    ],
+    "typedocOptions": {
+        "mode": "library",
+        "out": "docs"
+    }
 }
