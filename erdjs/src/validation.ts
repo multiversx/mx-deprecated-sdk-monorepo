@@ -5,15 +5,7 @@ export const ADDRESS_LENGTH = 32;
 export const SEED_STRING_LENGTH = 64;
 export const SEED_LENGTH = 32;
 export const CODE_HASH_LENGTH = HASH_LENGTH;
-export const ADDRESS_PREFIX = "erd";
 export const VMTYPES = ["0500"];
-
-export function Address(address: string): string {
-    if (address.length != ADDRESS_LENGTH) {
-        // TODO throw errors.ErrWrongAddressLength;
-    }
-    return address;
-}
 
 export function Nonce(nonce: number): number {
     nonce = validNumber(nonce);

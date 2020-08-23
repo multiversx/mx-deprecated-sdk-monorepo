@@ -86,7 +86,7 @@ export class SmartContractBase implements SmartContract {
         }
 
         let initialPadding = Buffer.alloc(8, 0);
-        let ownerAddressBytes = this.user.getAddressObject().bytes();
+        let ownerAddressBytes = this.user.getAddressObject().pubkey();
         let shardSelector = ownerAddressBytes.slice(30);
         let ownerNonceBytes = Buffer.alloc(8);
         ownerNonceBytes.writeBigUInt64LE(BigInt(this.user.getNonce()));
@@ -101,7 +101,7 @@ export class SmartContractBase implements SmartContract {
             shardSelector
         ]);
 
-        let address = new Address().setBytes(addressBytes);
+        let address = new Address(addressBytes);
         return address;
     }
 
@@ -141,16 +141,14 @@ export class SmartContractBase implements SmartContract {
             throw errors.ErrGasLimitNotSet;
         }
 
-        let deploymentAddress = new Address().setBytes(Buffer.alloc(32, 0));
-
-        deployment.setNonce(this.user.getNonce());
-        deployment.setSender(this.user.getAddress());
-        deployment.setReceiver(deploymentAddress.toString());
-        deployment.setGasLimit(this.gasLimit);
-        deployment.setGasPrice(this.gasPrice);
-        deployment.setChainID(this.chainID);
-        deployment.setVersion(this.version);
-        deployment.prepareData();
+        // deployment.setNonce(this.user.getNonce());
+        // deployment.setSender(this.user.getAddress());
+        // deployment.setReceiver(Address.Zero());
+        // deployment.setGasLimit(this.gasLimit);
+        // deployment.setGasPrice(this.gasPrice);
+        // deployment.setChainID(this.chainID);
+        // deployment.setVersion(this.version);
+        // deployment.prepareData();
 
         if (this.signingEnabled) {
             let signer = new AccountSigner(this.user);
@@ -172,14 +170,14 @@ export class SmartContractBase implements SmartContract {
             throw errors.ErrGasLimitNotSet;
         }
 
-        call.setNonce(this.user.getNonce());
-        call.setSender(this.user.getAddress());
-        call.setReceiver(this.scAddress.toString());
-        call.setGasLimit(this.gasLimit);
-        call.setGasPrice(this.gasPrice);
-        call.setChainID(this.chainID);
-        call.setVersion(this.version);
-        call.prepareData();
+        // call.setNonce(this.user.getNonce());
+        // call.setSender(this.user.getAddress());
+        // call.setReceiver(this.scAddress.toString());
+        // call.setGasLimit(this.gasLimit);
+        // call.setGasPrice(this.gasPrice);
+        // call.setChainID(this.chainID);
+        // call.setVersion(this.version);
+        // call.prepareData();
 
         if (this.signingEnabled) {
             let signer = new AccountSigner(this.user);

@@ -1,13 +1,12 @@
 import * as valid from "./validation";
 import * as errors from "./errors";
 import { Signer, Signable, Provider } from "./interface";
+import { Address } from "./address";
 
 export class Transaction implements Signable {
-    // TODO Sender and Receiver should be of type Account, to
-    // allow their validation before creating the transaction.
     protected hash: string = "";
-    protected sender: string = "";
-    protected receiver: string = "";
+    protected sender: Address = Address.Zero();
+    protected receiver: Address = Address.Zero();
     protected value: bigint = BigInt(0);
     protected nonce: number = 0;
     protected gasPrice: number = 0;
@@ -35,15 +34,15 @@ export class Transaction implements Signable {
             return;
         }
 
-        this.sender = valid.Address(data.sender);
-        this.receiver = valid.Address(data.receiver);
+        this.sender = new Address(data.sender);
+        this.receiver = new Address(data.receiver);
         this.value = valid.TxValue(data.value);
         this.nonce = valid.Nonce(data.nonce);
         this.gasPrice = valid.GasPrice(data.gasPrice);
         this.gasLimit = valid.GasLimit(data.gasLimit);
         this.data = valid.TxData(data.data);
         this.chainID = valid.ChainID(data.chainID);
-        this.version = valid.Version(data.version)
+        this.version = valid.Version(data.version);
 
         this.initialized = true;
         this.signed = false;
@@ -54,12 +53,12 @@ export class Transaction implements Signable {
         this.hash = txHash;
     }
 
-    public setSender(sender: string) {
-        this.sender = valid.Address(sender);
+    public setSender(sender: Address) {
+        this.sender = sender;
     }
 
-    public setReceiver(receiver: string) {
-        this.receiver = valid.Address(receiver);
+    public setReceiver(receiver: Address) {
+        this.receiver = receiver;
     }
 
     public setValue(txValue: string) {
@@ -106,9 +105,9 @@ export class Transaction implements Signable {
         return this.nonce;
     }
 
-    public getSender(): string {
-        return this.sender;
-    }
+    // public getSender(): string {
+    //     return this.sender;
+    // }
 
     public getData(): string {
         return this.data;

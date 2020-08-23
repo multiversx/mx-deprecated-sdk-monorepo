@@ -1,61 +1,87 @@
-import * as valid from "./validation";
 import * as bech32 from "bech32";
 import * as errors from "./errors";
 
+
+const HRP = "erd";
+const PUBKEY_LENGTH = 32;
+const PUBKEY_STRING_LENGTH = PUBKEY_LENGTH * 2;
+
+/**
+ * An Elrond Address, as an immutable object.
+ */
 export class Address {
-    private buffer: Buffer = Buffer.from("");
-    private prefix: string = "";
+    // We keep a hex-encoded string as the "backing" value
+    private valueHex: string = "";
 
-    public constructor(address?: string) {
-        if (address) {
-            this.set(address);
-        }
-    }
-
-    public set(address: string) {
-        let decodedAddress = bech32.decode(address);
-        if (decodedAddress.prefix != valid.ADDRESS_PREFIX) {
-            throw errors.ErrInvalidAddressPrefix;
+    public constructor(value?: Address | Buffer | string) {
+        if (!value) {
+            return;
         }
 
-        let addressBytes = Buffer.from(bech32.fromWords(decodedAddress.words));
-        if (addressBytes.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
+        // Copy-constructor
+        if (value instanceof Address) {
+            this.valueHex = value.valueHex;
+            return;
         }
 
-        this.buffer = addressBytes;
-        this.prefix = decodedAddress.prefix;
-    }
+        // From buffer (bytes)
+        if (value instanceof Buffer) {
+            let buffer = value as Buffer;
+            let length = buffer.length;
+            if (length != PUBKEY_LENGTH) {
+                throw new errors.ErrAddressWrongLength(PUBKEY_LENGTH, length);
+            }
 
-    public setHex(addressHex: string): Address {
-        var addressBytes = Buffer.from(addressHex, 'hex');
-        if (addressBytes.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
+            this.valueHex = buffer.toString("hex");
+            return;
         }
 
-        this.buffer = addressBytes;
-        return this;
-    }
+        // From string
+        if (typeof value === "string") {
+            let asString = (value as string).toLowerCase();
+            let length = asString.length;
 
-    public setBytes(bytes: Buffer): Address {
-        if (bytes.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
+            // From HEX
+            if (length == PUBKEY_STRING_LENGTH) {
+                let isValidHex = Buffer.from(asString, "hex").length == PUBKEY_LENGTH;
+                if (isValidHex) {
+                    this.valueHex = asString;
+                    return;
+                }
+            }
+
+            // From BECH32
+            this.valueHex = decodeBech32(asString);
+            return;
         }
 
-        this.buffer = bytes;
-        return this;
-    }
-
-    public getPrefix(): string {
-        return this.prefix;
-    }
-
-    public bytes(): Buffer {
-        return this.buffer;
+        throw new errors.ErrAddressCannotCreate(value);
     }
 
     public hex(): string {
-        return this.buffer.toString('hex');
+        this.assertNotEmpty();
+
+        return this.valueHex;
+    }
+
+    public bech32(): string {
+        this.assertNotEmpty();
+
+        let words = bech32.toWords(this.pubkey());
+        let address = bech32.encode(HRP, words);
+        return address;
+    }
+
+    public pubkey(): Buffer {
+        this.assertNotEmpty();
+
+        return Buffer.from(this.valueHex, "hex");
+    }
+
+    private assertNotEmpty() {
+        if (!this.valueHex) {
+            throw new errors.ErrAddressEmpty();
+        }
     }
 
     public equals(other: Address | null): boolean {
@@ -63,16 +89,30 @@ export class Address {
             return false;
         }
 
-        return this.hex() == other.hex();
+        return this.valueHex == other.valueHex;
     }
 
     public toString(): string {
-        if (this.buffer.length != valid.ADDRESS_LENGTH) {
-            throw errors.ErrWrongAddressLength;
-        }
-
-        let words = bech32.toWords(this.buffer);
-        let address = bech32.encode(valid.ADDRESS_PREFIX, words);
-        return address;
+        return this.bech32();
     }
+
+    public static Zero(): Address {
+        return new Address("0".repeat(64));
+    }
+}
+
+function decodeBech32(value: string): string {
+    let decoded = bech32.decode(value);
+    let prefix = decoded.prefix;
+    if (prefix != HRP) {
+        throw new errors.ErrAddressBadHrp(HRP, prefix);
+    }
+
+    let pubkey = Buffer.from(bech32.fromWords(decoded.words));
+    let length = pubkey.length;
+    if (length != PUBKEY_LENGTH) {
+        throw new errors.ErrAddressWrongLength(PUBKEY_LENGTH, length);
+    }
+
+    return pubkey.toString("hex");
 }
