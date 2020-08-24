@@ -1,25 +1,26 @@
-import { Signer, Signable, Provider } from "./interface";
+import { Signable, Provider } from "./interface";
 import { Address } from "./address";
 import { Balance } from "./balance";
-import { GasPrice, GasLimit } from "./gas";
-import { NetworkConfig, ChainID, TransactionVersion } from "./networkConfig";
+import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
+import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
 import { errors } from ".";
 import { Signature } from "./signature";
 
 export class Transaction implements Signable {
-    protected nonce: Nonce = new Nonce(0);
-    protected value: Balance = Balance.Zero();
-    protected sender: Address = Address.Zero();
-    protected receiver: Address = Address.Zero();
-    protected gasPrice: GasPrice = NetworkConfig.Default.MinGasPrice;
-    protected gasLimit: GasLimit = NetworkConfig.Default.MinGasLimit;
-    protected data: TransactionPayload = new TransactionPayload();
-    protected chainID: ChainID = NetworkConfig.Default.ChainID;
-    protected version: TransactionVersion = NetworkConfig.Default.MinTransactionVersion;
-    protected signature?: Signature;
-    protected hash: string = "";
-    protected status: string = "unknown";
+    nonce: Nonce = new Nonce(0);
+    value: Balance = Balance.Zero();
+    sender: Address = Address.Zero();
+    receiver: Address = Address.Zero();
+    gasPrice: GasPrice = NetworkConfig.Default.MinGasPrice;
+    gasLimit: GasLimit = NetworkConfig.Default.MinGasLimit;
+    data: TransactionPayload = new TransactionPayload();
+    chainID: ChainID = NetworkConfig.Default.ChainID;
+    version: TransactionVersion = NetworkConfig.Default.MinTransactionVersion;
+    
+    signature: Signature = new Signature();
+    hash: string = "";
+    status: string = "unknown";
 
     public constructor(init?: Partial<Transaction>) {
         Object.assign(this, init);
@@ -35,7 +36,7 @@ export class Transaction implements Signable {
     private toPlainObject(): any {
         let result: any = {
             nonce: this.nonce.value,
-            value: this.value.toString(),
+            value: this.value.raw(),
             receiver: this.receiver.bech32(),
             sender: this.sender.bech32(),
             gasPrice: this.gasPrice.value,
@@ -66,14 +67,6 @@ export class Transaction implements Signable {
         tx.signature = this.signature.hex();
         return tx;
     }
-
-    public setStatus(status: string) {
-        this.status = status;
-    }
-
-    public getStatus(): string {
-        return this.status;
-    }
 }
 
 export class TransactionPayload {
@@ -84,7 +77,7 @@ export class TransactionPayload {
     }
 
     isEmpty(): boolean {
-        return this.data.length > 0;
+        return this.data.length == 0;
     }
 
     encoded(): string {

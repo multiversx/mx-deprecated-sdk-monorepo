@@ -1,16 +1,16 @@
-import * as assert from "assert";
-import { Account, AccountSigner } from "./account";
-import { Transaction, TransactionWatcher } from "./transaction";
-import { Provider } from "./interface";
-import { ElrondProxy } from "./elrondproxy";
-import { SmartContractCall } from "./smartcontracts/scCall";
-import { SmartContractDeploy } from "./smartcontracts/scDeploy";
-import { ElrondERC20Client } from "./smartcontracts/elrondERC20client";
-import * as fs from "fs";
-import { SmartContractBase } from "./smartcontracts/smartcontract";
-import { describe } from "mocha";
+// import * as assert from "assert";
+// import { Account, AccountSigner } from "./account";
+// import { Transaction, TransactionWatcher } from "./transaction";
+// import { Provider } from "./interface";
+// import { ElrondProxy } from "./elrondproxy";
+// import { SmartContractCall } from "./smartcontracts/scCall";
+// import { SmartContractDeploy } from "./smartcontracts/scDeploy";
+// import { ElrondERC20Client } from "./smartcontracts/elrondERC20client";
+// import * as fs from "fs";
+// import { SmartContractBase } from "./smartcontracts/smartcontract";
+// import { describe } from "mocha";
 
-import keccak from "keccak";
+// import keccak from "keccak";
 
 var DEFAULT_PROXY_ADDRESS = "http://localhost:7950";
 

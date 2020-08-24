@@ -27,3 +27,28 @@ export class GasLimit {
         this.value = value;
     }
 }
+
+
+export class ChainID {
+    public readonly value: string;
+
+    constructor(value: string) {
+        if (!value) {
+            throw new errors.ErrChainIDInvalid(value);
+        }
+
+        this.value = value;
+    }
+}
+
+export class TransactionVersion {
+    public readonly value: number;
+
+    constructor(value: number) {
+        if (value < 1) {
+            throw new errors.ErrTransactionVersionInvalid(value);
+        }
+
+        this.value = value;
+    }
+}

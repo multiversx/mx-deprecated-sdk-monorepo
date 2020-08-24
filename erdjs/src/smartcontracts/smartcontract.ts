@@ -69,7 +69,7 @@ export class SmartContractBase implements SmartContract {
                     this.callStatusQueryPeriod,
                     this.callStatusQueryTimeout
                 );
-                deployment.setStatus("executed");
+                //deployment.setStatus("executed");
                 this.scAddress = this.computeAddress(deployment);
             } catch (err) {
                 console.error(err);
@@ -119,7 +119,7 @@ export class SmartContractBase implements SmartContract {
                     this.callStatusQueryPeriod,
                     this.callStatusQueryTimeout
                 );
-                call.setStatus("executed");
+                //call.setStatus("executed");
                 // TODO return smart contract results
             } catch (err) {
                 console.error(err);
