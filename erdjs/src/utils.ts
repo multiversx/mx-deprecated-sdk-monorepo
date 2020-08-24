@@ -16,10 +16,6 @@ export function Code(code: string | null, expectedCodeHash: string): string {
         return code;
     }
     
-    let codeHash = makeCodeHash(code);
-    if (codeHash !== expectedCodeHash) {
-        // TODO throw errors.ErrCodeHasUnexpectedHash;
-    }
     return code;
 }
 
@@ -52,12 +48,3 @@ export function SCCodeMetadata(metadata: string): string {
     }
     return metadata;
 }
-
-function makeCodeHash(code: string) {
-    if (code.length > 0) {
-        return "not_a_hash";
-    } else {
-        return "";
-    }
-}
-

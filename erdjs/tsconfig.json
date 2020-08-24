@@ -26,7 +26,8 @@
 		"node_modules",
         "out",
         "out-browser",
-		"**/*.spec.ts"
+        "**/*.spec.ts",
+        "src/examples"
     ],
     "typedocOptions": {
         "mode": "library",

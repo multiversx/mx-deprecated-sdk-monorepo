@@ -135,12 +135,12 @@ export class SmartContractBase implements SmartContract {
         if (this.user == null) {
             throw errors.ErrUserAccountNotSet;
         }
-        if (this.gasPrice == null) {
-            throw errors.ErrGasPriceNotSet;
-        }
-        if (this.gasLimit == null) {
-            throw errors.ErrGasLimitNotSet;
-        }
+        // if (this.gasPrice == null) {
+        //     throw errors.ErrGasPriceNotSet;
+        // }
+        // if (this.gasLimit == null) {
+        //     throw errors.ErrGasLimitNotSet;
+        // }
 
         // deployment.setNonce(this.user.getNonce());
         // deployment.setSender(this.user.getAddress());
@@ -164,12 +164,12 @@ export class SmartContractBase implements SmartContract {
         if (this.scAddress == null) {
             throw errors.ErrSCAddressNotSet;
         }
-        if (this.gasPrice == null) {
-            throw errors.ErrGasPriceNotSet;
-        }
-        if (this.gasLimit == null) {
-            throw errors.ErrGasLimitNotSet;
-        }
+        // if (this.gasPrice == null) {
+        //     throw errors.ErrGasPriceNotSet;
+        // }
+        // if (this.gasLimit == null) {
+        //     throw errors.ErrGasLimitNotSet;
+        // }
 
         // call.setNonce(this.user.getNonce());
         // call.setSender(this.user.getAddress());
