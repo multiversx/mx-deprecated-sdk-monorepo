@@ -23,11 +23,6 @@ export function Code(code: string | null, expectedCodeHash: string): string {
     return code;
 }
 
-
-export function TxData(txData: string): string {
-    return txData;
-}
-
 export function FunctionName(name: string): string {
     if (name.length == 0) {
         throw errors.ErrInvalidFunctionName;
@@ -36,14 +31,6 @@ export function FunctionName(name: string): string {
     return name;
 }
 
-// export function Seed(key: string): Buffer {
-//     if (key.length != 2 * SEED_STRING_LENGTH) {
-//         throw errors.ErrWrongSecretKeyLength;
-//     }
-
-//     let keyBytes = Buffer.from(key, 'hex');
-//     return keyBytes.slice(0, SEED_LENGTH);
-// }
 
 export function VMType(vmType: string): string {
     if (VMTYPES.indexOf(vmType) < 0) {
@@ -64,20 +51,6 @@ export function SCCodeMetadata(metadata: string): string {
         throw errors.ErrInvalidSmartContractCode;
     }
     return metadata;
-}
-
-export function ChainID(chainID: string): string {
-    if (chainID.length == 0) {
-        throw errors.ErrInvalidChainID
-    }
-    return chainID
-}
-
-export function Version(version: number): number {
-    if (version == 0) {
-        throw errors.ErrInvalidTransactionVersion
-    }
-    return version
 }
 
 function makeCodeHash(code: string) {

@@ -1,6 +1,8 @@
 import { Account } from "./account";
 import { Transaction } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
+import { Signature } from "./signature";
+import { Address } from "./address";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;
@@ -21,5 +23,5 @@ export interface Signer {
 
 export interface Signable {
     serializeForSigning(): Buffer;
-    applySignature(signature: Buffer): void;
+    applySignature(signature: Signature, signedBy: Address): void;
 }

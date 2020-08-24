@@ -1,6 +1,5 @@
 
 
-export var ErrTransactionNotSigned = new Error("transaction not signed");
 export var ErrProviderNotSet = new Error("provider not set");
 export var ErrAsyncTimerAlreadyRunning = new Error("async timer already running");
 export var ErrInvalidFunctionName = new Error("invalid function name");
@@ -11,8 +10,7 @@ export var ErrGasPriceNotSet = new Error("gas price not set");
 export var ErrGasLimitNotSet = new Error("gas limit not set");
 export var ErrInvalidVMType = new Error("invalid vm type");
 export var ErrInvalidSmartContractCode = new Error("invalid smart contract code");
-export var ErrInvalidChainID = new Error("invalid chain ID");
-export var ErrInvalidTransactionVersion = new Error("invalid transaction version");
+
 export var ErrExpectedTransactionStatusNotReached = new Error("expected transaction status not reached");
 
 export class Err extends Error {
@@ -76,5 +74,36 @@ export class ErrGasLimitInvalid extends Err {
 export class ErrNonceInvalid extends Err {
     public constructor(value: number) {
         super(`Invalid nonce: ${value}`);
+    }
+}
+
+export class ErrChainIDInvalid extends Err {
+    public constructor(value: string) {
+        super(`Invalid chain ID: ${value}`);
+    }
+}
+
+export class ErrTransactionVersionInvalid extends Err {
+    public constructor(value: number) {
+        super(`Invalid transaction version: ${value}`);
+    }
+}
+
+export class ErrTransactionNotSigned extends Err {
+    public constructor() {
+        super(`Transaction isn't signed`);
+    }
+}
+
+export class ErrSignatureCannotCreate extends Err {
+    public constructor(input: any, inner?: Error) {
+        let message = `Cannot create signature from: ${input}`;
+        super(message, inner);
+    }
+}
+
+export class ErrSignatureEmpty extends Err {
+    public constructor() {
+        super(`Signature is empty`);
     }
 }

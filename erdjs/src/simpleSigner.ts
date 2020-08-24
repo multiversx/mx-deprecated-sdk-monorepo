@@ -2,6 +2,8 @@
 import * as tweetnacl from "tweetnacl";
 import { Signer, Signable } from "./interface";
 import { errors } from ".";
+import { Address } from "./address";
+import { Signature } from "./signature";
 
 export const SEED_LENGTH = 32;
 
@@ -36,11 +38,13 @@ export class SimpleSigner implements Signer {
     private trySign(signable: Signable) {
         let pair = tweetnacl.sign.keyPair.fromSeed(this.seed);
         let signingKey = pair.secretKey;
+        let signedBy = new Address(Buffer.from(pair.publicKey));
 
         let bufferToSign = signable.serializeForSigning();
         let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
-        let signature = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
+        let signatureBuffer = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
+        let signature = new Signature(signatureBuffer);
 
-        signable.applySignature(signature);
+        signable.applySignature(signature, signedBy);
     }
 }
