@@ -45,6 +45,8 @@ export class TransactionVersion {
     public readonly value: number;
 
     constructor(value: number) {
+        value = Number(value);
+        
         if (value < 1) {
             throw new errors.ErrTransactionVersionInvalid(value);
         }

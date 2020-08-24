@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Basic</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/4.5.2/flatly/bootstrap.min.css">
+</head>
+
+<body class="pb-5">
+    <div class="container mt-4">
+        <h1>Basic example</h1>
+        <p>
+            This example shows you how to build a simple transfer transaction using <strong>erdjs</strong>.
+            It uses a <code>SimpleSigner</code> object to sign the transaction.
+            The transaction is then broadcasted by means of a <code>NodeProvider</code> object.
+        </p>
+
+        <div class="alert alert-danger">
+            <p>
+                Note that <strong>SimpleSigner</strong> should never be used in production <strong>dApps</strong>.
+            </p>
+        </div>
+
+        <h3>Network</h3>
+        <div class="row">
+            <div class="col-sm-12">
+                <form>
+                    <div class="form-group">
+                        <label class="control-label" for="ProxyInput">Proxy URL</label>
+                        <input class="form-control" id="ProxyInput" type="text" value="https://testnet-api.elrond.com">
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h3>Transaction</h3>
+        <div class="row">
+            <div class="col-sm-6">
+                <form>
+                    <div class="form-group">
+                        <label class="control-label" for="ReceiverInput">Receiver</label>
+                        <input class="form-control" id="ReceiverInput" type="text"
+                            placeholder="erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="ValueInput">eGLD to transfer</label>
+                        <input class="form-control" id="ValueInput" type="text" placeholder="0.05">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="MemoInput">Data (memo)</label>
+                        <input class="form-control" id="MemoInput" type="text" placeholder="Food for cats">
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-6">
+                <form>
+                    <div class="form-group">
+                        <label for="PrivateKeyTextArea">Private key</label>
+                        <textarea class="form-control" id="PrivateKeyTextArea"
+                            rows="3">1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf</textarea>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h3>Steps</h3>
+        <div class="row mb-3">
+            <div class="col-sm-4">
+                <button type="button" id="PrepareButton" class="btn btn-primary btn-lg btn-block">1. Prepare
+                    transaction</button>
+            </div>
+            <div class="col-sm-8">
+                <pre id="PreparedTransactionContainer"></pre>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-4">
+                <button type="button" id="SignButton" class="btn btn-primary btn-lg btn-block">2. Sign
+                    transaction</button>
+            </div>
+            <div class="col-sm-8">
+                <pre id="SignedTransactionContainer"></pre>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-sm-4">
+                <button type="button" id="BroadcastButton" class="btn btn-primary btn-lg btn-block">3. Broadcast
+                    transaction</button>
+            </div>
+            <div class="col-sm-8">
+                <pre id="BroadcastedTransactionContainer"></pre>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+    <script src="out/bundle.js"></script>
+</body>
+
+</html>

@@ -3,16 +3,17 @@ import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
+import { errors } from ".";
+import { NetworkConfig } from "./networkConfig";
+import { ChainID, GasLimit, GasPrice, TransactionVersion } from "./networkParams";
 
 export class ProxyProvider implements Provider {
     private url: string;
     private timeoutLimit: number;
 
-
-    constructor(config: any) {
-        // TODO validate proper structure of url
-        this.url = config.url;
-        this.timeoutLimit = config.timeout;
+    constructor(url: string, timeout?: number) {
+        this.url = url;
+        this.timeoutLimit = timeout || 1000;
     }
 
     getAccount(address: string): Promise<Account> {
@@ -23,8 +24,10 @@ export class ProxyProvider implements Provider {
             this.url + `/address/${address}`,
             { timeout: this.timeoutLimit }
         ).then(response => {
-            let account = new Account(this, response.data.data.account);
-            return account;
+            //let account = new Account(this, response.data.data.account);
+            //return account;
+            console.log(response);
+            return new Account("");
         });
     }
 
@@ -129,16 +132,28 @@ export class ProxyProvider implements Provider {
         ).then(response => response.data.data.status);
     }
 
-    getNetworkConfig(): Promise<any> {
-        return axios.get(
-            this.url + `/network/config`,
-            {timeout: this.timeoutLimit}
-        ).then( response => {
-            let error = response.data.error
-            if (error != "") {
-                throw Error(`cannot get response from proxy ${error}`)
-            }
-            return response.data.data.config
-        });
+    async getNetworkConfig(): Promise<NetworkConfig> {
+        let response = await this.doGet("network/config");
+        let payload = response.config;
+        
+        let networkConfig = new NetworkConfig();
+        networkConfig.ChainID = new ChainID(payload["erd_chain_id"]);
+        networkConfig.GasPerDataByte = Number(payload["erd_gas_per_data_byte"]);
+        networkConfig.MinGasLimit = new GasLimit(payload["erd_min_gas_limit"]);
+        networkConfig.MinGasPrice = new GasPrice(payload["erd_min_gas_price"]);
+        networkConfig.MinTransactionVersion = new TransactionVersion(payload["erd_min_transaction_version"]);
+
+        return networkConfig;
+    }
+
+    private async doGet(resourceUrl: string): Promise<any> {
+        try {
+            let response = await axios.get(`${this.url}/${resourceUrl}`, {timeout: this.timeoutLimit});
+            let payload = response.data.data;
+            return payload;
+        } catch (error) {
+            let originalErrorMessage = error.response.data.error;
+            throw new errors.ErrProxyProviderGet(resourceUrl, originalErrorMessage, error);
+        }
     }
 }

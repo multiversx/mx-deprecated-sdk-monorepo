@@ -104,3 +104,10 @@ export class ErrSignatureEmpty extends Err {
         super(`Signature is empty`);
     }
 }
+
+export class ErrProxyProviderGet extends Err {
+    public constructor(url: string, error: string, inner?: Error) {
+        let message = `Cannot GET ${url}, error: ${error}`;
+        super(message, inner);
+    }
+}

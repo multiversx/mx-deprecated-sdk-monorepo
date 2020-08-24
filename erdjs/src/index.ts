@@ -1,8 +1,14 @@
 export * from "./account";
+export * from "./address";
 export * from "./transaction";
+export * from "./balance";
+export * from "./networkConfig";
+export * from "./networkParams";
 export * as valid from "./utils";
 export * as errors from "./errors";
 export * from "./proxyProvider";
+export * from "./simpleSigner";
+export * from "./nullSigner";
 export * from "./smartcontracts/elrondERC20client";
 export * from "./smartcontracts/erc20client";
 export * from "./smartcontracts/smartcontract";

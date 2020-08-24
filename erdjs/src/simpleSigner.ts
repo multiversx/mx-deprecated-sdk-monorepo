@@ -13,7 +13,7 @@ export const SEED_LENGTH = 32;
 export class SimpleSigner implements Signer {
     private readonly seed: Buffer;
 
-    public constructor(seed: string | Buffer) {
+    constructor(seed: string | Buffer) {
         if (seed instanceof Buffer) {
             this.seed = seed;
         } else if (typeof seed === "string") {
@@ -27,7 +27,7 @@ export class SimpleSigner implements Signer {
         }
     }
 
-    public async sign(signable: Signable): Promise<void> {
+    async sign(signable: Signable): Promise<void> {
         try {
             this.trySign(signable);
         } catch (err) {
@@ -46,5 +46,9 @@ export class SimpleSigner implements Signer {
         let signature = new Signature(signatureBuffer);
 
         signable.applySignature(signature, signedBy);
+    }
+
+    getAddress(): Address {
+
     }
 }
