@@ -50,8 +50,12 @@ export class Signature {
         return this.valueHex;
     }
 
+    isEmpty(): boolean {
+        return !this.valueHex;
+    }
+
     private assertNotEmpty() {
-        if (!this.valueHex) {
+        if (this.isEmpty()) {
             throw new errors.ErrSignatureEmpty();
         }
     }

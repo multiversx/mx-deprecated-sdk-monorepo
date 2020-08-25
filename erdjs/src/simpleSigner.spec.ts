@@ -17,7 +17,6 @@ describe("test simpleSigner", () => {
         let transaction = new Transaction({
             nonce: new Nonce(0),
             value: Balance.Zero(),
-            sender: alice,
             receiver: bob,
             gasPrice: new GasPrice(1000000000),
             gasLimit: new GasLimit(50000),
@@ -26,7 +25,7 @@ describe("test simpleSigner", () => {
             version: new TransactionVersion(1)
         });
 
-        let serialized = transaction.serializeForSigning().toString();
+        let serialized = transaction.serializeForSigning(alice).toString();
         signer.sign(transaction);
 
         assert.equal(serialized, `{"nonce":0,"value":"0","receiver":"erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r","sender":"erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1}`);

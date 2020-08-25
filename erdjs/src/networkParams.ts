@@ -1,4 +1,5 @@
-import { errors } from ".";
+import { errors, TransactionPayload } from ".";
+import { NetworkConfig } from "./networkConfig";
 
 export class GasPrice {
     public readonly value: number;
@@ -25,6 +26,16 @@ export class GasLimit {
         }
 
         this.value = value;
+    }
+
+    static forTransfer(data: TransactionPayload): GasLimit {
+        let value = NetworkConfig.Default.MinGasLimit.value;
+        
+        if (data) {
+            value += NetworkConfig.Default.GasPerDataByte * data.length();
+        }
+
+        return new GasLimit(value);
     }
 }
 

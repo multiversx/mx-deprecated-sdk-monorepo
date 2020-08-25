@@ -64,11 +64,11 @@ export class SmartContractBase implements SmartContract {
                 let txHash = await this.provider.sendTransaction(deployment);
                 //deployment.setTxHash(txHash);
 
-                let watcher = new TransactionWatcher(txHash, this.provider);
-                await watcher.awaitExecuted(
-                    this.callStatusQueryPeriod,
-                    this.callStatusQueryTimeout
-                );
+                // let watcher = new TransactionWatcher(txHash, this.provider);
+                // await watcher.awaitExecuted(
+                //     this.callStatusQueryPeriod,
+                //     this.callStatusQueryTimeout
+                // );
                 //deployment.setStatus("executed");
                 this.scAddress = this.computeAddress(deployment);
             } catch (err) {
@@ -111,14 +111,14 @@ export class SmartContractBase implements SmartContract {
 
         if (this.provider != null) {
             try {
-                let txHash = await this.provider.sendTransaction(call);
-                //call.setTxHash(txHash);
+                // let txHash = await this.provider.sendTransaction(call);
+                // //call.setTxHash(txHash);
 
-                let watcher = new TransactionWatcher(txHash, this.provider);
-                await watcher.awaitExecuted(
-                    this.callStatusQueryPeriod,
-                    this.callStatusQueryTimeout
-                );
+                // let watcher = new TransactionWatcher(txHash, this.provider);
+                // await watcher.awaitExecuted(
+                //     this.callStatusQueryPeriod,
+                //     this.callStatusQueryTimeout
+                // );
                 //call.setStatus("executed");
                 // TODO return smart contract results
             } catch (err) {

@@ -19,31 +19,32 @@ export class Transaction implements Signable {
     version: TransactionVersion = NetworkConfig.Default.MinTransactionVersion;
     
     signature: Signature = new Signature();
-    hash: string = "";
+    hash: TransactionHash = new TransactionHash("");
     status: string = "unknown";
 
     public constructor(init?: Partial<Transaction>) {
         Object.assign(this, init);
     }
 
-    serializeForSigning(): Buffer {
-        let tx = this.toPlainObject();
+    serializeForSigning(signedBy: Address): Buffer {
+        let plain = this.toPlainObject(signedBy);
+        let serialized = JSON.stringify(plain);
 
-        let serializedTx = JSON.stringify(tx);
-        return Buffer.from(serializedTx);
+        return Buffer.from(serialized);
     }
 
-    private toPlainObject(): any {
+    toPlainObject(sender?: Address): any {
         let result: any = {
             nonce: this.nonce.value,
             value: this.value.raw(),
             receiver: this.receiver.bech32(),
-            sender: this.sender.bech32(),
+            sender: sender ? sender.bech32() : this.sender.bech32(),
             gasPrice: this.gasPrice.value,
             gasLimit: this.gasLimit.value,
             data: this.data.isEmpty() ? undefined : this.data.encoded(),
             chainID: this.chainID.value,
-            version: this.version.value
+            version: this.version.value,
+            signature: this.signature.isEmpty() ? undefined : this.signature.hex()
         };
 
         return result;
@@ -54,18 +55,17 @@ export class Transaction implements Signable {
         this.sender = signedBy;
     }
 
-    send(provider: Provider) {
-        provider.sendTransaction(this);
+    async send(provider: Provider): Promise<TransactionHash> {
+        this.hash = await provider.sendTransaction(this); 
+        return this.hash;
     }
 
-    getAsSendable(): any {
-        if (!this.signature) {
+    toSendable(): any {
+        if (this.signature.isEmpty()) {
             throw new errors.ErrTransactionNotSigned();
         }
 
-        let tx = this.toPlainObject();
-        tx.signature = this.signature.hex();
-        return tx;
+        return this.toPlainObject();
     }
 }
 
@@ -86,5 +86,21 @@ export class TransactionPayload {
 
     decoded(): string {
         return this.data;
+    }
+
+    length(): number {
+        return this.data.length;
+    }
+}
+
+export class TransactionHash {
+    readonly hash: string;
+
+    constructor(hash: string) {
+        this.hash = hash;
+    }
+
+    toString(): string {
+        return this.hash;
     }
 }

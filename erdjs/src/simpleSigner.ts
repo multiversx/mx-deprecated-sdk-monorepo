@@ -40,15 +40,11 @@ export class SimpleSigner implements Signer {
         let signingKey = pair.secretKey;
         let signedBy = new Address(Buffer.from(pair.publicKey));
 
-        let bufferToSign = signable.serializeForSigning();
+        let bufferToSign = signable.serializeForSigning(signedBy);
         let signatureRaw = tweetnacl.sign(new Uint8Array(bufferToSign), signingKey);
         let signatureBuffer = Buffer.from(signatureRaw.slice(0, signatureRaw.length - bufferToSign.length));
         let signature = new Signature(signatureBuffer);
 
         signable.applySignature(signature, signedBy);
-    }
-
-    getAddress(): Address {
-
     }
 }

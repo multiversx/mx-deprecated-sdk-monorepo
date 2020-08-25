@@ -111,3 +111,10 @@ export class ErrProxyProviderGet extends Err {
         super(message, inner);
     }
 }
+
+export class ErrProxyProviderPost extends Err {
+    public constructor(url: string, error: string, inner?: Error) {
+        let message = `Cannot POST ${url}, error: ${error}`;
+        super(message, inner);
+    }
+}

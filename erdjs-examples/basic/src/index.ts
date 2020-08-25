@@ -1,4 +1,4 @@
-import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner } from "@elrondnetwork/erdjs";
+import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner, SimpleSigner, GasLimit } from "@elrondnetwork/erdjs";
 
 declare var $: any;
 
@@ -10,31 +10,37 @@ $(async function () {
     $("#PrepareButton").click(async function () {
         NetworkConfig.Default.sync(provider);
 
+        let receiver = getReceiver();
+        let value = getTransferValue();
+        let memo = getTransferMemo();
+        let gasLimit = GasLimit.forTransfer(memo);
+
         transaction = new Transaction({
-            receiver: getReceiver(),
-            value: getTransferValue(),
-            data: getTransferMemo()
+            receiver: receiver,
+            value: value,
+            data: memo,
+            gasLimit: gasLimit
         });
 
-        let prepared = transaction.getAsSendable();
-        displayObject("PreparedTransactionContainer", prepared);
+        displayObject("PreparedTransactionContainer", transaction.toPlainObject());
     });
 
     $("#SignButton").click(async function () {
+        signer = new SimpleSigner(getPrivateKey());
+        signer.sign(transaction);
 
+        displayObject("SignedTransactionContainer", transaction.toPlainObject());
     });
 
     $("#BroadcastButton").click(async function () {
+        let transactionHash = await transaction.send(provider);
 
+        displayObject("BroadcastedTransactionContainer", transactionHash);
     });
 });
 
 function getProxyUrl(): string {
     return $("#ProxyInput").val();
-}
-
-function getSender(): Address {
-   // let privateKey =
 }
 
 function getReceiver(): Address {
@@ -43,8 +49,9 @@ function getReceiver(): Address {
 }
 
 function getTransferValue(): Balance {
-    let valueInput = $("#ValueInput").val();
-    return new Balance(valueInput);
+    let valueInput = Number($("#ValueInput").val());
+    let balance = Balance.eGLD(valueInput);
+    return balance;
 }
 
 function getTransferMemo(): TransactionPayload {
@@ -53,10 +60,10 @@ function getTransferMemo(): TransactionPayload {
 }
 
 function getPrivateKey(): string {
-    return $("#PrivateKeyInput").val();
+    return $("#PrivateKeyTextArea").val().trim();
 }
 
 function displayObject(container: string, obj: any) {
-    let json = JSON.stringify(obj);
+    let json = JSON.stringify(obj, null, 4);
     $(`#${container}`).html(json);
 }

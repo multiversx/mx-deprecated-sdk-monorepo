@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
-import { errors } from ".";
+import { errors, TransactionHash } from ".";
 import { NetworkConfig } from "./networkConfig";
 import { ChainID, GasLimit, GasPrice, TransactionVersion } from "./networkParams";
 
@@ -111,16 +111,10 @@ export class ProxyProvider implements Provider {
         ).then(response => response.data.data);
     }
 
-    sendTransaction(tx: Transaction): Promise<string> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        return axios.post(
-            this.url + '/transaction/send',
-            JSON.stringify(tx.getAsSendable()),
-            { timeout: this.timeoutLimit }
-        ).then(response => {
-            return response.data.data.txHash
-        });
+    async sendTransaction(tx: Transaction): Promise<TransactionHash> {
+        let response = await this.doPost("transaction/send", tx.toSendable());
+        let txHash = response.txHash;
+        return new TransactionHash(txHash);
     }
 
     getTransactionStatus(txHash: string): Promise<string> {
@@ -148,12 +142,26 @@ export class ProxyProvider implements Provider {
 
     private async doGet(resourceUrl: string): Promise<any> {
         try {
-            let response = await axios.get(`${this.url}/${resourceUrl}`, {timeout: this.timeoutLimit});
+            let url = `${this.url}/${resourceUrl}`;
+            let response = await axios.get(url, {timeout: this.timeoutLimit});
             let payload = response.data.data;
             return payload;
         } catch (error) {
             let originalErrorMessage = error.response.data.error;
             throw new errors.ErrProxyProviderGet(resourceUrl, originalErrorMessage, error);
+        }
+    }
+
+    private async doPost(resourceUrl: string, payload: any): Promise<any> {
+        try {
+            let url = `${this.url}/${resourceUrl}`;
+            let json = JSON.stringify(payload);
+            let response = await axios.post(url, json, {timeout: this.timeoutLimit});
+            let responsePayload = response.data.data;
+            return responsePayload;
+        } catch (error) {
+            let originalErrorMessage = error.response.data.error;
+            throw new errors.ErrProxyProviderPost(resourceUrl, originalErrorMessage, error);
         }
     }
 }

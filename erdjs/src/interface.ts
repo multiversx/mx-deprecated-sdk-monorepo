@@ -3,6 +3,7 @@ import { Transaction } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
+import { TransactionHash } from ".";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;
@@ -12,7 +13,7 @@ export interface Provider {
     getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint>;
     getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
-    sendTransaction(tx: Transaction): Promise<string>;
+    sendTransaction(tx: Transaction): Promise<TransactionHash>;
     getTransactionStatus(txHash: string): Promise<string>;
     getNetworkConfig(): Promise<NetworkConfig>;
 }
@@ -22,6 +23,6 @@ export interface Signer {
 }
 
 export interface Signable {
-    serializeForSigning(): Buffer;
+    serializeForSigning(signedBy: Address): Buffer;
     applySignature(signature: Signature, signedBy: Address): void;
 }
