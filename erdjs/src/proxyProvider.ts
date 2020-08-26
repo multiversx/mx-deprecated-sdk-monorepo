@@ -6,6 +6,7 @@ import { Transaction } from "./transaction";
 import { errors, TransactionHash } from ".";
 import { NetworkConfig } from "./networkConfig";
 import { ChainID, GasLimit, GasPrice, TransactionVersion } from "./networkParams";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 
 export class ProxyProvider implements Provider {
     private url: string;
@@ -115,6 +116,12 @@ export class ProxyProvider implements Provider {
         let response = await this.doPost("transaction/send", tx.toSendable());
         let txHash = response.txHash;
         return new TransactionHash(txHash);
+    }
+
+    async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
+        let response = await this.doGet(`transaction/${txHash.toString()}`);
+        let payload = response.transaction;
+        return new TransactionOnNetwork(payload);
     }
 
     getTransactionStatus(txHash: string): Promise<string> {

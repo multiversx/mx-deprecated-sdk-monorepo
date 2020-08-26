@@ -4,6 +4,7 @@ import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
 import { TransactionHash } from ".";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;
@@ -14,6 +15,7 @@ export interface Provider {
     getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
     sendTransaction(tx: Transaction): Promise<TransactionHash>;
+    getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
     getTransactionStatus(txHash: string): Promise<string>;
     getNetworkConfig(): Promise<NetworkConfig>;
 }

@@ -37,6 +37,12 @@ $(async function () {
 
         displayObject("BroadcastedTransactionContainer", transactionHash);
     });
+
+    $("#QueryButton").click(async function () {
+        let transactionOnNetwork = await provider.getTransaction();
+
+        displayObject("QueriedTransactionContainer", transactionHash);
+    });
 });
 
 function getProxyUrl(): string {
