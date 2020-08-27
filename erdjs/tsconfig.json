@@ -31,6 +31,6 @@
     ],
     "typedocOptions": {
         "mode": "library",
-        "out": "docs"
+        "out": "../docs/erdjs/api"
     }
 }

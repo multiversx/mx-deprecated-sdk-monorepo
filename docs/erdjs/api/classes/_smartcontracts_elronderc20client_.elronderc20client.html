@@ -1,0 +1,924 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>ElrondERC20Client | @elrondnetwork/erdjs</title>
+	<meta name="description" content="Documentation for @elrondnetwork/erdjs">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">@elrondnetwork/erdjs</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/_smartcontracts_elronderc20client_.html">&quot;smartcontracts/elrondERC20client&quot;</a>
+				</li>
+				<li>
+					<a href="_smartcontracts_elronderc20client_.elronderc20client.html">ElrondERC20Client</a>
+				</li>
+			</ul>
+			<h1>Class ElrondERC20Client</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="_smartcontracts_erc20client_.basicerc20client.html" class="tsd-signature-type">BasicERC20Client</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">ElrondERC20Client</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel">
+				<h3>Implements</h3>
+				<ul class="tsd-hierarchy">
+					<li><a href="../interfaces/_smartcontracts_interface_.smartcontract.html" class="tsd-signature-type">SmartContract</a></li>
+					<li><a href="../interfaces/_smartcontracts_interface_.erc20client.html" class="tsd-signature-type">ERC20Client</a></li>
+					<li><a href="../interfaces/_smartcontracts_interface_.erc20client.html" class="tsd-signature-type">ERC20Client</a></li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-inherited tsd-is-private-protected">
+							<h3>Properties</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#callstatusqueryperiod" class="tsd-kind-icon">call<wbr>Status<wbr>Query<wbr>Period</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#callstatusquerytimeout" class="tsd-kind-icon">call<wbr>Status<wbr>Query<wbr>Timeout</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#chainid" class="tsd-kind-icon">chainID</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#defaultdecimals" class="tsd-kind-icon">default<wbr>Decimals</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#functionname_balanceof" class="tsd-kind-icon">function<wbr>Name_<wbr>balance<wbr>Of</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#functionname_totalsupply" class="tsd-kind-icon">function<wbr>Name_<wbr>total<wbr>Supply</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#functionname_transfer" class="tsd-kind-icon">function<wbr>Name_<wbr>transfer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#gaslimit" class="tsd-kind-icon">gas<wbr>Limit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#provider" class="tsd-kind-icon">provider</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#scaddress" class="tsd-kind-icon">sc<wbr>Address</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#signingenabled" class="tsd-kind-icon">signing<wbr>Enabled</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#user" class="tsd-kind-icon">user</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#version" class="tsd-kind-icon">version</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-inherited">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#allowance" class="tsd-kind-icon">allowance</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#approve" class="tsd-kind-icon">approve</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#balanceof" class="tsd-kind-icon">balance<wbr>Of</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#cleanup" class="tsd-kind-icon">cleanup</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#computeaddress" class="tsd-kind-icon">compute<wbr>Address</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#decimals" class="tsd-kind-icon">decimals</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#enablesigning" class="tsd-kind-icon">enable<wbr>Signing</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#getaddress" class="tsd-kind-icon">get<wbr>Address</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#performcall" class="tsd-kind-icon">perform<wbr>Call</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#performdeployment" class="tsd-kind-icon">perform<wbr>Deployment</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#preparecall" class="tsd-kind-icon">prepare<wbr>Call</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#preparedeployment" class="tsd-kind-icon">prepare<wbr>Deployment</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#setprovider" class="tsd-kind-icon">set<wbr>Provider</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#symbol" class="tsd-kind-icon">symbol</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#totalsupply" class="tsd-kind-icon">total<wbr>Supply</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#transfer" class="tsd-kind-icon">transfer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="_smartcontracts_elronderc20client_.elronderc20client.html#transferfrom" class="tsd-kind-icon">transfer<wbr>From</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>ElrondERC20<wbr>Client<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, scAddress<span class="tsd-signature-symbol">: </span><a href="_address_.address.html" class="tsd-signature-type">Address</a>, user<span class="tsd-signature-symbol">: </span><a href="_account_.account.html" class="tsd-signature-type">Account</a>, chainID<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_smartcontracts_elronderc20client_.elronderc20client.html" class="tsd-signature-type">ElrondERC20Client</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#constructor">constructor</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/elrondERC20client.ts#L7">src/smartcontracts/elrondERC20client.ts:7</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>provider: <a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								</li>
+								<li>
+									<h5>scAddress: <a href="_address_.address.html" class="tsd-signature-type">Address</a></h5>
+								</li>
+								<li>
+									<h5>user: <a href="_account_.account.html" class="tsd-signature-type">Account</a></h5>
+								</li>
+								<li>
+									<h5>chainID: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>version: <span class="tsd-signature-type">number</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_smartcontracts_elronderc20client_.elronderc20client.html" class="tsd-signature-type">ElrondERC20Client</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-private-protected">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="callstatusqueryperiod" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> call<wbr>Status<wbr>Query<wbr>Period</h3>
+					<div class="tsd-signature tsd-kind-icon">call<wbr>Status<wbr>Query<wbr>Period<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 6000</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#callstatusqueryperiod">callStatusQueryPeriod</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L23">src/smartcontracts/smartcontract.ts:23</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="callstatusquerytimeout" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> call<wbr>Status<wbr>Query<wbr>Timeout</h3>
+					<div class="tsd-signature tsd-kind-icon">call<wbr>Status<wbr>Query<wbr>Timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 60000</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#callstatusquerytimeout">callStatusQueryTimeout</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L24">src/smartcontracts/smartcontract.ts:24</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="chainid" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> chainID</h3>
+					<div class="tsd-signature tsd-kind-icon">chainID<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#chainid">chainID</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L20">src/smartcontracts/smartcontract.ts:20</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="defaultdecimals" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> default<wbr>Decimals</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Decimals<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 18</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#defaultdecimals">defaultDecimals</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L7">src/smartcontracts/erc20client.ts:7</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="functionname_balanceof" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> function<wbr>Name_<wbr>balance<wbr>Of</h3>
+					<div class="tsd-signature tsd-kind-icon">function<wbr>Name_<wbr>balance<wbr>Of<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;balanceOf&quot;</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#functionname_balanceof">functionName_balanceOf</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L9">src/smartcontracts/erc20client.ts:9</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="functionname_totalsupply" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> function<wbr>Name_<wbr>total<wbr>Supply</h3>
+					<div class="tsd-signature tsd-kind-icon">function<wbr>Name_<wbr>total<wbr>Supply<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;totalSupply&quot;</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#functionname_totalsupply">functionName_totalSupply</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L8">src/smartcontracts/erc20client.ts:8</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="functionname_transfer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> function<wbr>Name_<wbr>transfer</h3>
+					<div class="tsd-signature tsd-kind-icon">function<wbr>Name_<wbr>transfer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;transfer&quot;</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#functionname_transfer">functionName_transfer</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L10">src/smartcontracts/erc20client.ts:10</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="gaslimit" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> gas<wbr>Limit</h3>
+					<div class="tsd-signature tsd-kind-icon">gas<wbr>Limit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#gaslimit">gasLimit</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L19">src/smartcontracts/smartcontract.ts:19</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="gasprice" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> gas<wbr>Price</h3>
+					<div class="tsd-signature tsd-kind-icon">gas<wbr>Price<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#gasprice">gasPrice</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L18">src/smartcontracts/smartcontract.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="provider" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> provider</h3>
+					<div class="tsd-signature tsd-kind-icon">provider<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#provider">provider</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L14">src/smartcontracts/smartcontract.ts:14</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="scaddress" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> sc<wbr>Address</h3>
+					<div class="tsd-signature tsd-kind-icon">sc<wbr>Address<span class="tsd-signature-symbol">:</span> <a href="_address_.address.html" class="tsd-signature-type">Address</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#scaddress">scAddress</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L15">src/smartcontracts/smartcontract.ts:15</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="signingenabled" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> signing<wbr>Enabled</h3>
+					<div class="tsd-signature tsd-kind-icon">signing<wbr>Enabled<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#signingenabled">signingEnabled</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L26">src/smartcontracts/smartcontract.ts:26</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="user" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> user</h3>
+					<div class="tsd-signature tsd-kind-icon">user<span class="tsd-signature-symbol">:</span> <a href="_account_.account.html" class="tsd-signature-type">Account</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> = null</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#user">user</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L16">src/smartcontracts/smartcontract.ts:16</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="version" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> version</h3>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#version">version</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L21">src/smartcontracts/smartcontract.ts:21</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="allowance" class="tsd-anchor"></a>
+					<h3>allowance</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">allowance<span class="tsd-signature-symbol">(</span>owner<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, spender<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#allowance">allowance</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#allowance">allowance</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L90">src/smartcontracts/erc20client.ts:90</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>owner: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>spender: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="approve" class="tsd-anchor"></a>
+					<h3>approve</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">approve<span class="tsd-signature-symbol">(</span>spender<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#approve">approve</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#approve">approve</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L84">src/smartcontracts/erc20client.ts:84</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>spender: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">bigint</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="balanceof" class="tsd-anchor"></a>
+					<h3>balance<wbr>Of</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">balance<wbr>Of<span class="tsd-signature-symbol">(</span>address<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#balanceof">balanceOf</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#balanceof">balanceOf</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L43">src/smartcontracts/erc20client.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>address: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="cleanup" class="tsd-anchor"></a>
+					<h3>cleanup</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">cleanup<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#cleanup">cleanup</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L189">src/smartcontracts/smartcontract.ts:189</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="computeaddress" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> compute<wbr>Address</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+						<li class="tsd-signature tsd-kind-icon">compute<wbr>Address<span class="tsd-signature-symbol">(</span>deployment<span class="tsd-signature-symbol">: </span><a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_address_.address.html" class="tsd-signature-type">Address</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#computeaddress">computeAddress</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L84">src/smartcontracts/smartcontract.ts:84</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>deployment: <a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_address_.address.html" class="tsd-signature-type">Address</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="decimals" class="tsd-anchor"></a>
+					<h3>decimals</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">decimals<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#decimals">decimals</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#decimals">decimals</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L20">src/smartcontracts/erc20client.ts:20</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="enablesigning" class="tsd-anchor"></a>
+					<h3>enable<wbr>Signing</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">enable<wbr>Signing<span class="tsd-signature-symbol">(</span>enable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#enablesigning">enableSigning</a></p>
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#enablesigning">enableSigning</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L36">src/smartcontracts/smartcontract.ts:36</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>enable: <span class="tsd-signature-type">boolean</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="getaddress" class="tsd-anchor"></a>
+					<h3>get<wbr>Address</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Address<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#getaddress">getAddress</a></p>
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#getaddress">getAddress</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L52">src/smartcontracts/smartcontract.ts:52</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#name">name</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#name">name</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L12">src/smartcontracts/erc20client.ts:12</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="performcall" class="tsd-anchor"></a>
+					<h3>perform<wbr>Call</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">perform<wbr>Call<span class="tsd-signature-symbol">(</span>call<span class="tsd-signature-symbol">: </span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#performcall">performCall</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L109">src/smartcontracts/smartcontract.ts:109</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>call: <a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="performdeployment" class="tsd-anchor"></a>
+					<h3>perform<wbr>Deployment</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">perform<wbr>Deployment<span class="tsd-signature-symbol">(</span>deployment<span class="tsd-signature-symbol">: </span><a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#performdeployment">performDeployment</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L59">src/smartcontracts/smartcontract.ts:59</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>deployment: <a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="preparecall" class="tsd-anchor"></a>
+					<h3>prepare<wbr>Call</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">prepare<wbr>Call<span class="tsd-signature-symbol">(</span>call<span class="tsd-signature-symbol">: </span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#preparecall">prepareCall</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L160">src/smartcontracts/smartcontract.ts:160</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>call: <a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="preparedeployment" class="tsd-anchor"></a>
+					<h3>prepare<wbr>Deployment</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">prepare<wbr>Deployment<span class="tsd-signature-symbol">(</span>deployment<span class="tsd-signature-symbol">: </span><a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#preparedeployment">prepareDeployment</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L134">src/smartcontracts/smartcontract.ts:134</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>deployment: <a href="_smartcontracts_scdeploy_.smartcontractdeploy.html" class="tsd-signature-type">SmartContractDeploy</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="setprovider" class="tsd-anchor"></a>
+					<h3>set<wbr>Provider</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Provider<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#setprovider">setProvider</a></p>
+								<p>Inherited from <a href="_smartcontracts_smartcontract_.smartcontractbase.html">SmartContractBase</a>.<a href="_smartcontracts_smartcontract_.smartcontractbase.html#setprovider">setProvider</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/smartcontract.ts#L40">src/smartcontracts/smartcontract.ts:40</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>provider: <a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="symbol" class="tsd-anchor"></a>
+					<h3>symbol</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">symbol<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#symbol">symbol</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#symbol">symbol</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L16">src/smartcontracts/erc20client.ts:16</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="totalsupply" class="tsd-anchor"></a>
+					<h3>total<wbr>Supply</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">total<wbr>Supply<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#totalsupply">totalSupply</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#totalsupply">totalSupply</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L24">src/smartcontracts/erc20client.ts:24</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="transfer" class="tsd-anchor"></a>
+					<h3>transfer</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">transfer<span class="tsd-signature-symbol">(</span>receiver<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#transfer">transfer</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#transfer">transfer</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L63">src/smartcontracts/erc20client.ts:63</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>receiver: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">bigint</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+					<a name="transferfrom" class="tsd-anchor"></a>
+					<h3>transfer<wbr>From</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">transfer<wbr>From<span class="tsd-signature-symbol">(</span>sender<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, receiver<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">bigint</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Implementation of <a href="../interfaces/_smartcontracts_interface_.erc20client.html">ERC20Client</a>.<a href="../interfaces/_smartcontracts_interface_.erc20client.html#transferfrom">transferFrom</a></p>
+								<p>Inherited from <a href="_smartcontracts_erc20client_.basicerc20client.html">BasicERC20Client</a>.<a href="_smartcontracts_erc20client_.basicerc20client.html#transferfrom">transferFrom</a></p>
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/16667a0/erdjs/src/smartcontracts/erc20client.ts#L77">src/smartcontracts/erc20client.ts:77</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>sender: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>receiver: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>value: <span class="tsd-signature-type">bigint</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_smartcontracts_sccall_.smartcontractcall.html" class="tsd-signature-type">SmartContractCall</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/_smartcontracts_elronderc20client_.html">&quot;smartcontracts/elrondERC20client&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-module">
+						<a href="_smartcontracts_elronderc20client_.elronderc20client.html" class="tsd-kind-icon">ElrondERC20<wbr>Client</a>
+						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#callstatusqueryperiod" class="tsd-kind-icon">call<wbr>Status<wbr>Query<wbr>Period</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#callstatusquerytimeout" class="tsd-kind-icon">call<wbr>Status<wbr>Query<wbr>Timeout</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#chainid" class="tsd-kind-icon">chainID</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#defaultdecimals" class="tsd-kind-icon">default<wbr>Decimals</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#functionname_balanceof" class="tsd-kind-icon">function<wbr>Name_<wbr>balance<wbr>Of</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#functionname_totalsupply" class="tsd-kind-icon">function<wbr>Name_<wbr>total<wbr>Supply</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#functionname_transfer" class="tsd-kind-icon">function<wbr>Name_<wbr>transfer</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#gaslimit" class="tsd-kind-icon">gas<wbr>Limit</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#provider" class="tsd-kind-icon">provider</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#scaddress" class="tsd-kind-icon">sc<wbr>Address</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#signingenabled" class="tsd-kind-icon">signing<wbr>Enabled</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#user" class="tsd-kind-icon">user</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#version" class="tsd-kind-icon">version</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#allowance" class="tsd-kind-icon">allowance</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#approve" class="tsd-kind-icon">approve</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#balanceof" class="tsd-kind-icon">balance<wbr>Of</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#cleanup" class="tsd-kind-icon">cleanup</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#computeaddress" class="tsd-kind-icon">compute<wbr>Address</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#decimals" class="tsd-kind-icon">decimals</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#enablesigning" class="tsd-kind-icon">enable<wbr>Signing</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#getaddress" class="tsd-kind-icon">get<wbr>Address</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#performcall" class="tsd-kind-icon">perform<wbr>Call</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#performdeployment" class="tsd-kind-icon">perform<wbr>Deployment</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#preparecall" class="tsd-kind-icon">prepare<wbr>Call</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#preparedeployment" class="tsd-kind-icon">prepare<wbr>Deployment</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#setprovider" class="tsd-kind-icon">set<wbr>Provider</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#symbol" class="tsd-kind-icon">symbol</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#totalsupply" class="tsd-kind-icon">total<wbr>Supply</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#transfer" class="tsd-kind-icon">transfer</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
+								<a href="_smartcontracts_elronderc20client_.elronderc20client.html#transferfrom" class="tsd-kind-icon">transfer<wbr>From</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
