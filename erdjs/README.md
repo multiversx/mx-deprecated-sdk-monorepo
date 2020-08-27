@@ -1,13 +1,9 @@
-# Elrond SDK for Javascript
+# Elrond SDK for JavaScript
+
+Elrond SDK for JavaScript and TypeScript (written in TypeScript).
 
 ```
-sudo npm install --global browserify
-
-# For running the examples
-sudo npm install --global http-server
-
-npm install
-npm run compile
-npm run compile-browser
-npm test
+npm install @elrondnetwork/erdjs
 ```
+
+Under development, stay tuned!
