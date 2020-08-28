@@ -1,7 +1,10 @@
 import { errors } from ".";
+import { BigNumber } from "bignumber.js"
 
 const DENOMINATION = 18;
-const OneEGLD = BigInt("1000000000000000000");
+const OneEGLDString = "1000000000000000000";
+
+BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 4 })
 
 /**
  * Balance, as an immutable object
@@ -20,8 +23,14 @@ export class Balance {
     /**
      * Creates a balance object from an eGLD value (denomination will be applied)
      */
-    static eGLD(value: number): Balance {
-        return new Balance(BigInt(value) * OneEGLD);
+    static eGLD(value: any): Balance {
+        let bigGold = new BigNumber(value);
+        let bigUnits = bigGold.multipliedBy(new BigNumber(OneEGLDString));
+        let bigUnitsString = bigUnits.integerValue().toString(10);
+        console.log(bigUnitsString);
+        let bigIntUnits = BigInt(bigUnitsString);
+        
+        return new Balance(bigIntUnits);
     }
 
     /**
@@ -36,7 +45,7 @@ export class Balance {
     }
 
     raw(): string {
-        return this.value.toString(); 
+        return this.value.toString();
     }
 
     formatted(): string {

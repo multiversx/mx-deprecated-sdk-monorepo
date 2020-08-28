@@ -8,21 +8,36 @@ import { errors } from ".";
 import { Signature } from "./signature";
 
 export class Transaction implements Signable {
-    nonce: Nonce = new Nonce(0);
-    value: Balance = Balance.Zero();
-    sender: Address = Address.Zero();
-    receiver: Address = Address.Zero();
-    gasPrice: GasPrice = NetworkConfig.Default.MinGasPrice;
-    gasLimit: GasLimit = NetworkConfig.Default.MinGasLimit;
-    data: TransactionPayload = new TransactionPayload();
-    chainID: ChainID = NetworkConfig.Default.ChainID;
-    version: TransactionVersion = NetworkConfig.Default.MinTransactionVersion;
-    
-    signature: Signature = new Signature();
-    hash: TransactionHash = new TransactionHash("");
+    nonce: Nonce;
+    value: Balance;
+    sender: Address;
+    receiver: Address;
+    gasPrice: GasPrice;
+    gasLimit: GasLimit;
+    data: TransactionPayload;
+    chainID: ChainID;
+    version: TransactionVersion;
+
+    signature: Signature;
+    hash: TransactionHash;
     status: string = "unknown";
 
+    private queryResponse: TransactionOnNetwork = new TransactionOnNetwork();
+
     public constructor(init?: Partial<Transaction>) {
+        this.nonce = new Nonce(0);
+        this.value = Balance.Zero();
+        this.sender = Address.Zero();
+        this.receiver = Address.Zero();
+        this.gasPrice = NetworkConfig.getDefault().MinGasPrice;
+        this.gasLimit = NetworkConfig.getDefault().MinGasLimit;
+        this.data = new TransactionPayload();
+        this.chainID = NetworkConfig.getDefault().ChainID;
+        this.version = NetworkConfig.getDefault().MinTransactionVersion;
+
+        this.signature = new Signature();
+        this.hash = new TransactionHash("");
+
         Object.assign(this, init);
     }
 
@@ -56,7 +71,7 @@ export class Transaction implements Signable {
     }
 
     async send(provider: Provider): Promise<TransactionHash> {
-        this.hash = await provider.sendTransaction(this); 
+        this.hash = await provider.sendTransaction(this);
         return this.hash;
     }
 
@@ -67,6 +82,28 @@ export class Transaction implements Signable {
 
         return this.toPlainObject();
     }
+
+    async query(provider: Provider, keepLocally: boolean = true): Promise<TransactionOnNetwork> {
+        if (this.hash.isEmpty()) {
+            throw new errors.ErrTransactionHashUnknown();
+        }
+
+        let response = await provider.getTransaction(this.hash);
+
+        if (keepLocally) {
+            this.queryResponse = response;
+        }
+
+        return response;
+    }
+
+    queryLocally(): TransactionOnNetwork {
+        return this.queryResponse;
+    }
+
+    queryStatus(): any {
+        return {}
+    }
 }
 
 export class TransactionPayload {
@@ -74,6 +111,15 @@ export class TransactionPayload {
 
     constructor(data?: string) {
         this.data = data || "";
+    }
+
+    static fromEncoded(encoded?: string): TransactionPayload {
+        if (!encoded) {
+            return new TransactionPayload("");
+        }
+
+        let decoded = Buffer.from(encoded, "base64").toString();
+        return new TransactionPayload(decoded);
     }
 
     isEmpty(): boolean {
@@ -100,7 +146,53 @@ export class TransactionHash {
         this.hash = hash;
     }
 
+    isEmpty(): boolean {
+        return !this.hash;
+    }
+
     toString(): string {
         return this.hash;
+    }
+}
+
+export class TransactionOnNetwork {
+    type: TransactionOnNetworkType = new TransactionOnNetworkType();
+    nonce?: Nonce;
+    round?: number;
+    epoch?: number;
+    value?: Balance;
+    receiver?: Address;
+    sender?: Address;
+    gasPrice?: GasPrice;
+    gasLimit?: GasLimit;
+    data?: TransactionPayload;
+    signature?: Signature;
+
+    constructor() {
+    }
+
+    static fromHttpResponse(payload: any): TransactionOnNetwork {
+        let result = new TransactionOnNetwork();
+
+        result.type = new TransactionOnNetworkType(payload["type"]);
+        result.nonce = new Nonce(payload["nonce"] || 0);
+        result.round = payload["round"];
+        result.round = payload["epoch"];
+        result.value = Balance.fromString(payload["value"]);
+        result.sender = Address.fromBech32(payload["sender"]);
+        result.receiver = Address.fromBech32(payload["receiver"]);
+        result.gasPrice = new GasPrice(payload["gasPrice"]);
+        result.gasLimit = new GasPrice(payload["gasLimit"]);
+        result.data = TransactionPayload.fromEncoded(payload["data"]);
+
+        return result;
+    }
+}
+
+export class TransactionOnNetworkType {
+    readonly value: string;
+
+    constructor(value?: string) {
+        this.value = value || "unknown";
     }
 }

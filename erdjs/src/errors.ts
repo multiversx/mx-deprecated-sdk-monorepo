@@ -17,6 +17,17 @@ export class Err extends Error {
         super(message);
         this.inner = inner;
     }
+
+    summary() {
+        return {
+            message: this.message,
+            name: this.name,
+            inner: this.inner ? {
+                message: this.inner.message,
+                name: this.inner.name
+            } : undefined
+        };
+    }
 }
 
 export class ErrInvalidArgument extends Err {
@@ -83,6 +94,12 @@ export class ErrChainIDInvalid extends Err {
 export class ErrTransactionVersionInvalid extends Err {
     public constructor(value: number) {
         super(`Invalid transaction version: ${value}`);
+    }
+}
+
+export class ErrTransactionHashUnknown extends Err {
+    public constructor() {
+        super(`Transaction hash isn't known`);
     }
 }
 

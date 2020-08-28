@@ -29,10 +29,10 @@ export class GasLimit {
     }
 
     static forTransfer(data: TransactionPayload): GasLimit {
-        let value = NetworkConfig.Default.MinGasLimit.value;
+        let value = NetworkConfig.getDefault().MinGasLimit.value;
         
         if (data) {
-            value += NetworkConfig.Default.GasPerDataByte * data.length();
+            value += NetworkConfig.getDefault().GasPerDataByte * data.length();
         }
 
         return new GasLimit(value);

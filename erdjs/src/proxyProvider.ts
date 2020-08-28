@@ -3,10 +3,9 @@ import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
-import { errors, TransactionHash } from ".";
+import { errors, TransactionHash, TransactionOnNetwork } from ".";
 import { NetworkConfig } from "./networkConfig";
 import { ChainID, GasLimit, GasPrice, TransactionVersion } from "./networkParams";
-import { TransactionOnNetwork } from "./transactionOnNetwork";
 
 export class ProxyProvider implements Provider {
     private url: string;
@@ -121,7 +120,7 @@ export class ProxyProvider implements Provider {
     async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
         let response = await this.doGet(`transaction/${txHash.toString()}`);
         let payload = response.transaction;
-        return new TransactionOnNetwork(payload);
+        return TransactionOnNetwork.fromHttpResponse(payload);
     }
 
     getTransactionStatus(txHash: string): Promise<string> {
@@ -136,15 +135,7 @@ export class ProxyProvider implements Provider {
     async getNetworkConfig(): Promise<NetworkConfig> {
         let response = await this.doGet("network/config");
         let payload = response.config;
-        
-        let networkConfig = new NetworkConfig();
-        networkConfig.ChainID = new ChainID(payload["erd_chain_id"]);
-        networkConfig.GasPerDataByte = Number(payload["erd_gas_per_data_byte"]);
-        networkConfig.MinGasLimit = new GasLimit(payload["erd_min_gas_limit"]);
-        networkConfig.MinGasPrice = new GasPrice(payload["erd_min_gas_price"]);
-        networkConfig.MinTransactionVersion = new TransactionVersion(payload["erd_min_transaction_version"]);
-
-        return networkConfig;
+        return NetworkConfig.fromHttpResponse(payload);
     }
 
     private async doGet(resourceUrl: string): Promise<any> {

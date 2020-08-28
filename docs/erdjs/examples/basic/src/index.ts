@@ -8,7 +8,7 @@ $(async function () {
     let transaction = new Transaction();
 
     $("#PrepareButton").click(async function () {
-        NetworkConfig.Default.sync(provider);
+        NetworkConfig.getDefault().sync(provider);
 
         let receiver = getReceiver();
         let value = getTransferValue();
@@ -39,9 +39,12 @@ $(async function () {
     });
 
     $("#QueryButton").click(async function () {
-        let transactionOnNetwork = await provider.getTransaction();
-
-        displayObject("QueriedTransactionContainer", transactionHash);
+        try {
+            await transaction.query(provider);
+            displayObject("QueriedTransactionContainer", transaction.queryLocally());
+        } catch (error) {
+            displayObject("QueriedTransactionContainer", error.summary());
+        }
     });
 });
 

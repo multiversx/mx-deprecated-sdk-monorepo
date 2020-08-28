@@ -3,8 +3,7 @@ import { Transaction } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
-import { TransactionHash } from ".";
-import { TransactionOnNetwork } from "./transactionOnNetwork";
+import { TransactionHash, TransactionOnNetwork } from ".";
 
 export interface Provider {
     getAccount(address: string): Promise<Account>;
