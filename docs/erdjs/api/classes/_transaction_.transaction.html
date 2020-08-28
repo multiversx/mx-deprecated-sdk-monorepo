@@ -107,6 +107,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_transaction_.transaction.html#gasprice" class="tsd-kind-icon">gas<wbr>Price</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_transaction_.transaction.html#hash" class="tsd-kind-icon">hash</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_transaction_.transaction.html#nonce" class="tsd-kind-icon">nonce</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="_transaction_.transaction.html#queryresponse" class="tsd-kind-icon">query<wbr>Response</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_transaction_.transaction.html#receiver" class="tsd-kind-icon">receiver</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_transaction_.transaction.html#sender" class="tsd-kind-icon">sender</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_transaction_.transaction.html#signature" class="tsd-kind-icon">signature</a></li>
@@ -119,6 +120,9 @@
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#applysignature" class="tsd-kind-icon">apply<wbr>Signature</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#query" class="tsd-kind-icon">query</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#querylocally" class="tsd-kind-icon">query<wbr>Locally</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#querystatus" class="tsd-kind-icon">query<wbr>Status</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#send" class="tsd-kind-icon">send</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#serializeforsigning" class="tsd-kind-icon">serialize<wbr>For<wbr>Signing</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_transaction_.transaction.html#toplainobject" class="tsd-kind-icon">to<wbr>Plain<wbr>Object</a></li>
@@ -140,7 +144,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L23">src/transaction.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L25">src/transaction.ts:25</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -159,90 +163,100 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="chainid" class="tsd-anchor"></a>
 					<h3>chainID</h3>
-					<div class="tsd-signature tsd-kind-icon">chainID<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.chainid.html" class="tsd-signature-type">ChainID</a><span class="tsd-signature-symbol"> = NetworkConfig.Default.ChainID</span></div>
+					<div class="tsd-signature tsd-kind-icon">chainID<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.chainid.html" class="tsd-signature-type">ChainID</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L18">src/transaction.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L18">src/transaction.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="data" class="tsd-anchor"></a>
 					<h3>data</h3>
-					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <a href="_transaction_.transactionpayload.html" class="tsd-signature-type">TransactionPayload</a><span class="tsd-signature-symbol"> = new TransactionPayload()</span></div>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <a href="_transaction_.transactionpayload.html" class="tsd-signature-type">TransactionPayload</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L17">src/transaction.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L17">src/transaction.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="gaslimit" class="tsd-anchor"></a>
 					<h3>gas<wbr>Limit</h3>
-					<div class="tsd-signature tsd-kind-icon">gas<wbr>Limit<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.gaslimit.html" class="tsd-signature-type">GasLimit</a><span class="tsd-signature-symbol"> = NetworkConfig.Default.MinGasLimit</span></div>
+					<div class="tsd-signature tsd-kind-icon">gas<wbr>Limit<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.gaslimit.html" class="tsd-signature-type">GasLimit</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L16">src/transaction.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L16">src/transaction.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="gasprice" class="tsd-anchor"></a>
 					<h3>gas<wbr>Price</h3>
-					<div class="tsd-signature tsd-kind-icon">gas<wbr>Price<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.gasprice.html" class="tsd-signature-type">GasPrice</a><span class="tsd-signature-symbol"> = NetworkConfig.Default.MinGasPrice</span></div>
+					<div class="tsd-signature tsd-kind-icon">gas<wbr>Price<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.gasprice.html" class="tsd-signature-type">GasPrice</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L15">src/transaction.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L15">src/transaction.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="hash" class="tsd-anchor"></a>
 					<h3>hash</h3>
-					<div class="tsd-signature tsd-kind-icon">hash<span class="tsd-signature-symbol">:</span> <a href="_transaction_.transactionhash.html" class="tsd-signature-type">TransactionHash</a><span class="tsd-signature-symbol"> = new TransactionHash(&quot;&quot;)</span></div>
+					<div class="tsd-signature tsd-kind-icon">hash<span class="tsd-signature-symbol">:</span> <a href="_transaction_.transactionhash.html" class="tsd-signature-type">TransactionHash</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L22">src/transaction.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L22">src/transaction.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="nonce" class="tsd-anchor"></a>
 					<h3>nonce</h3>
-					<div class="tsd-signature tsd-kind-icon">nonce<span class="tsd-signature-symbol">:</span> <a href="_nonce_.nonce.html" class="tsd-signature-type">Nonce</a><span class="tsd-signature-symbol"> = new Nonce(0)</span></div>
+					<div class="tsd-signature tsd-kind-icon">nonce<span class="tsd-signature-symbol">:</span> <a href="_nonce_.nonce.html" class="tsd-signature-type">Nonce</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L11">src/transaction.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L11">src/transaction.ts:11</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="queryresponse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> query<wbr>Response</h3>
+					<div class="tsd-signature tsd-kind-icon">query<wbr>Response<span class="tsd-signature-symbol">:</span> <a href="_transaction_.transactiononnetwork.html" class="tsd-signature-type">TransactionOnNetwork</a><span class="tsd-signature-symbol"> = new TransactionOnNetwork()</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L25">src/transaction.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="receiver" class="tsd-anchor"></a>
 					<h3>receiver</h3>
-					<div class="tsd-signature tsd-kind-icon">receiver<span class="tsd-signature-symbol">:</span> <a href="_address_.address.html" class="tsd-signature-type">Address</a><span class="tsd-signature-symbol"> = Address.Zero()</span></div>
+					<div class="tsd-signature tsd-kind-icon">receiver<span class="tsd-signature-symbol">:</span> <a href="_address_.address.html" class="tsd-signature-type">Address</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L14">src/transaction.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L14">src/transaction.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="sender" class="tsd-anchor"></a>
 					<h3>sender</h3>
-					<div class="tsd-signature tsd-kind-icon">sender<span class="tsd-signature-symbol">:</span> <a href="_address_.address.html" class="tsd-signature-type">Address</a><span class="tsd-signature-symbol"> = Address.Zero()</span></div>
+					<div class="tsd-signature tsd-kind-icon">sender<span class="tsd-signature-symbol">:</span> <a href="_address_.address.html" class="tsd-signature-type">Address</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L13">src/transaction.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L13">src/transaction.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="signature" class="tsd-anchor"></a>
 					<h3>signature</h3>
-					<div class="tsd-signature tsd-kind-icon">signature<span class="tsd-signature-symbol">:</span> <a href="_signature_.signature.html" class="tsd-signature-type">Signature</a><span class="tsd-signature-symbol"> = new Signature()</span></div>
+					<div class="tsd-signature tsd-kind-icon">signature<span class="tsd-signature-symbol">:</span> <a href="_signature_.signature.html" class="tsd-signature-type">Signature</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L21">src/transaction.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L21">src/transaction.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -252,27 +266,27 @@
 					<div class="tsd-signature tsd-kind-icon">status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;unknown&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L23">src/transaction.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L23">src/transaction.ts:23</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="value" class="tsd-anchor"></a>
 					<h3>value</h3>
-					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <a href="_balance_.balance.html" class="tsd-signature-type">Balance</a><span class="tsd-signature-symbol"> = Balance.Zero()</span></div>
+					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <a href="_balance_.balance.html" class="tsd-signature-type">Balance</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L12">src/transaction.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L12">src/transaction.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="version" class="tsd-anchor"></a>
 					<h3>version</h3>
-					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.transactionversion.html" class="tsd-signature-type">TransactionVersion</a><span class="tsd-signature-symbol"> = NetworkConfig.Default.MinTransactionVersion</span></div>
+					<div class="tsd-signature tsd-kind-icon">version<span class="tsd-signature-symbol">:</span> <a href="_networkparams_.transactionversion.html" class="tsd-signature-type">TransactionVersion</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L19">src/transaction.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L19">src/transaction.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -290,7 +304,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_interface_.signable.html">Signable</a>.<a href="../interfaces/_interface_.signable.html#applysignature">applySignature</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L53">src/transaction.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L68">src/transaction.ts:68</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -307,6 +321,66 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="query" class="tsd-anchor"></a>
+					<h3>query</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">query<span class="tsd-signature-symbol">(</span>provider<span class="tsd-signature-symbol">: </span><a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a>, keepLocally<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_transaction_.transactiononnetwork.html" class="tsd-signature-type">TransactionOnNetwork</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L86">src/transaction.ts:86</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>provider: <a href="../interfaces/_interface_.provider.html" class="tsd-signature-type">Provider</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> keepLocally: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_transaction_.transactiononnetwork.html" class="tsd-signature-type">TransactionOnNetwork</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="querylocally" class="tsd-anchor"></a>
+					<h3>query<wbr>Locally</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Locally<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_transaction_.transactiononnetwork.html" class="tsd-signature-type">TransactionOnNetwork</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L100">src/transaction.ts:100</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <a href="_transaction_.transactiononnetwork.html" class="tsd-signature-type">TransactionOnNetwork</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="querystatus" class="tsd-anchor"></a>
+					<h3>query<wbr>Status</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">query<wbr>Status<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L104">src/transaction.ts:104</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="send" class="tsd-anchor"></a>
 					<h3>send</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -316,7 +390,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L58">src/transaction.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L73">src/transaction.ts:73</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -340,7 +414,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_interface_.signable.html">Signable</a>.<a href="../interfaces/_interface_.signable.html#serializeforsigning">serializeForSigning</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L29">src/transaction.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L44">src/transaction.ts:44</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -363,7 +437,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L36">src/transaction.ts:36</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L51">src/transaction.ts:51</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -386,7 +460,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/a7b6b5f/erdjs/src/transaction.ts#L63">src/transaction.ts:63</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/e869338/erdjs/src/transaction.ts#L78">src/transaction.ts:78</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
@@ -434,6 +508,9 @@
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_transaction_.transaction.html#nonce" class="tsd-kind-icon">nonce</a>
 							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+								<a href="_transaction_.transaction.html#queryresponse" class="tsd-kind-icon">query<wbr>Response</a>
+							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
 								<a href="_transaction_.transaction.html#receiver" class="tsd-kind-icon">receiver</a>
 							</li>
@@ -456,6 +533,15 @@
 								<a href="_transaction_.transaction.html#applysignature" class="tsd-kind-icon">apply<wbr>Signature</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_transaction_.transaction.html#query" class="tsd-kind-icon">query</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_transaction_.transaction.html#querylocally" class="tsd-kind-icon">query<wbr>Locally</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_transaction_.transaction.html#querystatus" class="tsd-kind-icon">query<wbr>Status</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_transaction_.transaction.html#send" class="tsd-kind-icon">send</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -473,6 +559,12 @@
 				<ul class="after-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module">
 						<a href="_transaction_.transactionhash.html" class="tsd-kind-icon">Transaction<wbr>Hash</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="_transaction_.transactiononnetwork.html" class="tsd-kind-icon">Transaction<wbr>OnNetwork</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-module">
+						<a href="_transaction_.transactiononnetworktype.html" class="tsd-kind-icon">Transaction<wbr>OnNetwork<wbr>Type</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-module">
 						<a href="_transaction_.transactionpayload.html" class="tsd-kind-icon">Transaction<wbr>Payload</a>
@@ -498,6 +590,9 @@
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><span class="tsd-kind-icon">Private property</span></li>
 			</ul>
 		</div>
 	</div>
