@@ -1,7 +1,7 @@
 import { errors } from ".";
 
 export class Nonce {
-    public readonly value: number;
+    value: number;
 
     constructor(value: number) {
         value = Number(value);
@@ -11,5 +11,9 @@ export class Nonce {
         }
 
         this.value = value;
+    }
+
+    increment() {
+        this.value += 1;
     }
 }

@@ -1,10 +1,15 @@
 
 import { Signer, Signable } from "./interface";
+import { Address } from "./address";
 
 export class NullSigner implements Signer {
-    public constructor() {
+    constructor() {
     }
 
-    public async sign(_: Signable): Promise<void> {
+    getAddress(): Address {
+        return new Address();
+    }
+
+    async sign(_: Signable): Promise<void> {
     }
 }

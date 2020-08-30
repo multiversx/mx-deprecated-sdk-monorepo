@@ -133,10 +133,14 @@ export class Address {
         return Buffer.from(this.valueHex, "hex");
     }
 
-    private assertNotEmpty() {
-        if (!this.valueHex) {
+    assertNotEmpty() {
+        if (this.isEmpty()) {
             throw new errors.ErrAddressEmpty();
         }
+    }
+
+    isEmpty() {
+        return !this.valueHex;
     }
 
     /**
@@ -155,6 +159,13 @@ export class Address {
      */
     toString(): string {
         return this.bech32();
+    }
+
+    toJSON(): object {
+        return {
+            bech32: this.bech32(),
+            pubkey: this.hex()
+        }
     }
 
     /**

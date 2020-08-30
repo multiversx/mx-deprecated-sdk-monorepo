@@ -35,6 +35,12 @@ export class SimpleSigner implements Signer {
         }
     }
 
+    getAddress(): Address {
+        let pair = tweetnacl.sign.keyPair.fromSeed(this.seed);
+        let signedBy = new Address(Buffer.from(pair.publicKey));
+        return signedBy;
+    }
+
     private trySign(signable: Signable) {
         let pair = tweetnacl.sign.keyPair.fromSeed(this.seed);
         let signingKey = pair.secretKey;

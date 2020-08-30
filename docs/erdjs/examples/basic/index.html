@@ -22,20 +22,43 @@
         </div>
 
         <h3>Network</h3>
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-sm-12">
                 <form>
                     <div class="form-group">
                         <label class="control-label" for="ProxyInput">Proxy URL</label>
-                        <input class="form-control" id="ProxyInput" type="text" value="https://testnet-api.elrond.com" readonly>
+                        <input class="form-control" id="ProxyInput" type="text" value="https://testnet-api.elrond.com"
+                            readonly>
                     </div>
                 </form>
             </div>
         </div>
 
-        <h3>Transaction</h3>
-        <div class="row">
+        <div class="row mb-3">
             <div class="col-sm-6">
+                <h3>Account</h3>
+                <form>
+                    <div class="form-group">
+                        <label for="PrivateKeyInput">Private key</label>
+                        <input class="form-control" id="PrivateKeyInput"
+                            value="1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf"></input>
+                    </div>
+                </form>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <strong>Address:</strong> <span id="AccountAddress"></span>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>Nonce:</strong> <span id="AccountNonce"></span>
+                    </div>
+                    <div class="list-group-item">
+                        <strong>Balance:</strong> <span id="AccountBalance"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <h3>Transaction</h3>
                 <form>
                     <div class="form-group">
                         <label class="control-label" for="ReceiverInput">Receiver</label>
@@ -54,60 +77,71 @@
                     </div>
                 </form>
             </div>
-            <div class="col-sm-6">
-                <form>
-                    <div class="form-group">
-                        <label for="PrivateKeyTextArea">Private key</label>
-                        <textarea class="form-control" id="PrivateKeyTextArea"
-                            rows="3">1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf</textarea>
-                    </div>
-                </form>
-            </div>
         </div>
 
         <h3>Steps</h3>
         <div class="row mb-3">
-            <div class="col-sm-4">
-                <button type="button" id="PrepareButton" class="btn btn-primary btn-lg btn-block">1. Prepare
+            <div class="col-sm-12">
+                <button type="button" id="LoadAccountButton" class="btn btn-primary btn-lg">1. Load & sync
+                    account</button>
+                <button type="button" id="PrepareButton" class="btn btn-primary btn-lg">2. Prepare
+                    transaction</button>
+                <button type="button" id="SignButton" class="btn btn-primary btn-lg">3. Sign
+                    transaction</button>
+                <button type="button" id="BroadcastButton" class="btn btn-primary btn-lg">4. Broadcast
+                    transaction</button>
+                <button type="button" id="QueryButton" class="btn btn-primary btn-lg">5. Query
                     transaction</button>
             </div>
-            <div class="col-sm-8">
+        </div>
+
+        <h3>Results</h3>
+        <div class="row mb-3">
+            <div class="col-sm-12">
+                <h4>Prepared transaction</h4>
                 <pre id="PreparedTransactionContainer"></pre>
             </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-sm-4">
-                <button type="button" id="SignButton" class="btn btn-primary btn-lg btn-block">2. Sign
-                    transaction</button>
-            </div>
-            <div class="col-sm-8">
+            <div class="col-sm-12">
+                <h4>Signed transaction</h4>
                 <pre id="SignedTransactionContainer"></pre>
             </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-sm-4">
-                <button type="button" id="BroadcastButton" class="btn btn-primary btn-lg btn-block">3. Broadcast
-                    transaction</button>
-            </div>
-            <div class="col-sm-8">
+            <div class="col-sm-12">
+                <h4>Broadcast results</h4>
                 <pre id="BroadcastedTransactionContainer"></pre>
             </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-sm-4">
-                <button type="button" id="QueryButton" class="btn btn-primary btn-lg btn-block">4. Query
-                    transaction</button>
-            </div>
-            <div class="col-sm-8">
+            <div class="col-sm-12">
+                <h4>Query results</h4>
                 <pre id="QueriedTransactionContainer"></pre>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="ErrorModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Error</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <p class="error-text"></strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+        crossorigin="anonymous"></script>
     <script src="out/bundle.js"></script>
 </body>
 

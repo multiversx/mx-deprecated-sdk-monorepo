@@ -18,21 +18,48 @@ export class Err extends Error {
         this.inner = inner;
     }
 
-    summary() {
-        return {
-            message: this.message,
-            name: this.name,
-            inner: this.inner ? {
-                message: this.inner.message,
-                name: this.inner.name
-            } : undefined
-        };
+    summary(): any[] {
+        let result = [];
+
+        result.push({name: this.name, message: this.message});
+
+        let inner: any = this.inner;
+        while (inner) {
+            result.push({name: inner.name, message: inner.message});
+            inner = inner.inner;
+        }
+
+        return result;
+    }
+
+    html(): string {
+        let summary = this.summary();
+        let error = summary[0];
+        let causedBy = summary.slice(1)
+
+        let html = `
+            An error of type <strong>${error.name}</strong> occurred: ${error.message}.
+        `;
+
+        causedBy.forEach(cause => {
+            html += `<br /> ... <strong>${cause.name}</strong>: ${cause.message}`;
+        });
+
+        return html;
+    }
+
+    static html(error: Error): string {
+        if (error instanceof Err) {
+            return error.html();
+        } else {
+            return `Unexpected error of type <strong>${error.name}</strong> occurred: ${error.message}.`
+        }
     }
 }
 
 export class ErrInvalidArgument extends Err {
     public constructor(name: string, value: any, inner?: Error) {
-        super(`Invalid argument "${name}: ${value}"`, inner);
+        super(`Invalid argument "${name}": ${value}`, inner);
     }
 }
 

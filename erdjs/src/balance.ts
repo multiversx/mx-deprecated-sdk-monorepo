@@ -27,9 +27,8 @@ export class Balance {
         let bigGold = new BigNumber(value);
         let bigUnits = bigGold.multipliedBy(new BigNumber(OneEGLDString));
         let bigUnitsString = bigUnits.integerValue().toString(10);
-        console.log(bigUnitsString);
         let bigIntUnits = BigInt(bigUnitsString);
-        
+
         return new Balance(bigIntUnits);
     }
 
@@ -53,5 +52,12 @@ export class Balance {
         let decimals = padded.slice(-DENOMINATION);
         let integer = padded.slice(0, padded.length - DENOMINATION);
         return `${integer}.${decimals} eGLD`;
+    }
+
+    toJSON(): object {
+        return {
+            value: this.raw(),
+            formatted: this.formatted()
+        }
     }
 }

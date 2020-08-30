@@ -1,21 +1,42 @@
-import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner, SimpleSigner, GasLimit } from "@elrondnetwork/erdjs";
+import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner, SimpleSigner, GasLimit, Account } from "@elrondnetwork/erdjs";
+import { Err } from "@elrondnetwork/erdjs/out/errors";
 
 declare var $: any;
 
 $(async function () {
     let signer = new NullSigner();
     let provider = new ProxyProvider(getProxyUrl());
+    let account = new Account(new Address());
     let transaction = new Transaction();
 
-    $("#PrepareButton").click(async function () {
+    try {
         NetworkConfig.getDefault().sync(provider);
+    } catch (error) {
+        onError(error);
+    }
 
+    $("#LoadAccountButton").click(async function () {
+        try {
+            signer = new SimpleSigner(getPrivateKey());
+            account = new Account(signer.getAddress());
+            await account.sync(provider);
+
+            $("#AccountAddress").text(account.address.bech32());
+            $("#AccountNonce").text(account.nonce.value);
+            $("#AccountBalance").text(account.balance.formatted());
+        } catch (error) {
+            onError(error);
+        }
+    });
+
+    $("#PrepareButton").click(async function () {
         let receiver = getReceiver();
         let value = getTransferValue();
         let memo = getTransferMemo();
         let gasLimit = GasLimit.forTransfer(memo);
 
         transaction = new Transaction({
+            nonce: account.nonce,
             receiver: receiver,
             value: value,
             data: memo,
@@ -26,16 +47,22 @@ $(async function () {
     });
 
     $("#SignButton").click(async function () {
-        signer = new SimpleSigner(getPrivateKey());
-        signer.sign(transaction);
-
-        displayObject("SignedTransactionContainer", transaction.toPlainObject());
+        try {
+            signer = new SimpleSigner(getPrivateKey());
+            signer.sign(transaction);
+            displayObject("SignedTransactionContainer", transaction.toPlainObject());
+        } catch (error) {
+            onError(error);
+        }
     });
 
     $("#BroadcastButton").click(async function () {
-        let transactionHash = await transaction.send(provider);
-
-        displayObject("BroadcastedTransactionContainer", transactionHash);
+        try {
+            let transactionHash = await transaction.send(provider);
+            displayObject("BroadcastedTransactionContainer", transactionHash);
+        } catch (error) {
+            onError(error);
+        }
     });
 
     $("#QueryButton").click(async function () {
@@ -43,10 +70,16 @@ $(async function () {
             await transaction.query(provider);
             displayObject("QueriedTransactionContainer", transaction.queryLocally());
         } catch (error) {
-            displayObject("QueriedTransactionContainer", error.summary());
+            onError(error);
         }
     });
 });
+
+function onError(error: Error) {
+    let html = Err.html(error);
+    $("#ErrorModal .error-text").html(html);
+    $("#ErrorModal").modal("show");
+}
 
 function getProxyUrl(): string {
     return $("#ProxyInput").val();
@@ -69,7 +102,7 @@ function getTransferMemo(): TransactionPayload {
 }
 
 function getPrivateKey(): string {
-    return $("#PrivateKeyTextArea").val().trim();
+    return $("#PrivateKeyInput").val().trim();
 }
 
 function displayObject(container: string, obj: any) {

@@ -1,102 +1,87 @@
-import * as valid from "./utils";
-import * as errors from "./errors";
-import { Provider, Signer, Signable } from "./interface";
+import { Provider } from "./interface";
 import { Address } from "./address";
+import { Nonce } from "./nonce";
+import { Balance } from "./balance";
 
 export class Account {
-    private address: Address = new Address();
-    private seed: Buffer = Buffer.from("");
-    private nonce: number = 0;
-    private balance: bigint = BigInt(0);
-    private code: string = "";
+    readonly address: Address = new Address();
+    nonce: Nonce = new Nonce(0);
+    balance: Balance = new Balance(BigInt(0));
+    code: string = "";
 
-    public constructor(data: any) {
-        this.set(data);
+    private queryResponse: AccountOnNetwork = new AccountOnNetwork();
+
+    /**
+     * Creates an account object from an address
+     */
+    constructor(address: Address) {
+        this.address = address;
     }
 
-    // public async update(): Promise<void> {
-    //     if (this.provider !== null) {
-    //         let account = await this.provider.getAccount(this.getAddress());
-    //         this.copyFrom(account);
-    //     } else {
-    //         throw errors.ErrProviderNotSet;
-    //     }
-    // }
+    /**
+     * Queries the details of the account on the Network
+     * @param provider the Network provider
+     * @param keepLocally whether to save the query response within the object, locally
+     */
+    async query(provider: Provider, keepLocally: boolean = true): Promise<AccountOnNetwork> {
+        this.address.assertNotEmpty();
 
-    public getAddress(): string {
-        return this.address.toString();
-    }
+        let response = await provider.getAccount(this.address);
 
-    public getAddressObject(): Address {
-        return this.address;
-    }
-
-    public setAddress(address: string) {
-        this.address = new Address(address);
-    }
-
-    public getSeed(): Buffer {
-        return this.seed;
-    }
-
-    public getNonce(): number {
-        return this.nonce;
-    }
-
-    public getBalance(): bigint {
-        return this.balance;
-    }
-
-    public incrementNonce() {
-        this.nonce++;
-    }
-
-    public set(data: any) {
-        if (data == null) {
-            return;
+        if (keepLocally) {
+            this.queryResponse = response;
         }
 
-        this.address = new Address(data.address);
-        //this.nonce = valid.Nonce(data.nonce);
-        //this.balance = valid.BalanceString(data.balance);
+        return response;
     }
 
-    public copyFrom(account: Account) {
-        this.set(account.getPlain());
+    /**
+     * Gets a previously saved query response
+     */
+    queryLocally(): AccountOnNetwork {
+        return this.queryResponse;
     }
 
-    public getPlain(): any {
+    /**
+     * Synchronizes account properties with the ones queried from the Network
+     * @param provider the Network provider
+     */
+    async sync(provider: Provider) {
+        await this.query(provider, true);
+        this.nonce = this.queryResponse.nonce;
+        this.balance = this.queryResponse.balance;
+    }
+
+    incrementNonce() {
+        this.nonce.increment();
+    }
+
+    toPlainObject(): any {
         return {
-            address: this.getAddress(),
-            nonce: this.getNonce(),
-            balance: this.getBalance(),
-            code: this.code,
+            address: this.address.bech32(),
+            nonce: this.nonce.value,
+            balance: this.balance.raw(),
+            code: this.code
         };
     }
 }
 
 
-// class Account(IAccount):
-//     def __init__(self, address: Any = None, pem_file: Union[str, None] = None, pem_index: int = 0, key_file: str = "", pass_file: str = ""):
-//         self.address = Address(address)
-//         self.pem_file = pem_file
-//         self.pem_index = int(pem_index)
-//         self.nonce: int = 0
+export class AccountOnNetwork {
+    nonce: Nonce = new Nonce(0);
+    balance: Balance = new Balance(BigInt(0));
+    code: string = "";
 
-//         if pem_file:
-//             seed, pubkey = pem.parse(self.pem_file, self.pem_index)
-//             self.private_key_seed = seed.hex()
-//             self.address = Address(pubkey)
-//         elif key_file and pass_file:
-//             password = get_password(pass_file)
-//             address_from_key_file, seed = load_from_key_file(key_file, password)
-//             self.private_key_seed = seed.hex()
-//             self.address = Address(address_from_key_file)
+    constructor() {
+    }
 
-//     def sync_nonce(self, proxy: Any):
-//         logger.info("Account.sync_nonce()")
-//         self.nonce = proxy.get_account_nonce(self.address)
-//         logger.info(f"Account.sync_nonce() done: {self.nonce}")
+    static fromHttpResponse(payload: any): AccountOnNetwork {
+        let result = new AccountOnNetwork();
 
-//     def get_seed(self) -> bytes:
-//         return unhexlify(self.private_key_seed)
+        result.nonce = new Nonce(payload["nonce"] || 0);
+        result.balance = Balance.fromString(payload["balance"]);
+        result.code = payload["code"];
+
+        return result;
+    }
+}

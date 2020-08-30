@@ -87,10 +87,10 @@ export class SmartContractBase implements SmartContract {
         }
 
         let initialPadding = Buffer.alloc(8, 0);
-        let ownerAddressBytes = this.user.getAddressObject().pubkey();
+        let ownerAddressBytes = this.user.address.pubkey();
         let shardSelector = ownerAddressBytes.slice(30);
         let ownerNonceBytes = Buffer.alloc(8);
-        ownerNonceBytes.writeBigUInt64LE(BigInt(this.user.getNonce()));
+        ownerNonceBytes.writeBigUInt64LE(BigInt(this.user.nonce.value));
         let bytesToHash = Buffer.concat([ownerAddressBytes, ownerNonceBytes]);
         let hash = keccak('keccak256').update(bytesToHash).digest();
         let vmTypeBytes = Buffer.from(deployment.getVMType(), 'hex');

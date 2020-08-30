@@ -3,9 +3,10 @@ import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
-import { errors, TransactionHash, TransactionOnNetwork } from ".";
+import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance } from ".";
 import { NetworkConfig } from "./networkConfig";
-import { ChainID, GasLimit, GasPrice, TransactionVersion } from "./networkParams";
+import { Address } from "./address";
+import { Nonce } from "./nonce";
 
 export class ProxyProvider implements Provider {
     private url: string;
@@ -16,39 +17,22 @@ export class ProxyProvider implements Provider {
         this.timeoutLimit = timeout || 1000;
     }
 
-    getAccount(address: string): Promise<Account> {
-        // TODO add error handling:
-        //  * if the GET request fails
-        //  * if the retrieved data cannot be set to an Account
-        return axios.get(
-            this.url + `/address/${address}`,
-            { timeout: this.timeoutLimit }
-        ).then(response => {
-            //let account = new Account(this, response.data.data.account);
-            //return account;
-            console.log(response);
-            return new Account("");
-        });
+    async getAccount(address: Address): Promise<AccountOnNetwork> {
+        let response = await this.doGet(`address/${address.bech32()}`);
+        let payload = response.account;
+        return AccountOnNetwork.fromHttpResponse(payload);
     }
 
-    getBalance(address: string): Promise<bigint> {
-        // TODO add error handling:
-        //  * if the GET request fails
-        //  * if the retrieved data cannot be used as a bigint
-        return axios.get(
-            this.url + `/address/${address}/balance`,
-            { timeout: this.timeoutLimit }
-        ).then(response => BigInt(response.data.data.balance));
+    async getBalance(address: Address): Promise<Balance> {
+        let response = await this.doGet(`address/${address.bech32()}/balance`);
+        let payload = response.balance;
+        return Balance.fromString(payload);
     }
 
-    getNonce(address: string): Promise<number> {
-        // TODO add error handling:
-        //  * if the GET request fails
-        //  * if the retrieved data is an invalid nonce
-        return axios.get(
-            this.url + `/address/${address}/nonce`,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.nonce);
+    async getNonce(address: Address): Promise<Nonce> {
+        let response = await this.doGet(`address/${address.bech32()}/nonce`);
+        let payload = response.nonce;
+        return new Nonce(payload);
     }
 
     getVMValueString(address: string, funcName: string, args: string[]): Promise<string> {
@@ -145,6 +129,11 @@ export class ProxyProvider implements Provider {
             let payload = response.data.data;
             return payload;
         } catch (error) {
+            if (!error.response) {
+                console.warn(error);
+                throw new errors.ErrProxyProviderGet(resourceUrl, "", error);
+            }
+
             let originalErrorMessage = error.response.data.error;
             throw new errors.ErrProxyProviderGet(resourceUrl, originalErrorMessage, error);
         }
@@ -158,6 +147,11 @@ export class ProxyProvider implements Provider {
             let responsePayload = response.data.data;
             return responsePayload;
         } catch (error) {
+            if (!error.response) {
+                console.warn(error);
+                throw new errors.ErrProxyProviderPost(resourceUrl, "", error);
+            }
+
             let originalErrorMessage = error.response.data.error;
             throw new errors.ErrProxyProviderPost(resourceUrl, originalErrorMessage, error);
         }

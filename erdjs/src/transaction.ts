@@ -177,7 +177,7 @@ export class TransactionOnNetwork {
         result.type = new TransactionOnNetworkType(payload["type"]);
         result.nonce = new Nonce(payload["nonce"] || 0);
         result.round = payload["round"];
-        result.round = payload["epoch"];
+        result.epoch = payload["epoch"];
         result.value = Balance.fromString(payload["value"]);
         result.sender = Address.fromBech32(payload["sender"]);
         result.receiver = Address.fromBech32(payload["receiver"]);
