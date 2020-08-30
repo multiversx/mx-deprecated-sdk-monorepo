@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>GasLimit | @elrondnetwork/erdjs</title>
+	<title>AccountOnNetwork | @elrondnetwork/erdjs</title>
 	<meta name="description" content="Documentation for @elrondnetwork/erdjs">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_networkparams_.html">&quot;networkParams&quot;</a>
+					<a href="../modules/_account_.html">&quot;account&quot;</a>
 				</li>
 				<li>
-					<a href="_networkparams_.gaslimit.html">GasLimit</a>
+					<a href="_account_.accountonnetwork.html">AccountOnNetwork</a>
 				</li>
 			</ul>
-			<h1>Class GasLimit</h1>
+			<h1>Class AccountOnNetwork</h1>
 		</div>
 	</div>
 </header>
@@ -73,7 +73,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">GasLimit</span>
+						<span class="target">AccountOnNetwork</span>
 					</li>
 				</ul>
 			</section>
@@ -84,19 +84,21 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_networkparams_.gaslimit.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_account_.accountonnetwork.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_networkparams_.gaslimit.html#value" class="tsd-kind-icon">value</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_account_.accountonnetwork.html#balance" class="tsd-kind-icon">balance</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_account_.accountonnetwork.html#code" class="tsd-kind-icon">code</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_account_.accountonnetwork.html#nonce" class="tsd-kind-icon">nonce</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="_networkparams_.gaslimit.html#fortransfer" class="tsd-kind-icon">for<wbr>Transfer</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="_account_.accountonnetwork.html#fromhttpresponse" class="tsd-kind-icon">from<wbr>Http<wbr>Response</a></li>
 							</ul>
 						</section>
 					</div>
@@ -108,22 +110,16 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Gas<wbr>Limit<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_networkparams_.gaslimit.html" class="tsd-signature-type">GasLimit</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Account<wbr>OnNetwork<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_account_.accountonnetwork.html" class="tsd-signature-type">AccountOnNetwork</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/networkParams.ts#L19">src/networkParams.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/account.ts#L73">src/account.ts:73</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>value: <span class="tsd-signature-type">number</span></h5>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="_networkparams_.gaslimit.html" class="tsd-signature-type">GasLimit</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="_account_.accountonnetwork.html" class="tsd-signature-type">AccountOnNetwork</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -131,12 +127,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="value" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> value</h3>
-					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="balance" class="tsd-anchor"></a>
+					<h3>balance</h3>
+					<div class="tsd-signature tsd-kind-icon">balance<span class="tsd-signature-symbol">:</span> <a href="_balance_.balance.html" class="tsd-signature-type">Balance</a><span class="tsd-signature-symbol"> = new Balance(BigInt(0))</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/networkParams.ts#L19">src/networkParams.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/account.ts#L72">src/account.ts:72</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="code" class="tsd-anchor"></a>
+					<h3>code</h3>
+					<div class="tsd-signature tsd-kind-icon">code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/account.ts#L73">src/account.ts:73</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="nonce" class="tsd-anchor"></a>
+					<h3>nonce</h3>
+					<div class="tsd-signature tsd-kind-icon">nonce<span class="tsd-signature-symbol">:</span> <a href="_nonce_.nonce.html" class="tsd-signature-type">Nonce</a><span class="tsd-signature-symbol"> = new Nonce(0)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/account.ts#L71">src/account.ts:71</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -144,25 +160,25 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="fortransfer" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> for<wbr>Transfer</h3>
+					<a name="fromhttpresponse" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagStatic">Static</span> from<wbr>Http<wbr>Response</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">for<wbr>Transfer<span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><a href="_transaction_.transactionpayload.html" class="tsd-signature-type">TransactionPayload</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_networkparams_.gaslimit.html" class="tsd-signature-type">GasLimit</a></li>
+						<li class="tsd-signature tsd-kind-icon">from<wbr>Http<wbr>Response<span class="tsd-signature-symbol">(</span>payload<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_account_.accountonnetwork.html" class="tsd-signature-type">AccountOnNetwork</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/networkParams.ts#L31">src/networkParams.ts:31</a></li>
+									<li>Defined in <a href="https://github.com/ElrondNetwork/elrond-sdk/blob/d21d551/erdjs/src/account.ts#L78">src/account.ts:78</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>data: <a href="_transaction_.transactionpayload.html" class="tsd-signature-type">TransactionPayload</a></h5>
+									<h5>payload: <span class="tsd-signature-type">any</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="_networkparams_.gaslimit.html" class="tsd-signature-type">GasLimit</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="_account_.accountonnetwork.html" class="tsd-signature-type">AccountOnNetwork</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -175,39 +191,39 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/_networkparams_.html">&quot;network<wbr>Params&quot;</a>
+						<a href="../modules/_account_.html">&quot;account&quot;</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="_networkparams_.chainid.html" class="tsd-kind-icon">ChainID</a>
+						<a href="_account_.account.html" class="tsd-kind-icon">Account</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-module">
-						<a href="_networkparams_.gaslimit.html" class="tsd-kind-icon">Gas<wbr>Limit</a>
+						<a href="_account_.accountonnetwork.html" class="tsd-kind-icon">Account<wbr>OnNetwork</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="_networkparams_.gaslimit.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="_account_.accountonnetwork.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_networkparams_.gaslimit.html#value" class="tsd-kind-icon">value</a>
+								<a href="_account_.accountonnetwork.html#balance" class="tsd-kind-icon">balance</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_account_.accountonnetwork.html#code" class="tsd-kind-icon">code</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_account_.accountonnetwork.html#nonce" class="tsd-kind-icon">nonce</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-								<a href="_networkparams_.gaslimit.html#fortransfer" class="tsd-kind-icon">for<wbr>Transfer</a>
+								<a href="_account_.accountonnetwork.html#fromhttpresponse" class="tsd-kind-icon">from<wbr>Http<wbr>Response</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="_networkparams_.gasprice.html" class="tsd-kind-icon">Gas<wbr>Price</a>
-					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-module">
-						<a href="_networkparams_.transactionversion.html" class="tsd-kind-icon">Transaction<wbr>Version</a>
-					</li>
 				</ul>
 			</nav>
 		</div>
