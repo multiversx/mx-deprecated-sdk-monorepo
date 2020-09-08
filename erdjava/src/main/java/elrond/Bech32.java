@@ -26,15 +26,6 @@ public class Bech32 {
      */
     private static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
-    /**
-     * The io.nayuki.bitcoin.crypto.Bech32 character set for decoding.
-     */
-    private static final byte[] CHARSET_REV = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, 15, -1, 10, 17, 21, 20, 26, 30, 7, 5, -1, -1, -1, -1, -1, -1, -1, 29, -1, 24, 13, 25, 9, 8, 23,
-            -1, 18, 22, 31, 27, 19, -1, 1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1, -1, 29, -1, 24, 13,
-            25, 9, 8, 23, -1, 18, 22, 31, 27, 19, -1, 1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1 };
-
     public static class Bech32Data {
         final String hrp;
         final byte[] data;
@@ -57,9 +48,9 @@ public class Bech32 {
      * Internal function that computes the Bech32 checksum
      */
     private static int polymod(final byte[] values) {
-        int[] generator = new int[]{0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3};
+        int[] generator = new int[] { 0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3 };
         int chk = 1;
-        
+
         for (byte value : values) {
             int valueAsInt = value & 0xff;
             int top = chk >>> 25;
@@ -145,55 +136,52 @@ public class Bech32 {
     }
 
     /**
-     * Decode a io.nayuki.bitcoin.crypto.Bech32 string.
+     * Validate a Bech32 string, and determine HRP and data.
      */
-    public static Bech32Data decode(final String str) throws AddressFormatException {
-        boolean lower = false, upper = false;
-        if (str.length() < 8)
-            throw new AddressFormatException("input too short");
-        if (str.length() > 90)
-            throw new AddressFormatException("input too long");
-        for (int i = 0; i < str.length(); ++i) {
-            char c = str.charAt(i);
-            if (c < 33 || c > 126)
-                throw new AddressFormatException("invalid character");
-            if (c >= 'a' && c <= 'z') {
-                if (upper)
-                    throw new AddressFormatException("invalid character");
-                lower = true;
-            }
-            if (c >= 'A' && c <= 'Z') {
-                if (lower)
-                    throw new AddressFormatException("invalid character");
-                upper = true;
-            }
+    public static Bech32Data decode(String bech) throws Bech32Exception {
+        if (bech.length() > 90) {
+            throw new Bech32Exception();
         }
-        final int pos = str.lastIndexOf('1');
-        if (pos < 1)
-            throw new AddressFormatException("missing hrp");
-        final int dataPartLength = str.length() - 1 - pos;
-        if (dataPartLength < 6)
-            throw new AddressFormatException("data part to short");
-        byte[] values = new byte[dataPartLength];
-        for (int i = 0; i < dataPartLength; ++i) {
-            char c = str.charAt(i + pos + 1);
-            if (CHARSET_REV[c] == -1)
-                throw new AddressFormatException("invalid character");
-            values[i] = CHARSET_REV[c];
+
+        if ((bech.chars().anyMatch(x -> (x < 33) || (x > 126)))) {
+            throw new InvalidCharactersException();
         }
-        String hrp = str.substring(0, pos).toLowerCase(Locale.ROOT);
-        if (!verifyChecksum(hrp, values))
-            throw new AddressFormatException("invalid checksum");
-        return new Bech32Data(hrp, Arrays.copyOfRange(values, 0, values.length - 6));
+
+        boolean isFullLower = bech.toLowerCase().equals(bech);
+        boolean isFullUpper = bech.toUpperCase().equals(bech);
+        if (!isFullLower && !isFullUpper) {
+            throw new InconsistentCasingException();
+        }
+
+        bech = bech.toLowerCase();
+        final int pos = bech.lastIndexOf('1');
+        if ((pos < 1) || (pos + 7 > bech.length())) {
+            throw new MissingHrpException();
+        }
+
+        String dataPart = bech.substring(pos+1);
+
+        boolean hasInvalidChars = dataPart.chars().anyMatch(x -> CHARSET.indexOf(x) < 0);
+        if (hasInvalidChars) {
+            throw new InvalidCharactersException();
+        }
+
+        byte[] dataIndices = Utils.toByteArray(dataPart.chars().map(x -> CHARSET.indexOf(x)).toArray());
+        String hrp = bech.substring(0, pos);
+
+        if (!verifyChecksum(hrp, dataIndices)) {
+            throw new InvalidChecksumException();
+        }
+
+        return new Bech32Data(hrp, Arrays.copyOfRange(dataIndices, 0, dataIndices.length - 6));
     }
 
     /**
      * General power-of-2 base conversion.
      * 
-     * @throws CannotConvertBitsException
+     * @throws Bech32Exception
      */
-    public static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad)
-            throws CannotConvertBitsException {
+    public static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad) throws Bech32Exception {
         int acc = 0;
         int bits = 0;
         ByteArrayOutputStream ret = new ByteArrayOutputStream();
@@ -227,7 +215,23 @@ public class Bech32 {
         return ret.toByteArray();
     }
 
-    public static class CannotConvertBitsException extends Exception {
+    public static class Bech32Exception extends Exception {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 3260891634512906120L;
+
+        public Bech32Exception() {
+            super();
+        }
+
+        public Bech32Exception(String message) {
+            super(message);
+        }
+    }
+
+    public static class CannotConvertBitsException extends Bech32Exception {
 
         /**
          *
@@ -235,9 +239,35 @@ public class Bech32 {
         private static final long serialVersionUID = 7002466269883351644L;
     }
 
-    public static class AddressFormatException extends Exception {
-        public AddressFormatException(String message) {
-            super(message);
-        }
+    public static class InvalidCharactersException extends Bech32Exception {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 440923894748025560L;
+    }
+
+    public static class InconsistentCasingException extends Bech32Exception {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = -6909226964519236168L;
+    }
+
+    public static class MissingHrpException extends Bech32Exception {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = -2279315088416839103L;
+    }
+
+    public static class InvalidChecksumException extends Bech32Exception {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1194101021531173712L;
     }
 }

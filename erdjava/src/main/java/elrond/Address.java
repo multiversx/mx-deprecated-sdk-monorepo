@@ -2,8 +2,7 @@ package elrond;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import elrond.Bech32.AddressFormatException;
-import elrond.Bech32.CannotConvertBitsException;
+import elrond.Bech32.Bech32Exception;
 
 public class Address {
     static final String HRP = "erd";
@@ -29,7 +28,7 @@ public class Address {
         return new Address(value);
     }
 
-    public static Address fromBech32(String value) throws AddressFormatException, CannotConvertBitsException {
+    public static Address fromBech32(String value) throws Bech32Exception {
         var bech32Data = Bech32.decode(value);
         var decodedBytes = Bech32.convertBits(bech32Data.data, 5, 8, false);
         var hex = new String(Hex.encode(decodedBytes));
@@ -44,7 +43,7 @@ public class Address {
         return Hex.decode(this.valueHex);
     }
 
-    public String bech32() throws CannotConvertBitsException {
+    public String bech32() throws Bech32Exception {
         var pubkey = this.pubkey();
         var address = Bech32.encode(HRP, Bech32.convertBits(pubkey, 8, 5, true));
         return address;
