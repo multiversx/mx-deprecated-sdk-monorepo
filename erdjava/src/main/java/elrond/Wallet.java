@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.macs.HMac;
+import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 public class Wallet {
@@ -20,6 +21,26 @@ public class Wallet {
     static final long HARDENED_OFFSET = 0x80000000;
 
     private Wallet() {
+    }
+
+    public static Keys deriveKeys(String mnemonic, long accountIndex) throws IOException {
+        var seed = mnemonicToBip39Seed(mnemonic);
+        var privateKey = bip39SeedToPrivateKey(seed, accountIndex);
+        var privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
+        var publicKeyParameters = privateKeyParameters.generatePublicKey();
+        var publicKey = publicKeyParameters.getEncoded();
+
+        return new Keys(publicKey, privateKey);
+    }
+
+    public static class Keys {
+        public final byte[] publicKey;
+        public final byte[] privateKey;
+
+        public Keys(byte[] publicKey, byte[] privateKey) {
+            this.publicKey = publicKey;
+            this.privateKey = privateKey;
+        }
     }
 
     public static byte[] mnemonicToBip39Seed(final String mnemonic) {
