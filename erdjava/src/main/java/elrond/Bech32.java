@@ -1,122 +1,231 @@
-// # Copyright (c) 2017 Pieter Wuille
-// #
-// # Permission is hereby granted, free of charge, to any person obtaining a copy
-// # of this software and associated documentation files (the "Software"), to deal
-// # in the Software without restriction, including without limitation the rights
-// # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// # copies of the Software, and to permit persons to whom the Software is
-// # furnished to do so, subject to the following conditions:
-// #
-// # The above copyright notice and this permission notice shall be included in
-// # all copies or substantial portions of the Software.
-// #
-// # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// # THE SOFTWARE.
+/*
+ * Copyright 2018 Coinomi Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-// """Reference implementation for Bech32 and segwit addresses."""
+package elrond;
 
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.Locale;
 
-// CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l"
+//import static com.google.common.base.Preconditions.checkArgument;
 
+public class Bech32 {
+    /**
+     * The io.nayuki.bitcoin.crypto.Bech32 character set for encoding.
+     */
+    private static final String CHARSET = "qpzry9x8gf2tvdw0s3jn54khce6mua7l";
 
-// def bech32_polymod(values):
-//     """Internal function that computes the Bech32 checksum."""
-//     generator = [0x3b6a57b2, 0x26508e6d, 0x1ea119fa, 0x3d4233dd, 0x2a1462b3]
-//     chk = 1
-//     for value in values:
-//         top = chk >> 25
-//         chk = (chk & 0x1ffffff) << 5 ^ value
-//         for i in range(5):
-//             chk ^= generator[i] if ((top >> i) & 1) else 0
-//     return chk
+    /**
+     * The io.nayuki.bitcoin.crypto.Bech32 character set for decoding.
+     */
+    private static final byte[] CHARSET_REV = {
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+            15, -1, 10, 17, 21, 20, 26, 30, 7, 5, -1, -1, -1, -1, -1, -1,
+            -1, 29, -1, 24, 13, 25, 9, 8, 23, -1, 18, 22, 31, 27, 19, -1,
+            1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1,
+            -1, 29, -1, 24, 13, 25, 9, 8, 23, -1, 18, 22, 31, 27, 19, -1,
+            1, 0, 3, 16, 11, 28, 12, 14, 6, 4, 2, -1, -1, -1, -1, -1
+    };
 
+    public static class Bech32Data {
+        final String hrp;
+        final byte[] data;
 
-// def bech32_hrp_expand(hrp):
-//     """Expand the HRP into values for checksum computation."""
-//     return [ord(x) >> 5 for x in hrp] + [0] + [ord(x) & 31 for x in hrp]
+        private Bech32Data(final String hrp, final byte[] data) {
+            this.hrp = hrp;
+            this.data = data;
+        }
 
+        public String getHrp() {
+            return hrp;
+        }
 
-// def bech32_verify_checksum(hrp, data):
-//     """Verify a checksum given HRP and converted data characters."""
-//     return bech32_polymod(bech32_hrp_expand(hrp) + data) == 1
+        public byte[] getData() {
+            return data;
+        }
+    }
 
+    /**
+     * Find the polynomial with value coefficients mod the generator as 30-bit.
+     */
+    private static int polymod(final byte[] values) {
+        int c = 1;
+        for (byte v_i : values) {
+            int c0 = (c >>> 25) & 0xff;
+            c = ((c & 0x1ffffff) << 5) ^ (v_i & 0xff);
+            if ((c0 & 1) != 0) c ^= 0x3b6a57b2;
+            if ((c0 & 2) != 0) c ^= 0x26508e6d;
+            if ((c0 & 4) != 0) c ^= 0x1ea119fa;
+            if ((c0 & 8) != 0) c ^= 0x3d4233dd;
+            if ((c0 & 16) != 0) c ^= 0x2a1462b3;
+        }
+        return c;
+    }
 
-// def bech32_create_checksum(hrp, data):
-//     """Compute the checksum values given HRP and data."""
-//     values = bech32_hrp_expand(hrp) + data
-//     polymod = bech32_polymod(values + [0, 0, 0, 0, 0, 0]) ^ 1
-//     return [(polymod >> 5 * (5 - i)) & 31 for i in range(6)]
+    /**
+     * Expand a HRP for use in checksum computation.
+     */
+    private static byte[] expandHrp(final String hrp) {
+        int hrpLength = hrp.length();
+        byte ret[] = new byte[hrpLength * 2 + 1];
+        for (int i = 0; i < hrpLength; ++i) {
+            int c = hrp.charAt(i) & 0x7f; // Limit to standard 7-bit ASCII
+            ret[i] = (byte) ((c >>> 5) & 0x07);
+            ret[i + hrpLength + 1] = (byte) (c & 0x1f);
+        }
+        ret[hrpLength] = 0;
+        return ret;
+    }
 
+    /**
+     * Verify a checksum.
+     */
+    private static boolean verifyChecksum(final String hrp, final byte[] values) {
+        byte[] hrpExpanded = expandHrp(hrp);
+        byte[] combined = new byte[hrpExpanded.length + values.length];
+        System.arraycopy(hrpExpanded, 0, combined, 0, hrpExpanded.length);
+        System.arraycopy(values, 0, combined, hrpExpanded.length, values.length);
+        return polymod(combined) == 1;
+    }
 
-// def bech32_encode(hrp, data):
-//     """Compute a Bech32 string given HRP and data values."""
-//     combined = data + bech32_create_checksum(hrp, data)
-//     return hrp + '1' + ''.join([CHARSET[d] for d in combined])
+    /**
+     * Create a checksum.
+     */
+    private static byte[] createChecksum(final String hrp, final byte[] values) {
+        byte[] hrpExpanded = expandHrp(hrp);
+        byte[] enc = new byte[hrpExpanded.length + values.length + 6];
+        System.arraycopy(hrpExpanded, 0, enc, 0, hrpExpanded.length);
+        System.arraycopy(values, 0, enc, hrpExpanded.length, values.length);
+        int mod = polymod(enc) ^ 1;
+        byte[] ret = new byte[6];
+        for (int i = 0; i < 6; ++i) {
+            ret[i] = (byte) ((mod >>> (5 * (5 - i))) & 31);
+        }
+        return ret;
+    }
 
+    /**
+     * Encode a io.nayuki.bitcoin.crypto.Bech32 string.
+     */
+    public static String encode(final Bech32Data bech32) {
+        return encode(bech32.hrp, bech32.data);
+    }
 
-// def bech32_decode(bech):
-//     """Validate a Bech32 string, and determine HRP and data."""
-//     if ((any(ord(x) < 33 or ord(x) > 126 for x in bech)) or (bech.lower() != bech and bech.upper() != bech)):
-//         return (None, None)
-//     bech = bech.lower()
-//     pos = bech.rfind('1')
-//     if pos < 1 or pos + 7 > len(bech) or len(bech) > 90:
-//         return (None, None)
-//     if not all(x in CHARSET for x in bech[pos + 1:]):
-//         return (None, None)
-//     hrp = bech[:pos]
-//     data = [CHARSET.find(x) for x in bech[pos + 1:]]
-//     if not bech32_verify_checksum(hrp, data):
-//         return (None, None)
-//     return (hrp, data[:-6])
+    /**
+     * Encode a io.nayuki.bitcoin.crypto.Bech32 string.
+     */
+    public static String encode(String hrp, final byte[] values) {
+        //checkArgument(hrp.length() >= 1, "Human-readable part is too short");
+        //checkArgument(hrp.length() <= 83, "Human-readable part is too long");
+        hrp = hrp.toLowerCase(Locale.ROOT);
+        byte[] checksum = createChecksum(hrp, values);
+        byte[] combined = new byte[values.length + checksum.length];
+        System.arraycopy(values, 0, combined, 0, values.length);
+        System.arraycopy(checksum, 0, combined, values.length, checksum.length);
+        StringBuilder sb = new StringBuilder(hrp.length() + 1 + combined.length);
+        sb.append(hrp);
+        sb.append('1');
+        for (byte b : combined) {
+            sb.append(CHARSET.charAt(b));
+        }
+        return sb.toString();
+    }
 
+    /**
+     * Decode a io.nayuki.bitcoin.crypto.Bech32 string.
+     */
+    public static Bech32Data decode(final String str) throws AddressFormatException {
+        boolean lower = false, upper = false;
+        if (str.length() < 8)
+            throw new AddressFormatException("input too short");
+        if (str.length() > 90)
+            throw new AddressFormatException("input too long");
+        for (int i = 0; i < str.length(); ++i) {
+            char c = str.charAt(i);
+            if (c < 33 || c > 126) throw new AddressFormatException("invalid character");
+            if (c >= 'a' && c <= 'z') {
+                if (upper)
+                    throw new AddressFormatException("invalid character");
+                lower = true;
+            }
+            if (c >= 'A' && c <= 'Z') {
+                if (lower)
+                    throw new AddressFormatException("invalid character");
+                upper = true;
+            }
+        }
+        final int pos = str.lastIndexOf('1');
+        if (pos < 1) throw new AddressFormatException("missing hrp");
+        final int dataPartLength = str.length() - 1 - pos;
+        if (dataPartLength < 6)
+            throw new AddressFormatException("data part to short");
+        byte[] values = new byte[dataPartLength];
+        for (int i = 0; i < dataPartLength; ++i) {
+            char c = str.charAt(i + pos + 1);
+            if (CHARSET_REV[c] == -1) throw new AddressFormatException("invalid character");
+            values[i] = CHARSET_REV[c];
+        }
+        String hrp = str.substring(0, pos).toLowerCase(Locale.ROOT);
+        if (!verifyChecksum(hrp, values)) throw new AddressFormatException("invalid checksum");
+        return new Bech32Data(hrp, Arrays.copyOfRange(values, 0, values.length - 6));
+    }
 
-// def convertbits(data, frombits, tobits, pad=True):
-//     """General power-of-2 base conversion."""
-//     acc = 0
-//     bits = 0
-//     ret = []
-//     maxv = (1 << tobits) - 1
-//     max_acc = (1 << (frombits + tobits - 1)) - 1
-//     for value in data:
-//         if value < 0 or (value >> frombits):
-//             return None
-//         acc = ((acc << frombits) | value) & max_acc
-//         bits += frombits
-//         while bits >= tobits:
-//             bits -= tobits
-//             ret.append((acc >> bits) & maxv)
-//     if pad:
-//         if bits:
-//             ret.append((acc << (tobits - bits)) & maxv)
-//     elif bits >= frombits or ((acc << (tobits - bits)) & maxv):
-//         return None
-//     return ret
+    /**
+     * see https://github.com/sipa/bech32/pull/40/files
+     */
+    public static byte[] convertBits(final byte[] in, final int inStart, final int inLen,
+                                     final int fromBits, final int toBits, final boolean pad)
+            throws SegwitAddressException {
+        int acc = 0;
+        int bits = 0;
+        ByteArrayOutputStream out = new ByteArrayOutputStream(64);
+        final int maxv = (1 << toBits) - 1;
+        final int max_acc = (1 << (fromBits + toBits - 1)) - 1;
+        for (int i = 0; i < inLen; i++) {
+            int value = in[i + inStart] & 0xff;
+            if ((value >>> fromBits) != 0) {
+                throw new SegwitAddressException(String.format(
+                        "Input value '%X' exceeds '%d' bit size", value, fromBits));
+            }
+            acc = ((acc << fromBits) | value) & max_acc;
+            bits += fromBits;
+            while (bits >= toBits) {
+                bits -= toBits;
+                out.write((acc >>> bits) & maxv);
+            }
+        }
+        if (pad) {
+            if (bits > 0) out.write((acc << (toBits - bits)) & maxv);
+        } else if (bits >= fromBits || ((acc << (toBits - bits)) & maxv) != 0) {
+            throw new SegwitAddressException("Could not convert bits, invalid padding");
+        }
+        return out.toByteArray();
+    }
 
+    public static class SegwitAddressException extends Exception {
+        public SegwitAddressException(String message) {
+            super(message);
+        }
+    }
 
-// def decode(hrp, addr):
-//     """Decode a segwit address."""
-//     hrpgot, data = bech32_decode(addr)
-//     if hrpgot != hrp:
-//         return (None, None)
-//     decoded = convertbits(data[1:], 5, 8, False)
-//     if decoded is None or len(decoded) < 2 or len(decoded) > 40:
-//         return (None, None)
-//     if data[0] > 16:
-//         return (None, None)
-//     if data[0] == 0 and len(decoded) != 20 and len(decoded) != 32:
-//         return (None, None)
-//     return (data[0], decoded)
-
-
-// def encode(hrp, witver, witprog):
-//     """Encode a segwit address."""
-//     ret = bech32_encode(hrp, [witver] + convertbits(witprog, 8, 5))
-//     if decode(hrp, ret) == (None, None):
-//         return None
-//     return ret
+    public static class AddressFormatException extends Exception {
+        public AddressFormatException(String message) {
+            super(message);
+        }
+    }
+}
