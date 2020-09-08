@@ -2,7 +2,7 @@ package elrond;
 
 import org.bouncycastle.util.encoders.Hex;
 
-import elrond.Bech32.Bech32Exception;
+import elrond.Exceptions.ErrAddress;
 
 public class Address {
     static final String HRP = "erd";
@@ -16,23 +16,26 @@ public class Address {
         this.valueHex = valueHex;
     }
 
-    public static Address fromHex(String value) throws ErrAddressCannotCreate {
-        var decoded = Hex.decode(value);
-        var encodedAgain = new String(Hex.encode(decoded));
-        var isValid = encodedAgain.equals(value);
-
-        if (!isValid) {
-            throw new ErrAddressCannotCreate(value);
+    public static Address fromBech32(String value) throws Exceptions.ErrAddress {
+        var bech32Data = Bech32.decode(value);
+        if (!bech32Data.hrp.equals(HRP)) {
+            throw new Exceptions.ErrAddressBadHrp();
         }
 
-        return new Address(value);
-    }
-
-    public static Address fromBech32(String value) throws Bech32Exception {
-        var bech32Data = Bech32.decode(value);
         var decodedBytes = Bech32.convertBits(bech32Data.data, 5, 8, false);
         var hex = new String(Hex.encode(decodedBytes));
         return new Address(hex);
+    }
+
+    public static Address fromHex(String value) throws Exceptions.ErrAddress {
+        var decoded = Hex.decode(value);
+        var encodedAgain = new String(Hex.encode(decoded));
+        var isValid = encodedAgain.equals(value);
+        if (!isValid) {
+            throw new Exceptions.ErrAddressCannotCreate(value);
+        }
+
+        return new Address(value);
     }
 
     public String hex() {
@@ -43,9 +46,18 @@ public class Address {
         return Hex.decode(this.valueHex);
     }
 
-    public String bech32() throws Bech32Exception {
+    public String bech32() throws Exceptions.ErrAddress {
         var pubkey = this.pubkey();
         var address = Bech32.encode(HRP, Bech32.convertBits(pubkey, 8, 5, true));
         return address;
+    }
+
+    public static boolean isValidBech32(String value) {
+        try {
+            Address.fromBech32(value);
+            return true;
+        } catch(ErrAddress error){
+            return false;
+        }
     }
 }

@@ -179,7 +179,7 @@ public class Bech32 {
     /**
      * Validate a Bech32 string, and determine HRP and data.
      */
-    public static Bech32Data decode(String bech) throws Bech32Exception {
+    public static Bech32Data decode(String bech) throws Exceptions.ErrAddress {
         /*-
         Reference Python implementation by Pieter Wuille:
         
@@ -200,37 +200,37 @@ public class Bech32 {
         */
 
         if (bech.length() > 90) {
-            throw new Bech32Exception();
+            throw new Exceptions.ErrAddress();
         }
 
         if ((bech.chars().anyMatch(x -> (x < 33) || (x > 126)))) {
-            throw new InvalidCharactersException();
+            throw new Exceptions.ErrInvalidCharacters();
         }
 
         boolean isFullLower = bech.toLowerCase().equals(bech);
         boolean isFullUpper = bech.toUpperCase().equals(bech);
         if (!isFullLower && !isFullUpper) {
-            throw new InconsistentCasingException();
+            throw new Exceptions.InconsistentCasingException();
         }
 
         bech = bech.toLowerCase();
         final int pos = bech.lastIndexOf('1');
         if ((pos < 1) || (pos + 7 > bech.length())) {
-            throw new MissingHrpException();
+            throw new Exceptions.ErrMissingHrp();
         }
 
         String dataPart = bech.substring(pos + 1);
 
         boolean hasInvalidChars = dataPart.chars().anyMatch(x -> CHARSET.indexOf(x) < 0);
         if (hasInvalidChars) {
-            throw new InvalidCharactersException();
+            throw new Exceptions.ErrInvalidCharacters();
         }
 
         byte[] dataIndices = Utils.toByteArray(dataPart.chars().map(x -> CHARSET.indexOf(x)).toArray());
         String hrp = bech.substring(0, pos);
 
         if (!verifyChecksum(hrp, dataIndices)) {
-            throw new InvalidChecksumException();
+            throw new Exceptions.ErrInvalidChecksum();
         }
 
         return new Bech32Data(hrp, Arrays.copyOfRange(dataIndices, 0, dataIndices.length - 6));
@@ -238,10 +238,8 @@ public class Bech32 {
 
     /**
      * General power-of-2 base conversion.
-     * 
-     * @throws Bech32Exception
      */
-    public static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad) throws Bech32Exception {
+    public static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad) throws Exceptions.ErrAddress {
         /*-
         Reference Python implementation by Pieter Wuille:
         
@@ -276,7 +274,7 @@ public class Bech32 {
             int valueAsInt = value & 0xff;
 
             if ((valueAsInt < 0) || (valueAsInt >>> fromBits != 0)) {
-                throw new CannotConvertBitsException();
+                throw new Exceptions.ErrCannotConvertBits();
             }
 
             acc = ((acc << fromBits) | valueAsInt) & maxAcc;
@@ -293,65 +291,9 @@ public class Bech32 {
                 ret.write((acc << (toBits - bits)) & maxv);
             }
         } else if (bits >= fromBits || ((acc << (toBits - bits)) & maxv) != 0) {
-            throw new CannotConvertBitsException();
+            throw new Exceptions.ErrCannotConvertBits();
         }
 
         return ret.toByteArray();
-    }
-
-    public static class Bech32Exception extends Exception {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 3260891634512906120L;
-
-        public Bech32Exception() {
-            super();
-        }
-
-        public Bech32Exception(String message) {
-            super(message);
-        }
-    }
-
-    public static class CannotConvertBitsException extends Bech32Exception {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 7002466269883351644L;
-    }
-
-    public static class InvalidCharactersException extends Bech32Exception {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 440923894748025560L;
-    }
-
-    public static class InconsistentCasingException extends Bech32Exception {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = -6909226964519236168L;
-    }
-
-    public static class MissingHrpException extends Bech32Exception {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = -2279315088416839103L;
-    }
-
-    public static class InvalidChecksumException extends Bech32Exception {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1194101021531173712L;
     }
 }
