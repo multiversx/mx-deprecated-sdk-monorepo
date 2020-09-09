@@ -1,5 +1,6 @@
 package elrond;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
@@ -79,6 +80,10 @@ public class Transaction {
         } catch (ErrCannotSerializeTransaction error) {
             throw new ErrCannotSignTransaction();
         }
+    }
+
+    public void send(IProvider provider) throws ErrCannotSerializeTransaction, IOException {
+        provider.sendTransaction(this);
     }
 
     public void setNonce(long nonce) {

@@ -7,11 +7,16 @@ import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
 import elrond.Exceptions.ErrAddress;
+import elrond.Exceptions.ErrCannotSerializeTransaction;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class ProxyProvider implements IProvider {
+    private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+
     private final String url;
     private final OkHttpClient httpClient;
 
@@ -21,17 +26,23 @@ public class ProxyProvider implements IProvider {
     }
 
     public NetworkConfig getNetworkConfig() throws IOException {
-        String json = this.doGet("network/config");
-        ResponseOfGetNetworkConfig typedResponse = new Gson().fromJson(json, ResponseOfGetNetworkConfig.class);
+        String responseJson = this.doGet("network/config");
+        ResponseOfGetNetworkConfig typedResponse = new Gson().fromJson(responseJson, ResponseOfGetNetworkConfig.class);
         PayloadOfGetNetworkConfig payload = typedResponse.data.config;
         return NetworkConfig.fromProviderPayload(payload);
     }
 
     public AccountOnNetwork getAccount(Address address) throws IOException, ErrAddress {
-        String json = this.doGet(String.format("address/%s", address.bech32()));
-        ResponseOfGetAccount typedResponse = new Gson().fromJson(json, ResponseOfGetAccount.class);
+        String responseJson = this.doGet(String.format("address/%s", address.bech32()));
+        ResponseOfGetAccount typedResponse = new Gson().fromJson(responseJson, ResponseOfGetAccount.class);
         PayloadOfGetAccount payload = typedResponse.data.account;
         return AccountOnNetwork.fromProviderPayload(payload);
+    }
+
+    public void sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction {
+        String requestJson = transaction.serialize();
+        String responseJson = this.doPost("transaction/send", requestJson);
+        // TODO: return hash.
     }
 
     private String doGet(String resourceUrl) throws IOException {
@@ -39,8 +50,19 @@ public class ProxyProvider implements IProvider {
         Request request = new Request.Builder().url(getUrl).build();
 
         try (Response response = this.httpClient.newCall(request).execute()) {
-            String json = response.body().string();
-            return json;
+            String responseJson = response.body().string();
+            return responseJson;
+        }
+    }
+
+    private String doPost(String resourceUrl, String json) throws IOException {
+        String postUrl = String.format("%s/%s", this.url, resourceUrl);
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder().url(postUrl).post(body).build();
+
+        try (Response response = this.httpClient.newCall(request).execute()) {
+            String responseJson = response.body().string();
+            return responseJson;
         }
     }
 
