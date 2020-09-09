@@ -1,10 +1,12 @@
 package elrond;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import elrond.Exceptions.ErrAddress;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -23,6 +25,13 @@ public class ProxyProvider implements IProvider {
         ResponseOfGetNetworkConfig typedResponse = new Gson().fromJson(json, ResponseOfGetNetworkConfig.class);
         PayloadOfGetNetworkConfig payload = typedResponse.data.config;
         return NetworkConfig.fromProviderPayload(payload);
+    }
+
+    public AccountOnNetwork getAccount(Address address) throws IOException, ErrAddress {
+        String json = this.doGet(String.format("address/%s", address.bech32()));
+        ResponseOfGetAccount typedResponse = new Gson().fromJson(json, ResponseOfGetAccount.class);
+        PayloadOfGetAccount payload = typedResponse.data.account;
+        return AccountOnNetwork.fromProviderPayload(payload);
     }
 
     private String doGet(String resourceUrl) throws IOException {
@@ -68,5 +77,20 @@ public class ProxyProvider implements IProvider {
 
         @SerializedName(value = "erd_min_transaction_version")
         public int minTransactionVersion;
+    }
+
+    public static class ResponseOfGetAccount extends ResponseBase<WrapperOfGetAccount> {}
+
+    public static class WrapperOfGetAccount {
+        @SerializedName(value = "account")
+        public PayloadOfGetAccount account;
+    }
+
+    public static class PayloadOfGetAccount {
+        @SerializedName(value = "nonce")
+        public long nonce;
+
+        @SerializedName(value = "balance")
+        public BigInteger balance;
     }
 }
