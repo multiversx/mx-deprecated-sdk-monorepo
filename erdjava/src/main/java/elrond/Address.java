@@ -2,6 +2,7 @@ package elrond;
 
 import org.bouncycastle.util.encoders.Hex;
 
+import elrond.Bech32.Bech32Data;
 import elrond.Exceptions.ErrAddress;
 
 public class Address {
@@ -17,20 +18,20 @@ public class Address {
     }
 
     public static Address fromBech32(String value) throws Exceptions.ErrAddress {
-        var bech32Data = Bech32.decode(value);
+        Bech32Data bech32Data = Bech32.decode(value);
         if (!bech32Data.hrp.equals(HRP)) {
             throw new Exceptions.ErrAddressBadHrp();
         }
 
-        var decodedBytes = Bech32.convertBits(bech32Data.data, 5, 8, false);
-        var hex = new String(Hex.encode(decodedBytes));
+        byte[] decodedBytes = Bech32.convertBits(bech32Data.data, 5, 8, false);
+        String hex = new String(Hex.encode(decodedBytes));
         return new Address(hex);
     }
 
     public static Address fromHex(String value) throws Exceptions.ErrAddress {
-        var decoded = Hex.decode(value);
-        var encodedAgain = new String(Hex.encode(decoded));
-        var isValid = encodedAgain.equals(value);
+        byte[] decoded = Hex.decode(value);
+        String encodedAgain = new String(Hex.encode(decoded));
+        boolean isValid = encodedAgain.equals(value);
         if (!isValid) {
             throw new Exceptions.ErrAddressCannotCreate(value);
         }
@@ -47,8 +48,8 @@ public class Address {
     }
 
     public String bech32() throws Exceptions.ErrAddress {
-        var pubkey = this.pubkey();
-        var address = Bech32.encode(HRP, Bech32.convertBits(pubkey, 8, 5, true));
+        byte[] pubkey = this.pubkey();
+        String address = Bech32.encode(HRP, Bech32.convertBits(pubkey, 8, 5, true));
         return address;
     }
 

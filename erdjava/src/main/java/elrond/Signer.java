@@ -18,16 +18,16 @@ public class Signer {
     }
 
     public String sign(byte[] data) {
-        var signer = this.createEd25519Signer();
+        Ed25519Signer signer = this.createEd25519Signer();
         signer.update(data, 0, data.length);
-        var signature = signer.generateSignature();
-        var hex = Hex.encode(signature);
+        byte[] signature = signer.generateSignature();
+        byte[] hex = Hex.encode(signature);
         return new String(hex);
     }
 
     private Ed25519Signer createEd25519Signer() {
-        var parameters = new Ed25519PrivateKeyParameters(this.privateKey, 0);
-        var signer = new Ed25519Signer();
+        Ed25519PrivateKeyParameters parameters = new Ed25519PrivateKeyParameters(this.privateKey, 0);
+        Ed25519Signer signer = new Ed25519Signer();
         signer.init(true, parameters);
         return signer;
     }

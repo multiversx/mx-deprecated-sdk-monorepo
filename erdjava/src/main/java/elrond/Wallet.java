@@ -15,6 +15,7 @@ import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
+import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 
 import elrond.Exceptions.ErrCannotDeriveKeys;
@@ -51,11 +52,11 @@ public class Wallet {
 
     public static Keys deriveKeys(String mnemonic, long accountIndex) throws ErrCannotDeriveKeys {
         try {
-            var seed = mnemonicToBip39Seed(mnemonic);
-            var privateKey = bip39SeedToPrivateKey(seed, accountIndex);
-            var privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
-            var publicKeyParameters = privateKeyParameters.generatePublicKey();
-            var publicKey = publicKeyParameters.getEncoded();
+            byte[] seed = mnemonicToBip39Seed(mnemonic);
+            byte[] privateKey = bip39SeedToPrivateKey(seed, accountIndex);
+            Ed25519PrivateKeyParameters privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
+            Ed25519PublicKeyParameters publicKeyParameters = privateKeyParameters.generatePublicKey();
+            byte[] publicKey = publicKeyParameters.getEncoded();
     
             return new Keys(publicKey, privateKey);
         } catch (IOException error) {
@@ -73,20 +74,20 @@ public class Wallet {
         }
     }
 
-    private static byte[] mnemonicToBip39Seed(final String mnemonic) {
-        final var mnemonicBytes = mnemonic.getBytes(StandardCharsets.UTF_8);
-        final var passphrase = BIP39_SALT_MODIFIER.getBytes(StandardCharsets.UTF_8);
-        final var generator = new PKCS5S2ParametersGenerator(new SHA512Digest());
+    private static byte[] mnemonicToBip39Seed(String mnemonic) {
+        byte[] mnemonicBytes = mnemonic.getBytes(StandardCharsets.UTF_8);
+        byte[] passphrase = BIP39_SALT_MODIFIER.getBytes(StandardCharsets.UTF_8);
+        PKCS5S2ParametersGenerator generator = new PKCS5S2ParametersGenerator(new SHA512Digest());
 
         generator.init(mnemonicBytes, passphrase, BIP39_PBKDF2_ROUNDS);
-        final byte[] seed = ((KeyParameter) generator.generateDerivedParameters(512)).getKey();
+        byte[] seed = ((KeyParameter) generator.generateDerivedParameters(512)).getKey();
         return seed;
     }
 
     private static byte[] bip39SeedToPrivateKey(byte[] seed, long accountIndex) throws IOException {
-        var keyAndChainCode = bip39SeedToMasterKey(seed);
-        var key = keyAndChainCode.key;
-        var chainCode = keyAndChainCode.chainCode;
+        KeyAndChainCode keyAndChainCode = bip39SeedToMasterKey(seed);
+        byte[] key = keyAndChainCode.key;
+        byte[] chainCode = keyAndChainCode.chainCode;
 
         long[] derivationPath = Arrays.copyOf(ELROND_DERIVATION_PATH, ELROND_DERIVATION_PATH.length);
         derivationPath[derivationPath.length - 1] = accountIndex;

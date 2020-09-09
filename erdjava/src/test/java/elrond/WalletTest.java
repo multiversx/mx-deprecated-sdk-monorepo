@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import elrond.Exceptions.ErrCannotDeriveKeys;
 import elrond.Exceptions.ErrCannotGenerateMnemonic;
+import elrond.Wallet.Keys;
 
 import java.util.List;
 
@@ -21,11 +22,11 @@ public class WalletTest {
     @Test
     public void deriveKeys() throws ErrCannotDeriveKeys {
         // Emotion spare
-        var mnemonic = "emotion spare multiply lecture rude machine raise radio ability doll depend equip pass ghost cabin delay birth opera shoe force any slow fluid old";
-        var expectedPrivateKey = "4d6fbfd1fa028afee050068f08c46b95754fd27a06f429b308ba326fff094349";
-        var expectedPublicKey = "10afb6ed5c730bff355db7958ae19a466d4c78be8780db271192eec1b266c2a4";
+        String mnemonic = "emotion spare multiply lecture rude machine raise radio ability doll depend equip pass ghost cabin delay birth opera shoe force any slow fluid old";
+        String expectedPrivateKey = "4d6fbfd1fa028afee050068f08c46b95754fd27a06f429b308ba326fff094349";
+        String expectedPublicKey = "10afb6ed5c730bff355db7958ae19a466d4c78be8780db271192eec1b266c2a4";
 
-        var keys = Wallet.deriveKeys(mnemonic, 0);
+        Keys keys = Wallet.deriveKeys(mnemonic, 0);
         assertEquals(expectedPrivateKey, new String(Hex.encode(keys.privateKey)));
         assertEquals(expectedPublicKey, new String(Hex.encode(keys.publicKey)));
 

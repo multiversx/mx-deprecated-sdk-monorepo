@@ -23,14 +23,14 @@ public class Transaction {
     private String signature = "";
 
     public String serialize() {
-        var map = this.toMap();
-        var gson = new Gson();
-        var json = gson.toJson(map);
+        Map<String, Object> map = this.toMap();
+        Gson gson = new Gson();
+        String json = gson.toJson(map);
         return json;
     }
 
     public Map<String, Object> toMap() {
-        var map = new LinkedHashMap<String, Object>();
+        Map<String, Object> map = new LinkedHashMap<String, Object>();
 
         map.put("nonce", this.nonce);
         map.put("value", this.value.toString(10));
@@ -54,7 +54,7 @@ public class Transaction {
     }
 
     public void sign(Signer signer) {
-        var serialized = this.serialize();
+        String serialized = this.serialize();
         this.signature = signer.sign(serialized);
     }
 
@@ -115,8 +115,8 @@ public class Transaction {
     }
 
     public String getDataEncoded() {
-        var dataAsBytes = this.data.getBytes(StandardCharsets.UTF_8);
-        var encodedAsBytes = Base64.encode(dataAsBytes);
+        byte[] dataAsBytes = this.data.getBytes(StandardCharsets.UTF_8);
+        byte[] encodedAsBytes = Base64.encode(dataAsBytes);
         return new String(encodedAsBytes);
     }
 
