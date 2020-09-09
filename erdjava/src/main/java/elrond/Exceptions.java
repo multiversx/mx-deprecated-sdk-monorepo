@@ -99,4 +99,12 @@ public class Exceptions {
          */
         private static final long serialVersionUID = 1194101021531173712L;
     }
+
+    public static class ErrCannotGenerateMnemonic extends ErrKnown {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = -9089149758748689110L;
+    }
 }

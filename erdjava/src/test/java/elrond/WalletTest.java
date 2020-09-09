@@ -2,13 +2,22 @@ package elrond;
 
 import org.junit.Test;
 
+import elrond.Exceptions.ErrCannotGenerateMnemonic;
+
 import java.io.IOException;
+import java.util.List;
 
 import org.bouncycastle.util.encoders.Hex;
 
 import static org.junit.Assert.assertEquals;
 
 public class WalletTest {
+    @Test
+    public void generateMnemonic() throws ErrCannotGenerateMnemonic {
+        List<String> words = Wallet.generateMnemonic();
+        assertEquals(24, words.size());
+    }
+
     @Test
     public void deriveKeys() throws IOException {
         // Emotion spare

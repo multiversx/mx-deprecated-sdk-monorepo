@@ -5,15 +5,22 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.List;
 
+import org.bitcoinj.crypto.MnemonicCode;
+import org.bitcoinj.crypto.MnemonicException.MnemonicLengthException;
 import org.bouncycastle.crypto.digests.SHA512Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 
+import elrond.Exceptions.ErrCannotGenerateMnemonic;
+
 public class Wallet {
+    static final int DEFAULT_ENTROPY_BITS = 256; // this leads to 24-words mnemonics
     static final String BIP39_SALT_MODIFIER = "mnemonic";
     static final int BIP39_PBKDF2_ROUNDS = 2048;
     static final String BIP32_SEED_MODIFIER = "ed25519 seed";
@@ -21,6 +28,24 @@ public class Wallet {
     static final long HARDENED_OFFSET = 0x80000000;
 
     private Wallet() {
+    }
+
+    public static List<String> generateMnemonic() throws ErrCannotGenerateMnemonic {
+        try {
+            byte[] entropy = generateEntropy();
+            MnemonicCode mnemonicCode = new MnemonicCode();
+            List<String> mnemonic = mnemonicCode.toMnemonic(entropy);
+            return mnemonic;
+        } catch (IOException | MnemonicLengthException error) {
+            throw new Exceptions.ErrCannotGenerateMnemonic();
+        }
+    }
+
+    private static byte[] generateEntropy() {
+        SecureRandom random = new SecureRandom();
+        byte[] entropy = new byte[DEFAULT_ENTROPY_BITS / 8];
+        random.nextBytes(entropy);
+        return entropy;
     }
 
     public static Keys deriveKeys(String mnemonic, long accountIndex) throws IOException {
