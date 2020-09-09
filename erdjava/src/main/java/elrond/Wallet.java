@@ -17,6 +17,8 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.Ed25519PublicKeyParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
+import org.bouncycastle.crypto.signers.Ed25519Signer;
+import org.bouncycastle.util.encoders.Hex;
 
 import elrond.Exceptions.ErrCannotDeriveKeys;
 import elrond.Exceptions.ErrCannotGenerateMnemonic;
@@ -29,7 +31,19 @@ public class Wallet {
     static final long[] ELROND_DERIVATION_PATH = { 44, 508, 0, 0, 0 };
     static final long HARDENED_OFFSET = 0x80000000;
 
-    private Wallet() {
+    private final byte[] publicKey;
+    private final byte[] privateKey;
+
+    public Wallet(String privateKeyHex) {
+        this(Hex.decode(privateKeyHex));
+    }
+
+    public Wallet(byte[] privateKey) {
+        Ed25519PrivateKeyParameters privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
+        Ed25519PublicKeyParameters publicKeyParameters = privateKeyParameters.generatePublicKey();
+
+        this.publicKey = publicKeyParameters.getEncoded();
+        this.privateKey = privateKey;
     }
 
     public static List<String> generateMnemonic() throws ErrCannotGenerateMnemonic {
@@ -50,27 +64,13 @@ public class Wallet {
         return entropy;
     }
 
-    public static Keys deriveKeys(String mnemonic, long accountIndex) throws ErrCannotDeriveKeys {
+    public static Wallet deriveFromMnemonic(String mnemonic, long accountIndex) throws ErrCannotDeriveKeys {
         try {
             byte[] seed = mnemonicToBip39Seed(mnemonic);
             byte[] privateKey = bip39SeedToPrivateKey(seed, accountIndex);
-            Ed25519PrivateKeyParameters privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
-            Ed25519PublicKeyParameters publicKeyParameters = privateKeyParameters.generatePublicKey();
-            byte[] publicKey = publicKeyParameters.getEncoded();
-    
-            return new Keys(publicKey, privateKey);
+            return new Wallet(privateKey);
         } catch (IOException error) {
             throw new Exceptions.ErrCannotDeriveKeys();
-        }
-    }
-
-    public static class Keys {
-        public final byte[] publicKey;
-        public final byte[] privateKey;
-
-        public Keys(byte[] publicKey, byte[] privateKey) {
-            this.publicKey = publicKey;
-            this.privateKey = privateKey;
         }
     }
 
@@ -101,14 +101,14 @@ public class Wallet {
         return key;
     }
 
-    public static KeyAndChainCode bip39SeedToMasterKey(byte[] seed) {
+    private static KeyAndChainCode bip39SeedToMasterKey(byte[] seed) {
         byte[] result = hmacSHA512(BIP32_SEED_MODIFIER.getBytes(StandardCharsets.UTF_8), seed);
         byte[] masterKey = Arrays.copyOfRange(result, 0, 32);
         byte[] chainCode = Arrays.copyOfRange(result, 32, 64);
         return new KeyAndChainCode(masterKey, chainCode);
     }
 
-    static class KeyAndChainCode {
+    private static class KeyAndChainCode {
         public final byte[] key;
         public final byte[] chainCode;
 
@@ -134,7 +134,7 @@ public class Wallet {
         return new KeyAndChainCode(Arrays.copyOfRange(result, 0, 32), Arrays.copyOfRange(result, 32, 64));
     }
 
-    public static byte[] hmacSHA512(byte[] key, byte[] message) {
+    private static byte[] hmacSHA512(byte[] key, byte[] message) {
         byte[] result = new byte[64];
 
         HMac hmac = new HMac(new SHA512Digest());
@@ -142,5 +142,32 @@ public class Wallet {
         hmac.update(message, 0, message.length);
         hmac.doFinal(result, 0);
         return result;
+    }
+
+    public String sign(String data) {
+        return this.sign(data.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String sign(byte[] data) {
+        Ed25519Signer signer = this.createEd25519Signer();
+        signer.update(data, 0, data.length);
+        byte[] signature = signer.generateSignature();
+        byte[] hex = Hex.encode(signature);
+        return new String(hex);
+    }
+
+    private Ed25519Signer createEd25519Signer() {
+        Ed25519PrivateKeyParameters parameters = new Ed25519PrivateKeyParameters(this.privateKey, 0);
+        Ed25519Signer signer = new Ed25519Signer();
+        signer.init(true, parameters);
+        return signer;
+    }
+
+    public byte[] getPrivateKey() {
+        return privateKey;
+    }
+
+    public byte[] getPublicKey() {
+        return publicKey;
     }
 }

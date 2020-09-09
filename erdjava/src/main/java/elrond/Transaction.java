@@ -72,10 +72,10 @@ public class Transaction {
         return map;
     }
 
-    public void sign(Signer signer) throws ErrCannotSignTransaction {
+    public void sign(Wallet wallet) throws ErrCannotSignTransaction {
         try {
             String serialized = this.serialize();
-            this.signature = signer.sign(serialized);
+            this.signature = wallet.sign(serialized);
         } catch (ErrCannotSerializeTransaction error) {
             throw new ErrCannotSignTransaction();
         }
