@@ -17,6 +17,10 @@ public class Address {
         this.valueHex = valueHex;
     }
 
+    public static Address createEmptyAddress() {
+        return new Address("");
+    }
+
     public static Address fromBech32(String value) throws Exceptions.ErrAddress {
         Bech32Data bech32Data = Bech32.decode(value);
         if (!bech32Data.hrp.equals(HRP)) {

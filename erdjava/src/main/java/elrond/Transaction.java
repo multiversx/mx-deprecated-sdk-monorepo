@@ -22,9 +22,20 @@ public class Transaction {
     private Address receiver;
     private long gasPrice;
     private long gasLimit;
-    private String data = "";
+    private String data;
     private String chainID;
-    private String signature = "";
+    private String signature;
+
+    public Transaction() {
+        this.value = BigInteger.valueOf(0);
+        this.sender = Address.createEmptyAddress();
+        this.receiver = Address.createEmptyAddress();
+        this.data = "";
+        this.gasPrice = NetworkConfig.getDefault().getMinGasPrice();
+        this.gasLimit = NetworkConfig.getDefault().getMinGasLimit();
+        this.chainID = NetworkConfig.getDefault().getChainID();
+        this.signature = "";
+    }
 
     public String serialize() throws ErrCannotSerializeTransaction {
         try {
