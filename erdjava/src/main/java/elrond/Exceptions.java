@@ -114,6 +114,21 @@ public class Exceptions {
          *
          */
         private static final long serialVersionUID = 6759812280546343157L;
+    }
 
+    public static class ErrCannotSerializeTransaction extends ErrKnown {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = -1322742374396410484L;
+    }
+
+    public static class ErrCannotSignTransaction extends ErrKnown {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1L;
     }
 }

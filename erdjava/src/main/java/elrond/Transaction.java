@@ -9,33 +9,41 @@ import com.google.gson.Gson;
 
 import org.bouncycastle.util.encoders.Base64;
 
+import elrond.Exceptions.ErrAddress;
+import elrond.Exceptions.ErrCannotSerializeTransaction;
+import elrond.Exceptions.ErrCannotSignTransaction;
+
 public class Transaction {
     public static final int VERSION = 1;
 
     private long nonce;
     private BigInteger value;
-    private String sender;
-    private String receiver;
+    private Address sender;
+    private Address receiver;
     private long gasPrice;
     private long gasLimit;
     private String data = "";
     private String chainID;
     private String signature = "";
 
-    public String serialize() {
-        Map<String, Object> map = this.toMap();
-        Gson gson = new Gson();
-        String json = gson.toJson(map);
-        return json;
+    public String serialize() throws ErrCannotSerializeTransaction {
+        try {
+            Map<String, Object> map = this.toMap();
+            Gson gson = new Gson();
+            String json = gson.toJson(map);
+            return json;
+        } catch (ErrAddress error) {
+            throw new ErrCannotSerializeTransaction();
+        }
     }
 
-    public Map<String, Object> toMap() {
-        Map<String, Object> map = new LinkedHashMap<String, Object>();
+    private Map<String, Object> toMap() throws ErrAddress {
+        Map<String, Object> map = new LinkedHashMap<>();
 
         map.put("nonce", this.nonce);
         map.put("value", this.value.toString(10));
-        map.put("receiver", this.receiver);
-        map.put("sender", this.sender);
+        map.put("receiver", this.receiver.bech32());
+        map.put("sender", this.sender.bech32());
         map.put("gasPrice", this.gasPrice);
         map.put("gasLimit", this.gasLimit);
 
@@ -53,9 +61,13 @@ public class Transaction {
         return map;
     }
 
-    public void sign(Signer signer) {
-        String serialized = this.serialize();
-        this.signature = signer.sign(serialized);
+    public void sign(Signer signer) throws ErrCannotSignTransaction {
+        try {
+            String serialized = this.serialize();
+            this.signature = signer.sign(serialized);
+        } catch (ErrCannotSerializeTransaction error) {
+            throw new ErrCannotSignTransaction();
+        }
     }
 
     public void setNonce(long nonce) {
@@ -74,19 +86,19 @@ public class Transaction {
         return value;
     }
 
-    public void setSender(String sender) {
+    public void setSender(Address sender) {
         this.sender = sender;
     }
 
-    public String getSender() {
+    public Address getSender() {
         return sender;
     }
 
-    public void setReceiver(String receiver) {
+    public void setReceiver(Address receiver) {
         this.receiver = receiver;
     }
 
-    public String getReceiver() {
+    public Address getReceiver() {
         return receiver;
     }
 

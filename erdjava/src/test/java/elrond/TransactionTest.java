@@ -7,29 +7,29 @@ import static org.junit.Assert.assertEquals;
 
 public class TransactionTest {
     @Test
-    public void shouldSerialize() {
+    public void shouldSerialize() throws Exception {
         Transaction transaction = new Transaction();
 
         // Without data (memo) field
         transaction.setNonce(0);
         transaction.setValue(new BigInteger("42"));
-        transaction.setSender("erd1alice");
-        transaction.setReceiver("erd1bob");
+        transaction.setSender(Address.fromBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
+        transaction.setReceiver(Address.fromBech32("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r"));
         transaction.setGasPrice(1000000000);
         transaction.setGasLimit(50000);
         transaction.setChainID("1");
 
-        String expected = "{\"nonce\":0,\"value\":\"42\",\"receiver\":\"erd1bob\",\"sender\":\"erd1alice\",\"gasPrice\":1000000000,\"gasLimit\":50000,\"chainID\":\"1\",\"version\":1}";
+        String expected = "{\"nonce\":0,\"value\":\"42\",\"receiver\":\"erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r\",\"sender\":\"erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz\",\"gasPrice\":1000000000,\"gasLimit\":50000,\"chainID\":\"1\",\"version\":1}";
         assertEquals(expected, transaction.serialize());
 
         // With data (memo) field
         transaction.setData("foobar");
-        expected = "{\"nonce\":0,\"value\":\"42\",\"receiver\":\"erd1bob\",\"sender\":\"erd1alice\",\"gasPrice\":1000000000,\"gasLimit\":50000,\"data\":\"Zm9vYmFy\",\"chainID\":\"1\",\"version\":1}";
+        expected = "{\"nonce\":0,\"value\":\"42\",\"receiver\":\"erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r\",\"sender\":\"erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz\",\"gasPrice\":1000000000,\"gasLimit\":50000,\"data\":\"Zm9vYmFy\",\"chainID\":\"1\",\"version\":1}";
         assertEquals(expected, transaction.serialize());
     }
 
     @Test
-    public void shouldSign() {
+    public void shouldSign() throws Exception {
         String alicePrivateKey = "1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf";
         Signer aliceSigner = new Signer(alicePrivateKey);
 
@@ -37,8 +37,8 @@ public class TransactionTest {
         Transaction transaction = new Transaction();
         transaction.setNonce(7);
         transaction.setValue(new BigInteger("10000000000000000000"));
-        transaction.setSender("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz");
-        transaction.setReceiver("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r");
+        transaction.setSender(Address.fromBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
+        transaction.setReceiver(Address.fromBech32("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r"));
         transaction.setGasPrice(1000000000);
         transaction.setGasLimit(70000);
         transaction.setData("for the book");
@@ -54,8 +54,8 @@ public class TransactionTest {
         transaction = new Transaction();
         transaction.setNonce(8);
         transaction.setValue(new BigInteger("10000000000000000000"));
-        transaction.setSender("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz");
-        transaction.setReceiver("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r");
+        transaction.setSender(Address.fromBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
+        transaction.setReceiver(Address.fromBech32("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r"));
         transaction.setGasPrice(1000000000);
         transaction.setGasLimit(50000);
         transaction.setData("");
