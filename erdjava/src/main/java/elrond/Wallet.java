@@ -17,6 +17,7 @@ import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.Ed25519PrivateKeyParameters;
 import org.bouncycastle.crypto.params.KeyParameter;
 
+import elrond.Exceptions.ErrCannotDeriveKeys;
 import elrond.Exceptions.ErrCannotGenerateMnemonic;
 
 public class Wallet {
@@ -48,14 +49,18 @@ public class Wallet {
         return entropy;
     }
 
-    public static Keys deriveKeys(String mnemonic, long accountIndex) throws IOException {
-        var seed = mnemonicToBip39Seed(mnemonic);
-        var privateKey = bip39SeedToPrivateKey(seed, accountIndex);
-        var privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
-        var publicKeyParameters = privateKeyParameters.generatePublicKey();
-        var publicKey = publicKeyParameters.getEncoded();
-
-        return new Keys(publicKey, privateKey);
+    public static Keys deriveKeys(String mnemonic, long accountIndex) throws ErrCannotDeriveKeys {
+        try {
+            var seed = mnemonicToBip39Seed(mnemonic);
+            var privateKey = bip39SeedToPrivateKey(seed, accountIndex);
+            var privateKeyParameters = new Ed25519PrivateKeyParameters(privateKey, 0);
+            var publicKeyParameters = privateKeyParameters.generatePublicKey();
+            var publicKey = publicKeyParameters.getEncoded();
+    
+            return new Keys(publicKey, privateKey);
+        } catch (IOException error) {
+            throw new Exceptions.ErrCannotDeriveKeys();
+        }
     }
 
     public static class Keys {
@@ -68,7 +73,7 @@ public class Wallet {
         }
     }
 
-    public static byte[] mnemonicToBip39Seed(final String mnemonic) {
+    private static byte[] mnemonicToBip39Seed(final String mnemonic) {
         final var mnemonicBytes = mnemonic.getBytes(StandardCharsets.UTF_8);
         final var passphrase = BIP39_SALT_MODIFIER.getBytes(StandardCharsets.UTF_8);
         final var generator = new PKCS5S2ParametersGenerator(new SHA512Digest());
@@ -78,7 +83,7 @@ public class Wallet {
         return seed;
     }
 
-    public static byte[] bip39SeedToPrivateKey(byte[] seed, long accountIndex) throws IOException {
+    private static byte[] bip39SeedToPrivateKey(byte[] seed, long accountIndex) throws IOException {
         var keyAndChainCode = bip39SeedToMasterKey(seed);
         var key = keyAndChainCode.key;
         var chainCode = keyAndChainCode.chainCode;

@@ -2,9 +2,9 @@ package elrond;
 
 import org.junit.Test;
 
+import elrond.Exceptions.ErrCannotDeriveKeys;
 import elrond.Exceptions.ErrCannotGenerateMnemonic;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.bouncycastle.util.encoders.Hex;
@@ -19,7 +19,7 @@ public class WalletTest {
     }
 
     @Test
-    public void deriveKeys() throws IOException {
+    public void deriveKeys() throws ErrCannotDeriveKeys {
         // Emotion spare
         var mnemonic = "emotion spare multiply lecture rude machine raise radio ability doll depend equip pass ghost cabin delay birth opera shoe force any slow fluid old";
         var expectedPrivateKey = "4d6fbfd1fa028afee050068f08c46b95754fd27a06f429b308ba326fff094349";

@@ -107,4 +107,13 @@ public class Exceptions {
          */
         private static final long serialVersionUID = -9089149758748689110L;
     }
+
+    public static class ErrCannotDeriveKeys extends ErrKnown {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 6759812280546343157L;
+
+    }
 }
