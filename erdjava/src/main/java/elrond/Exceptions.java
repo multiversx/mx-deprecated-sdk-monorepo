@@ -129,6 +129,22 @@ public class Exceptions {
         /**
          *
          */
-        private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = -5983779627162656410L;
+    }
+
+    public static class ErrProxyRequest extends ErrKnown {
+
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1344143859356453293L;
+
+        public ErrProxyRequest() {
+            super();
+        }
+
+        public ErrProxyRequest(String message) {
+            super(message);
+        }
     }
 }

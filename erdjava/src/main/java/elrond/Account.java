@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 import elrond.Exceptions.ErrAddress;
+import elrond.Exceptions.ErrProxyRequest;
 
 public class Account {
     private final Address address;
@@ -20,8 +21,9 @@ public class Account {
      * @param provider the Network provider
      * @throws IOException
      * @throws ErrAddress
+     * @throws ErrProxyRequest
      */
-    public void sync(IProvider provider) throws ErrAddress, IOException {
+    public void sync(IProvider provider) throws ErrAddress, IOException, ErrProxyRequest {
         AccountOnNetwork accountOnNetwork = provider.getAccount(this.address);
         this.nonce = accountOnNetwork.getNonce();
         this.balance = accountOnNetwork.getBalance();

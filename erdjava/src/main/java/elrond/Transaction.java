@@ -13,6 +13,7 @@ import org.bouncycastle.util.encoders.Base64;
 import elrond.Exceptions.ErrAddress;
 import elrond.Exceptions.ErrCannotSerializeTransaction;
 import elrond.Exceptions.ErrCannotSignTransaction;
+import elrond.Exceptions.ErrProxyRequest;
 
 public class Transaction {
     public static final int VERSION = 1;
@@ -84,7 +85,7 @@ public class Transaction {
         }
     }
 
-    public void send(IProvider provider) throws ErrCannotSerializeTransaction, IOException {
+    public void send(IProvider provider) throws ErrCannotSerializeTransaction, IOException, ErrProxyRequest {
         this.txHash = provider.sendTransaction(this);
     }
 

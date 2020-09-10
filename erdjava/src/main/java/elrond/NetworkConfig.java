@@ -2,6 +2,7 @@ package elrond;
 
 import java.io.IOException;
 
+import elrond.Exceptions.ErrProxyRequest;
 import elrond.ProxyProvider.PayloadOfGetNetworkConfig;
 
 public class NetworkConfig {
@@ -27,10 +28,12 @@ public class NetworkConfig {
 
     /**
      * Synchronizes the object with the current configuration from a provider
+     * 
      * @param provider
      * @throws IOException
+     * @throws ErrProxyRequest
      */
-    public void sync(IProvider provider) throws IOException {
+    public void sync(IProvider provider) throws IOException, ErrProxyRequest {
         NetworkConfig fresh = provider.getNetworkConfig();
         this.assign(fresh);
     }

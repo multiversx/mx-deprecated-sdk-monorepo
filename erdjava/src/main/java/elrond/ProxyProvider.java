@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import elrond.Exceptions.ErrAddress;
 import elrond.Exceptions.ErrCannotSerializeTransaction;
+import elrond.Exceptions.ErrProxyRequest;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -25,24 +26,31 @@ public class ProxyProvider implements IProvider {
         this.httpClient = new OkHttpClient();
     }
 
-    public NetworkConfig getNetworkConfig() throws IOException {
+    public NetworkConfig getNetworkConfig() throws IOException, ErrProxyRequest {
         String responseJson = this.doGet("network/config");
         ResponseOfGetNetworkConfig typedResponse = new Gson().fromJson(responseJson, ResponseOfGetNetworkConfig.class);
+        typedResponse.throwIfError();
+
         PayloadOfGetNetworkConfig payload = typedResponse.data.config;
         return NetworkConfig.fromProviderPayload(payload);
     }
 
-    public AccountOnNetwork getAccount(Address address) throws IOException, ErrAddress {
+    public AccountOnNetwork getAccount(Address address) throws IOException, ErrAddress, ErrProxyRequest {
         String responseJson = this.doGet(String.format("address/%s", address.bech32()));
         ResponseOfGetAccount typedResponse = new Gson().fromJson(responseJson, ResponseOfGetAccount.class);
+        typedResponse.throwIfError();
+
         PayloadOfGetAccount payload = typedResponse.data.account;
         return AccountOnNetwork.fromProviderPayload(payload);
     }
 
-    public String sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction {
+    public String sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction,
+            ErrProxyRequest {
         String requestJson = transaction.serialize();
         String responseJson = this.doPost("transaction/send", requestJson);
         ResponseOfSendTransaction typedResponse = new Gson().fromJson(responseJson, ResponseOfSendTransaction.class);
+        typedResponse.throwIfError();
+        
         PayloadOfSendTransactionResponse payload = typedResponse.data;
         return payload.txHash;
     }
@@ -77,6 +85,16 @@ public class ProxyProvider implements IProvider {
 
         @SerializedName(value = "code")
         public String code;
+
+        public void throwIfError() throws ErrProxyRequest {
+            if (this.error != null && !this.error.isEmpty()) {
+                throw new ErrProxyRequest(this.error);
+            }
+
+            if (!"successful".equals(this.code)) {
+                throw new ErrProxyRequest(this.code);
+            }
+        }
     }
 
     public static class ResponseOfGetNetworkConfig extends ResponseBase<WrapperOfGetNetworkConfig> {}
