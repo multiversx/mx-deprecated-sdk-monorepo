@@ -41,6 +41,7 @@ public class BroadcastTest {
             transaction.sign(walletOfAlice);
             transaction.send(this.provider);
 
+            assertEquals(64, transaction.getTxHash().length());
             alice.incrementNonce();
         }
     }

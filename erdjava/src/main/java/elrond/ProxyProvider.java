@@ -39,10 +39,12 @@ public class ProxyProvider implements IProvider {
         return AccountOnNetwork.fromProviderPayload(payload);
     }
 
-    public void sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction {
+    public String sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction {
         String requestJson = transaction.serialize();
         String responseJson = this.doPost("transaction/send", requestJson);
-        // TODO: return hash.
+        ResponseOfSendTransaction typedResponse = new Gson().fromJson(responseJson, ResponseOfSendTransaction.class);
+        PayloadOfSendTransactionResponse payload = typedResponse.data;
+        return payload.txHash;
     }
 
     private String doGet(String resourceUrl) throws IOException {
@@ -114,5 +116,12 @@ public class ProxyProvider implements IProvider {
 
         @SerializedName(value = "balance")
         public BigInteger balance;
+    }
+
+    public static class ResponseOfSendTransaction extends ResponseBase<PayloadOfSendTransactionResponse> {}
+
+    public static class PayloadOfSendTransactionResponse {
+        @SerializedName(value = "txHash")
+        public String txHash;
     }
 }

@@ -26,6 +26,7 @@ public class Transaction {
     private String data;
     private String chainID;
     private String signature;
+    private String txHash;
 
     public Transaction() {
         this.value = BigInteger.valueOf(0);
@@ -36,6 +37,7 @@ public class Transaction {
         this.gasLimit = NetworkConfig.getDefault().getMinGasLimit();
         this.chainID = NetworkConfig.getDefault().getChainID();
         this.signature = "";
+        this.txHash = "";
     }
 
     public String serialize() throws ErrCannotSerializeTransaction {
@@ -83,7 +85,7 @@ public class Transaction {
     }
 
     public void send(IProvider provider) throws ErrCannotSerializeTransaction, IOException {
-        provider.sendTransaction(this);
+        this.txHash = provider.sendTransaction(this);
     }
 
     public void setNonce(long nonce) {
@@ -158,5 +160,9 @@ public class Transaction {
 
     public String getSignature() {
         return signature;
+    }
+
+    public String getTxHash() {
+        return txHash;
     }
 }
