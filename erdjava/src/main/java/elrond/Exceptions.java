@@ -1,50 +1,50 @@
 package elrond;
 
 public class Exceptions {
-    public static class ErrKnown extends Exception {
+    public static class KnownException extends Exception {
         /**
          *
          */
         private static final long serialVersionUID = 8760300734907152416L;
 
-        public ErrKnown() {
+        public KnownException() {
             super();
         }
 
-        public ErrKnown(String message) {
+        public KnownException(String message) {
             super(message);
         }
     }
 
-    public static class ErrAddress extends ErrKnown {
+    public static class AddressException extends KnownException {
 
         /**
          *
          */
         private static final long serialVersionUID = 7303569975530215510L;
 
-        public ErrAddress() {
+        public AddressException() {
             super();
         }
 
-        public ErrAddress(String message) {
+        public AddressException(String message) {
             super(message);
         }
     }
 
-    public static class ErrAddressCannotCreate extends ErrAddress {
+    public static class CannotCreateAddressException extends AddressException {
         
         /**
          *
          */
         private static final long serialVersionUID = 1249335179408397539L;
         
-        public ErrAddressCannotCreate(Object input) {
+        public CannotCreateAddressException(Object input) {
             super(String.format("Cannot create address from: %s", input.toString()));
         }
     }
 
-    public static class ErrAddressBadHrp extends ErrAddress {
+    public static class BadAddressHrpException extends AddressException {
 
         /**
          *
@@ -52,7 +52,7 @@ public class Exceptions {
         private static final long serialVersionUID = 7074540271315613570L;
     }
 
-    public static class ErrAddressEmpty extends ErrAddress{
+    public static class EmptyAddressException extends AddressException{
 
         /**
          *
@@ -60,7 +60,7 @@ public class Exceptions {
         private static final long serialVersionUID = -170346454394596227L;
     }
 
-    public static class ErrCannotConvertBits extends ErrAddress {
+    public static class CannotConvertBitsException extends AddressException {
 
         /**
          *
@@ -68,7 +68,7 @@ public class Exceptions {
         private static final long serialVersionUID = 7002466269883351644L;
     }
 
-    public static class ErrInvalidCharacters extends ErrAddress {
+    public static class InvalidCharactersException extends AddressException {
 
         /**
          *
@@ -76,7 +76,7 @@ public class Exceptions {
         private static final long serialVersionUID = 440923894748025560L;
     }
 
-    public static class InconsistentCasingException extends ErrAddress {
+    public static class InconsistentCasingException extends AddressException {
 
         /**
          *
@@ -84,7 +84,7 @@ public class Exceptions {
         private static final long serialVersionUID = -6909226964519236168L;
     }
 
-    public static class ErrMissingHrp extends ErrAddress {
+    public static class MissingAddressHrpException extends AddressException {
 
         /**
          *
@@ -92,7 +92,7 @@ public class Exceptions {
         private static final long serialVersionUID = -2279315088416839103L;
     }
 
-    public static class ErrInvalidChecksum extends ErrAddress {
+    public static class InvalidAddressChecksumException extends AddressException {
 
         /**
          *
@@ -100,7 +100,7 @@ public class Exceptions {
         private static final long serialVersionUID = 1194101021531173712L;
     }
 
-    public static class ErrCannotGenerateMnemonic extends ErrKnown {
+    public static class CannotGenerateMnemonicException extends KnownException {
 
         /**
          *
@@ -108,7 +108,7 @@ public class Exceptions {
         private static final long serialVersionUID = -9089149758748689110L;
     }
 
-    public static class ErrCannotDeriveKeys extends ErrKnown {
+    public static class CannotDeriveKeysException extends KnownException {
 
         /**
          *
@@ -116,7 +116,7 @@ public class Exceptions {
         private static final long serialVersionUID = 6759812280546343157L;
     }
 
-    public static class ErrCannotSerializeTransaction extends ErrKnown {
+    public static class CannotSerializeTransactionException extends KnownException {
 
         /**
          *
@@ -124,7 +124,7 @@ public class Exceptions {
         private static final long serialVersionUID = -1322742374396410484L;
     }
 
-    public static class ErrCannotSignTransaction extends ErrKnown {
+    public static class CannotSignTransactionException extends KnownException {
 
         /**
          *
@@ -132,18 +132,18 @@ public class Exceptions {
         private static final long serialVersionUID = -5983779627162656410L;
     }
 
-    public static class ErrProxyRequest extends ErrKnown {
+    public static class ProxyRequestException extends KnownException {
 
         /**
          *
          */
         private static final long serialVersionUID = 1344143859356453293L;
 
-        public ErrProxyRequest() {
+        public ProxyRequestException() {
             super();
         }
 
-        public ErrProxyRequest(String message) {
+        public ProxyRequestException(String message) {
             super(message);
         }
     }

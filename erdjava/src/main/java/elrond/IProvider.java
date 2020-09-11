@@ -2,12 +2,12 @@ package elrond;
 
 import java.io.IOException;
 
-import elrond.Exceptions.ErrAddress;
-import elrond.Exceptions.ErrCannotSerializeTransaction;
-import elrond.Exceptions.ErrProxyRequest;
+import elrond.Exceptions.AddressException;
+import elrond.Exceptions.CannotSerializeTransactionException;
+import elrond.Exceptions.ProxyRequestException;
 
 public interface IProvider {
-    NetworkConfig getNetworkConfig() throws IOException, ErrProxyRequest;
-    AccountOnNetwork getAccount(Address address) throws IOException, ErrAddress, ErrProxyRequest;
-    String sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction, ErrProxyRequest;
+    NetworkConfig getNetworkConfig() throws IOException, ProxyRequestException;
+    AccountOnNetwork getAccount(Address address) throws IOException, AddressException, ProxyRequestException;
+    String sendTransaction(Transaction transaction) throws IOException, CannotSerializeTransactionException, ProxyRequestException;
 }

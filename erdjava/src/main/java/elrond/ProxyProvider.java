@@ -6,9 +6,9 @@ import java.math.BigInteger;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
-import elrond.Exceptions.ErrAddress;
-import elrond.Exceptions.ErrCannotSerializeTransaction;
-import elrond.Exceptions.ErrProxyRequest;
+import elrond.Exceptions.AddressException;
+import elrond.Exceptions.CannotSerializeTransactionException;
+import elrond.Exceptions.ProxyRequestException;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -26,7 +26,7 @@ public class ProxyProvider implements IProvider {
         this.httpClient = new OkHttpClient();
     }
 
-    public NetworkConfig getNetworkConfig() throws IOException, ErrProxyRequest {
+    public NetworkConfig getNetworkConfig() throws IOException, ProxyRequestException {
         String responseJson = this.doGet("network/config");
         ResponseOfGetNetworkConfig typedResponse = new Gson().fromJson(responseJson, ResponseOfGetNetworkConfig.class);
         typedResponse.throwIfError();
@@ -35,7 +35,7 @@ public class ProxyProvider implements IProvider {
         return NetworkConfig.fromProviderPayload(payload);
     }
 
-    public AccountOnNetwork getAccount(Address address) throws IOException, ErrAddress, ErrProxyRequest {
+    public AccountOnNetwork getAccount(Address address) throws IOException, AddressException, ProxyRequestException {
         String responseJson = this.doGet(String.format("address/%s", address.bech32()));
         ResponseOfGetAccount typedResponse = new Gson().fromJson(responseJson, ResponseOfGetAccount.class);
         typedResponse.throwIfError();
@@ -44,8 +44,8 @@ public class ProxyProvider implements IProvider {
         return AccountOnNetwork.fromProviderPayload(payload);
     }
 
-    public String sendTransaction(Transaction transaction) throws IOException, ErrCannotSerializeTransaction,
-            ErrProxyRequest {
+    public String sendTransaction(Transaction transaction) throws IOException, CannotSerializeTransactionException,
+            ProxyRequestException {
         String requestJson = transaction.serialize();
         String responseJson = this.doPost("transaction/send", requestJson);
         ResponseOfSendTransaction typedResponse = new Gson().fromJson(responseJson, ResponseOfSendTransaction.class);
@@ -86,13 +86,13 @@ public class ProxyProvider implements IProvider {
         @SerializedName(value = "code")
         public String code;
 
-        public void throwIfError() throws ErrProxyRequest {
+        public void throwIfError() throws ProxyRequestException {
             if (this.error != null && !this.error.isEmpty()) {
-                throw new ErrProxyRequest(this.error);
+                throw new ProxyRequestException(this.error);
             }
 
             if (!"successful".equals(this.code)) {
-                throw new ErrProxyRequest(this.code);
+                throw new ProxyRequestException(this.code);
             }
         }
     }

@@ -179,7 +179,7 @@ public class Bech32 {
     /**
      * Validate a Bech32 string, and determine HRP and data.
      */
-    public static Bech32Data decode(String bech) throws Exceptions.ErrAddress {
+    public static Bech32Data decode(String bech) throws Exceptions.AddressException {
         /*-
         Reference Python implementation by Pieter Wuille:
         
@@ -200,11 +200,11 @@ public class Bech32 {
         */
 
         if (bech.length() > 90) {
-            throw new Exceptions.ErrAddress();
+            throw new Exceptions.AddressException();
         }
 
         if ((bech.chars().anyMatch(x -> (x < 33) || (x > 126)))) {
-            throw new Exceptions.ErrInvalidCharacters();
+            throw new Exceptions.InvalidCharactersException();
         }
 
         boolean isFullLower = bech.toLowerCase().equals(bech);
@@ -216,21 +216,21 @@ public class Bech32 {
         bech = bech.toLowerCase();
         final int pos = bech.lastIndexOf('1');
         if ((pos < 1) || (pos + 7 > bech.length())) {
-            throw new Exceptions.ErrMissingHrp();
+            throw new Exceptions.MissingAddressHrpException();
         }
 
         String dataPart = bech.substring(pos + 1);
 
         boolean hasInvalidChars = dataPart.chars().anyMatch(x -> CHARSET.indexOf(x) < 0);
         if (hasInvalidChars) {
-            throw new Exceptions.ErrInvalidCharacters();
+            throw new Exceptions.InvalidCharactersException();
         }
 
         byte[] dataIndices = Utils.toByteArray(dataPart.chars().map(x -> CHARSET.indexOf(x)).toArray());
         String hrp = bech.substring(0, pos);
 
         if (!verifyChecksum(hrp, dataIndices)) {
-            throw new Exceptions.ErrInvalidChecksum();
+            throw new Exceptions.InvalidAddressChecksumException();
         }
 
         return new Bech32Data(hrp, Arrays.copyOfRange(dataIndices, 0, dataIndices.length - 6));
@@ -239,7 +239,7 @@ public class Bech32 {
     /**
      * General power-of-2 base conversion.
      */
-    public static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad) throws Exceptions.ErrAddress {
+    public static byte[] convertBits(byte[] data, int fromBits, int toBits, boolean pad) throws Exceptions.AddressException {
         /*-
         Reference Python implementation by Pieter Wuille:
         
@@ -274,7 +274,7 @@ public class Bech32 {
             int valueAsInt = value & 0xff;
 
             if ((valueAsInt < 0) || (valueAsInt >>> fromBits != 0)) {
-                throw new Exceptions.ErrCannotConvertBits();
+                throw new Exceptions.CannotConvertBitsException();
             }
 
             acc = ((acc << fromBits) | valueAsInt) & maxAcc;
@@ -291,7 +291,7 @@ public class Bech32 {
                 ret.write((acc << (toBits - bits)) & maxv);
             }
         } else if (bits >= fromBits || ((acc << (toBits - bits)) & maxv) != 0) {
-            throw new Exceptions.ErrCannotConvertBits();
+            throw new Exceptions.CannotConvertBitsException();
         }
 
         return ret.toByteArray();

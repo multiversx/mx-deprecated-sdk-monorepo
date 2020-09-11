@@ -3,7 +3,7 @@ package elrond;
 import org.bouncycastle.util.encoders.Hex;
 
 import elrond.Bech32.Bech32Data;
-import elrond.Exceptions.ErrAddress;
+import elrond.Exceptions.AddressException;
 
 public class Address {
     static final String HRP = "erd";
@@ -21,10 +21,10 @@ public class Address {
         return new Address("");
     }
 
-    public static Address fromBech32(String value) throws Exceptions.ErrAddress {
+    public static Address fromBech32(String value) throws Exceptions.AddressException {
         Bech32Data bech32Data = Bech32.decode(value);
         if (!bech32Data.hrp.equals(HRP)) {
-            throw new Exceptions.ErrAddressBadHrp();
+            throw new Exceptions.BadAddressHrpException();
         }
 
         byte[] decodedBytes = Bech32.convertBits(bech32Data.data, 5, 8, false);
@@ -32,12 +32,12 @@ public class Address {
         return new Address(hex);
     }
 
-    public static Address fromHex(String value) throws Exceptions.ErrAddress {
+    public static Address fromHex(String value) throws Exceptions.AddressException {
         byte[] decoded = Hex.decode(value);
         String encodedAgain = new String(Hex.encode(decoded));
         boolean isValid = encodedAgain.equals(value);
         if (!isValid) {
-            throw new Exceptions.ErrAddressCannotCreate(value);
+            throw new Exceptions.CannotCreateAddressException(value);
         }
 
         return new Address(value);
@@ -51,7 +51,7 @@ public class Address {
         return Hex.decode(this.valueHex);
     }
 
-    public String bech32() throws Exceptions.ErrAddress {
+    public String bech32() throws Exceptions.AddressException {
         byte[] pubkey = this.pubkey();
         String address = Bech32.encode(HRP, Bech32.convertBits(pubkey, 8, 5, true));
         return address;
@@ -61,7 +61,7 @@ public class Address {
         try {
             Address.fromBech32(value);
             return true;
-        } catch(ErrAddress error){
+        } catch(AddressException error){
             return false;
         }
     }

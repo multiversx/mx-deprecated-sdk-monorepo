@@ -3,8 +3,8 @@ package elrond;
 import java.io.IOException;
 import java.math.BigInteger;
 
-import elrond.Exceptions.ErrAddress;
-import elrond.Exceptions.ErrProxyRequest;
+import elrond.Exceptions.AddressException;
+import elrond.Exceptions.ProxyRequestException;
 
 public class Account {
     private final Address address;
@@ -20,10 +20,10 @@ public class Account {
      * 
      * @param provider the Network provider
      * @throws IOException
-     * @throws ErrAddress
-     * @throws ErrProxyRequest
+     * @throws AddressException
+     * @throws ProxyRequestException
      */
-    public void sync(IProvider provider) throws ErrAddress, IOException, ErrProxyRequest {
+    public void sync(IProvider provider) throws AddressException, IOException, ProxyRequestException {
         AccountOnNetwork accountOnNetwork = provider.getAccount(this.address);
         this.nonce = accountOnNetwork.getNonce();
         this.balance = accountOnNetwork.getBalance();

@@ -20,8 +20,8 @@ import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.crypto.signers.Ed25519Signer;
 import org.bouncycastle.util.encoders.Hex;
 
-import elrond.Exceptions.ErrCannotDeriveKeys;
-import elrond.Exceptions.ErrCannotGenerateMnemonic;
+import elrond.Exceptions.CannotDeriveKeysException;
+import elrond.Exceptions.CannotGenerateMnemonicException;
 
 public class Wallet {
     static final int DEFAULT_ENTROPY_BITS = 256; // this leads to 24-words mnemonics
@@ -46,14 +46,14 @@ public class Wallet {
         this.privateKey = privateKey;
     }
 
-    public static List<String> generateMnemonic() throws ErrCannotGenerateMnemonic {
+    public static List<String> generateMnemonic() throws CannotGenerateMnemonicException {
         try {
             byte[] entropy = generateEntropy();
             MnemonicCode mnemonicCode = new MnemonicCode();
             List<String> mnemonic = mnemonicCode.toMnemonic(entropy);
             return mnemonic;
         } catch (IOException | MnemonicLengthException error) {
-            throw new Exceptions.ErrCannotGenerateMnemonic();
+            throw new Exceptions.CannotGenerateMnemonicException();
         }
     }
 
@@ -64,13 +64,13 @@ public class Wallet {
         return entropy;
     }
 
-    public static Wallet deriveFromMnemonic(String mnemonic, long accountIndex) throws ErrCannotDeriveKeys {
+    public static Wallet deriveFromMnemonic(String mnemonic, long accountIndex) throws CannotDeriveKeysException {
         try {
             byte[] seed = mnemonicToBip39Seed(mnemonic);
             byte[] privateKey = bip39SeedToPrivateKey(seed, accountIndex);
             return new Wallet(privateKey);
         } catch (IOException error) {
-            throw new Exceptions.ErrCannotDeriveKeys();
+            throw new Exceptions.CannotDeriveKeysException();
         }
     }
 

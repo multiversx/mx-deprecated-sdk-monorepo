@@ -2,8 +2,8 @@ package elrond;
 
 import org.junit.Test;
 
-import elrond.Exceptions.ErrCannotDeriveKeys;
-import elrond.Exceptions.ErrCannotGenerateMnemonic;
+import elrond.Exceptions.CannotDeriveKeysException;
+import elrond.Exceptions.CannotGenerateMnemonicException;
 
 import java.util.List;
 
@@ -13,13 +13,13 @@ import static org.junit.Assert.assertEquals;
 
 public class WalletTest {
     @Test
-    public void generateMnemonic() throws ErrCannotGenerateMnemonic {
+    public void generateMnemonic() throws CannotGenerateMnemonicException {
         List<String> words = Wallet.generateMnemonic();
         assertEquals(24, words.size());
     }
 
     @Test
-    public void deriveFromMnemonic() throws ErrCannotDeriveKeys {
+    public void deriveFromMnemonic() throws CannotDeriveKeysException {
         // Emotion spare
         String mnemonic = "emotion spare multiply lecture rude machine raise radio ability doll depend equip pass ghost cabin delay birth opera shoe force any slow fluid old";
         String expectedPrivateKey = "4d6fbfd1fa028afee050068f08c46b95754fd27a06f429b308ba326fff094349";

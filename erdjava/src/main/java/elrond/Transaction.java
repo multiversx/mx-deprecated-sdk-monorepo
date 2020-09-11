@@ -10,10 +10,10 @@ import com.google.gson.Gson;
 
 import org.bouncycastle.util.encoders.Base64;
 
-import elrond.Exceptions.ErrAddress;
-import elrond.Exceptions.ErrCannotSerializeTransaction;
-import elrond.Exceptions.ErrCannotSignTransaction;
-import elrond.Exceptions.ErrProxyRequest;
+import elrond.Exceptions.AddressException;
+import elrond.Exceptions.CannotSerializeTransactionException;
+import elrond.Exceptions.CannotSignTransactionException;
+import elrond.Exceptions.ProxyRequestException;
 
 public class Transaction {
     public static final int VERSION = 1;
@@ -41,18 +41,18 @@ public class Transaction {
         this.txHash = "";
     }
 
-    public String serialize() throws ErrCannotSerializeTransaction {
+    public String serialize() throws CannotSerializeTransactionException {
         try {
             Map<String, Object> map = this.toMap();
             Gson gson = new Gson();
             String json = gson.toJson(map);
             return json;
-        } catch (ErrAddress error) {
-            throw new ErrCannotSerializeTransaction();
+        } catch (AddressException error) {
+            throw new CannotSerializeTransactionException();
         }
     }
 
-    private Map<String, Object> toMap() throws ErrAddress {
+    private Map<String, Object> toMap() throws AddressException {
         Map<String, Object> map = new LinkedHashMap<>();
 
         map.put("nonce", this.nonce);
@@ -76,16 +76,16 @@ public class Transaction {
         return map;
     }
 
-    public void sign(Wallet wallet) throws ErrCannotSignTransaction {
+    public void sign(Wallet wallet) throws CannotSignTransactionException {
         try {
             String serialized = this.serialize();
             this.signature = wallet.sign(serialized);
-        } catch (ErrCannotSerializeTransaction error) {
-            throw new ErrCannotSignTransaction();
+        } catch (CannotSerializeTransactionException error) {
+            throw new CannotSignTransactionException();
         }
     }
 
-    public void send(IProvider provider) throws ErrCannotSerializeTransaction, IOException, ErrProxyRequest {
+    public void send(IProvider provider) throws CannotSerializeTransactionException, IOException, ProxyRequestException {
         this.txHash = provider.sendTransaction(this);
     }
 
