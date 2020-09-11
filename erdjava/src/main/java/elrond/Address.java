@@ -11,6 +11,7 @@ public class Address {
     static final int PUBKEY_LENGTH = 32;
     static final int PUBKEY_STRING_LENGTH = PUBKEY_LENGTH * 2; // hex-encoded
     static final int BECH32_LENGTH = 62;
+    static final String ZERO_PUBKEY_STRING = "0".repeat(PUBKEY_STRING_LENGTH);
 
     private final String valueHex;
 
@@ -18,8 +19,8 @@ public class Address {
         this.valueHex = valueHex;
     }
 
-    public static Address createEmptyAddress() {
-        return new Address("");
+    public static Address createZeroAddress() {
+        return new Address(ZERO_PUBKEY_STRING);
     }
 
     public static Address fromBech32(String value) throws Exceptions.AddressException {
@@ -58,7 +59,7 @@ public class Address {
         return Hex.decode(this.valueHex);
     }
 
-    public String bech32() throws Exceptions.AddressException {
+    public String bech32() throws AddressException {
         byte[] pubkey = this.pubkey();
         String address = Bech32.encode(HRP, Bech32.convertBits(pubkey, 8, 5, true));
         return address;
@@ -68,7 +69,7 @@ public class Address {
         try {
             Address.fromBech32(value);
             return true;
-        } catch(AddressException error){
+        } catch (AddressException error) {
             return false;
         }
     }

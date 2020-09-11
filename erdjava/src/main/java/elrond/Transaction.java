@@ -32,8 +32,8 @@ public class Transaction {
 
     public Transaction() {
         this.value = BigInteger.valueOf(0);
-        this.sender = Address.createEmptyAddress();
-        this.receiver = Address.createEmptyAddress();
+        this.sender = Address.createZeroAddress();
+        this.receiver = Address.createZeroAddress();
         this.data = "";
         this.gasPrice = NetworkConfig.getDefault().getMinGasPrice();
         this.gasLimit = NetworkConfig.getDefault().getMinGasLimit();
