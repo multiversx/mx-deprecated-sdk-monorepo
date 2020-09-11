@@ -17,6 +17,7 @@ import elrond.Exceptions.ProxyRequestException;
 
 public class Transaction {
     public static final int VERSION = 1;
+    private static final Gson gson = new Gson();
 
     private long nonce;
     private BigInteger value;
@@ -44,7 +45,6 @@ public class Transaction {
     public String serialize() throws CannotSerializeTransactionException {
         try {
             Map<String, Object> map = this.toMap();
-            Gson gson = new Gson();
             String json = gson.toJson(map);
             return json;
         } catch (AddressException error) {

@@ -17,6 +17,7 @@ import okhttp3.Response;
 
 public class ProxyProvider implements IProvider {
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final Gson gson = new Gson();
 
     private final String url;
     private final OkHttpClient httpClient;
@@ -28,7 +29,7 @@ public class ProxyProvider implements IProvider {
 
     public NetworkConfig getNetworkConfig() throws IOException, ProxyRequestException {
         String responseJson = this.doGet("network/config");
-        ResponseOfGetNetworkConfig typedResponse = new Gson().fromJson(responseJson, ResponseOfGetNetworkConfig.class);
+        ResponseOfGetNetworkConfig typedResponse = gson.fromJson(responseJson, ResponseOfGetNetworkConfig.class);
         typedResponse.throwIfError();
 
         PayloadOfGetNetworkConfig payload = typedResponse.data.config;
@@ -37,7 +38,7 @@ public class ProxyProvider implements IProvider {
 
     public AccountOnNetwork getAccount(Address address) throws IOException, AddressException, ProxyRequestException {
         String responseJson = this.doGet(String.format("address/%s", address.bech32()));
-        ResponseOfGetAccount typedResponse = new Gson().fromJson(responseJson, ResponseOfGetAccount.class);
+        ResponseOfGetAccount typedResponse = gson.fromJson(responseJson, ResponseOfGetAccount.class);
         typedResponse.throwIfError();
 
         PayloadOfGetAccount payload = typedResponse.data.account;
@@ -48,7 +49,7 @@ public class ProxyProvider implements IProvider {
             ProxyRequestException {
         String requestJson = transaction.serialize();
         String responseJson = this.doPost("transaction/send", requestJson);
-        ResponseOfSendTransaction typedResponse = new Gson().fromJson(responseJson, ResponseOfSendTransaction.class);
+        ResponseOfSendTransaction typedResponse = gson.fromJson(responseJson, ResponseOfSendTransaction.class);
         typedResponse.throwIfError();
         
         PayloadOfSendTransactionResponse payload = typedResponse.data;
