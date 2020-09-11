@@ -2,10 +2,13 @@ package elrond;
 
 import org.junit.Test;
 
+import elrond.Exceptions.CannotCreateAddressException;
+import elrond.Exceptions.InvalidAddressChecksumException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AddressTest {
     @Test
@@ -20,6 +23,21 @@ public class AddressTest {
 
         assertEquals(aliceBech32, Address.fromHex(aliceHex).bech32());
         assertEquals(bobBech32, Address.fromHex(bobHex).bech32());
+    }
+
+    @Test
+    public void shouldNotCreate() {
+        assertThrows(CannotCreateAddressException.class, () -> {
+            Address.fromHex("F");
+        });
+
+        assertThrows(CannotCreateAddressException.class, () -> {
+            Address.fromHex("FOOBAR");
+        });
+
+        assertThrows(InvalidAddressChecksumException.class, () -> {
+            Address.fromBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldy");
+        });
     }
 
     @Test

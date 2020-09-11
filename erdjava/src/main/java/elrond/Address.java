@@ -1,5 +1,6 @@
 package elrond;
 
+import org.bouncycastle.util.encoders.DecoderException;
 import org.bouncycastle.util.encoders.Hex;
 
 import elrond.Bech32.Bech32Data;
@@ -33,14 +34,20 @@ public class Address {
     }
 
     public static Address fromHex(String value) throws Exceptions.AddressException {
-        byte[] decoded = Hex.decode(value);
-        String encodedAgain = new String(Hex.encode(decoded));
-        boolean isValid = encodedAgain.equals(value);
-        if (!isValid) {
+        if (value.length() != PUBKEY_STRING_LENGTH || !isValidHex(value)) {
             throw new Exceptions.CannotCreateAddressException(value);
         }
 
         return new Address(value);
+    }
+
+    private static boolean isValidHex(String value) {
+        try {
+            Hex.decode(value);
+            return true;
+        } catch (DecoderException error) {
+            return false;
+        }
     }
 
     public String hex() {
