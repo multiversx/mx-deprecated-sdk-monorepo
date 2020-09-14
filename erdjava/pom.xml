@@ -123,7 +123,7 @@
           <version>3.2.0</version>
           <configuration>
             <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
-            <reportOutputDirectory>../docs</reportOutputDirectory>
+            <reportOutputDirectory>../../elrond-sdk-docs/erdjava</reportOutputDirectory>
             <destDir>erdjava</destDir>
           </configuration>
         </plugin>
