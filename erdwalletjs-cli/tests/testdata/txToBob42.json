@@ -5,6 +5,6 @@
     "gasPrice": 1000000000,
     "gasLimit": 70000,
     "data": "food for cats",
-    "chainID": "v1.0.147",
+    "chainID": "1",
     "version": 1
 }
