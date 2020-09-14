@@ -21,7 +21,7 @@ sudo apt install maven
 ## Get `erdjava`
 
 ```
-git clone --depth 1 -b erdjava https://github.com/ElrondNetwork/elrond-sdk.git
+git clone --depth 1 -b development https://github.com/ElrondNetwork/elrond-sdk.git
 cd elrond-sdk/erdjava
 mvn test
 ```
