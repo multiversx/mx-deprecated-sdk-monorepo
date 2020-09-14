@@ -31,6 +31,6 @@
     ],
     "typedocOptions": {
         "mode": "library",
-        "out": "../docs/erdjs/api"
+        "out": "../../elrond-sdk-docs/erdjs"
     }
 }
