@@ -17,5 +17,9 @@
   "exclude": [
     "node_modules",
     "out"
-  ]
+  ],
+  "typedocOptions": {
+    "mode": "library",
+    "out": "../../elrond-sdk-docs/erdtestjs"
+  }
 }
