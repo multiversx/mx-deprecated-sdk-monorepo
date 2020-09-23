@@ -58,6 +58,6 @@ export class Balance {
         return {
             value: this.raw(),
             formatted: this.formatted()
-        }
+        };
     }
 }

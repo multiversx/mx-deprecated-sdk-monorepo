@@ -20,7 +20,6 @@ export class Transaction implements Signable {
 
     signature: Signature;
     hash: TransactionHash;
-    status: string = "unknown";
 
     private queryResponse: TransactionOnNetwork = new TransactionOnNetwork();
 
@@ -155,6 +154,30 @@ export class TransactionHash {
     }
 }
 
+export class TransactionStatus {
+    readonly status: string;
+
+    constructor(status: string) {
+        this.status = (status || "").toLowerCase();
+    }
+
+    isPending(): boolean {
+        return this.status == "received" || this.status == "pending" || this.status == "partially-executed";
+    }
+
+    isExecuted(): boolean {
+        return this.status == "executed" || this.status == "invalid";
+    }
+
+    isSuccessful(): boolean {
+        return this.status == "executed";
+    }
+
+    toString(): string {
+        return this.status;
+    }
+}
+
 export class TransactionOnNetwork {
     type: TransactionOnNetworkType = new TransactionOnNetworkType();
     nonce?: Nonce;
@@ -167,6 +190,7 @@ export class TransactionOnNetwork {
     gasLimit?: GasLimit;
     data?: TransactionPayload;
     signature?: Signature;
+    status?: TransactionStatus;
 
     constructor() {
     }
@@ -184,6 +208,7 @@ export class TransactionOnNetwork {
         result.gasPrice = new GasPrice(payload["gasPrice"]);
         result.gasLimit = new GasPrice(payload["gasLimit"]);
         result.data = TransactionPayload.fromEncoded(payload["data"]);
+        result.status = new TransactionStatus(payload["status"]);
 
         return result;
     }
