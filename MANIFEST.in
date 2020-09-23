@@ -1,2 +1,9 @@
 include erdpy/projects/*.txt
 include erdpy/projects/*.json
+
+include erdpy/testnet/wallet/users/*.pem
+include erdpy/testnet/wallet/users/*.json
+include erdpy/testnet/wallet/validators/*.pem
+include erdpy/testnet/wallet/validators/*.json
+include erdpy/testnet/wallet/observers/*.pem
+include erdpy/testnet/wallet/observers/*.json
