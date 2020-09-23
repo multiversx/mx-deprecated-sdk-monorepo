@@ -4,6 +4,7 @@ import { Signer, Signable } from "./interface";
 import { errors } from ".";
 import { Address } from "./address";
 import { Signature } from "./signature";
+const core = require("@elrondnetwork/elrond-core-js");
 
 export const SEED_LENGTH = 32;
 
@@ -19,12 +20,19 @@ export class SimpleSigner implements Signer {
         } else if (typeof seed === "string") {
             this.seed = Buffer.from(seed, "hex");
         } else {
-            throw new errors.ErrInvalidArgument("seed", seed);
+            throw new errors.ErrInvalidArgument("seed");
         }
 
         if (this.seed.length != SEED_LENGTH) {
-            throw new errors.ErrInvalidArgument("seed", seed);
+            throw new errors.ErrInvalidArgument("seed");
         }
+    }
+
+    static fromWalletKey(walletKeyObject: any, password: string): Signer {
+        let account = new core.account();
+        account.loadFromKeyFile(walletKeyObject, password);
+        let seed = account.privateKey.slice(0, 32);
+        return new SimpleSigner(seed);
     }
 
     async sign(signable: Signable): Promise<void> {

@@ -30,9 +30,6 @@ export class NetworkConfig {
     async sync(provider: Provider): Promise<void> {
         let fresh: NetworkConfig = await provider.getNetworkConfig();
         Object.assign(this, fresh);
-
-        console.log("NetworkConfig set to:");
-        console.log(this);
     }
 
     static fromHttpResponse(payload: any): NetworkConfig {

@@ -58,8 +58,16 @@ export class Err extends Error {
 }
 
 export class ErrInvalidArgument extends Err {
-    public constructor(name: string, value: any, inner?: Error) {
-        super(`Invalid argument "${name}": ${value}`, inner);
+    public constructor(name: string, value?: any, inner?: Error) {
+        super(ErrInvalidArgument.getMessage(name, value), inner);
+    }
+
+    static getMessage(name: string, value?: any): string {
+        if (value) {
+            return `Invalid argument "${name}": ${value}`;
+        }
+
+        return `Invalid argument "${name}"`;
     }
 }
 
