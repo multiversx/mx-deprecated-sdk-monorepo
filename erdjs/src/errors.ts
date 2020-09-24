@@ -1,7 +1,6 @@
 
 
 export var ErrProviderNotSet = new Error("provider not set");
-export var ErrAsyncTimerAlreadyRunning = new Error("async timer already running");
 export var ErrInvalidFunctionName = new Error("invalid function name");
 export var ErrUserAccountNotSet = new Error("user account not set");
 export var ErrSCAddressNotSet = new Error("smart contract address not set");
@@ -168,5 +167,17 @@ export class ErrProxyProviderPost extends Err {
     public constructor(url: string, error: string, inner?: Error) {
         let message = `Cannot POST ${url}, error: ${error}`;
         super(message, inner);
+    }
+}
+
+export class ErrAsyncTimerAlreadyRunning extends Err {
+    public constructor() {
+        super("Async timer already running");
+    }
+}
+
+export class ErrAsyncTimerAborted extends Err {
+    public constructor() {
+        super("Async timer aborted");
     }
 }
