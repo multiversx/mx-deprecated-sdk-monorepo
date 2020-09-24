@@ -5,10 +5,14 @@ import { ErrAsyncTimerAborted } from "./errors";
  * AsyncTimer is an async-friendly abstraction that wraps JavaScript's setTimeout() and clearTimeout().
  */
 export class AsyncTimer {
+    private readonly name: string;
     private timeoutHandle: any = null;
     private rejectionFunc: any = null;
+    private correlationTag: number;
 
-    constructor() {
+    constructor(name: string) {
+        this.name = name;
+        this.correlationTag = 0;
     }
 
     /**
@@ -16,11 +20,12 @@ export class AsyncTimer {
      * @param timeout The time (in milliseconds) to wait until resolving the promise.
      */
     public start(timeout: number): Promise<void> {
-        console.debug("AsyncTimer.start()");
-
         if (this.timeoutHandle) {
             throw new errors.ErrAsyncTimerAlreadyRunning();
         }
+
+        this.correlationTag++;
+        console.debug(`AsyncTimer[${this.name}'${this.correlationTag}].start()`);
 
         return new Promise<void>((resolve, reject) => {
             this.rejectionFunc = reject;
@@ -39,7 +44,7 @@ export class AsyncTimer {
      * Aborts the timer: rejects the promise (if any) and stops the timer.
      */
     public abort() {
-        console.debug("AsyncTimer.abort()");
+        console.debug(`AsyncTimer[${this.name}'${this.correlationTag}].abort()`);
 
         if (this.rejectionFunc) {
             this.rejectionFunc(new ErrAsyncTimerAborted());
@@ -53,11 +58,22 @@ export class AsyncTimer {
      * Stops the timer.
      */
     public stop() {
-        console.debug("AsyncTimer.stop()");
+        if (this.isStopped()) {
+            return;
+        }
+
+        console.debug(`AsyncTimer[${this.name}'${this.correlationTag}].stop()`);
 
         if (this.timeoutHandle) {
             clearTimeout(this.timeoutHandle);
             this.timeoutHandle = null;
         }
+    }
+
+    /**
+     * Returns whether the timer is stopped.
+     */
+    public isStopped(): boolean {
+        return this.timeoutHandle ? false : true;
     }
 }

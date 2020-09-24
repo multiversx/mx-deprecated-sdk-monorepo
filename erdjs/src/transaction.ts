@@ -161,6 +161,10 @@ export class TransactionStatus {
         this.status = (status || "").toLowerCase();
     }
 
+    static createUnknown(): TransactionStatus {
+        return new TransactionStatus("unknown");
+    }
+
     isPending(): boolean {
         return this.status == "received" || this.status == "pending" || this.status == "partially-executed";
     }
@@ -190,9 +194,12 @@ export class TransactionOnNetwork {
     gasLimit?: GasLimit;
     data?: TransactionPayload;
     signature?: Signature;
-    status?: TransactionStatus;
+    status: TransactionStatus;
 
-    constructor() {
+    constructor(init?: Partial<TransactionOnNetwork>) {
+        Object.assign(this, init);
+
+        this.status = TransactionStatus.createUnknown();
     }
 
     static fromHttpResponse(payload: any): TransactionOnNetwork {

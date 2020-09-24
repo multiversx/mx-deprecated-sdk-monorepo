@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { Provider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
-import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance } from ".";
+import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import { Nonce } from "./nonce";
@@ -107,13 +107,9 @@ export class ProxyProvider implements Provider {
         return TransactionOnNetwork.fromHttpResponse(payload);
     }
 
-    getTransactionStatus(txHash: string): Promise<string> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        return axios.get(
-            this.url + `/transaction/${txHash}/status`,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data.status);
+    async getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus> {
+        let response = await this.doGet(`transaction/${txHash.toString()}/status`);
+        return new TransactionStatus(response.status);
     }
 
     async getNetworkConfig(): Promise<NetworkConfig> {

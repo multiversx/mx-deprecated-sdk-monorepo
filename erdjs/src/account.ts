@@ -72,7 +72,8 @@ export class AccountOnNetwork {
     balance: Balance = new Balance(BigInt(0));
     code: string = "";
 
-    constructor() {
+    constructor(init?: Partial<AccountOnNetwork>) {
+        Object.assign(this, init);
     }
 
     static fromHttpResponse(payload: any): AccountOnNetwork {

@@ -6,7 +6,7 @@ import { AsyncTimer } from "./asyncTimer";
 
 describe("test asyncTimer", () => {
     it("should start timer and resolve promise", async () => {
-        let timer = new AsyncTimer();
+        let timer = new AsyncTimer("test");
         await timer.start(42);
 
         // No assertion needed.
@@ -15,8 +15,8 @@ describe("test asyncTimer", () => {
     it("should abort a very long-running timer", async () => {
         let error: Error | null = null;
 
-        let shortTimer = new AsyncTimer();
-        let longTimer = new AsyncTimer();
+        let shortTimer = new AsyncTimer("short");
+        let longTimer = new AsyncTimer("long");
 
         let shortPromise = shortTimer.start(42);
         let longPromise = longTimer.start(42000);

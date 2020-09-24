@@ -7,8 +7,6 @@ export var ErrSCAddressNotSet = new Error("smart contract address not set");
 export var ErrInvalidVMType = new Error("invalid vm type");
 export var ErrInvalidSmartContractCode = new Error("invalid smart contract code");
 
-export var ErrExpectedTransactionStatusNotReached = new Error("expected transaction status not reached");
-
 export class Err extends Error {
     inner: Error | undefined = undefined;
 
@@ -34,7 +32,7 @@ export class Err extends Error {
     html(): string {
         let summary = this.summary();
         let error = summary[0];
-        let causedBy = summary.slice(1)
+        let causedBy = summary.slice(1);
 
         let html = `
             An error of type <strong>${error.name}</strong> occurred: ${error.message}.
@@ -179,5 +177,17 @@ export class ErrAsyncTimerAlreadyRunning extends Err {
 export class ErrAsyncTimerAborted extends Err {
     public constructor() {
         super("Async timer aborted");
+    }
+}
+
+export class ErrExpectedTransactionStatusNotReached extends Err {
+    public constructor() {
+        super(`Expected transaction status not reached`);
+    }
+}
+
+export class ErrMock extends Err {
+    public constructor(message: string) {
+        super(message);
     }
 }

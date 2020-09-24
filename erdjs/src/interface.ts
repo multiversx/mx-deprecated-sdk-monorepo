@@ -2,7 +2,7 @@ import { Transaction } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
-import { TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance } from ".";
+import { TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
 import { Nonce } from "./nonce";
 
 export interface Provider {
@@ -19,7 +19,7 @@ export interface Provider {
     
     sendTransaction(tx: Transaction): Promise<TransactionHash>;
     getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
-    getTransactionStatus(txHash: string): Promise<string>;
+    getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus>;
 }
 
 export interface Signer {
