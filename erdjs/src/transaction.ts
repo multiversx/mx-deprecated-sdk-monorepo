@@ -101,7 +101,7 @@ export class Transaction implements Signable {
     }
 
     queryStatus(): any {
-        return {}
+        return {};
     }
 }
 

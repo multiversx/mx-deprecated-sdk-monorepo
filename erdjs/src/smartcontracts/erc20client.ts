@@ -1,5 +1,5 @@
 import { ERC20Client } from "./interface";
-import { SmartContractBase } from "./smartcontract";
+import { SmartContractBase } from "./smartContract";
 import { SmartContractCall } from "./scCall";
 import * as errors from "../errors";
 
