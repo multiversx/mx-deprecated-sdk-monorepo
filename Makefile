@@ -16,8 +16,9 @@ publish-erdwalletjs-cli:
 publish-erdjs-beta:
 	cd ./erdjs && npm publish --tag=beta --access=public
 
-test-all:
-	python3 -m unittest discover -s erdpy/tests
+test-erdpy:
+	#python3 -m unittest discover -s erdpy/tests
+	pytest ./erdpy/tests/test_testnet.py -s
 
 arwendebug:
 	# When referencing a non-released version, add the commit hash, like this: arwen-wasm-vm/cmd/arwendebug@...

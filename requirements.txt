@@ -1,4 +1,4 @@
-toml~=0.10.1
+toml~=0.10.0
 bottle~=0.12.18
 requests~=2.24.0
 pynacl
