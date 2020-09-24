@@ -1,8 +1,8 @@
-from erdpy import cli_shared
 import logging
 from typing import Any
 
-from erdpy import config, dependencies, errors
+from erdpy import cli_shared, config, dependencies, errors
+from erdpy.dependencies.install import get_deps_dict
 
 logger = logging.getLogger("cli.deps")
 
@@ -11,7 +11,7 @@ def setup_parser(subparsers: Any) -> Any:
     parser = cli_shared.add_group_subparser(subparsers, "deps", "Manage dependencies or elrond-sdk modules")
     subparsers = parser.add_subparsers()
 
-    choices = ["clang", "cpp", "rust", "arwentools", "nodejs"]
+    choices = list(get_deps_dict().keys())
 
     sub = cli_shared.add_command_subparser(subparsers, "deps", "install", "Install dependencies or elrond-sdk modules.")
     sub.add_argument("name", choices=choices, help="the dependency to install")

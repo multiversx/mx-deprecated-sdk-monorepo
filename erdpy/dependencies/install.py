@@ -1,9 +1,10 @@
 import logging
-from typing import List
+from typing import Dict, List
 
 from erdpy import config, errors
-from erdpy.dependencies.modules import (ArwenToolsModule, DependencyModule, NodejsModule,
-                                        Rust, StandaloneModule)
+from erdpy.dependencies.modules import (ArwenToolsModule, DependencyModule,
+                                        GolangModule, NodejsModule, Rust,
+                                        StandaloneModule)
 
 logger = logging.getLogger("install")
 
@@ -28,10 +29,22 @@ def get_module_by_key(key: str) -> DependencyModule:
     return matches[0]
 
 
+def get_deps_dict() -> Dict[str, DependencyModule]:
+    deps = dict()
+    for module in get_all_deps():
+        deps[module.key] = module
+        for alias in module.aliases:
+            deps[alias] = module
+    return deps
+
+
 def get_all_deps() -> List[DependencyModule]:
     return [
         StandaloneModule(key="llvm", aliases=["clang", "cpp"]),
-        ArwenToolsModule(key="arwentools", aliases=[]),
-        Rust(key="rust", aliases=[]),
-        NodejsModule(key="nodejs", aliases=[])
+        ArwenToolsModule(key="arwentools"),
+        Rust(key="rust"),
+        NodejsModule(key="nodejs", aliases=[]),
+        StandaloneModule(key="elrond_go"),
+        StandaloneModule(key="elrond_proxy_go"),
+        GolangModule(key="golang")
     ]

@@ -72,7 +72,7 @@ def get_defaults() -> Dict[str, Any]:
         "proxy": "https://testnet-api.elrond.com",
         "chainID": "Testnet",
         "txVersion": "1",
-        "dependencies.arwentools.tag": "v0.3.28",
+        "dependencies.arwentools.tag": "v0.3.35",
         "dependencies.arwentools.urlTemplate.linux": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_linux_amd64.tar.gz",
         "dependencies.arwentools.urlTemplate.osx": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_darwin_amd64.tar.gz",
         "dependencies.llvm.tag": "v9-19feb",
@@ -81,7 +81,17 @@ def get_defaults() -> Dict[str, Any]:
         "dependencies.rust.tag": "",
         "dependencies.nodejs.tag": "v12.18.3",
         "dependencies.nodejs.urlTemplate.linux": "https://nodejs.org/dist/{TAG}/node-{TAG}-linux-x64.tar.xz",
-        "dependencies.nodejs.urlTemplate.osx": "https://nodejs.org/dist/{TAG}/node-{TAG}-darwin-x64.tar.gz"
+        "dependencies.nodejs.urlTemplate.osx": "https://nodejs.org/dist/{TAG}/node-{TAG}-darwin-x64.tar.gz",
+        "dependencies.elrond_go.tag": "master",
+        "dependencies.elrond_go.urlTemplate.linux": "https://github.com/ElrondNetwork/elrond-go/archive/{TAG}.tar.gz",
+        "dependencies.elrond_go.urlTemplate.osx": "https://github.com/ElrondNetwork/elrond-go/archive/{TAG}.tar.gz",
+        "dependencies.elrond_go.url": "https://github.com/ElrondNetwork/elrond-go/archive/{TAG}.tar.gz",
+        "dependencies.elrond_proxy_go.tag": "master",
+        "dependencies.elrond_proxy_go.urlTemplate.linux": "https://github.com/ElrondNetwork/elrond-proxy-go/archive/{TAG}.tar.gz",
+        "dependencies.elrond_proxy_go.urlTemplate.osx": "https://github.com/ElrondNetwork/elrond-proxy-go/archive/{TAG}.tar.gz",
+        "dependencies.golang.tag": "go1.15.2",
+        "dependencies.golang.urlTemplate.linux": "https://golang.org/dl/{TAG}.linux-amd64.tar.gz",
+        "dependencies.golang.urlTemplate.osx": "https://golang.org/dl/{TAG}.darwin-amd64.tar.gz",
     }
 
 
