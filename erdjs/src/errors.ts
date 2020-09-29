@@ -68,6 +68,12 @@ export class ErrInvalidArgument extends Err {
     }
 }
 
+export class ErrBadType extends Err {
+    public constructor(name: string, type: any, value?: any) {
+        super(`Bad type of "${name}": ${value}. Expected type: ${type}`);
+    }
+}
+
 export class ErrAddressCannotCreate extends Err {
     public constructor(input: any, inner?: Error) {
         let message = `Cannot create address from: ${input}`;

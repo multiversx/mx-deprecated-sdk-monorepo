@@ -48,3 +48,15 @@ export function SCCodeMetadata(metadata: string): string {
     }
     return metadata;
 }
+
+export function guardType(name: string, type: any, value?: any, allowUndefined: boolean = true) {
+    if (allowUndefined && value === undefined) {
+        return;
+    }
+
+    if (value instanceof type) {
+        return;
+    }
+
+    throw new errors.ErrBadType(name, type, value);
+}

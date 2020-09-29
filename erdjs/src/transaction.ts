@@ -6,6 +6,7 @@ import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
 import { errors } from ".";
 import { Signature } from "./signature";
+import { guardType } from "./utils";
 
 export class Transaction implements Signable {
     nonce: Nonce;
@@ -38,6 +39,10 @@ export class Transaction implements Signable {
         this.hash = new TransactionHash("");
 
         Object.assign(this, init);
+
+        guardType("nonce", Nonce, this.nonce);
+        guardType("gasLimit", GasLimit, this.gasLimit);
+        guardType("gasPrice", GasPrice, this.gasPrice);
     }
 
     serializeForSigning(signedBy: Address): Buffer {
