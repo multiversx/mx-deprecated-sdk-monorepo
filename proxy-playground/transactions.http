@@ -1,4 +1,4 @@
-@baseUrl = https://testnet-api.elrond.com
+@baseUrl = http://localhost:7950
 @exampleTx = fa8195bae93d4609a6fc5972a7a6176feece39a6c4821acae2276701aee12fb0
 
 
@@ -74,3 +74,22 @@ GET {{baseUrl}}/transaction/{{exampleTx}} HTTP/1.1
 
 // Get transaction status
 GET {{baseUrl}}/transaction/{{exampleTx}}/status HTTP/1.1
+
+###
+
+// Simulate transactions
+POST {{baseUrl}}/transaction/simulate HTTP/1.1
+Content-Type: application/json
+
+{
+    "nonce": 5,
+    "value": "0",
+    "receiver": "erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx",
+    "sender": "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
+    "gasPrice": 1000000000,
+    "gasLimit": 70000,
+    "data": "SGVsbG8sIFdvcmxk",
+    "chainID": "local-testnet",
+    "version": 1,
+    "signature": "ae02374458e6b50f440e98da8ac38f491c86aab67ad67d5d93cd90d03ed9e4c7c2bc9840ce64cd11c3336b1d6fe93d7b9196e60eebb65ff55457df0e2da3cb0c"
+}

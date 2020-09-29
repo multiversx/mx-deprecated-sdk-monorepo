@@ -5,6 +5,7 @@ import os.path
 import pathlib
 import shutil
 import stat
+import sys
 import tarfile
 import zipfile
 from pathlib import Path
@@ -78,11 +79,11 @@ def write_file(f: Any, text: str):
 
 
 def read_toml_file(filename):
-    return toml.load(filename)
+    return toml.load(str(filename))
 
 
 def write_toml_file(filename, data):
-    with open(filename, "w") as f:
+    with open(str(filename), "w") as f:
         toml.dump(data, f)
 
 
@@ -96,7 +97,9 @@ def write_json_file(filename: str, data: Any):
         json.dump(data, f, indent=4)
 
 
-def dump_out_json(data: Any, outfile: Any):
+def dump_out_json(data: Any, outfile: Any = None):
+    if not outfile:
+        outfile = sys.stdout
     json.dump(data, outfile, indent=4)
 
 

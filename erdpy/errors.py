@@ -137,6 +137,11 @@ class BadUserInput(KnownError):
         super().__init__(f"Bad user input: {message}.")
 
 
+class BadUsage(KnownError):
+    def __init__(self, message: str):
+        super().__init__(f"Bad usage: {message}.")
+
+
 class CannotSignMessageWithBLSKey(KnownError):
     def __init__(self):
         super(CannotSignMessageWithBLSKey, self).__init__("cannot sign message with BLS key")
@@ -155,3 +160,8 @@ class TransactionIsNotSigned(KnownError):
 class NoWalletProvided(KnownError):
     def __init__(self):
         super().__init__("No wallet provided.")
+
+
+class TestnetError(KnownError):
+    def __init__(self, message: str):
+        super().__init__(message)
