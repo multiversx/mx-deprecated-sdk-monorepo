@@ -68,7 +68,7 @@ matrix:
         - python3 --version
       install:
         - sudo apt-get update
-        - sudo apt-get install python3.6-venv
+        - sudo apt-get install python-venv
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
         - python3 erdpy-up.py
       script:
@@ -82,7 +82,7 @@ matrix:
         - python3 --version
       install:
         - sudo apt-get update
-        - sudo apt-get install python3.6-venv
+        - sudo apt-get install python-venv
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
         - python3 erdpy-up.py
         - ls ~/elrondsdk/erdpy-venv/bin
