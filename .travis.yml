@@ -100,6 +100,6 @@ matrix:
         - python3 --version
       install:
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
-        - python3 erdpy-up.py
+        - python3 erdpy-up.py <<< "2"
       script:
         - ~/elrondsdk/erdpy --version
