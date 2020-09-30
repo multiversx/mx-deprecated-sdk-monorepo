@@ -4,9 +4,10 @@ import { Balance } from "./balance";
 import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
 import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
-import { errors } from ".";
 import { Signature } from "./signature";
 import { guardType } from "./utils";
+import { TransactionPayload } from "./transactionPayload";
+import { errors } from ".";
 
 export class Transaction implements Signable {
     nonce: Nonce;
@@ -107,39 +108,6 @@ export class Transaction implements Signable {
 
     queryStatus(): any {
         return {};
-    }
-}
-
-export class TransactionPayload {
-    private data: string;
-
-    constructor(data?: string) {
-        this.data = data || "";
-    }
-
-    static fromEncoded(encoded?: string): TransactionPayload {
-        if (!encoded) {
-            return new TransactionPayload("");
-        }
-
-        let decoded = Buffer.from(encoded, "base64").toString();
-        return new TransactionPayload(decoded);
-    }
-
-    isEmpty(): boolean {
-        return this.data.length == 0;
-    }
-
-    encoded(): string {
-        return Buffer.from(this.data).toString("base64");
-    }
-
-    decoded(): string {
-        return this.data;
-    }
-
-    length(): number {
-        return this.data.length;
     }
 }
 

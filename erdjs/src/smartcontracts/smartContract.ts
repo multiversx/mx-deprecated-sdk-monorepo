@@ -61,7 +61,7 @@ export class SmartContractBase implements SmartContract {
 
         if (this.provider != null) {
             try {
-                let txHash = await this.provider.sendTransaction(deployment);
+                //let txHash = await this.provider.sendTransaction(deployment);
                 //deployment.setTxHash(txHash);
 
                 // let watcher = new TransactionWatcher(txHash, this.provider);
@@ -70,7 +70,7 @@ export class SmartContractBase implements SmartContract {
                 //     this.callStatusQueryTimeout
                 // );
                 //deployment.setStatus("executed");
-                this.scAddress = this.computeAddress(deployment);
+                //this.scAddress = this.computeAddress(deployment);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -131,7 +131,7 @@ export class SmartContractBase implements SmartContract {
         return call;
     }
 
-    public prepareDeployment(deployment: SmartContractDeploy) {
+    public prepareDeployment(_deployment: SmartContractDeploy) {
         if (this.user == null) {
             throw errors.ErrUserAccountNotSet;
         }
@@ -152,12 +152,12 @@ export class SmartContractBase implements SmartContract {
         // deployment.prepareData();
 
         if (this.signingEnabled) {
-            let signer = new SimpleSigner("");
-            signer.sign(deployment);
+            // let signer = new SimpleSigner("");
+            // signer.sign(deployment);
         }
     }
 
-    public prepareCall(call: SmartContractCall) {
+    public prepareCall(_call: SmartContractCall) {
         if (this.user == null) {
             throw errors.ErrUserAccountNotSet;
         }
@@ -181,8 +181,8 @@ export class SmartContractBase implements SmartContract {
         // call.prepareData();
 
         if (this.signingEnabled) {
-            let signer = new SimpleSigner("");
-            signer.sign(call);
+            // let signer = new SimpleSigner("");
+            // signer.sign(call);
         }
     }
 

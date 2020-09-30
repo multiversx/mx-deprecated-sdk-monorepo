@@ -2,18 +2,18 @@ import * as valid from "../utils";
 import * as errors from "../errors";
 import { Transaction } from "../transaction";
 
-export class SmartContractCall extends Transaction {
+export class SmartContractCall {
     protected functionName: string = "";
     protected arguments: string[] = [];
 
     constructor() {
-        super();
+        //super();
         //this.arguments = [];
     }
 
     public prepareData() {
         //this.setData(this.generateArgumentString());
-        console.log("SmartContractCall data:\t", this.data);
+        //console.log("SmartContractCall data:\t", this.data);
     }
 
     public generateArgumentString(): string {

@@ -53,10 +53,15 @@ export function guardType(name: string, type: any, value?: any, allowUndefined: 
     if (allowUndefined && value === undefined) {
         return;
     }
-
     if (value instanceof type) {
         return;
     }
 
     throw new errors.ErrBadType(name, type, value);
+}
+
+export function guardValueIsSet(name: string, value?: any | null | undefined) {
+    if (value == null || value === undefined) {
+        throw new errors.Err(`"${name}" must be set`);
+    }
 }

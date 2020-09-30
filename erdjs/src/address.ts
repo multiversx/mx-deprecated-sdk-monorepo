@@ -165,7 +165,7 @@ export class Address {
         return {
             bech32: this.bech32(),
             pubkey: this.hex()
-        }
+        };
     }
 
     /**
