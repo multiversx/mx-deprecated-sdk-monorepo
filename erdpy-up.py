@@ -41,20 +41,19 @@ def main():
 
     logger.info("Checking user.")
     if os.getuid() == 0:
-        raise Exception("You should not install erdpy as root.")
+        raise InstallError("You should not install erdpy as root.")
 
     logger.info("Checking Python version.")
     logger.info(f"Python version: {sys.version_info}")
     if python_major_version < MIN_REQUIRED_PYTHON_MAJOR_VERSION or (python_major_version >= MIN_REQUIRED_PYTHON_MAJOR_VERSION and python_minor_version < MIN_REQUIRED_PYTHON_MINOR_VERSION):
-        raise Exception("You need Python 3.6 or later.")
-    if operating_system == "osx":
-        if python_minor_version < MIN_REQUIRED_PYTHON_MINOR_VERSION_MACOS:
-            raise Exception("On MacOS, you need Python 3.8 or later.")
+        raise InstallError("You need Python 3.6 or later.")
+    if operating_system == "osx" and python_minor_version < MIN_REQUIRED_PYTHON_MINOR_VERSION_MACOS:
+        raise InstallError("On MacOS, you need Python 3.8 or later.")
 
     logger.info("Checking operating system.")
     logger.info(f"Operating system: {operating_system}")
     if operating_system != "linux" and operating_system != "osx":
-        raise Exception("Your operating system is not supported yet.")
+        raise InstallError("Your operating system is not supported yet.")
 
     remove_installation()
     create_venv()
@@ -82,7 +81,7 @@ def get_operating_system():
 
     operating_system = aliases.get(sys.platform)
     if operating_system is None:
-        raise Exception(f"Unknown platform: {sys.platform}")
+        raise InstallError(f"Unknown platform: {sys.platform}")
 
     return operating_system
 
@@ -92,7 +91,7 @@ def remove_installation():
     if os.path.isdir(old_folder):
         answer = input(f"Older installation in {old_folder} has to be removed. Allow? (y/n)")
         if answer.lower() not in ["y", "yes"]:
-            raise Exception("Installation will not continue.")
+            raise InstallError("Installation will not continue.")
         shutil.rmtree(old_folder)
         logger.info("Removed previous installation (ElrondSCTools).")
 
@@ -136,9 +135,9 @@ def require_venv():
             if return_code == 0:
                 logger.info("Done installing [python3-venv].")
             else:
-                raise Exception("Packages [venv] or [ensurepip] not installed correctly.")
+                raise InstallError("Packages [venv] or [ensurepip] not installed correctly.")
         else:
-            raise Exception("Packages [venv] or [ensurepip] not found, please install them first. See https://docs.python.org/3/tutorial/venv.html.")
+            raise InstallError("Packages [venv] or [ensurepip] not found, please install them first. See https://docs.python.org/3/tutorial/venv.html.")
 
 
 def get_erdpy_path():
@@ -158,10 +157,10 @@ def install_erdpy():
     erpy_versioned = "erdpy" if not exact_version else f"erdpy=={exact_version}"
     return_code = run_in_venv(["pip", "install", "--no-cache-dir", erpy_versioned])
     if return_code != 0:
-        raise Exception("Could not install erdpy.")
+        raise InstallError("Could not install erdpy.")
     return_code = run_in_venv(["erdpy", "--version"])
     if return_code != 0:
-        raise Exception("Could not install erdpy.")
+        raise InstallError("Could not install erdpy.")
 
     # Create symlink to "bin/erdpy"
     link_path = os.path.join(elrondsdk_path, "erdpy")
@@ -217,7 +216,7 @@ def get_profile_file():
 2) bash
 """)
         if value not in ["1", "2"]:
-            raise Exception("Invalid choice.")
+            raise InstallError("Invalid choice.")
 
         value = int(value)
         if value == 1:
@@ -240,3 +239,11 @@ if __name__ == "__main__":
 For more information go to https://docs.elrond.com.
 For support, please contact us at https://t.me/ElrondDevelopers.
 """)
+
+
+class InstallError(Exception):
+    inner = None
+
+    def __init__(self, message, inner=None):
+        super().__init__(message)
+        self.inner = inner
