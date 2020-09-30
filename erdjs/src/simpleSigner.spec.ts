@@ -1,11 +1,12 @@
 import { describe } from "mocha";
 import { Address } from "./address";
 import { SimpleSigner } from "./simpleSigner";
-import { Transaction, TransactionPayload } from ".";
+import { Transaction } from ".";
 import { Nonce } from "./nonce";
 import { Balance } from "./balance";
 import { GasPrice, GasLimit, ChainID, TransactionVersion } from "./networkParams";
 import { assert } from "chai";
+import { TransactionPayload } from "./transactionPayload";
 
 
 describe("test simpleSigner", () => {
