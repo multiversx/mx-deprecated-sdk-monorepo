@@ -155,7 +155,7 @@ def ensure_folder(folder):
 def install_erdpy():
     logger.info("Installing erdpy in virtual environment...")
     erpy_versioned = "erdpy" if not exact_version else f"erdpy=={exact_version}"
-    return_code = run_in_venv(["pip", "install", "--no-cache-dir", erpy_versioned])
+    return_code = run_in_venv(["pip3", "install", "--no-cache-dir", erpy_versioned])
     if return_code != 0:
         raise InstallError("Could not install erdpy.")
     return_code = run_in_venv(["erdpy", "--version"])
