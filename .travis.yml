@@ -100,6 +100,10 @@ matrix:
         #- alias python=/usr/local/bin/python3
         - brew ls --versions python
         - python3 --version
+        - brew info python@3.8
+        - brew unlink python
+        - brew link --force python@3.8
+        - python3 --version
       install:
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
         #- python3 erdpy-up.py
