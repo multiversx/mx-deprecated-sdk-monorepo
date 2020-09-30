@@ -70,7 +70,7 @@ matrix:
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
         - python3 erdpy-up.py
       script:
-        - erdpy --version
+        - ~/elrondsdk/erdpy --version
 
     # Testing erdpy-up on Ubuntu 18.04
     - language: python
@@ -82,10 +82,12 @@ matrix:
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
         - python3 erdpy-up.py
       script:
-        - erdpy --version
+        - ~/elrondsdk/erdpy --version
 
     # Testing erdpy-up on MacOS
-    - language: generic
+    - language: python
+      python:
+        - "3.8"
       os: osx
       osx_image: xcode11.3
       before_install:
@@ -94,4 +96,4 @@ matrix:
         - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
         - python3 erdpy-up.py
       script:
-        - erdpy --version
+        - ~/elrondsdk/erdpy --version
