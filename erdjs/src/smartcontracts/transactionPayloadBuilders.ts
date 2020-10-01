@@ -2,7 +2,7 @@
 import { TransactionPayload } from "../transactionPayload";
 import { guardValueIsSet } from "../utils";
 
-import { Argument } from "./argument";
+import { appendArguments, Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
@@ -40,10 +40,7 @@ export class ContractDeployPayloadBuilder {
         let code = this.code!.toString();
         let codeMetadata = this.codeMetadata.toString();
         let data = `${code}@${ArwenVirtualMachine}@${codeMetadata}`;
-
-        if (this.arguments.length > 0) {
-            data += "@" + this.arguments.join("@");
-        }
+        data = appendArguments(data, this.arguments);
 
         return new TransactionPayload(data);
     }
@@ -80,21 +77,18 @@ export class ContractUpgradePayloadBuilder {
         let code = this.code!.toString();
         let codeMetadata = this.codeMetadata.toString();
         let data = `upgradeContract@${code}@${codeMetadata}`;
-
-        if (this.arguments.length > 0) {
-            data += "@" + this.arguments.join("@");
-        }
+        data = appendArguments(data, this.arguments);
 
         return new TransactionPayload(data);
     }
 }
 
 export class ContractCallPayloadBuilder {
-    private calledFunction: ContractFunction | null = null;
+    private contractFunction: ContractFunction | null = null;
     private arguments: Argument[] = [];
 
-    setFunction (calledFunction: ContractFunction): ContractCallPayloadBuilder {
-        this.calledFunction = calledFunction;
+    setFunction (contractFunction: ContractFunction): ContractCallPayloadBuilder {
+        this.contractFunction = contractFunction;
         return this;
     }
 
@@ -109,13 +103,10 @@ export class ContractCallPayloadBuilder {
     }
 
     build(): TransactionPayload {
-        guardValueIsSet("calledFunction", this.calledFunction);
+        guardValueIsSet("calledFunction", this.contractFunction);
 
-        let data = this.calledFunction?.toString();
-
-        if (this.arguments.length > 0) {
-            data += "@" + this.arguments.join("@");
-        }
+        let data = this.contractFunction!.name;
+        data = appendArguments(data, this.arguments);
 
         return new TransactionPayload(data);
     }

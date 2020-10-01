@@ -1,7 +1,6 @@
 
 
 export var ErrProviderNotSet = new Error("provider not set");
-export var ErrInvalidFunctionName = new Error("invalid function name");
 export var ErrUserAccountNotSet = new Error("user account not set");
 export var ErrSCAddressNotSet = new Error("smart contract address not set");
 export var ErrInvalidVMType = new Error("invalid vm type");
@@ -157,6 +156,12 @@ export class ErrSignatureCannotCreate extends Err {
 export class ErrSignatureEmpty extends Err {
     public constructor() {
         super(`Signature is empty`);
+    }
+}
+
+export class ErrInvalidFunctionName extends Err {
+    public constructor() {
+        super(`Invalid function name`);
     }
 }
 

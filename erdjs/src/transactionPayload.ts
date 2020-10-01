@@ -1,4 +1,4 @@
-import { ContractDeployPayloadBuilder, ContractUpgradePayloadBuilder } from "./smartcontracts/transactionPayloadBuilders";
+import { ContractCallPayloadBuilder, ContractDeployPayloadBuilder, ContractUpgradePayloadBuilder } from "./smartcontracts/transactionPayloadBuilders";
 
 export class TransactionPayload {
     private data: string;
@@ -32,11 +32,15 @@ export class TransactionPayload {
         return this.data.length;
     }
 
-    contractDeploy(): ContractDeployPayloadBuilder {
+    static contractDeploy(): ContractDeployPayloadBuilder {
         return new ContractDeployPayloadBuilder();
     }
 
-    contractUpgrade(): ContractUpgradePayloadBuilder {
+    static contractUpgrade(): ContractUpgradePayloadBuilder {
         return new ContractUpgradePayloadBuilder();
+    }
+
+    static contractCall(): ContractCallPayloadBuilder {
+        return new ContractCallPayloadBuilder();
     }
 }

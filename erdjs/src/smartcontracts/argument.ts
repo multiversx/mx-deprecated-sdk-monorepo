@@ -1,8 +1,9 @@
 import { Buffer } from "buffer";
 import { errors } from "..";
+import { Address } from "../address";
 
 export class Argument {
-    private value: string = "";
+    public readonly value: string = "";
 
     private constructor(argumentValue: string) {
         if (argumentValue.length == 0) {
@@ -39,4 +40,20 @@ export class Argument {
         let hex = buffer.toString("hex");
         return new Argument(hex);
     }
+
+    static pubkey(value: Address): Argument {
+        return new Argument(value.hex());
+    }
+}
+
+export function appendArguments(to: string, args: Argument[]): string {
+    if (args.length == 0) {
+        return to;
+    }
+
+    args.forEach(arg => {
+        to += "@" + arg.value;
+    });
+
+    return to;
 }

@@ -1,11 +1,13 @@
+import { errors } from "..";
+
 export class ContractFunction {
-    name: string;
+    readonly name: string;
 
     constructor(name: string) {
         this.name = name;
-    }
 
-    toString(): string {
-        return this.name;
+        if (name.length == 0) {
+            throw new errors.ErrInvalidFunctionName();
+        }
     }
 }
