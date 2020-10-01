@@ -1,4 +1,4 @@
-import { errors } from ".";
+import  * as errors from "./errors";
 
 
 const SIGNATURE_LENGTH = 64;

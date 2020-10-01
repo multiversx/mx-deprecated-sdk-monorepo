@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { errors } from "..";
+import  * as errors from "../errors";
 import { Address } from "../address";
 
 export class Argument {

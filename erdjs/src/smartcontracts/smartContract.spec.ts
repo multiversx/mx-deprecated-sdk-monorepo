@@ -10,6 +10,9 @@ import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
 import { SimpleSigner } from "../simpleSigner";
+import { MockProvider, Wait } from "../mockProvider";
+import { TransactionWatcher } from "../transactionWatcher";
+import { TransactionStatus } from "../transaction";
 
 
 describe("test contract", () => {
@@ -42,6 +45,16 @@ describe("test contract", () => {
         aliceSigner.sign(deployTransaction);
         assert.equal(contract.getOwner().bech32(), alice.bech32());
         assert.equal(contract.getAddress().bech32(), "erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
+
+        // Now let's broadcast the deploy transaction, and wait for its execution.
+        let provider = new MockProvider();
+        let hash = await deployTransaction.send(provider);
+        let watcher = new TransactionWatcher(deployTransaction.hash, provider, 42, 42 * 3);
+
+        await Promise.all([
+            provider.mockTransactionTimeline(hash, [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed")]),
+            watcher.awaitExecuted(),
+        ]);
     });
 });
 

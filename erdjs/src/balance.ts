@@ -1,5 +1,5 @@
-import { errors } from ".";
-import { BigNumber } from "bignumber.js"
+import * as errors from "./errors";
+import { BigNumber } from "bignumber.js";
 
 const DENOMINATION = 18;
 const OneEGLDString = "1000000000000000000";

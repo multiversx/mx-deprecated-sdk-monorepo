@@ -1,7 +1,7 @@
 import { IProvider } from "./interface";
 import { AsyncTimer } from "./asyncTimer";
 import { TransactionHash, TransactionStatus } from "./transaction";
-import { errors } from ".";
+import  * as errors from "./errors";
 
 const DefaultPollingInterval = 5000;
 const DefaultTimeout = DefaultPollingInterval * 10;

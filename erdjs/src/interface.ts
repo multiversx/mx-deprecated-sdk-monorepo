@@ -1,9 +1,10 @@
-import { Transaction } from "./transaction";
+import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
-import { TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
 import { Nonce } from "./nonce";
+import { AccountOnNetwork } from "./account";
+import { Balance } from "./balance";
 
 export interface IProvider {
     getNetworkConfig(): Promise<NetworkConfig>;

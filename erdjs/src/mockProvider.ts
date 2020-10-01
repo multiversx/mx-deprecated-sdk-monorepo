@@ -1,10 +1,13 @@
 
 import { IProvider } from "./interface";
-import { Transaction } from "./transaction";
-import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
+import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import { Nonce } from "./nonce";
+import { AsyncTimer } from "./asyncTimer";
+import { AccountOnNetwork } from "./account";
+import { Balance } from "./balance";
+import * as errors from "./errors";
 
 export class MockProvider implements IProvider {
     static AddressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
@@ -41,12 +44,29 @@ export class MockProvider implements IProvider {
         this.transactions.set(hash.toString(), item);
     }
 
+    async mockTransactionTimeline(transactionOrHash: Transaction | TransactionHash, timelinePoints: any[]): Promise<void> {
+        let hash = transactionOrHash instanceof TransactionHash ? transactionOrHash : transactionOrHash.hash;
+        let timeline = new AsyncTimer(`mock timeline of ${hash}`);
+        
+        await timeline.start(0);
+
+        for (const point of timelinePoints) {
+            if (point instanceof TransactionStatus) {
+                this.mockUpdateTransaction(hash, transaction => {
+                    transaction.status = point;
+                });
+            } else if (point instanceof Wait) {
+                await timeline.start(point.milliseconds);
+            }
+        }
+    }
+
     async getAccount(address: Address): Promise<AccountOnNetwork> {
         let account = this.accounts.get(address.bech32());
         if (account) {
             return account;
         }
-        
+
         return new AccountOnNetwork();
     }
 
@@ -60,8 +80,16 @@ export class MockProvider implements IProvider {
         return account.nonce;
     }
 
-    async sendTransaction(_tx: Transaction): Promise<TransactionHash> {
-        throw new errors.ErrMock("Not implemented");
+    async sendTransaction(transaction: Transaction): Promise<TransactionHash> {
+        this.mockPutTransaction(transaction.hash, new TransactionOnNetwork({
+            nonce: transaction.nonce,
+            sender: transaction.sender,
+            receiver: transaction.receiver,
+            data: transaction.data,
+            status: new TransactionStatus("pending")
+        }));
+
+        return transaction.hash;
     }
 
     async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
@@ -101,5 +129,13 @@ export class MockProvider implements IProvider {
 
     async getVMValueQuery(_address: string, _funcName: string, _args: string[]): Promise<any> {
         throw new errors.ErrMock("Not implemented");
+    }
+}
+
+export class Wait {
+    readonly milliseconds: number;
+
+    constructor(milliseconds: number) {
+        this.milliseconds = milliseconds;
     }
 }

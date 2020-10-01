@@ -1,6 +1,6 @@
 import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
-import { errors } from ".";
+import * as errors from "./errors";
 
 export class GasPrice {
     public readonly value: number;

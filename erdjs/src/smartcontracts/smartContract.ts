@@ -19,6 +19,7 @@ export class SmartContract implements ISmartContract {
     private abi: Abi = new Abi();
     private code: Code = Code.nothing();
     private codeMetadata: CodeMetadata = new CodeMetadata();
+    private readonly trackOfTransactions: Transaction[] = [];
 
     constructor() {
     }
@@ -85,6 +86,8 @@ export class SmartContract implements ISmartContract {
         let nonce = transaction.nonce;
         let address = SmartContract.computeAddress(this.owner, nonce);
         this.setAddress(address);
+
+        this.trackOfTransactions.push(transaction);
     }
 
     upgrade({ code, codeMetadata, initArgs, value, gasLimit }
@@ -108,8 +111,13 @@ export class SmartContract implements ISmartContract {
 
         this.code = code;
         this.codeMetadata = codeMetadata;
+        transaction.onSigned.on(this.onUpgradeSigned.bind(this));
 
         return transaction;
+    }
+
+    private onUpgradeSigned({ transaction }: { transaction: Transaction, signedBy: Address }) {
+        this.trackOfTransactions.push(transaction);
     }
 
     call({ func, args, value, gasLimit }
@@ -129,7 +137,13 @@ export class SmartContract implements ISmartContract {
             data: payload
         });
 
+        transaction.onSigned.on(this.onCallSigned.bind(this));
+
         return transaction;
+    }
+
+    private onCallSigned({ transaction }: { transaction: Transaction, signedBy: Address }) {
+        this.trackOfTransactions.push(transaction);
     }
 
     static computeAddress(owner: Address, nonce: Nonce): Address {
@@ -139,7 +153,7 @@ export class SmartContract implements ISmartContract {
         let ownerNonceBytes = Buffer.alloc(8);
         ownerNonceBytes.writeBigUInt64LE(BigInt(nonce.value));
         let bytesToHash = Buffer.concat([ownerPubkey, ownerNonceBytes]);
-        let hash = keccak('keccak256').update(bytesToHash).digest();
+        let hash = keccak("keccak256").update(bytesToHash).digest();
         let vmTypeBytes = Buffer.from(ArwenVirtualMachine, "hex");
         let addressBytes = Buffer.concat([
             initialPadding,

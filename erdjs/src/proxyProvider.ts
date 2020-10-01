@@ -1,12 +1,12 @@
-
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { IProvider } from "./interface";
-import { Account } from "./account";
-import { Transaction } from "./transaction";
-import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
+import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import { Nonce } from "./nonce";
+import  * as errors from "./errors";
+import { Balance } from "./balance";
+import { AccountOnNetwork } from "./account";
 
 export class ProxyProvider implements IProvider {
     private url: string;

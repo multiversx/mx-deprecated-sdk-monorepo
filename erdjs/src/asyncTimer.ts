@@ -1,4 +1,4 @@
-import { errors } from ".";
+import * as errors from "./errors";
 import { ErrAsyncTimerAborted } from "./errors";
 
 /*

@@ -1,10 +1,10 @@
 
 import * as tweetnacl from "tweetnacl";
 import { ISigner, ISignable } from "./interface";
-import { errors } from ".";
 import { Address } from "./address";
 import { Signature } from "./signature";
 const core = require("@elrondnetwork/elrond-core-js");
+import * as errors from "./errors";
 
 export const SEED_LENGTH = 32;
 
