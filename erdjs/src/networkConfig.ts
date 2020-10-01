@@ -1,4 +1,4 @@
-import { Provider } from "./interface";
+import { IProvider } from "./interface";
 import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
 
 
@@ -27,7 +27,7 @@ export class NetworkConfig {
         return NetworkConfig.default;
     }
 
-    async sync(provider: Provider): Promise<void> {
+    async sync(provider: IProvider): Promise<void> {
         let fresh: NetworkConfig = await provider.getNetworkConfig();
         Object.assign(this, fresh);
     }

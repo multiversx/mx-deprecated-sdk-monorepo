@@ -1,4 +1,4 @@
-import { Provider } from "./interface";
+import { IProvider } from "./interface";
 import { AsyncTimer } from "./asyncTimer";
 import { TransactionHash, TransactionStatus } from "./transaction";
 import { errors } from ".";
@@ -11,7 +11,7 @@ const DefaultTimeout = DefaultPollingInterval * 10;
  */
 export class TransactionWatcher {
     private readonly hash: TransactionHash;
-    private readonly provider: Provider;
+    private readonly provider: IProvider;
     private readonly pollingInterval: number;
     private readonly timeout: number;
 
@@ -24,7 +24,7 @@ export class TransactionWatcher {
      */
     constructor(
         hash: TransactionHash,
-        provider: Provider,
+        provider: IProvider,
         pollingInterval: number = DefaultPollingInterval,
         timeout: number = DefaultTimeout
     ) {

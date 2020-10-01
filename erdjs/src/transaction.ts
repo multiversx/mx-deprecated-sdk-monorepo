@@ -1,4 +1,4 @@
-import { Signable, Provider } from "./interface";
+import { ISignable, IProvider } from "./interface";
 import { Address } from "./address";
 import { Balance } from "./balance";
 import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
@@ -8,8 +8,13 @@ import { Signature } from "./signature";
 import { guardType } from "./utils";
 import { TransactionPayload } from "./transactionPayload";
 import { errors } from ".";
+import { TypedEvent } from "./events";
 
-export class Transaction implements Signable {
+const TRANSACTION_VERSION = new TransactionVersion(1);
+
+export class Transaction implements ISignable {
+    onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
+
     nonce: Nonce;
     value: Balance;
     sender: Address;
@@ -34,12 +39,14 @@ export class Transaction implements Signable {
         this.gasLimit = NetworkConfig.getDefault().MinGasLimit;
         this.data = new TransactionPayload();
         this.chainID = NetworkConfig.getDefault().ChainID;
-        this.version = NetworkConfig.getDefault().MinTransactionVersion;
+        this.version = TRANSACTION_VERSION;
 
         this.signature = new Signature();
         this.hash = new TransactionHash("");
 
         Object.assign(this, init);
+
+        this.onSigned = new TypedEvent();
 
         guardType("nonce", Nonce, this.nonce);
         guardType("gasLimit", GasLimit, this.gasLimit);
@@ -73,9 +80,11 @@ export class Transaction implements Signable {
     applySignature(signature: Signature, signedBy: Address) {
         this.signature = signature;
         this.sender = signedBy;
+
+        this.onSigned.emit({ transaction: this, signedBy: signedBy });
     }
 
-    async send(provider: Provider): Promise<TransactionHash> {
+    async send(provider: IProvider): Promise<TransactionHash> {
         this.hash = await provider.sendTransaction(this);
         return this.hash;
     }
@@ -88,21 +97,21 @@ export class Transaction implements Signable {
         return this.toPlainObject();
     }
 
-    async query(provider: Provider, keepLocally: boolean = true): Promise<TransactionOnNetwork> {
+    async getAsOnNetwork(provider: IProvider, cacheLocally: boolean = true): Promise<TransactionOnNetwork> {
         if (this.hash.isEmpty()) {
             throw new errors.ErrTransactionHashUnknown();
         }
 
         let response = await provider.getTransaction(this.hash);
 
-        if (keepLocally) {
+        if (cacheLocally) {
             this.queryResponse = response;
         }
 
         return response;
     }
 
-    queryLocally(): TransactionOnNetwork {
+    getAsOnNetworkCached(): TransactionOnNetwork {
         return this.queryResponse;
     }
 

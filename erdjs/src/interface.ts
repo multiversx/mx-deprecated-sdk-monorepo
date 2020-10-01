@@ -5,7 +5,7 @@ import { Address } from "./address";
 import { TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
 import { Nonce } from "./nonce";
 
-export interface Provider {
+export interface IProvider {
     getNetworkConfig(): Promise<NetworkConfig>;
 
     getAccount(address: Address): Promise<AccountOnNetwork>;
@@ -22,12 +22,12 @@ export interface Provider {
     getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus>;
 }
 
-export interface Signer {
+export interface ISigner {
     getAddress(): Address;
-    sign(signable: Signable): Promise<void>;
+    sign(signable: ISignable): Promise<void>;
 }
 
-export interface Signable {
+export interface ISignable {
     serializeForSigning(signedBy: Address): Buffer;
     applySignature(signature: Signature, signedBy: Address): void;
 }

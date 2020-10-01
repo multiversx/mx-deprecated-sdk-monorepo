@@ -1,12 +1,12 @@
 
-import { Provider } from "./interface";
+import { IProvider } from "./interface";
 import { Transaction } from "./transaction";
 import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import { Nonce } from "./nonce";
 
-export class MockProvider implements Provider {
+export class MockProvider implements IProvider {
     static AddressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     static AddressOfBob = new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx");
     static AddressOfCarol = new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8");

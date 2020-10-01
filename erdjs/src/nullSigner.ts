@@ -1,8 +1,8 @@
 
-import { Signer, Signable } from "./interface";
+import { ISigner, ISignable } from "./interface";
 import { Address } from "./address";
 
-export class NullSigner implements Signer {
+export class NullSigner implements ISigner {
     constructor() {
     }
 
@@ -10,6 +10,6 @@ export class NullSigner implements Signer {
         return new Address();
     }
 
-    async sign(_: Signable): Promise<void> {
+    async sign(_: ISignable): Promise<void> {
     }
 }

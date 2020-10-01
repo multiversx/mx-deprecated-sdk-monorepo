@@ -1,6 +1,6 @@
 
 import * as tweetnacl from "tweetnacl";
-import { Signer, Signable } from "./interface";
+import { ISigner, ISignable } from "./interface";
 import { errors } from ".";
 import { Address } from "./address";
 import { Signature } from "./signature";
@@ -11,7 +11,7 @@ export const SEED_LENGTH = 32;
 /**
  * ed25519 signer that can be created using the seed (recommended for tests only)
  */
-export class SimpleSigner implements Signer {
+export class SimpleSigner implements ISigner {
     private readonly seed: Buffer;
 
     constructor(seed: string | Buffer) {
@@ -28,14 +28,14 @@ export class SimpleSigner implements Signer {
         }
     }
 
-    static fromWalletKey(walletKeyObject: any, password: string): Signer {
+    static fromWalletKey(walletKeyObject: any, password: string): ISigner {
         let account = new core.account();
         account.loadFromKeyFile(walletKeyObject, password);
         let seed = account.privateKey.slice(0, 32);
         return new SimpleSigner(seed);
     }
 
-    async sign(signable: Signable): Promise<void> {
+    async sign(signable: ISignable): Promise<void> {
         try {
             this.trySign(signable);
         } catch (err) {
@@ -49,7 +49,7 @@ export class SimpleSigner implements Signer {
         return signedBy;
     }
 
-    private trySign(signable: Signable) {
+    private trySign(signable: ISignable) {
         let pair = tweetnacl.sign.keyPair.fromSeed(this.seed);
         let signingKey = pair.secretKey;
         let signedBy = new Address(Buffer.from(pair.publicKey));

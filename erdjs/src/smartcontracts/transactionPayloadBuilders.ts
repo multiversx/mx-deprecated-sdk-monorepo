@@ -7,7 +7,7 @@ import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
 
-const ArwenVirtualMachine = "0500";
+export const ArwenVirtualMachine = "0500";
 
 export class ContractDeployPayloadBuilder {
     private code: Code | null = null;
@@ -24,12 +24,12 @@ export class ContractDeployPayloadBuilder {
         return this;
     }
 
-    addInitArgument(arg: Argument): ContractDeployPayloadBuilder {
+    addInitArg(arg: Argument): ContractDeployPayloadBuilder {
         this.arguments.push(arg);
         return this;
     }
 
-    setInitArguments(args: Argument[]): ContractDeployPayloadBuilder {
+    setInitArgs(args: Argument[]): ContractDeployPayloadBuilder {
         this.arguments = args;
         return this;
     }
@@ -61,12 +61,12 @@ export class ContractUpgradePayloadBuilder {
         return this;
     }
 
-    addInitArgument(arg: Argument): ContractUpgradePayloadBuilder {
+    addInitArg(arg: Argument): ContractUpgradePayloadBuilder {
         this.arguments.push(arg);
         return this;
     }
 
-    setInitArguments(args: Argument[]): ContractUpgradePayloadBuilder {
+    setInitArgs(args: Argument[]): ContractUpgradePayloadBuilder {
         this.arguments = args;
         return this;
     }
@@ -92,12 +92,12 @@ export class ContractCallPayloadBuilder {
         return this;
     }
 
-    addArgument(arg: Argument): ContractCallPayloadBuilder {
+    addArg(arg: Argument): ContractCallPayloadBuilder {
         this.arguments.push(arg);
         return this;
     }
 
-    setArguments(args: Argument[]): ContractCallPayloadBuilder {
+    setArgs(args: Argument[]): ContractCallPayloadBuilder {
         this.arguments = args;
         return this;
     }

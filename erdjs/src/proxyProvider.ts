@@ -1,6 +1,6 @@
 
 import axios, { AxiosResponse } from "axios";
-import { Provider } from "./interface";
+import { IProvider } from "./interface";
 import { Account } from "./account";
 import { Transaction } from "./transaction";
 import { errors, TransactionHash, TransactionOnNetwork, AccountOnNetwork, Balance, TransactionStatus } from ".";
@@ -8,7 +8,7 @@ import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import { Nonce } from "./nonce";
 
-export class ProxyProvider implements Provider {
+export class ProxyProvider implements IProvider {
     private url: string;
     private timeoutLimit: number;
 

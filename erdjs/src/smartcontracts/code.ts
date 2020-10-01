@@ -17,6 +17,10 @@ export class Code {
         return Code.fromBuffer(buffer);
     }
 
+    static nothing(): Code {
+        return new Code("");
+    }
+
     toString(): string {
         return this.hex;
     }
