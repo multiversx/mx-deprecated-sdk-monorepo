@@ -1,15 +1,17 @@
 import { ISignable, IProvider } from "./interface";
 import { Address } from "./address";
 import { Balance } from "./balance";
+import { Account } from "./account";
 import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
 import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
 import { Signature } from "./signature";
 import { guardType } from "./utils";
 import { TransactionPayload } from "./transactionPayload";
-import  * as errors from "./errors";
+import * as errors from "./errors";
 import { TypedEvent } from "./events";
 import keccak from "keccak";
+import { TransactionWatcher } from "./transactionWatcher";
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
 
@@ -52,6 +54,10 @@ export class Transaction implements ISignable {
         guardType("nonce", Nonce, this.nonce);
         guardType("gasLimit", GasLimit, this.gasLimit);
         guardType("gasPrice", GasPrice, this.gasPrice);
+    }
+
+    feedNonce(account: Account) {
+        this.nonce = account.nonce;
     }
 
     serializeForSigning(signedBy: Address): Buffer {
@@ -119,6 +125,16 @@ export class Transaction implements ISignable {
 
     queryStatus(): any {
         return {};
+    }
+
+    async awaitPending(provider: IProvider): Promise<void> {
+        let watcher = new TransactionWatcher(this.hash, provider);
+        await watcher.awaitPending();
+    }
+
+    async awaitExecuted(provider: IProvider): Promise<void> {
+        let watcher = new TransactionWatcher(this.hash, provider);
+        await watcher.awaitExecuted();
     }
 }
 

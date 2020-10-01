@@ -3,13 +3,13 @@ import { AsyncTimer } from "./asyncTimer";
 import { TransactionHash, TransactionStatus } from "./transaction";
 import  * as errors from "./errors";
 
-const DefaultPollingInterval = 5000;
-const DefaultTimeout = DefaultPollingInterval * 10;
-
 /**
  * TransactionWatcher allows one to continuously watch (monitor), by means of polling, the status of a given transaction.
  */
 export class TransactionWatcher {
+    static DefaultPollingInterval: number = 5000;
+    static DefaultTimeout: number = TransactionWatcher.DefaultPollingInterval * 10;
+
     private readonly hash: TransactionHash;
     private readonly provider: IProvider;
     private readonly pollingInterval: number;
@@ -25,8 +25,8 @@ export class TransactionWatcher {
     constructor(
         hash: TransactionHash,
         provider: IProvider,
-        pollingInterval: number = DefaultPollingInterval,
-        timeout: number = DefaultTimeout
+        pollingInterval: number = TransactionWatcher.DefaultPollingInterval,
+        timeout: number = TransactionWatcher.DefaultTimeout
     ) {
         this.hash = hash;
         this.provider = provider;

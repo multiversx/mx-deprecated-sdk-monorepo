@@ -21,7 +21,10 @@ export class SmartContract implements ISmartContract {
     private codeMetadata: CodeMetadata = new CodeMetadata();
     private readonly trackOfTransactions: Transaction[] = [];
 
-    constructor() {
+    constructor({ address }: { address?: Address }) {
+        if (address) {
+            this.address = address;
+        }
     }
 
     setAddress(address: Address) {
@@ -166,58 +169,3 @@ export class SmartContract implements ISmartContract {
         return address;
     }
 }
-
-// export class SmartContractBase implements SmartContract {
-//     protected callStatusQueryPeriod: number = 6000;
-//     protected callStatusQueryTimeout: number = 60000;
-
-
-//     public async performDeployment(deployment: SmartContractDeploy): Promise<SmartContractDeploy> {
-//         this.prepareDeployment(deployment);
-
-//         if (this.provider != null) {
-//             try {
-//                 //let txHash = await this.provider.sendTransaction(deployment);
-//                 //deployment.setTxHash(txHash);
-
-//                 // let watcher = new TransactionWatcher(txHash, this.provider);
-//                 // await watcher.awaitExecuted(
-//                 //     this.callStatusQueryPeriod,
-//                 //     this.callStatusQueryTimeout
-//                 // );
-//                 //deployment.setStatus("executed");
-//                 //this.scAddress = this.computeAddress(deployment);
-//             } catch (err) {
-//                 console.error(err);
-//             } finally {
-//                 this.cleanup();
-//             }
-//         }
-
-//         return deployment;
-//     }
-//     public async performCall(call: SmartContractCall): Promise<SmartContractCall> {
-//         this.prepareCall(call);
-
-//         if (this.provider != null) {
-//             try {
-//                 // let txHash = await this.provider.sendTransaction(call);
-//                 // //call.setTxHash(txHash);
-
-//                 // let watcher = new TransactionWatcher(txHash, this.provider);
-//                 // await watcher.awaitExecuted(
-//                 //     this.callStatusQueryPeriod,
-//                 //     this.callStatusQueryTimeout
-//                 // );
-//                 //call.setStatus("executed");
-//                 // TODO return smart contract results
-//             } catch (err) {
-//                 console.error(err);
-//             } finally {
-//                 this.cleanup();
-//             }
-//         }
-
-//         return call;
-//     }
-// }

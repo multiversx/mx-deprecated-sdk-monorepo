@@ -43,7 +43,7 @@ export class Account {
     }
 
     /**
-     * Synchronizes account properties with the ones queried from the Network
+     * Synchronizes account properties (such as nonce, balance) with the ones queried from the Network
      * @param provider the Network provider
      */
     async sync(provider: IProvider) {
