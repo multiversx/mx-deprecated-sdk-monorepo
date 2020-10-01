@@ -9,6 +9,7 @@ import { CodeMetadata } from "./codeMetadata";
 import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
+import { SimpleSigner } from "../simpleSigner";
 
 
 describe("test contract", () => {
@@ -35,6 +36,12 @@ describe("test contract", () => {
         assert.equal(deployTransaction.gasLimit.value, 1000000);
 
         // Sign transaction, then check contract address (should be computed upon signing)
+        let aliceSigner = new SimpleSigner("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9");
+        let alice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
+
+        aliceSigner.sign(deployTransaction);
+        assert.equal(contract.getOwner().bech32(), alice.bech32());
+        assert.equal(contract.getAddress().bech32(), "erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
     });
 });
 

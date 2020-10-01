@@ -14,6 +14,7 @@ import { Nonce } from "../nonce";
 import { ContractFunction } from "./function";
 
 export class SmartContract implements ISmartContract {
+    private owner: Address = new Address();
     private address: Address = new Address();
     private abi: Abi = new Abi();
     private code: Code = Code.nothing();
@@ -29,6 +30,11 @@ export class SmartContract implements ISmartContract {
     getAddress(): Address {
         this.address.assertNotEmpty();
         return this.address;
+    }
+
+    getOwner(): Address {
+        this.owner.assertNotEmpty();
+        return this.owner;
     }
 
     setAbi(abi: Abi) {
@@ -69,15 +75,15 @@ export class SmartContract implements ISmartContract {
 
         this.code = code;
         this.codeMetadata = codeMetadata;
-        transaction.onSigned.on(this.onDeploySigned);
+        transaction.onSigned.on(this.onDeploySigned.bind(this));
 
         return transaction;
     }
 
     private onDeploySigned({ transaction, signedBy }: { transaction: Transaction, signedBy: Address }) {
-        let owner = signedBy;
+        this.owner = signedBy;
         let nonce = transaction.nonce;
-        let address = SmartContract.computeAddress(owner, nonce);
+        let address = SmartContract.computeAddress(this.owner, nonce);
         this.setAddress(address);
     }
 
