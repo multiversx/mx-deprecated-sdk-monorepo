@@ -12,5 +12,5 @@ export * from "./simpleSigner";
 export * from "./nullSigner";
 //export * from "./smartcontracts/elrondERC20client";
 //export * from "./smartcontracts/erc20client";
-//export * from "./smartcontracts/smartContract";
+export * from "./smartcontracts/smartContract";
 export * from "./smartcontracts/interface";

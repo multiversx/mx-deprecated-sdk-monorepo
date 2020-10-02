@@ -8,7 +8,7 @@ import { Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import keccak from "keccak";
-import { SmartContract as ISmartContract } from "./interface";
+import { ISmartContract as ISmartContract } from "./interface";
 import { ArwenVirtualMachine } from "./transactionPayloadBuilders";
 import { Nonce } from "../nonce";
 import { ContractFunction } from "./function";

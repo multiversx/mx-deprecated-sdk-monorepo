@@ -53,7 +53,7 @@ export class Account {
     }
 
     incrementNonce() {
-        this.nonce.increment();
+        this.nonce = this.nonce.increment();
     }
 
     toPlainObject(): any {

@@ -56,8 +56,8 @@ export class Transaction implements ISignable {
         guardType("gasPrice", GasPrice, this.gasPrice);
     }
 
-    feedNonce(account: Account) {
-        this.nonce = account.nonce;
+    setNonce(nonce: Nonce) {
+        this.nonce = nonce;
     }
 
     serializeForSigning(signedBy: Address): Buffer {

@@ -13,7 +13,7 @@ export class Nonce {
         this.value = value;
     }
 
-    increment() {
-        this.value += 1;
+    increment(): Nonce {
+        return new Nonce(this.value + 1);
     }
 }

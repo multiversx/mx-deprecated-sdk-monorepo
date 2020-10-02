@@ -47,7 +47,7 @@ describe("test contract", () => {
         });
 
         await alice.sync(provider);
-        deployTransaction.feedNonce(alice);
+        deployTransaction.setNonce(alice.nonce);
 
         assert.equal(deployTransaction.data.decoded(), "01020304@0500@0000");
         assert.equal(deployTransaction.gasLimit.value, 1000000);
@@ -72,19 +72,50 @@ describe("test contract", () => {
     it("should call", async () => {
         let contract = new SmartContract({ address: new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3") });
 
+        provider.mockUpdateAccount(aliceAddress, account => {
+            account.nonce = new Nonce(42);
+        });
+
         let callTransactionOne = contract.call({
-            func: new ContractFunction("helloWorld"),
+            func: new ContractFunction("helloEarth"),
             args: [Argument.number(5), Argument.hex("0123")],
             gasLimit: new GasLimit(150000)
         });
 
-        assert.equal(callTransactionOne.data.decoded(), "helloWorld@05@0123");
+        let callTransactionTwo = contract.call({
+            func: new ContractFunction("helloMars"),
+            args: [Argument.number(5), Argument.hex("0123")],
+            gasLimit: new GasLimit(1500000)
+        });
+
+        await alice.sync(provider);
+        callTransactionOne.setNonce(alice.nonce);
+        alice.incrementNonce();
+        callTransactionTwo.setNonce(alice.nonce);
+
+        assert.equal(callTransactionOne.nonce.value, 42);
+        assert.equal(callTransactionOne.data.decoded(), "helloEarth@05@0123");
         assert.equal(callTransactionOne.gasLimit.value, 150000);
+        assert.equal(callTransactionTwo.nonce.value, 43);
+        assert.equal(callTransactionTwo.data.decoded(), "helloMars@05@0123");
+        assert.equal(callTransactionTwo.gasLimit.value, 1500000);
 
-        // Sign transaction, then check contract address (should be computed upon signing)
+        // Sign transactions, broadcast them
         aliceSigner.sign(callTransactionOne);
+        aliceSigner.sign(callTransactionTwo);
 
-        // TODO: WHO SETS THE NONCE?
+        let hashOne = await callTransactionOne.send(provider);
+        let hashTwo = await callTransactionTwo.send(provider);
+
+        await Promise.all([
+            provider.mockTransactionTimeline(callTransactionOne, [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed")]),
+            provider.mockTransactionTimeline(callTransactionTwo, [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed")]),
+            callTransactionOne.awaitExecuted(provider),
+            callTransactionTwo.awaitExecuted(provider)
+        ]);
+
+        assert.isTrue((await provider.getTransactionStatus(hashOne)).isExecuted());
+        assert.isTrue((await provider.getTransactionStatus(hashTwo)).isExecuted());
     });
 });
 
