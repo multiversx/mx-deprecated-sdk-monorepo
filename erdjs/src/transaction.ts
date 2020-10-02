@@ -97,6 +97,11 @@ export class Transaction implements ISignable {
         return this.hash;
     }
 
+    async simulate(provider: IProvider): Promise<any> {
+        let response = await provider.simulateTransaction(this);
+        return response;
+    }
+
     toSendable(): any {
         if (this.signature.isEmpty()) {
             throw new errors.ErrTransactionNotSigned();

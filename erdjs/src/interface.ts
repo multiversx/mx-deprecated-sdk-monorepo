@@ -19,6 +19,7 @@ export interface IProvider {
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
     
     sendTransaction(tx: Transaction): Promise<TransactionHash>;
+    simulateTransaction(tx: Transaction): Promise<TransactionHash>;
     getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
     getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus>;
 }

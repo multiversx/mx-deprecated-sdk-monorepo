@@ -101,6 +101,11 @@ export class ProxyProvider implements IProvider {
         return new TransactionHash(txHash);
     }
 
+    async simulateTransaction(tx: Transaction): Promise<any> {
+        let response = await this.doPost("transaction/simulate", tx.toSendable());
+        return response;
+    }
+
     async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
         let response = await this.doGet(`transaction/${txHash.toString()}`);
         let payload = response.transaction;

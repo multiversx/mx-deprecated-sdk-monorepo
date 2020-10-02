@@ -65,12 +65,16 @@ export class TransactionWatcher {
         });
 
         while (!stop) {
-            currentStatus = await this.provider.getTransactionStatus(this.hash);
+            try {
+                currentStatus = await this.provider.getTransactionStatus(this.hash);
 
-            if (isAwaitedStatus(currentStatus) || stop) {
-                break;
+                if (isAwaitedStatus(currentStatus) || stop) {
+                    break;
+                }
+            } catch (error) {
+                console.log("cannot (yet) get status");
             }
-
+            
             await periodicTimer.start(this.pollingInterval);
         }
 
