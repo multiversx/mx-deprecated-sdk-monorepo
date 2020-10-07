@@ -172,10 +172,6 @@ describe("test on local testnet", function() {
         });
 
         simulateOne.setNonce(alice.nonce);
-
-        // Fake increment (required for fast simulations, in sequence)
-        alice.incrementNonce();
-
         simulateTwo.setNonce(alice.nonce);
 
         await aliceSigner.sign(simulateOne);
