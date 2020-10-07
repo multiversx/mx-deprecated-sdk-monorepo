@@ -1,10 +1,10 @@
 # Elrond SDK for Javascript
 
 ```
-sudo npm install --global browserify
+npm install --global browserify
 
 # For running the examples
-sudo npm install --global http-server
+npm install --global http-server
 
 npm install
 npm run compile
