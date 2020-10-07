@@ -18,7 +18,7 @@ describe("test world", () => {
     });
 
     it("should interact well with contract [counter]", async () => {
-        let code = loadContractCode("../examples/contracts/mycounter/counter.wasm");
+        let code = loadContractCode("./src/testdata/counter.wasm");
         let world = new World("foo");
         await world.createAccount({ address: alice, nonce: 42 });
         await world.createAccount({ address: bob, nonce: 7 });

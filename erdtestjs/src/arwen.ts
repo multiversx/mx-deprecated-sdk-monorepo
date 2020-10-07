@@ -16,7 +16,7 @@ export class RequestBase {
 export class ResponseBase {
     Error: string = "";
 
-    isSuccess(): Boolean {
+    isSuccess(): boolean {
         return this.Error ? false : true;
     }
 }
@@ -33,7 +33,7 @@ export class ContractResponseBase extends ResponseBase {
     Output: VMOutput = new VMOutput();
     ReturnCodeString: string = "";
 
-    isSuccess(): Boolean {
+    isSuccess(): boolean {
         let ok = this.ReturnCodeString == "ok";
         return ok && super.isSuccess();
     }
