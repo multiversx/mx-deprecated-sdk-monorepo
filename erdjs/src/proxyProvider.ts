@@ -102,6 +102,7 @@ export class ProxyProvider implements IProvider {
     }
 
     async simulateTransaction(tx: Transaction): Promise<any> {
+        console.log(tx.toSendable());
         let response = await this.doPost("transaction/simulate", tx.toSendable());
         return response;
     }
@@ -153,7 +154,7 @@ export class ProxyProvider implements IProvider {
                 throw new errors.ErrProxyProviderPost(resourceUrl, "", error);
             }
 
-            let originalErrorMessage = error.response.data.error;
+            let originalErrorMessage = error.response.data.error || error.response.data;
             throw new errors.ErrProxyProviderPost(resourceUrl, originalErrorMessage, error);
         }
     }
