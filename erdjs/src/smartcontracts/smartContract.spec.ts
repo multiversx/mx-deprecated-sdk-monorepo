@@ -23,9 +23,6 @@ describe("test contract", () => {
     let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     let alice = new Account(aliceAddress);
 
-    TransactionWatcher.DefaultPollingInterval = 42;
-    TransactionWatcher.DefaultTimeout = 42 * 3;
-
     it("should compute contract address", async () => {
         let owner = new Address("93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e");
 
@@ -39,6 +36,8 @@ describe("test contract", () => {
     });
 
     it("should deploy", async () => {
+        setupWatcherTimeouts();
+
         let contract = new SmartContract({});
         let deployTransaction = contract.deploy({
             code: Code.fromBuffer(Buffer.from([1, 2, 3, 4])),
@@ -130,10 +129,10 @@ describe("test on local testnet", function() {
     let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     let alice = new Account(aliceAddress);
 
-    TransactionWatcher.DefaultPollingInterval = 5000;
-    TransactionWatcher.DefaultTimeout = 50000;
-
     it.skip("should deploy, then simulate transactions", async () => {
+        TransactionWatcher.DefaultPollingInterval = 5000;
+        TransactionWatcher.DefaultTimeout = 50000;
+
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);
 
@@ -193,3 +192,8 @@ describe("test on local testnet", function() {
         console.log(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
     });
 });
+
+function setupWatcherTimeouts() {
+    TransactionWatcher.DefaultPollingInterval = 42;
+    TransactionWatcher.DefaultTimeout = 42 * 3;
+}
