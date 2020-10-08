@@ -4,8 +4,8 @@ import { assert } from "chai";
 import { Address, Nonce, Code, GasLimit, ContractFunction } from "@elrondnetwork/erdjs";
 
 describe("test world", () => {
-    let aliceBech32 = "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz";
-    let bobBech32 = "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r";
+    let aliceBech32 = "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th";
+    let bobBech32 = "erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx";
     let alice = new Address(aliceBech32);
     let bob = new Address(bobBech32);
 
@@ -73,7 +73,7 @@ class CounterContract {
     }
     
     async increment(caller: Address, gasLimit: GasLimit): Promise<void> {
-        let response = await this.world.runContract({
+        let response = await this.world.callContract({
             contract: this.address,
             impersonated: caller,
             func: new ContractFunction("increment"),
@@ -84,7 +84,7 @@ class CounterContract {
     }
 
     async decrement(caller: Address, gasLimit: GasLimit): Promise<void> {
-        let response = await this.world.runContract({
+        let response = await this.world.callContract({
             contract: this.address,
             impersonated: caller,
             func: new ContractFunction("decrement"),

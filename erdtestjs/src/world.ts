@@ -7,11 +7,21 @@ import { Address, Balance, Nonce, Code, CodeMetadata, Argument, GasLimit, GasPri
 import { readJSONFileAsAny } from "./ioutils";
 import { CreateAccountResponse } from "./worldMessages";
 
+/**
+ * A World represents an isolated Blockchain stub, that holds its state in a trivial database, and is connected to an ArwenDebug provider.
+ * 
+ * Typically, each unit (or integration) test will run in a separate World.
+ */
 export class World {
     private uniqueName: string;
     private databasePath: string;
     private provider: ArwenDebugProvider;
 
+    /**
+     * 
+     * @param name The name of the World.
+     * @param databasePath Where to hold the trivial database.
+     */
     constructor(name: string, databasePath: string = "") {
         this.uniqueName = `${name}${Date.now()}`;
         this.databasePath = databasePath || this.getDefaultDatabasePath();
@@ -26,6 +36,13 @@ export class World {
         return path.join(this.databasePath, "worlds", `${this.uniqueName}.json`);
     }
 
+    /**
+     * Deploys a smart contract to the World.
+     * 
+     * ```typescript
+     * await world.deployContract({ impersonated: alice, code: Code.fromFile("..."), gasLimit: new GasLimit(500000) });
+     * ```
+     */
     async deployContract(
         { impersonated, code, codePath, codeMetadata, args, value, gasLimit, gasPrice }
             : { impersonated: Address, code?: Code, codePath?: string, codeMetadata?: CodeMetadata, args?: Argument[], value?: Balance, gasLimit?: GasLimit, gasPrice?: GasPrice })
@@ -44,11 +61,14 @@ export class World {
         });
     }
 
-    async runContract(
+    /**
+     * Calls a smart contract function.
+     */
+    async callContract(
         { contract, impersonated, func, args, value, gasLimit, gasPrice }
             : { contract: Address, impersonated: Address, func: ContractFunction, args?: Argument[], value?: Balance, gasLimit?: GasLimit, gasPrice?: GasPrice })
         : Promise<RunResponse> {
-        return await this.provider.runContract({
+        return await this.provider.callContract({
             databasePath: this.databasePath,
             world: this.uniqueName,
             contractAddress: contract,
@@ -61,6 +81,9 @@ export class World {
         });
     }
 
+    /**
+     * Queries a smart contract (executes a pure function).
+     */
     async queryContract(
         { contract, impersonated, func, args, value, gasLimit }
             : { contract: Address, impersonated: Address, func: ContractFunction, args?: Argument[], value?: Balance, gasLimit?: GasLimit })
@@ -78,6 +101,16 @@ export class World {
         });
     }
 
+    /**
+     * Creates a user account in the World. 
+     * 
+     * This is useful for creating contract participants (owners, callers).
+     * 
+     * ```typescript
+     * await world.createAccount({ address: new Address("erd1..."), nonce: new Nonce(42) });
+     * await world.createAccount({ address: new Address("erd1..."), nonce: new Nonce(7) });
+     * ```
+     */
     async createAccount(
         { address, balance, nonce }
             : { address: Address, balance?: Balance, nonce?: Nonce })
@@ -91,6 +124,13 @@ export class World {
         });
     }
 
+    /**
+     * Fetches the whole storage of the account (the contract).
+     * 
+     * This is useful to inspect the state of the contract in more detail.
+     * 
+     * @param address The address of the account (the contract).
+     */
     getAccountStorage(address: Address): WorldAccountStorage | null {
         let accounts = this.loadAccounts();
         let account = accounts.getByAddress(address);
@@ -101,7 +141,7 @@ export class World {
         return account.Storage;
     }
 
-    loadAccounts(): WorldAccounts {
+    private loadAccounts(): WorldAccounts {
         let worldState = readJSONFileAsAny(this.getPath());
         let accountsMap = worldState.Accounts || {};
         let accounts = [];

@@ -5,7 +5,7 @@ import { CreateAccountResponse } from "./worldMessages";
 export interface ArwenDebugProvider {
     deployContract(request: DeployRequest): Promise<DeployResponse>;
     upgradeContract(request: UpgradeRequest): Promise<UpgradeResponse>;
-    runContract(request: RunRequest): Promise<RunResponse>;
+    callContract(request: RunRequest): Promise<RunResponse>;
     queryContract(request: QueryRequest): Promise<QueryResponse>;
     createAccount(request: CreateAccountRequest): Promise<CreateAccountResponse>;
 }

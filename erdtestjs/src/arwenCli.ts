@@ -66,12 +66,12 @@ export class ArwenCLI implements ArwenDebugProvider {
         return response;
     }
 
-    async runContract(request: RunRequest): Promise<RunResponse> {
+    async callContract(request: RunRequest): Promise<RunResponse> {
         let [outcomeKey, outcomePath] = this.createOutcomeCoordinates(request.databasePath);
         let options: any = {
             program: this.getArwenDebugPath(),
             args: [
-                "run",
+                "call",
                 `--database=${request.databasePath}`,
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
