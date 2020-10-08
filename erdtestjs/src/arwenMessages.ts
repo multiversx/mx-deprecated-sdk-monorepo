@@ -1,3 +1,4 @@
+import  * as errors from "./errors";
 import { AccountOnNetwork, Address, Balance, Nonce,  Code, CodeMetadata, Argument, ContractFunction, GasPrice, GasLimit } from "@elrondnetwork/erdjs";
 import { CreateAccountResponse } from "./worldMessages";
 
@@ -29,6 +30,14 @@ export class ContractResponseBase extends ResponseBase {
     isSuccess(): boolean {
         let ok = this.ReturnCodeString == "ok";
         return ok && super.isSuccess();
+    }
+
+    throwIfError() {
+        if (this.isSuccess()) {
+            return;
+        }
+
+        throw new errors.ErrContract(this.Output.ReturnMessage);
     }
 
     firstResult(): WrappedContractReturnData {

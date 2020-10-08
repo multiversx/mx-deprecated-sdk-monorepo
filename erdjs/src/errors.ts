@@ -1,11 +1,3 @@
-
-
-export var ErrProviderNotSet = new Error("provider not set");
-export var ErrUserAccountNotSet = new Error("user account not set");
-export var ErrSCAddressNotSet = new Error("smart contract address not set");
-export var ErrInvalidVMType = new Error("invalid vm type");
-export var ErrInvalidSmartContractCode = new Error("invalid smart contract code");
-
 export class Err extends Error {
     inner: Error | undefined = undefined;
 

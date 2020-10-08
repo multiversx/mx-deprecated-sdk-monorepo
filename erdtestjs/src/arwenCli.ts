@@ -1,8 +1,8 @@
+import  * as errors from "./errors";
 import child_process = require("child_process");
 import { DeployRequest, DeployResponse, UpgradeRequest, UpgradeResponse, RunRequest, RunResponse, CreateAccountResponseDto, CreateAccountRequest, QueryRequest, QueryResponse } from "./arwenMessages";
 import { ArwenDebugProvider } from "./arwenInterfaces";
 import { getToolsPath } from "./workstation";
-import { MyExecError } from "./errors";
 import { readJSONFile } from "./ioutils";
 import path = require("path");
 import { CreateAccountResponse } from "./worldMessages";
@@ -173,7 +173,7 @@ async function execute(options: any): Promise<any> {
     let subprocess = child_process.spawn(program, args, spawnOptions);
 
     subprocess.on("error", function (error) {
-        reject(new MyExecError({ program: program, message: error.message }));
+        reject(new errors.ErrExec({ program: program, message: error.message }));
     });
 
     let lastStderr: string;
@@ -201,7 +201,7 @@ async function execute(options: any): Promise<any> {
         if (code == 0) {
             resolve({ code: code });
         } else {
-            reject(new MyExecError({ program: program, code: code.toString(), message: lastStderr || lastStdout }));
+            reject(new errors.ErrExec({ program: program, code: code.toString(), message: lastStderr || lastStdout }));
         }
     });
 
