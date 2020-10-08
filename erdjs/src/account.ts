@@ -66,8 +66,8 @@ export class Account {
     }
 }
 
-
 export class AccountOnNetwork {
+    address: Address = new Address();
     nonce: Nonce = new Nonce(0);
     balance: Balance = new Balance(BigInt(0));
     code: string = "";
@@ -79,6 +79,7 @@ export class AccountOnNetwork {
     static fromHttpResponse(payload: any): AccountOnNetwork {
         let result = new AccountOnNetwork();
 
+        result.address = new Address(payload["address"] || 0);
         result.nonce = new Nonce(payload["nonce"] || 0);
         result.balance = Balance.fromString(payload["balance"]);
         result.code = payload["code"];

@@ -10,4 +10,8 @@ export class ContractFunction {
             throw new errors.ErrInvalidFunctionName();
         }
     }
+
+    static none(): ContractFunction {
+        return new ContractFunction("untitled");
+    }
 }

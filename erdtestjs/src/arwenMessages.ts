@@ -1,12 +1,5 @@
-import { Address } from "@elrondnetwork/erdjs";
-
-export interface ArwenDebugProvider {
-    deployContract(request: DeployRequest): Promise<DeployResponse>;
-    upgradeContract(request: UpgradeRequest): Promise<UpgradeResponse>;
-    runContract(request: RunRequest): Promise<RunResponse>;
-    queryContract(request: QueryRequest): Promise<QueryResponse>;
-    createAccount(request: CreateAccountRequest): Promise<CreateAccountResponse>;
-}
+import { AccountOnNetwork, Address, Balance, Nonce,  Code, CodeMetadata, Argument, ContractFunction, GasPrice, GasLimit } from "@elrondnetwork/erdjs";
+import { CreateAccountResponse } from "./worldMessages";
 
 export class RequestBase {
     databasePath: string = "";
@@ -23,9 +16,9 @@ export class ResponseBase {
 
 export class ContractRequestBase extends RequestBase {
     impersonated: Address = new Address();
-    value: string = "";
-    gasPrice: number = 0;
-    gasLimit: number = 0;
+    value: Balance = Balance.Zero();
+    gasPrice: GasPrice = GasPrice.min();
+    gasLimit: GasLimit = GasLimit.min();
 }
 
 export class ContractResponseBase extends ResponseBase {
@@ -45,17 +38,17 @@ export class ContractResponseBase extends ResponseBase {
 }
 
 export class DeployRequest extends ContractRequestBase {
-    code: string = "";
+    code: Code = Code.nothing();
     codePath: string = "";
-    codeMetadata: string = "";
-    arguments: string[] = [];
+    codeMetadata: CodeMetadata = new CodeMetadata();
+    arguments: Argument[] = [];
 }
 
 export class DeployResponse extends ContractResponseBase {
     ContractAddressHex: string = "";
 
     getContractAddress(): Address {
-        return new Address().setHex(this.ContractAddressHex);
+        return new Address(this.ContractAddressHex);
     }
 }
 
@@ -68,8 +61,8 @@ export class UpgradeResponse extends ContractResponseBase {
 
 export class RunRequest extends ContractRequestBase {
     contractAddress: Address = new Address();
-    function: string = "";
-    arguments: string[] = [];
+    function: ContractFunction = ContractFunction.none();
+    arguments: Argument[] = [];
 }
 
 export class RunResponse extends ContractResponseBase {
@@ -83,18 +76,33 @@ export class QueryResponse extends ContractResponseBase {
 
 export class CreateAccountRequest extends RequestBase {
     address: Address = new Address();
-    balance: string = "";
-    nonce: number = 0;
+    balance: Balance = Balance.Zero();
+    nonce: Nonce = new Nonce(0);
 }
 
-export class CreateAccountResponse {
-    Account: Account | null = null;
+export class CreateAccountResponseDto {
+    Account: AccountDto | null = null;
+
+    toWorldMessage(): CreateAccountResponse  {
+        let response = new CreateAccountResponse();
+        let accountDto = this.Account!;
+
+        response.account = new AccountOnNetwork({
+            address: new Address(accountDto.AddressHex),
+            nonce: new Nonce(accountDto.Nonce),
+            balance: Balance.fromString(accountDto.BalanceString)
+        });
+
+        return response;
+    }
 }
 
-export class Account {
-    Address: string = "";
+export class AccountDto {
+    AddressHex: string = "";
     Nonce: number = 0;
-    Balance: number = 0;
+    BalanceString: string = "0";
+    CodeHex: string = "0";
+    CodeMetadataHex: string = "0";
 }
 
 export class VMOutput {

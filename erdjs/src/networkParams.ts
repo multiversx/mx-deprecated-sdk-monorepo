@@ -14,6 +14,11 @@ export class GasPrice {
 
         this.value = value;
     }
+
+    static min(): GasPrice {
+        let value = NetworkConfig.getDefault().MinGasPrice.value;
+        return new GasPrice(value);
+    }
 }
 
 export class GasLimit {
@@ -36,6 +41,11 @@ export class GasLimit {
             value += NetworkConfig.getDefault().GasPerDataByte * data.length();
         }
 
+        return new GasLimit(value);
+    }
+
+    static min(): GasLimit {
+        let value = NetworkConfig.getDefault().MinGasLimit.value;
         return new GasLimit(value);
     }
 }

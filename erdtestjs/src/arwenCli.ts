@@ -1,9 +1,11 @@
 import child_process = require("child_process");
-import { ArwenDebugProvider, DeployRequest, DeployResponse, UpgradeRequest, UpgradeResponse, RunRequest, RunResponse, CreateAccountResponse, CreateAccountRequest, QueryRequest, QueryResponse } from "./arwen";
+import { DeployRequest, DeployResponse, UpgradeRequest, UpgradeResponse, RunRequest, RunResponse, CreateAccountResponseDto, CreateAccountRequest, QueryRequest, QueryResponse } from "./arwenMessages";
+import { ArwenDebugProvider } from "./arwenInterfaces";
 import { getToolsPath } from "./workstation";
 import { MyExecError } from "./errors";
 import { readJSONFile } from "./ioutils";
 import path = require("path");
+import { CreateAccountResponse } from "./worldMessages";
 
 export class ArwenCLI implements ArwenDebugProvider {
     async deployContract(request: DeployRequest): Promise<DeployResponse> {
@@ -16,12 +18,12 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--impersonated=${request.impersonated.hex()}`,
-                `--code=${request.code}`,
+                `--code=${request.code.toString()}`,
                 `--code-path=${request.codePath}`,
-                `--code-metadata=${request.codeMetadata}`,
-                `--value=${request.value}`,
-                `--gas-limit=${request.gasLimit}`,
-                `--gas-price=${request.gasPrice}`
+                `--code-metadata=${request.codeMetadata.toString()}`,
+                `--value=${request.value.raw()}`,
+                `--gas-limit=${request.gasLimit.value}`,
+                `--gas-price=${request.gasPrice.value}`
             ]
         };
 
@@ -45,12 +47,12 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--impersonated=${request.impersonated.hex()}`,
-                `--code=${request.code}`,
+                `--code=${request.code.toString()}`,
                 `--code-path=${request.codePath}`,
-                `--code-metadata=${request.codeMetadata}`,
-                `--value=${request.value}`,
-                `--gas-limit=${request.gasLimit}`,
-                `--gas-price=${request.gasPrice}`
+                `--code-metadata=${request.codeMetadata.toString()}`,
+                `--value=${request.value.raw()}`,
+                `--gas-limit=${request.gasLimit.value}`,
+                `--gas-price=${request.gasPrice.value}`
             ]
         };
 
@@ -75,10 +77,10 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress.hex()}`,
                 `--impersonated=${request.impersonated.hex()}`,
-                `--function=${request.function}`,
-                `--value=${request.value}`,
-                `--gas-limit=${request.gasLimit}`,
-                `--gas-price=${request.gasPrice}`
+                `--function=${request.function.name}`,
+                `--value=${request.value.raw()}`,
+                `--gas-limit=${request.gasLimit.value}`,
+                `--gas-price=${request.gasPrice.value}`
             ]
         };
 
@@ -103,8 +105,8 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--outcome=${outcomeKey}`,
                 `--contract=${request.contractAddress.hex()}`,
                 `--impersonated=${request.impersonated.hex()}`,
-                `--function=${request.function}`,
-                `--gas-limit=${request.gasLimit}`,
+                `--function=${request.function.name}`,
+                `--gas-limit=${request.gasLimit.value}`,
             ]
         };
 
@@ -128,14 +130,15 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--address=${request.address.hex()}`,
-                `--balance=${request.balance}`,
-                `--nonce=${request.nonce}`
+                `--balance=${request.balance.raw()}`,
+                `--nonce=${request.nonce.value}`
             ]
         };
 
         await execute(options);
 
-        let response = readJSONFile(CreateAccountResponse, outcomePath);
+        let responseDto = readJSONFile(CreateAccountResponseDto, outcomePath);
+        let response = responseDto.toWorldMessage();
         return response;
     }
 
