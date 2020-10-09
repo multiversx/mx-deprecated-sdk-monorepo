@@ -1,6 +1,6 @@
 {
   "name": "@elrondnetwork/erdjs",
-  "version": "1.0.3-beta.1",
+  "version": "1.0.3-beta.7",
   "description": "Smart Contracts interaction framework",
   "main": "out/index.js",
   "types": "out/index.d.js",
@@ -17,10 +17,13 @@
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@babel/runtime": "^7.11.2",
+    "@elrondnetwork/elrond-core-js": "^1.26.2",
     "@types/keccak": "^3.0.1",
     "abort-controller": "^3.0.0",
     "axios": "^0.19.2",
     "bech32": "^1.1.4",
+    "bignumber.js": "^9.0.0",
     "keccak": "^3.0.0",
     "tweetnacl": "^1.0.3",
     "underscore": "^1.10.2"
@@ -36,6 +39,7 @@
     "mocha": "^7.1.1",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.1",
+    "typedoc": "^0.18.0",
     "typescript": "^3.8.3"
   }
 }

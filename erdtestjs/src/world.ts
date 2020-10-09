@@ -1,16 +1,27 @@
 import path = require("path");
-import { ArwenDebugProvider, CreateAccountResponse, DeployRequest, DeployResponse, RunResponse, QueryResponse } from "./arwen";
+import { DeployResponse, RunResponse, QueryResponse } from "./arwenMessages";
+import { ArwenDebugProvider } from "./arwenInterfaces";
 import { ArwenCLI } from "./arwenCli";
 import { getToolsSubfolder } from "./workstation";
-import { Address } from "@elrondnetwork/erdjs";
+import { Address, Balance, Nonce, Code, CodeMetadata, Argument, GasLimit, GasPrice, ContractFunction } from "@elrondnetwork/erdjs";
 import { readJSONFileAsAny } from "./ioutils";
+import { CreateAccountResponse } from "./worldMessages";
 
-
+/**
+ * A World represents an isolated Blockchain stub, that holds its state in a trivial database, and is connected to an ArwenDebug provider.
+ * 
+ * Typically, each unit (or integration) test will run in a separate World.
+ */
 export class World {
     private uniqueName: string;
     private databasePath: string;
     private provider: ArwenDebugProvider;
 
+    /**
+     * 
+     * @param name The name of the World.
+     * @param databasePath Where to hold the trivial database.
+     */
     constructor(name: string, databasePath: string = "") {
         this.uniqueName = `${name}${Date.now()}`;
         this.databasePath = databasePath || this.getDefaultDatabasePath();
@@ -25,94 +36,101 @@ export class World {
         return path.join(this.databasePath, "worlds", `${this.uniqueName}.json`);
     }
 
+    /**
+     * Deploys a smart contract to the World.
+     * 
+     * ```typescript
+     * await world.deployContract({ impersonated: alice, code: Code.fromFile("..."), gasLimit: new GasLimit(500000) });
+     * ```
+     */
     async deployContract(
         { impersonated, code, codePath, codeMetadata, args, value, gasLimit, gasPrice }
-            : { impersonated: Address, code?: string, codePath?: string, codeMetadata?: string, args?: any[], value?: string, gasLimit?: number, gasPrice?: number })
+            : { impersonated: Address, code?: Code, codePath?: string, codeMetadata?: CodeMetadata, args?: Argument[], value?: Balance, gasLimit?: GasLimit, gasPrice?: GasPrice })
         : Promise<DeployResponse> {
         return await this.provider.deployContract({
             databasePath: this.databasePath,
             world: this.uniqueName,
             impersonated: impersonated,
-            code: code || "",
-            codeMetadata: codeMetadata || "",
+            code: code || Code.nothing(),
+            codeMetadata: codeMetadata || new CodeMetadata(),
             codePath: codePath || "",
-            arguments: this.encodeArguments(args || []),
-            value: value || "0",
-            gasLimit: gasLimit || 0,
-            gasPrice: gasPrice || 0
+            arguments: args || [],
+            value: value || Balance.Zero(),
+            gasLimit: gasLimit || GasLimit.min(),
+            gasPrice: gasPrice || GasPrice.min()
         });
     }
 
-    async runContract(
-        { contract, impersonated, functionName, args, value, gasLimit, gasPrice }
-            : { contract: Address, impersonated: Address, functionName: string, args?: any[], value?: string, gasLimit?: number, gasPrice?: number })
+    /**
+     * Calls a smart contract function.
+     */
+    async callContract(
+        { contract, impersonated, func, args, value, gasLimit, gasPrice }
+            : { contract: Address, impersonated: Address, func: ContractFunction, args?: Argument[], value?: Balance, gasLimit?: GasLimit, gasPrice?: GasPrice })
         : Promise<RunResponse> {
-        return await this.provider.runContract({
+        return await this.provider.callContract({
             databasePath: this.databasePath,
             world: this.uniqueName,
             contractAddress: contract,
             impersonated: impersonated,
-            function: functionName,
-            arguments: this.encodeArguments(args || []),
-            value: value || "0",
-            gasLimit: gasLimit || 0,
-            gasPrice: gasPrice || 0
+            function: func,
+            arguments: args || [],
+            value: value || Balance.Zero(),
+            gasLimit: gasLimit || GasLimit.min(),
+            gasPrice: gasPrice || GasPrice.min()
         });
     }
 
+    /**
+     * Queries a smart contract (executes a pure function).
+     */
     async queryContract(
-        { contract, impersonated, functionName, args, gasLimit }
-            : { contract: Address, impersonated: Address, functionName: string, args?: any[], gasLimit?: number })
+        { contract, impersonated, func, args, value, gasLimit }
+            : { contract: Address, impersonated: Address, func: ContractFunction, args?: Argument[], value?: Balance, gasLimit?: GasLimit })
         : Promise<QueryResponse> {
         return await this.provider.queryContract({
             databasePath: this.databasePath,
             world: this.uniqueName,
             contractAddress: contract,
             impersonated: impersonated,
-            function: functionName,
-            arguments: this.encodeArguments(args || []),
-            value: "0",
-            gasLimit: gasLimit || 0,
-            gasPrice: 0
+            function: func,
+            arguments: args || [],
+            value: value || Balance.Zero(),
+            gasPrice: GasPrice.min(),
+            gasLimit: gasLimit || GasLimit.min()
         });
     }
 
+    /**
+     * Creates a user account in the World. 
+     * 
+     * This is useful for creating contract participants (owners, callers).
+     * 
+     * ```typescript
+     * await world.createAccount({ address: new Address("erd1..."), nonce: new Nonce(42) });
+     * await world.createAccount({ address: new Address("erd1..."), nonce: new Nonce(7) });
+     * ```
+     */
     async createAccount(
         { address, balance, nonce }
-            : { address: Address, balance?: string, nonce?: number })
+            : { address: Address, balance?: Balance, nonce?: Nonce })
         : Promise<CreateAccountResponse> {
         return await this.provider.createAccount({
             databasePath: this.databasePath,
             world: this.uniqueName,
             address: address,
-            balance: balance || "100000000",
-            nonce: nonce || 0
+            balance: balance || Balance.Zero(),
+            nonce: nonce || new Nonce(0)
         });
     }
 
-    private encodeArguments(args: any[]): string[] {
-        return args.map(this.encodeArgument);
-    }
-
-    private encodeArgument(arg: any): string {
-        let hexString = "";
-
-        if (typeof arg === "string") {
-            let argString = String(arg);
-            let buffer = Buffer.from(argString);
-            hexString = buffer.toString("hex");
-        } else if (typeof arg === "number") {
-            let argNumber = Number(arg);
-            hexString = argNumber.toString(16);
-        } else {
-            throw new Error("Cannot encode argument.");
-        }
-
-        let hexStringLength = hexString.length % 2 == 0 ? hexString.length : hexString.length + 1;
-        let paddedHexString = hexString.padStart(hexStringLength, "0");
-        return paddedHexString;
-    }
-
+    /**
+     * Fetches the whole storage of the account (the contract).
+     * 
+     * This is useful to inspect the state of the contract in more detail.
+     * 
+     * @param address The address of the account (the contract).
+     */
     getAccountStorage(address: Address): WorldAccountStorage | null {
         let accounts = this.loadAccounts();
         let account = accounts.getByAddress(address);
@@ -123,7 +141,7 @@ export class World {
         return account.Storage;
     }
 
-    loadAccounts(): WorldAccounts {
+    private loadAccounts(): WorldAccounts {
         let worldState = readJSONFileAsAny(this.getPath());
         let accountsMap = worldState.Accounts || {};
         let accounts = [];
@@ -154,7 +172,7 @@ export class WorldAccount {
     Storage: any;
 
     constructor(obj: any) {
-        this.Address = new Address().setHex(obj.AddressHex);
+        this.Address = new Address(obj.AddressHex);
         this.Nonce = obj.Nonce;
         this.Balance = BigInt(obj.Balance.toString());
         this.Storage = new WorldAccountStorage(obj.Storage);
@@ -192,7 +210,7 @@ export class StorageValue {
     }
 
     asAddress(): Address | null {
-        return new Address().setHex(this.hex);
+        return new Address(this.hex);
     }
 
     asNumber(): number {

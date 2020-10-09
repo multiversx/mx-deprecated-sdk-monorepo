@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"target": "ES2015",
+		"outDir": "out",
+		"types": [],
+		"lib": [
+			"ES2015",
+			"DOM"
+		],
+		"sourceMap": true,
+		"allowJs": false,
+		"strict": true,
+		"strictPropertyInitialization": true,
+		"strictNullChecks": true,
+		"skipLibCheck": true
+	},
+	"include": [
+		"src/**/*"
+	]
+}
