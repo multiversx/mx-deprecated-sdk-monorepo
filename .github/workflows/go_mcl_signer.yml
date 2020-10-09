@@ -28,6 +28,13 @@ jobs:
 
     - name: Build
       run: | 
-        ls
-        cd ./erdpy/mcl_signer/cmd/signer
+        cd ./mcl_signer/cmd/signer
         go build -v .
+        
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: mcl_signer_linux
+        path: ./mcl_signer/cmd/signer/signer
+
+  
