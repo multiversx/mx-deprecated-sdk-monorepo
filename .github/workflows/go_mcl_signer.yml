@@ -1,4 +1,4 @@
-name: Build MCL signer
+name: Build MCL signer: Ubuntu
 
 on:
   workflow_dispatch
@@ -28,5 +28,6 @@ jobs:
 
     - name: Build
       run: | 
-        cd .erdpy/mcl_signer/cmd/signer
+        ls
+        cd ./erdpy/mcl_signer/cmd/signer
         go build -v .
