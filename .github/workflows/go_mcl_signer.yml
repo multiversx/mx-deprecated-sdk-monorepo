@@ -1,4 +1,4 @@
-name: Build MCL signer: Ubuntu
+name: Build MCL signer - Ubuntu
 
 on:
   workflow_dispatch
