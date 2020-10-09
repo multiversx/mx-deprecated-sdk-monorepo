@@ -1,7 +1,6 @@
 import { ISignable, IProvider } from "./interface";
 import { Address } from "./address";
 import { Balance } from "./balance";
-import { Account } from "./account";
 import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
 import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
@@ -188,6 +187,10 @@ export class TransactionStatus {
 
     isSuccessful(): boolean {
         return this.status == "executed";
+    }
+
+    isInvalid(): boolean {
+        return this.status == "invalid";
     }
 
     toString(): string {
