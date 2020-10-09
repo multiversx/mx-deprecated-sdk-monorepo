@@ -1,12 +1,15 @@
-name: Build MCL signer - Ubuntu
+name: Build MCL signer
 
 on:
   workflow_dispatch
 
 jobs:
   build:
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.runs-on }}
     name: Build
-    runs-on: ubuntu-latest
     steps:
 
     - name: Set up Go 1.x
