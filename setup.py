@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 # See https://packaging.python.org/tutorials/packaging-projects/
 setuptools.setup(
     name="erdpy",
-    version="0.8.9",
+    version="0.9.0b1",
     description="Elrond Smart Contracts Tools and Python SDK",
     long_description=long_description,
     long_description_content_type="text/markdown",
