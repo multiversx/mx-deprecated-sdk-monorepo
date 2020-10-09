@@ -42,7 +42,7 @@ jobs:
       with:
         tag_name: ${{ github.ref }}
         release_name: Release MCL Signer ${{ github.ref }}
-        draft: true
+        draft: false
         prerelease: true
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
