@@ -182,11 +182,15 @@ export class TransactionStatus {
     }
 
     isExecuted(): boolean {
-        return this.status == "executed" || this.status == "invalid";
+        return this.isSuccessful() || this.isInvalid();
     }
 
     isSuccessful(): boolean {
-        return this.status == "executed";
+        return this.status == "executed" || this.status == "success" || this.status == "successful";
+    }
+
+    isFailed(): boolean {
+        return this.status == "fail" || this.status == "failed" || this.status == "unsuccessful";
     }
 
     isInvalid(): boolean {
