@@ -9,8 +9,8 @@ import { guardType } from "./utils";
 import { TransactionPayload } from "./transactionPayload";
 import * as errors from "./errors";
 import { TypedEvent } from "./events";
-import keccak from "keccak";
 import { TransactionWatcher } from "./transactionWatcher";
+const createKeccakHash = require("keccak");
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
 
@@ -161,7 +161,7 @@ export class TransactionHash {
         // TODO: Fix this, to use the actual algorithm, not a dummy one.
         let dummyData = `this!is!not!the!real!hash!${JSON.stringify(transaction)}`;
         let buffer = Buffer.from(dummyData);
-        let hash = keccak("keccak256").update(buffer).digest();
+        let hash = createKeccakHash("keccak256").update(buffer).digest();
         return new TransactionHash(hash.toString("hex"));
     }
 }

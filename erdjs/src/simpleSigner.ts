@@ -3,7 +3,6 @@ import * as tweetnacl from "tweetnacl";
 import { ISigner, ISignable } from "./interface";
 import { Address } from "./address";
 import { Signature } from "./signature";
-const core = require("@elrondnetwork/elrond-core-js");
 import * as errors from "./errors";
 
 export const SEED_LENGTH = 32;
@@ -26,13 +25,6 @@ export class SimpleSigner implements ISigner {
         if (this.seed.length != SEED_LENGTH) {
             throw new errors.ErrInvalidArgument("seed");
         }
-    }
-
-    static fromWalletKey(walletKeyObject: any, password: string): ISigner {
-        let account = new core.account();
-        account.loadFromKeyFile(walletKeyObject, password);
-        let seed = account.privateKey.slice(0, 32);
-        return new SimpleSigner(seed);
     }
 
     async sign(signable: ISignable): Promise<void> {

@@ -7,11 +7,11 @@ import { Abi } from "./abi";
 import { Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
-import keccak from "keccak";
 import { ISmartContract as ISmartContract } from "./interface";
 import { ArwenVirtualMachine } from "./transactionPayloadBuilders";
 import { Nonce } from "../nonce";
 import { ContractFunction } from "./function";
+const createKeccakHash = require("keccak");
 
 export class SmartContract implements ISmartContract {
     private owner: Address = new Address();
@@ -156,7 +156,7 @@ export class SmartContract implements ISmartContract {
         let ownerNonceBytes = Buffer.alloc(8);
         ownerNonceBytes.writeBigUInt64LE(BigInt(nonce.value));
         let bytesToHash = Buffer.concat([ownerPubkey, ownerNonceBytes]);
-        let hash = keccak("keccak256").update(bytesToHash).digest();
+        let hash = createKeccakHash("keccak256").update(bytesToHash).digest();
         let vmTypeBytes = Buffer.from(ArwenVirtualMachine, "hex");
         let addressBytes = Buffer.concat([
             initialPadding,
