@@ -1,5 +1,5 @@
 import fs = require("fs");
-import { MyError } from "./errors";
+import { Err } from "@elrondnetwork/erdjs";
 
 export function readJSONFile<T>(ctor: new () => T, filePath: string): T {
     let plainObject = readJSONFileAsAny(filePath);
@@ -21,7 +21,7 @@ export function readTextFile(filePath: string): string {
 
 function guardFileExists(filePath: string) {
     if (!fs.existsSync(filePath)) {
-        throw new MyError({ message: `Missing file: ${filePath}` });
+        throw new Err(`Missing file: ${filePath}`);
     }
 }
 

@@ -72,7 +72,7 @@ def get_defaults() -> Dict[str, Any]:
         "proxy": "https://testnet-api.elrond.com",
         "chainID": "Testnet",
         "txVersion": "1",
-        "dependencies.arwentools.tag": "v0.3.35",
+        "dependencies.arwentools.tag": "v0.4.0-3-ge9b85fc",
         "dependencies.arwentools.urlTemplate.linux": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_linux_amd64.tar.gz",
         "dependencies.arwentools.urlTemplate.osx": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_darwin_amd64.tar.gz",
         "dependencies.llvm.tag": "v9-19feb",
@@ -92,6 +92,9 @@ def get_defaults() -> Dict[str, Any]:
         "dependencies.golang.tag": "go1.15.2",
         "dependencies.golang.urlTemplate.linux": "https://golang.org/dl/{TAG}.linux-amd64.tar.gz",
         "dependencies.golang.urlTemplate.osx": "https://golang.org/dl/{TAG}.darwin-amd64.tar.gz",
+        "dependencies.mcl_signer.tag": "v1.0.0",
+        "dependencies.mcl_signer.urlTemplate.linux": "https://github.com/ElrondNetwork/elrond-sdk-go-tools/releases/download/{TAG}/mcl_signer_{TAG}_ubuntu-latest.tar.gz",
+        "dependencies.mcl_signer.urlTemplate.osx": "https://github.com/ElrondNetwork/elrond-sdk-go-tools/releases/download/{TAG}/mcl_signer_{TAG}_macos-latest.tar.gz"
     }
 
 
