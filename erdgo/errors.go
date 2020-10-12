@@ -5,4 +5,5 @@ import "errors"
 var (
 	errInvalidPubkey  error = errors.New("Invalid pubkey")
 	errInvalidAddress error = errors.New("Invalid address")
+	errInvalidPemFile error = errors.New("Invalid .PEM file")
 )

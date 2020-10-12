@@ -4,6 +4,10 @@ import (
 	"crypto/hmac"
 	"crypto/sha512"
 	"encoding/binary"
+	"encoding/hex"
+	"encoding/pem"
+	"io/ioutil"
+	"os"
 
 	"github.com/ElrondNetwork/elrond-go/crypto/signing"
 	"github.com/ElrondNetwork/elrond-go/crypto/signing/ed25519"
@@ -65,6 +69,48 @@ func GetAddressFromPrivateKey(privateKeyBytes []byte) (string, error) {
 	}
 
 	return PubkeyToBech32(publicKeyBytes)
+}
+
+// LoadPrivateKeyFromPemFile loads a private key from a .pem file
+func LoadPrivateKeyFromPemFile(filename string) ([]byte, error) {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	blk, _ := pem.Decode(data)
+	if blk == nil {
+		return nil, errInvalidPemFile
+	}
+
+	return hex.DecodeString(string(blk.Bytes))
+}
+
+// SavePrivateKeyToPemFile saves the private key in a .pem file
+func SavePrivateKeyToPemFile(privateKey []byte, filename string) error {
+	address, err := GetAddressFromPrivateKey(privateKey)
+	if err != nil {
+		return err
+	}
+	if len(privateKey) <= pubkeyLen {
+		pubkey, err := Bech32ToPubkey(address)
+		if err != nil {
+			return err
+		}
+		privateKey = append(privateKey, pubkey...)
+	}
+	blk := pem.Block{
+		Type:  "PRIVATE KEY for " + address,
+		Bytes: []byte(hex.EncodeToString(privateKey)),
+	}
+	file, err := os.OpenFile(filename, os.O_CREATE|os.O_WRONLY, 0600)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		_ = file.Close()
+	}()
+
+	return pem.Encode(file, &blk)
 }
 
 func derivePrivateKey(seed []byte, path bip32Path) *bip32 {
