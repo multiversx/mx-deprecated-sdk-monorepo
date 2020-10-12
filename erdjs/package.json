@@ -1,11 +1,12 @@
 {
   "name": "@elrondnetwork/erdjs",
-  "version": "1.0.3-beta.7",
+  "version": "1.0.3-beta.8",
   "description": "Smart Contracts interaction framework",
   "main": "out/index.js",
   "types": "out/index.d.js",
   "files": [
-    "out/**/*"
+    "out/**/*",
+    "out-browser/**/*"
   ],
   "scripts": {
     "test": "mocha --timeout 80000",
