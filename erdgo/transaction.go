@@ -22,3 +22,63 @@ type Transaction struct {
 	ChainID   string `json:"chainID"`
 	Version   uint32 `json:"version"`
 }
+
+// TransactionStatus holds a transaction's status response from the network
+type TransactionStatus struct {
+	Data struct {
+		Status string `json:"status"`
+	} `json:"data"`
+	Error string `json:"error"`
+	Code  string `json:"code"`
+}
+
+// TransactionInfo holds a transaction info response from the network
+type TransactionInfo struct {
+	Data struct {
+		Type                              string `json:"type"`
+		Nonce                             uint64 `json:"nonce"`
+		Round                             uint64 `json:"round"`
+		Epoch                             uint64 `json:"epoch"`
+		Value                             string `json:"value"`
+		Receiver                          string `json:"receiver"`
+		Sender                            string `json:"sender"`
+		GasPrice                          uint64 `json:"gasPrice"`
+		GasLimit                          uint64 `json:"gasLimit"`
+		Data                              []byte `json:"data"`
+		Signature                         string `json:"signature"`
+		SourceShard                       uint32 `json:"sourceShard"`
+		DestinationShard                  uint32 `json:"destinationShard"`
+		BlockNonce                        uint64 `json:"blockNonce"`
+		BlockHash                         string `json:"blockHash"`
+		NotarizedAtSourceInMetaNonce      uint64 `json:"notarizedAtSourceInMetaNonce"`
+		NotarizedAtSourceInMetaHash       string `json:"NotarizedAtSourceInMetaHash"`
+		NotarizedAtDestinationInMetaNonce uint64 `json:"notarizedAtDestinationInMetaNonce"`
+		NotarizedAtDestinationInMetaHash  string `json:"notarizedAtDestinationInMetaHash"`
+		MiniblockType                     string `json:"miniblockType"`
+		MiniblockHash                     string `json:"miniblockHash"`
+		Status                            string `json:"status"`
+		HyperblockNonce                   uint64 `json:"hyperblockNonce"`
+		HyperblockHash                    string `json:"hyperblockHash"`
+	} `json:"data"`
+	Error string `json:"error"`
+	Code  string `json:"code"`
+}
+
+// BlockTransaction holds a transaction's info entry in a hyperblock
+type BlockTransaction struct {
+	Type             string `json:"type"`
+	Hash             string `json:"hash"`
+	Nonce            uint64 `json:"nonce"`
+	Value            string `json:"value"`
+	Receiver         string `json:"receiver"`
+	Sender           string `json:"sender"`
+	GasPrice         uint64 `json:"gasPrice"`
+	GasLimit         uint64 `json:"gasLimit"`
+	Data             []byte `json:"data"`
+	Signature        string `json:"signature"`
+	SourceShard      uint32 `json:"sourceShard"`
+	DestinationShard uint32 `json:"destinationShard"`
+	MiniblockType    string `json:"miniblockType"`
+	MiniblockHash    string `json:"miniblockHash"`
+	Status           string `json:"status"`
+}
