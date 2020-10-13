@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	proxyURL    = "https://api-testnet.elrond.com"
+	proxyURL    = "http://174.138.103.62:8079" // "https://api-testnet.elrond.com"
 	metachainID = 4294967295
 	// endpoints
 	networkConfigEndpoint        = "network/config"
@@ -123,6 +123,7 @@ func GetTransactionInfo(hash string) (*TransactionInfo, error) {
 	return response, nil
 }
 
+// GetLatestHyperblockNonce retrieves the latest hyperblock (metachain) nonce from the network
 func GetLatestHyperblockNonce() (uint64, error) {
 	endpoint := fmt.Sprintf(getNetworkStatusEndpoint, metachainID)
 	data, err := getHTTP(endpoint)

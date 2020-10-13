@@ -1,7 +1,5 @@
 package erdgo
 
-import "math/big"
-
 // AccountResponse holds the account endpoint response
 type AccountResponse struct {
 	Data struct {
@@ -13,10 +11,10 @@ type AccountResponse struct {
 
 // Account holds an Account's informations
 type Account struct {
-	Address  string   `json:"address"`
-	Nonce    uint64   `json:"nonce"`
-	Balance  *big.Int `json:"balance"`
-	Code     string   `json:"code"`
-	CodeHash []byte   `json:"codeHash"`
-	RootHash []byte   `json:"rootHash"`
+	Address  string `json:"address"`
+	Nonce    uint64 `json:"nonce"`
+	Balance  string `json:"balance"`
+	Code     string `json:"code"`
+	CodeHash []byte `json:"codeHash"`
+	RootHash []byte `json:"rootHash"`
 }

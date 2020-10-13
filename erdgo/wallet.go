@@ -45,10 +45,10 @@ func GenerateNewMnemonic() (string, error) {
 }
 
 // GetPrivateKeyFromMnemonic generates a private key based on mnemonic, accound and address index
-func GetPrivateKeyFromMnemonic(mnemonic string, account, addressIndex uint32) []byte {
+func GetPrivateKeyFromMnemonic(mnemonic string, account, addressIndex uint8) []byte {
 	seed := bip39.NewSeed(mnemonic, "")
-	egldPath[2] = account | hardened
-	egldPath[4] = addressIndex | hardened
+	egldPath[2] = uint32(account) | hardened
+	egldPath[4] = uint32(addressIndex) | hardened
 	keyData := derivePrivateKey(seed, egldPath)
 
 	return keyData.Key

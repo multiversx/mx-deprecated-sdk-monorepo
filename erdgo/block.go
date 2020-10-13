@@ -8,12 +8,12 @@ type Hyperblock struct {
 	PrevBlockHash string `json:"prevBlockHash"`
 	Epoch         uint64 `json:"epoch"`
 	NumTxs        uint64 `json:"numTxs"`
-	ShardBlocks   map[uint32]struct {
+	ShardBlocks   []struct {
 		Hash  string `json:"hash"`
 		Nonce uint64 `json:"nonce"`
 		Shard uint32 `json:"shard"`
-	} `json:"shardBlocks`
-	Transactions map[uint32]BlockTransaction
+	} `json:"shardBlocks"`
+	Transactions []BlockTransaction
 }
 
 // HyperblockResponse holds a hyperblock info response from the network
