@@ -13,7 +13,7 @@ type Hyperblock struct {
 		Nonce uint64 `json:"nonce"`
 		Shard uint32 `json:"shard"`
 	} `json:"shardBlocks"`
-	Transactions []BlockTransaction
+	Transactions []TransactionOnNetwork
 }
 
 // HyperblockResponse holds a hyperblock info response from the network

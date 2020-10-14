@@ -35,14 +35,14 @@ type TransactionStatus struct {
 // TransactionInfo holds a transaction info response from the network
 type TransactionInfo struct {
 	Data struct {
-		Transaction BlockTransaction `json:"transaction"`
+		Transaction TransactionOnNetwork `json:"transaction"`
 	} `json:"data"`
 	Error string `json:"error"`
 	Code  string `json:"code"`
 }
 
-// BlockTransaction holds a transaction's info entry in a hyperblock
-type BlockTransaction struct {
+// TransactionOnNetwork holds a transaction's info entry in a hyperblock
+type TransactionOnNetwork struct {
 	Type             string `json:"type"`
 	Hash             string `json:"hash"`
 	Nonce            uint64 `json:"nonce"`
@@ -58,4 +58,6 @@ type BlockTransaction struct {
 	MiniblockType    string `json:"miniblockType"`
 	MiniblockHash    string `json:"miniblockHash"`
 	Status           string `json:"status"`
+	HyperblockNonce  uint64 `json:"hyperblockNonce"`
+	HyperblockHash   string `json:"hyperblockHash"`
 }

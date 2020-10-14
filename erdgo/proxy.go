@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	proxyURL    = "http://174.138.103.62:8079" // "https://api-testnet.elrond.com"
 	metachainID = 4294967295
+
 	// endpoints
 	networkConfigEndpoint        = "network/config"
 	accountEndpoint              = "address/%s"
@@ -23,9 +23,23 @@ const (
 	getNetworkStatusEndpoint     = "network/status/%v"
 )
 
+// ElrondProxy implements basic functions for interacting with an Elrond Proxy
+type ElrondProxy struct {
+	proxyURL string
+}
+
+// NewElrondProxy initializes and returns an ElrondProxy object
+func NewElrondProxy(url string) *ElrondProxy {
+	ep := &ElrondProxy{
+		proxyURL: url,
+	}
+
+	return ep
+}
+
 // GetNetworkConfig retrieves the network configuration from the proxy
-func GetNetworkConfig() (*NetworkConfig, error) {
-	data, err := getHTTP(networkConfigEndpoint)
+func (ep *ElrondProxy) GetNetworkConfig() (*NetworkConfig, error) {
+	data, err := ep.getHTTP(networkConfigEndpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -42,12 +56,12 @@ func GetNetworkConfig() (*NetworkConfig, error) {
 }
 
 // GetAccount retrieves an account info from the network (nonce, balance)
-func GetAccount(address string) (*Account, error) {
+func (ep *ElrondProxy) GetAccount(address string) (*Account, error) {
 	if !IsValidBech32Address(address) {
 		return nil, errInvalidAddress
 	}
 	endpoint := fmt.Sprintf(accountEndpoint, address)
-	data, err := getHTTP(endpoint)
+	data, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -64,12 +78,12 @@ func GetAccount(address string) (*Account, error) {
 }
 
 // SendTransaction broadcasts a transaction to the network and returns the txhash if successful
-func SendTransaction(tx *Transaction) (string, error) {
+func (ep *ElrondProxy) SendTransaction(tx *Transaction) (string, error) {
 	jsonTx, err := json.Marshal(tx)
 	if err != nil {
 		return "", err
 	}
-	data, err := postHTTP(sendTransactionEndpoint, jsonTx)
+	data, err := ep.postHTTP(sendTransactionEndpoint, jsonTx)
 	if err != nil {
 		return "", err
 	}
@@ -86,9 +100,9 @@ func SendTransaction(tx *Transaction) (string, error) {
 }
 
 // GetTransactionStatus retrieves a transaction's status from the network
-func GetTransactionStatus(hash string) (string, error) {
+func (ep *ElrondProxy) GetTransactionStatus(hash string) (string, error) {
 	endpoint := fmt.Sprintf(getTransactionStatusEndpoint, hash)
-	data, err := getHTTP(endpoint)
+	data, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return "", err
 	}
@@ -105,9 +119,9 @@ func GetTransactionStatus(hash string) (string, error) {
 }
 
 // GetTransactionInfo retrieves a transaction's details from the network
-func GetTransactionInfo(hash string) (*TransactionInfo, error) {
+func (ep *ElrondProxy) GetTransactionInfo(hash string) (*TransactionInfo, error) {
 	endpoint := fmt.Sprintf(getTransactionInfoEndpoint, hash)
-	data, err := getHTTP(endpoint)
+	data, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -124,9 +138,9 @@ func GetTransactionInfo(hash string) (*TransactionInfo, error) {
 }
 
 // GetLatestHyperblockNonce retrieves the latest hyperblock (metachain) nonce from the network
-func GetLatestHyperblockNonce() (uint64, error) {
+func (ep *ElrondProxy) GetLatestHyperblockNonce() (uint64, error) {
 	endpoint := fmt.Sprintf(getNetworkStatusEndpoint, metachainID)
-	data, err := getHTTP(endpoint)
+	data, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return 0, err
 	}
@@ -143,21 +157,21 @@ func GetLatestHyperblockNonce() (uint64, error) {
 }
 
 // GetHyperblockByNonce retrieves a hyperblock's info by nonce from the network
-func GetHyperblockByNonce(nonce uint64) (*Hyperblock, error) {
+func (ep *ElrondProxy) GetHyperblockByNonce(nonce uint64) (*Hyperblock, error) {
 	endpoint := fmt.Sprintf(getHyperblockByNonceEndpoint, nonce)
 
-	return getHyperblock(endpoint)
+	return ep.getHyperblock(endpoint)
 }
 
 // GetHyperblockByHash retrieves a hyperblock's info by hash from the network
-func GetHyperblockByHash(hash string) (*Hyperblock, error) {
+func (ep *ElrondProxy) GetHyperblockByHash(hash string) (*Hyperblock, error) {
 	endpoint := fmt.Sprintf(getHyperblockByHashEndpoint, hash)
 
-	return getHyperblock(endpoint)
+	return ep.getHyperblock(endpoint)
 }
 
-func getHyperblock(endpoint string) (*Hyperblock, error) {
-	data, err := getHTTP(endpoint)
+func (ep *ElrondProxy) getHyperblock(endpoint string) (*Hyperblock, error) {
+	data, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return nil, err
 	}
@@ -173,8 +187,8 @@ func getHyperblock(endpoint string) (*Hyperblock, error) {
 	return &response.Data.Hyperblock, nil
 }
 
-func getHTTP(endpoint string) ([]byte, error) {
-	url := fmt.Sprintf("%s/%s", proxyURL, endpoint)
+func (ep *ElrondProxy) getHTTP(endpoint string) ([]byte, error) {
+	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
@@ -195,8 +209,8 @@ func getHTTP(endpoint string) ([]byte, error) {
 	return body, nil
 }
 
-func postHTTP(endpoint string, data []byte) ([]byte, error) {
-	url := fmt.Sprintf("%s/%s", proxyURL, endpoint)
+func (ep *ElrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
+	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
 	response, err := http.Post(url, "", strings.NewReader(string(data)))
 	if err != nil {
 		return nil, err

@@ -9,10 +9,12 @@ import (
 )
 
 func main() {
+	ep := erdgo.NewElrondProxy("http://174.138.103.62:8079")
+
 	// Load a wallet .PEM file
-	privateKey, err := erdgo.LoadPrivateKeyFromPemFile("walletKey.pem")
+	privateKey, err := erdgo.LoadPrivateKeyFromPemFile("../../tests/alice.pem")
 	if err != nil {
-		fmt.Printf("Unable to load walletKey.pem: %s\n\r", err)
+		fmt.Printf("Unable to load alice.pem: %s\n\r", err)
 		return
 	}
 	// Generate address from private key
@@ -22,13 +24,13 @@ func main() {
 		return
 	}
 	// Get account info
-	account, err := erdgo.GetAccount(address)
+	account, err := ep.GetAccount(address)
 	if err != nil {
 		fmt.Printf("Error retrieving account info: %s\n\r", err)
 		return
 	}
 	// Get network configuration
-	networkConfig, err := erdgo.GetNetworkConfig()
+	networkConfig, err := ep.GetNetworkConfig()
 	if err != nil {
 		fmt.Printf("Error retrieving network config: %s\n\r", err)
 		return
@@ -52,7 +54,7 @@ func main() {
 		return
 	}
 	// Broadcast the transaction
-	hash, err := erdgo.SendTransaction(tx)
+	hash, err := ep.SendTransaction(tx)
 	if err != nil {
 		fmt.Printf("Error sending transaction: %s\n\r", err)
 		return
@@ -61,7 +63,7 @@ func main() {
 	fmt.Println("Waiting 30s for the transaction to be notarized...")
 	time.Sleep(time.Second * 30)
 	// Get transaction info
-	txInfo, err := erdgo.GetTransactionInfo(hash)
+	txInfo, err := ep.GetTransactionInfo(hash)
 	if err != nil {
 		fmt.Printf("Error retrieving transaction info: %s\n\r", err)
 		return

@@ -8,6 +8,8 @@ import (
 )
 
 func main() {
+	ep := erdgo.NewElrondProxy("http://174.138.103.62:8079")
+
 	// Generating new mnemonic wallet
 	mnemonic, err := erdgo.GenerateNewMnemonic()
 	if err != nil {
@@ -36,7 +38,7 @@ func main() {
 	fmt.Printf("Public key: %s\n\r", hex.EncodeToString(pubkey))
 
 	// Retrieving network configuration parameters
-	networkConfig, err := erdgo.GetNetworkConfig()
+	networkConfig, err := ep.GetNetworkConfig()
 	if err != nil {
 		fmt.Printf("Error getting network config: %s\n\r", err)
 		return
@@ -48,7 +50,7 @@ func main() {
 
 	// Save the private key to a .PEM file and reload it
 	walletFilename := "test.pem"
-	erdgo.SavePrivateKeyToPemFile(privateKey, walletFilename)
+	_ = erdgo.SavePrivateKeyToPemFile(privateKey, walletFilename)
 	privateKey, err = erdgo.LoadPrivateKeyFromPemFile(walletFilename)
 	// Generate the address from the loaded private key
 	address2, err := erdgo.GetAddressFromPrivateKey(privateKey)

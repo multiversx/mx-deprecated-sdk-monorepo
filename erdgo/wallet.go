@@ -44,7 +44,7 @@ func GenerateNewMnemonic() (string, error) {
 	return bip39.NewMnemonic(entropy)
 }
 
-// GetPrivateKeyFromMnemonic generates a private key based on mnemonic, accound and address index
+// GetPrivateKeyFromMnemonic generates a private key based on mnemonic, account and address index
 func GetPrivateKeyFromMnemonic(mnemonic string, account, addressIndex uint8) []byte {
 	seed := bip39.NewSeed(mnemonic, "")
 	egldPath[2] = uint32(account) | hardened

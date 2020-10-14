@@ -2,9 +2,7 @@ package erdgo
 
 import (
 	"encoding/hex"
-	"fmt"
 	"math"
-	"regexp"
 
 	"github.com/btcsuite/btcutil/bech32"
 )
@@ -31,11 +29,12 @@ func IsValidBech32Address(address string) bool {
 
 // IsValidPubkey returns true if the provided parameter is a valid pubkey and false otherwise
 func IsValidPubkey(strPubkey string) bool {
-	hexDigitsPerByte := 2
-	exp := fmt.Sprintf("[0-9a-fA-F]{%v}", pubkeyLen*hexDigitsPerByte)
-	re := regexp.MustCompile(exp)
+	bytes, err := hex.DecodeString(strPubkey)
+	if err != nil {
+		return false
+	}
 
-	return re.MatchString(strPubkey)
+	return len(bytes) == pubkeyLen
 }
 
 // PubkeyToBech32 converts a pubkey to an Elrond bech32 address
