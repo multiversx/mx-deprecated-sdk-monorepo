@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"time"
 
 	"github.com/ElrondNetwork/elrond-sdk/erdgo"
 )
@@ -49,7 +50,8 @@ func main() {
 	fmt.Printf("Address: %s on shard %v\n\r", address, shard)
 
 	// Save the private key to a .PEM file and reload it
-	walletFilename := "test.pem"
+	walletFilename := fmt.Sprintf("test%v.pem", time.Now().Unix())
+	fmt.Printf("PEM file saved as %s\n\r", walletFilename)
 	_ = erdgo.SavePrivateKeyToPemFile(privateKey, walletFilename)
 	privateKey, err = erdgo.LoadPrivateKeyFromPemFile(walletFilename)
 	// Generate the address from the loaded private key
