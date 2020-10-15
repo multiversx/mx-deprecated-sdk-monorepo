@@ -16,6 +16,7 @@ setuptools.setup(
     packages=setuptools.find_packages(
         include=["erdpy*"], exclude=["examples*"]),
     include_package_data=True,
+    setup_requires=["wheel"],
     install_requires=[
         "toml==0.10.0", "bottle", "requests", "pynacl", "pycryptodomex", "cryptography"
     ],
