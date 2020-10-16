@@ -118,18 +118,21 @@ func derivePrivateKey(seed []byte, path bip32Path) *bip32 {
 	digest := hmac.New(sha512.New, []byte("ed25519 seed"))
 	digest.Write(seed)
 	intermediary := digest.Sum(nil)
-	b.Key = intermediary[:32]
-	b.ChainCode = intermediary[32:]
+	serializedKeyLen := 32
+	serializedChildIndexLen := 4
+	hardenedChildPadding := byte(0x00)
+	b.Key = intermediary[:serializedKeyLen]
+	b.ChainCode = intermediary[serializedKeyLen:]
 	for _, childIdx := range path {
-		data := make([]byte, 1+32+4)
-		data[0] = 0x00
-		copy(data[1:1+32], b.Key)
-		binary.BigEndian.PutUint32(data[1+32:1+32+4], childIdx)
+		data := make([]byte, 1+serializedKeyLen+4)
+		data[0] = hardenedChildPadding
+		copy(data[1:1+serializedKeyLen], b.Key)
+		binary.BigEndian.PutUint32(data[1+serializedKeyLen:1+serializedKeyLen+serializedChildIndexLen], childIdx)
 		digest = hmac.New(sha512.New, b.ChainCode)
 		digest.Write(data)
 		intermediary = digest.Sum(nil)
-		b.Key = intermediary[:32]
-		b.ChainCode = intermediary[32:]
+		b.Key = intermediary[:serializedKeyLen]
+		b.ChainCode = intermediary[serializedKeyLen:]
 	}
 
 	return b
