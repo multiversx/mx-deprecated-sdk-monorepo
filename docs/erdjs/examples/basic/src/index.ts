@@ -1,5 +1,4 @@
-import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner, SimpleSigner, GasLimit, Account } from "@elrondnetwork/erdjs";
-import { Err } from "@elrondnetwork/erdjs/out/errors";
+import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner, SimpleSigner, GasLimit, Account, Err } from "@elrondnetwork/erdjs";
 
 declare var $: any;
 
@@ -67,8 +66,8 @@ $(async function () {
 
     $("#QueryButton").click(async function () {
         try {
-            await transaction.query(provider);
-            displayObject("QueriedTransactionContainer", transaction.queryLocally());
+            await transaction.getAsOnNetwork(provider);
+            displayObject("QueriedTransactionContainer", transaction.getAsOnNetworkCached());
         } catch (error) {
             onError(error);
         }

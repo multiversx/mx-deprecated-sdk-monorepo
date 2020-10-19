@@ -26,7 +26,6 @@
         "build": true,
         "dist": true
     },
-    "python.pythonPath": "python3",
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true,
