@@ -7,6 +7,8 @@ This is a monorepo containing the following:
 | Component   |      Type      |  Documentation | API | Changelog | CLI | Distribution
 |----------|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
 | erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/tools/erdpy) | Sphinx (TBD) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) | [erdpy-up](https://docs.elrond.com/tools/erdpy/installing-erdpy#install-using-erdpy-up) and [PyPi](https://pypi.org/project/erdpy/#history)
+| erdgo | Go SDK | [pkg.go.dev](https://pkg.go.dev/github.com/ElrondNetwork/elrond-sdk/erdgo) | N / A | [CHANGELOG](erdgo/CHANGELOG.md) | [CLI](erdgo/README.md)  | `go.mod` (Github)
+| erdjava | Java SDK | [JavaDoc](https://elrondnetwork.github.io/elrond-sdk-docs/erdjava) | N / A | [CHANGELOG](erdjava/CHANGELOG.md) | [CLI](erdjava/README.md)  | Source code (Github)
 | erdjs |    TypeScript SDK   | TBD | [TypeDoc](https://elrondnetwork.github.io/elrond-sdk/erdjs/api/index.html) | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdjs)
 | erdtestjs |    TypeScript SDK   |  TBD | TypeDoc (TBD) | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdtestjs)
 | erdwalletjs-cli | NodeJS CLI | TBD | N / A | [CHANGELOG](erdwalletjs-cli/CHANGELOG.md) | [CLI](erdwalletjs-cli/README.md)  | [npm](https://www.npmjs.com/package/@elrondnetwork/erdwalletjs-cli)
