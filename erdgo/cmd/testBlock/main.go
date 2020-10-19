@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	ep := erdgo.NewElrondProxy("http://174.138.103.62:8079")
+	ep := erdgo.NewElrondProxy("http://localhost:8079")
 
 	// Get latest hyperblock (metachain) nonce
 	nonce, err := ep.GetLatestHyperblockNonce()

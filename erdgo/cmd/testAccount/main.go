@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	ep := erdgo.NewElrondProxy("http://174.138.103.62:8079")
+	ep := erdgo.NewElrondProxy("http://localhost:8079")
 
 	// Retrieving network configuration parameters
 	networkConfig, err := ep.GetNetworkConfig()
