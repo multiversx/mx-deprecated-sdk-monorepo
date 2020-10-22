@@ -13,7 +13,7 @@ public class BroadcastTest {
     private final ProxyProvider provider;
 
     public BroadcastTest() {
-        this.provider = new ProxyProvider("https://testnet-api.elrond.com");
+        this.provider = new ProxyProvider("https://api-testnet.elrond.com");
     }
 
     @Test

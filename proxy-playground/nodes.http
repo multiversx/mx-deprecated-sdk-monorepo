@@ -1,4 +1,4 @@
-@proxyUrl = https://testnet-api.elrond.com
+@proxyUrl = https://api-testnet.elrond.com
 @observerUrl = http://localhost:8080
 
 ###

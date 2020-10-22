@@ -20,7 +20,7 @@ GAS_LIMIT = 50000
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("--proxy", default="https://testnet-api.elrond.com")
+    parser.add_argument("--proxy", default="https://api-testnet.elrond.com")
     parser.add_argument("--pem", required=True)
     parser.add_argument("--bulk-size", type=int, default=50, help="how many transactions to send in bulk")
     parser.add_argument("--sleep-before-recall", type=int, default=5, help="how many seconds to sleep before recalling nonce")
