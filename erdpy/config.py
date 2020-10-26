@@ -3,8 +3,6 @@ from typing import Any, Dict
 
 from erdpy import errors, utils
 
-MODULES_CONFIG_URL = "https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/master/deps.json"
-
 ROOT_FOLDER_NAME = "elrondsdk"
 CONFIG_PATH = os.path.expanduser("~/elrondsdk/erdpy.json")
 
@@ -69,10 +67,10 @@ def _guard_valid_name(name: str):
 
 def get_defaults() -> Dict[str, Any]:
     return {
-        "proxy": "https://testnet-api.elrond.com",
-        "chainID": "Testnet",
+        "proxy": "https://api-testnet.elrond.com",
+        "chainID": "T",
         "txVersion": "1",
-        "dependencies.arwentools.tag": "v0.4.0-3-ge9b85fc",
+        "dependencies.arwentools.tag": "v0.4.1",
         "dependencies.arwentools.urlTemplate.linux": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_linux_amd64.tar.gz",
         "dependencies.arwentools.urlTemplate.osx": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_darwin_amd64.tar.gz",
         "dependencies.llvm.tag": "v9-19feb",
@@ -80,7 +78,7 @@ def get_defaults() -> Dict[str, Any]:
         "dependencies.llvm.urlTemplate.osx": "https://ide.elrond.com/vendor-llvm/{TAG}/darwin-amd64.tar.gz?t=19feb",
         "dependencies.rust.tag": "",
         "dependencies.nodejs.tag": "v12.18.3",
-        "dependencies.nodejs.urlTemplate.linux": "https://nodejs.org/dist/{TAG}/node-{TAG}-linux-x64.tar.xz",
+        "dependencies.nodejs.urlTemplate.linux": "https://nodejs.org/dist/{TAG}/node-{TAG}-linux-x64.tar.gz",
         "dependencies.nodejs.urlTemplate.osx": "https://nodejs.org/dist/{TAG}/node-{TAG}-darwin-x64.tar.gz",
         "dependencies.elrond_go.tag": "master",
         "dependencies.elrond_go.urlTemplate.linux": "https://github.com/ElrondNetwork/elrond-go/archive/{TAG}.tar.gz",

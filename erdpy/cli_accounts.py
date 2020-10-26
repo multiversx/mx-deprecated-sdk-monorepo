@@ -1,10 +1,9 @@
-from erdpy import utils
-from erdpy.accounts import Address
-from erdpy.proxy.core import ElrondProxy
-from erdpy import cli_shared
 import logging
 from typing import Any
 
+from erdpy import cli_shared, utils
+from erdpy.accounts import Address
+from erdpy.proxy.core import ElrondProxy
 
 logger = logging.getLogger("cli.accounts")
 
@@ -19,6 +18,7 @@ def setup_parser(subparsers: Any) -> Any:
     mutex = sub.add_mutually_exclusive_group()
     mutex.add_argument("--balance", action="store_true", help="whether to only fetch the balance")
     mutex.add_argument("--nonce", action="store_true", help="whether to only fetch the nonce")
+    cli_shared.add_omit_fields_arg(sub)
     sub.set_defaults(func=get_account)
 
     sub = cli_shared.add_command_subparser(subparsers, "account", "get-transactions", "Query account transactions")
@@ -40,13 +40,15 @@ def get_account(args: Any):
     address = args.address
     proxy = ElrondProxy(proxy_url)
     account = proxy.get_account(Address(address))
+    omit_fields = cli_shared.parse_omit_fields_arg(args)
 
     if args.balance:
         print(account.get("balance", 0))
     elif args.nonce:
         print(account.get("nonce", 0))
     else:
-        print(account)
+        utils.omit_fields(account, omit_fields)
+        utils.dump_out_json(account)
 
 
 def get_account_transactions(args: Any):

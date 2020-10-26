@@ -10,6 +10,7 @@ import erdpy.cli_blockatlas
 import erdpy.cli_config
 import erdpy.cli_contracts
 import erdpy.cli_cost
+import erdpy.cli_data
 import erdpy.cli_deps
 import erdpy.cli_dispatcher
 import erdpy.cli_network
@@ -17,7 +18,7 @@ import erdpy.cli_testnet
 import erdpy.cli_transactions
 import erdpy.cli_validators
 import erdpy.cli_wallet
-from erdpy import errors
+from erdpy import errors, scope
 from erdpy._version import __version__
 
 logger = logging.getLogger("cli")
@@ -29,9 +30,15 @@ def main():
     except errors.KnownError as err:
         logger.critical(err.get_pretty())
         sys.exit(1)
+    except KeyboardInterrupt:
+        print("erdpy process killed by user.")
+        sys.exit(1)
 
 
 def _do_main():
+    logging.basicConfig(level=logging.INFO)
+    scope.initialize()
+
     parser = setup_parser()
     args = parser.parse_args()
 
@@ -85,6 +92,7 @@ https://docs.elrond.com/tools/erdpy.
     commands.append(erdpy.cli_config.setup_parser(subparsers))
     commands.append(erdpy.cli_block.setup_parser(subparsers))
     commands.append(erdpy.cli_testnet.setup_parser(subparsers))
+    commands.append(erdpy.cli_data.setup_parser(subparsers))
 
     parser.epilog = """
 ----------------------
