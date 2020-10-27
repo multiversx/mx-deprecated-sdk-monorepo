@@ -5,20 +5,18 @@ import * as errors from "./errors";
 import { Nonce } from "./nonce";
 import { GasLimit, GasPrice } from "./networkParams";
 import { Account } from "./account";
-import { MockProvider } from "./testutils/mockProvider";
-import { SimpleSigner } from "./simpleSigner";
-import { Address } from "./address";
 import { TransactionPayload } from "./transactionPayload";
 import { ProxyProvider } from "./proxyProvider";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
+import { TestWallets } from "./testutils/wallets";
 
 
 describe("test transaction", () => {
-    let provider = new MockProvider();
-    let aliceSigner = new SimpleSigner("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9");
-    let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
-    let alice = new Account(aliceAddress);
+    let wallets = new TestWallets();
+    let aliceWallet = wallets.alice;
+    let alice = new Account(aliceWallet.address);
+    let aliceSigner = aliceWallet.signer;
     
     let nonce: any = 42;
     let gasLimit: any = 42;
@@ -43,13 +41,14 @@ describe("test transaction", () => {
         let transactionOne = new Transaction({
             data: new TransactionPayload("helloWorld"),
             gasLimit: new GasLimit(70000),
-            receiver: aliceAddress
+            receiver: alice.address,
+            value: Balance.eGLD(1000)
         });
 
         let transactionTwo = new Transaction({
             data: new TransactionPayload("helloWorld"),
             gasLimit: new GasLimit(70000),
-            receiver: aliceAddress,
+            receiver: alice.address,
             value: Balance.eGLD(1000000)
         });
 
