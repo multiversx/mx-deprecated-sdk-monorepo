@@ -8,12 +8,11 @@ import { GasLimit } from "../networkParams";
 import { SimpleSigner } from "../simpleSigner";
 import { MockProvider, Wait } from "../mockProvider";
 import { TransactionWatcher } from "../transactionWatcher";
-import { Transaction, TransactionStatus } from "../transaction";
+import { TransactionStatus } from "../transaction";
 import { Argument } from "./argument";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { ProxyProvider } from "../proxyProvider";
-import { TransactionPayload } from "../transactionPayload";
 import { NetworkConfig } from "../networkConfig";
 
 
@@ -51,7 +50,7 @@ describe("test contract", () => {
         await alice.sync(provider);
         deployTransaction.setNonce(alice.nonce);
 
-        assert.equal(deployTransaction.data.decoded(), "01020304@0500@0000");
+        assert.equal(deployTransaction.data.decoded(), "01020304@0500@0100");
         assert.equal(deployTransaction.gasLimit.value, 1000000);
         assert.equal(deployTransaction.nonce.value, 42);
 
