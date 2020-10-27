@@ -4,6 +4,34 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [0.9.3] - 26.10.2020
+ - Add better output for simulated deployments.
+
+## [0.9.2] - 26.10.2020
+ - Do not build `.hex` file anymore at `contract build`.
+ - Patch field `name` in contract templates / mandos tests.
+ - Patch logging and log-level for local testnet. Include `arwen` logs.
+ - Optimize local testnet: **no observers, only 4 DNS contracts, less waiting time.**
+ - Fix `testnet clean` (when folder is missing).
+ - Implement global scope. Initialize `chainID` and `proxy` parameters from `testnet.toml`, if any. 
+ - Add `erdpy data` sub-command to parse files, store and load key-value pairs. Useful for IDE snippets, but not limited to.
+ - Pretty handling of `Ctrl+C`, overall.
+ - Reference newest **Mandos**.
+ - For NodeJS dependency, add a symlink to latest version. Set `env` for nodejs execution. Will be used for `erdtestjs` etc.
+ - Prettier dump of `account` json (`erdpy get account`).
+ - Support `omit-fields` parameter (when dumping) for `account get` and `tx get`.
+
+## [0.9.1] - 15.10.2020
+ - Adjust `erdpy validator` commands to use the `MCL signer` (external component).
+ - Fix `erdpy account` with flags `--nonce, --balance`.
+ - Possible fix for setup / installation: https://github.com/ElrondNetwork/elrond-sdk/issues/58.
+
+## [0.8.9] - 09.10.2020
+ - Minor `erdpy-up` improvements.
+ - Minor `erdpy testnet ...` fixes regarding the patched configuration of the Node (`config.toml`).
+ - Reference newest `arwentools`.
+ - Fix response casing for `contract query`.
+
 ## [0.8.7] - 29.09.2020
  - Allow one to start a local testnet via `erdpy testnet ...` commands.
  - Simulate transactions via `--simulate` flag (both regular and smart contract transactions).

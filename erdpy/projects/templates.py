@@ -180,7 +180,7 @@ class TemplateRust(Template):
         self._replace_in_files(
             [lib_path],
             [
-                (f"pub use {self.template_name.replace('-', '_')}::*", f"use {self.project_name.replace('-', '_')}::*")
+                (f"use {self.template_name.replace('-', '_')}::*", f"use {self.project_name.replace('-', '_')}::*")
             ]
         )
 
@@ -225,6 +225,12 @@ class TemplateRust(Template):
                 (f"{self.template_name}.wasm", f"{self.project_name}.wasm")
             ]
         )
+
+        for file in test_paths:
+            data = utils.read_json_file(file)
+            # Patch fields
+            data["name"] = data.get("name", "").replace(self.template_name, self.project_name)
+            utils.write_json_file(file, data)
 
     def _replace_in_files(self, files, replacements):
         for file in files:

@@ -63,6 +63,7 @@ class StandaloneModule(DependencyModule):
             aliases = list()
 
         super().__init__(key, aliases)
+        self.archive_type = "tar.gz"
 
     def _do_install(self, tag: str):
         self._download(tag)
@@ -83,7 +84,13 @@ class StandaloneModule(DependencyModule):
     def _extract(self, tag: str):
         archive_path = self._get_archive_path(tag)
         destination_folder = self.get_directory(tag)
-        utils.untar(archive_path, destination_folder)
+
+        if self.archive_type == "tar.gz":
+            utils.untar(archive_path, destination_folder)
+        elif self.archive_type == "zip":
+            utils.unzip(archive_path, destination_folder)
+        else:
+            raise errors.UnknownArchiveType(self.archive_type)
 
     def get_directory(self, tag: str):
         folder = path.join(self.get_parent_directory(), tag)
@@ -104,7 +111,7 @@ class StandaloneModule(DependencyModule):
 
     def _get_archive_path(self, tag: str) -> str:
         tools_folder = workstation.get_tools_folder()
-        archive = path.join(tools_folder, f"{self.key}.{tag}.tar.gz")
+        archive = path.join(tools_folder, f"{self.key}.{tag}.{self.archive_type}")
         return archive
 
 
@@ -162,10 +169,19 @@ class NodejsModule(StandaloneModule):
         super().__init__(key, aliases)
 
     def _post_install(self, tag: str):
-        pass
+        # We'll create a symlink towards the payload folder
+        subfolder_to_bypass = self._get_download_url(tag).split("/")[-1]
+        subfolder_to_bypass = subfolder_to_bypass.replace(f".{self.archive_type}", "")
+        payload_folder = path.join(self.get_directory(tag), subfolder_to_bypass)
+        link = path.join(self.get_parent_directory(), "latest")
+
+        utils.symlink(payload_folder, link)
 
     def get_env(self):
+        bin_folder = path.join(self.get_parent_directory(), "latest", "bin")
+
         return {
+            "PATH": f"{bin_folder}:{os.environ['PATH']}",
         }
 
 
@@ -213,3 +229,15 @@ class Rust(DependencyModule):
             "RUSTUP_HOME": directory,
             "CARGO_HOME": directory
         }
+
+
+class MclSignerModule(StandaloneModule):
+    def __init__(self, key: str, aliases: List[str] = None):
+        if aliases is None:
+            aliases = list()
+
+        super().__init__(key, aliases)
+
+    def _post_install(self, tag: str):
+        directory = self.get_directory(tag)
+        utils.mark_executable(path.join(directory, "signer"))

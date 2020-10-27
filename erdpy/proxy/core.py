@@ -1,7 +1,7 @@
 import logging
 from typing import Any, List, Tuple
 
-from erdpy import utils
+from erdpy import transactions, utils
 from erdpy.accounts import Address
 from erdpy.proxy.http_facade import do_get, do_post
 from erdpy.proxy.messages import NetworkConfig
@@ -31,7 +31,8 @@ class ElrondProxy:
     def get_account(self, address: Address):
         url = f"{self.url}/address/{address.bech32()}"
         response = do_get(url)
-        return response
+        account = response.get("account", dict())
+        return account
 
     def get_account_transactions(self, address: Address):
         TRUNCATE_DATA_THRESHOLD = 75
@@ -87,7 +88,6 @@ class ElrondProxy:
 
     def simulate_transaction(self, payload: Any) -> str:
         url = f"{self.url}/transaction/simulate"
-        utils.dump_out_json(payload)
         response = do_post(url, payload)
         return response
 
@@ -110,7 +110,8 @@ class ElrondProxy:
             url = f"{self.url}/transaction/{tx_hash}?sender={sender_address}"
 
         response = do_get(url)
-        return response
+        transaction = response.get("transaction", dict())
+        return transaction
 
     def get_hyperblock(self, key) -> Any:
         url = f"{self.url}/hyperblock/by-hash/{key}"
