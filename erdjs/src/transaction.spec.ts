@@ -5,7 +5,7 @@ import * as errors from "./errors";
 import { Nonce } from "./nonce";
 import { GasLimit, GasPrice } from "./networkParams";
 import { Account } from "./account";
-import { MockProvider } from "./mockProvider";
+import { MockProvider } from "./testutils/mockProvider";
 import { SimpleSigner } from "./simpleSigner";
 import { Address } from "./address";
 import { TransactionPayload } from "./transactionPayload";

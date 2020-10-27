@@ -6,7 +6,7 @@ import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
 import { SimpleSigner } from "../simpleSigner";
-import { MockProvider, Wait } from "../mockProvider";
+import { MockProvider, Wait } from "../testutils/mockProvider";
 import { TransactionWatcher } from "../transactionWatcher";
 import { TransactionStatus } from "../transaction";
 import { Argument } from "./argument";
@@ -14,13 +14,15 @@ import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { ProxyProvider } from "../proxyProvider";
 import { NetworkConfig } from "../networkConfig";
+import { TestWallets } from "../testutils/wallets";
 
 
 describe("test contract", () => {
     let provider = new MockProvider();
-    let aliceSigner = new SimpleSigner("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9");
-    let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
-    let alice = new Account(aliceAddress);
+    let wallets = new TestWallets();
+    let aliceWallet = wallets.alice;
+    let alice = new Account(aliceWallet.address);
+    let aliceSigner = aliceWallet.signer;
 
     it("should compute contract address", async () => {
         let owner = new Address("93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e");
@@ -43,7 +45,7 @@ describe("test contract", () => {
             gasLimit: new GasLimit(1000000)
         });
 
-        provider.mockUpdateAccount(aliceAddress, account => {
+        provider.mockUpdateAccount(alice.address, account => {
             account.nonce = new Nonce(42);
         });
 
@@ -56,7 +58,7 @@ describe("test contract", () => {
 
         // Sign transaction, then check contract address (should be computed upon signing)
         aliceSigner.sign(deployTransaction);
-        assert.equal(contract.getOwner().bech32(), aliceAddress.bech32());
+        assert.equal(contract.getOwner().bech32(), alice.address.bech32());
         assert.equal(contract.getAddress().bech32(), "erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q");
 
         // Now let's broadcast the deploy transaction, and wait for its execution.
@@ -73,7 +75,7 @@ describe("test contract", () => {
     it("should call", async () => {
         let contract = new SmartContract({ address: new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3") });
 
-        provider.mockUpdateAccount(aliceAddress, account => {
+        provider.mockUpdateAccount(alice.address, account => {
             account.nonce = new Nonce(42);
         });
 
@@ -120,13 +122,14 @@ describe("test contract", () => {
     });
 });
 
-describe("test on local testnet", function() {
+describe("test on local testnet", function () {
     this.timeout(50000);
 
     let localTestnet = new ProxyProvider("http://localhost:7950");
-    let aliceSigner = new SimpleSigner("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9");
-    let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
-    let alice = new Account(aliceAddress);
+    let wallets = new TestWallets();
+    let aliceWallet = wallets.alice;
+    let alice = new Account(aliceWallet.address);
+    let aliceSigner = aliceWallet.signer;
 
     it.skip("should deploy, then simulate transactions", async () => {
         TransactionWatcher.DefaultPollingInterval = 5000;
@@ -152,7 +155,7 @@ describe("test on local testnet", function() {
             func: new ContractFunction("increment"),
             gasLimit: new GasLimit(3000000)
         });
-        
+
         transactionIncrement.setNonce(alice.nonce);
         await aliceSigner.sign(transactionIncrement);
 

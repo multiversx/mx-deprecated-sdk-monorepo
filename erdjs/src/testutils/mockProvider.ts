@@ -1,14 +1,14 @@
 
-import { IProvider } from "./interface";
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
-import { NetworkConfig } from "./networkConfig";
-import { Address } from "./address";
-import { Nonce } from "./nonce";
-import { AsyncTimer } from "./asyncTimer";
-import { AccountOnNetwork } from "./account";
-import { Balance } from "./balance";
-import * as errors from "./errors";
-import { Query, QueryResponse } from "./smartcontracts/query";
+import { IProvider } from "../interface";
+import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "../transaction";
+import { NetworkConfig } from "../networkConfig";
+import { Address } from "../address";
+import { Nonce } from "../nonce";
+import { AsyncTimer } from "../asyncTimer";
+import { AccountOnNetwork } from "../account";
+import { Balance } from "../balance";
+import * as errors from "../errors";
+import { Query, QueryResponse } from "../smartcontracts/query";
 
 /**
  * A mock {@link IProvider}, used for tests only.
