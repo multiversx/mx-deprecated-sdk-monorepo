@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "test": "mocha --timeout 80000",
-    "compile-browser": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.js --standalone erdjs",
+    "compile-browser": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.js --standalone erdjs --exclude=**/backendSigner.js",
+    "compile-browser-min": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.min.js --standalone erdjs --exclude=**/backendSigner.js -p tinyify",
     "compile": "tsc -p tsconfig.json",
     "pretest": "npm run compile",
     "prepublish": "npm run compile-browser"
@@ -20,24 +21,22 @@
   "dependencies": {
     "@babel/runtime": "^7.11.2",
     "@elrondnetwork/elrond-core-js": "^1.26.2",
-    "@types/keccak": "^3.0.1",
     "abort-controller": "^3.0.0",
     "axios": "^0.19.2",
     "bech32": "^1.1.4",
     "bignumber.js": "^9.0.0",
-    "keccak": "^3.0.0",
-    "tweetnacl": "^1.0.3",
-    "underscore": "^1.10.2"
+    "keccak": "^3.0.1",
+    "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
     "@types/assert": "^1.4.6",
     "@types/chai": "^4.2.11",
     "@types/mocha": "^7.0.2",
     "@types/node": "^13.13.2",
-    "@types/underscore": "^1.9.4",
     "assert": "^2.0.0",
     "chai": "^4.2.0",
     "mocha": "^7.1.1",
+    "tinyify": "^3.0.0",
     "ts-node": "^8.10.2",
     "tslint": "^6.1.1",
     "typedoc": "^0.18.0",
