@@ -3,10 +3,9 @@ import { IProvider } from "./interface";
 import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
-import { Nonce } from "./nonce";
 import  * as errors from "./errors";
-import { Balance } from "./balance";
 import { AccountOnNetwork } from "./account";
+import { Query, QueryResponse } from "./smartcontracts/query";
 
 export class ProxyProvider implements IProvider {
     private url: string;
@@ -23,76 +22,13 @@ export class ProxyProvider implements IProvider {
         return AccountOnNetwork.fromHttpResponse(payload);
     }
 
-    async getBalance(address: Address): Promise<Balance> {
-        let response = await this.doGet(`address/${address.bech32()}/balance`);
-        let payload = response.balance;
-        return Balance.fromString(payload);
-    }
-
-    async getNonce(address: Address): Promise<Nonce> {
-        let response = await this.doGet(`address/${address.bech32()}/nonce`);
-        let payload = response.nonce;
-        return new Nonce(payload);
-    }
-
-    getVMValueString(address: string, funcName: string, args: string[]): Promise<string> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/string`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data);
-    }
-
-    getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/int`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => BigInt(response.data.data));
-    }
-
-    getVMValueHex(address: string, funcName: string, args: string[]): Promise<string> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/hex`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data);
-    }
-
-    getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/query`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data);
+    /**
+     * Queries a Smart Contract - runs a pure function defined by the contract and returns its results.
+     */
+    async queryContract(query: Query): Promise<QueryResponse> {
+        let data = query.toHttpRequest();
+        let response = await this.doPost("/vm-values/query", data);
+        return QueryResponse.fromHttpResponse(response);
     }
 
     async sendTransaction(tx: Transaction): Promise<TransactionHash> {
@@ -102,7 +38,6 @@ export class ProxyProvider implements IProvider {
     }
 
     async simulateTransaction(tx: Transaction): Promise<any> {
-        console.log(tx.toSendable());
         let response = await this.doPost("transaction/simulate", tx.toSendable());
         return response;
     }

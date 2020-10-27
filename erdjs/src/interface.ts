@@ -3,6 +3,8 @@ import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
 import { AccountOnNetwork } from "./account";
+import { Query, QueryResponse } from "./smartcontracts/query";
+
 
 /**
  * An interface that defines the endpoints of an HTTP API Provider.
@@ -18,11 +20,11 @@ export interface IProvider {
      */
     getAccount(address: Address): Promise<AccountOnNetwork>;
 
-    getVMValueString(address: string, funcName: string, args: string[]): Promise<string>;
-    getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint>;
-    getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
-    getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
-    
+    /**
+     * Queries a Smart Contract - runs a pure function defined by the contract and returns its results.
+     */
+    queryContract(query: Query): Promise<QueryResponse>;
+
     /**
      * Broadcasts an already-signed {@link Transaction}.
      */

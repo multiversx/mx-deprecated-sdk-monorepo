@@ -8,9 +8,10 @@ import { AsyncTimer } from "./asyncTimer";
 import { AccountOnNetwork } from "./account";
 import { Balance } from "./balance";
 import * as errors from "./errors";
+import { Query, QueryResponse } from "./smartcontracts/query";
 
 /**
- * An {@link IProvider}, used for tests only.
+ * A mock {@link IProvider}, used for tests only.
  */
 export class MockProvider implements IProvider {
     static AddressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
@@ -112,20 +113,8 @@ export class MockProvider implements IProvider {
     }
 
 
-    async getVMValueString(_address: string, _funcName: string, _args: string[]): Promise<string> {
-        throw new errors.ErrMock("Not implemented");
-    }
-
-    async getVMValueInt(_address: string, _funcName: string, _args: string[]): Promise<bigint> {
-        throw new errors.ErrMock("Not implemented");
-    }
-
-    async getVMValueHex(_address: string, _funcName: string, _args: string[]): Promise<string> {
-        throw new errors.ErrMock("Not implemented");
-    }
-
-    async getVMValueQuery(_address: string, _funcName: string, _args: string[]): Promise<any> {
-        throw new errors.ErrMock("Not implemented");
+    async queryContract(_query: Query): Promise<QueryResponse> {
+        return new QueryResponse();
     }
 }
 

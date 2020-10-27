@@ -28,4 +28,11 @@ export class ContractFunction {
     static none(): ContractFunction {
         return new ContractFunction("untitled");
     }
+
+    /**
+     * Returns the name of the function.
+     */
+    toString() {
+        return this.name;
+    }
 }
