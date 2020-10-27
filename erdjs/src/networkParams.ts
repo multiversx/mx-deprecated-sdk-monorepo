@@ -2,9 +2,18 @@ import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import * as errors from "./errors";
 
+/**
+ * The gas price, as an immutable object.
+ */
 export class GasPrice {
+    /**
+     * The actual numeric value.
+     */
     public readonly value: number;
 
+    /**
+     * Creates a GasPrice object given a value.
+     */
     constructor(value: number) {
         value = Number(value);
         
@@ -15,15 +24,27 @@ export class GasPrice {
         this.value = value;
     }
 
+    /**
+     * Creates a GasPrice object using the minimum value.
+     */
     static min(): GasPrice {
         let value = NetworkConfig.getDefault().MinGasPrice.value;
         return new GasPrice(value);
     }
 }
 
+/**
+ * The gas limit, as an immutable object.
+ */
 export class GasLimit {
+    /**
+     * The actual numeric value.
+     */
     public readonly value: number;
 
+    /**
+     * Creates a GasLimit object given a value.
+     */
     constructor(value: number) {
         value = Number(value);
         
@@ -34,6 +55,9 @@ export class GasLimit {
         this.value = value;
     }
 
+    /**
+     * Creates a GasLimit object for a value-transfer {@link Transaction}.
+     */
     static forTransfer(data: TransactionPayload): GasLimit {
         let value = NetworkConfig.getDefault().MinGasLimit.value;
         
@@ -44,6 +68,9 @@ export class GasLimit {
         return new GasLimit(value);
     }
 
+    /**
+     * Creates a GasLimit object using the minimum value.
+     */
     static min(): GasLimit {
         let value = NetworkConfig.getDefault().MinGasLimit.value;
         return new GasLimit(value);
@@ -52,8 +79,14 @@ export class GasLimit {
 
 
 export class ChainID {
+    /**
+     * The actual value, as a string.
+     */
     public readonly value: string;
 
+    /**
+     * Creates a ChainID object given a value.
+     */
     constructor(value: string) {
         if (!value) {
             throw new errors.ErrChainIDInvalid(value);
@@ -64,8 +97,14 @@ export class ChainID {
 }
 
 export class TransactionVersion {
+    /**
+     * The actual numeric value.
+     */
     public readonly value: number;
 
+    /**
+     * Creates a TransactionVersion object given a value.
+     */
     constructor(value: number) {
         value = Number(value);
         

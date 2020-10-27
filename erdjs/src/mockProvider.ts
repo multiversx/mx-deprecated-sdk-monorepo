@@ -73,16 +73,6 @@ export class MockProvider implements IProvider {
         return new AccountOnNetwork();
     }
 
-    async getBalance(address: Address): Promise<Balance> {
-        let account = await this.getAccount(address);
-        return account.balance;
-    }
-
-    async getNonce(address: Address): Promise<Nonce> {
-        let account = await this.getAccount(address);
-        return account.nonce;
-    }
-
     async sendTransaction(transaction: Transaction): Promise<TransactionHash> {
         this.mockPutTransaction(transaction.hash, new TransactionOnNetwork({
             nonce: transaction.nonce,

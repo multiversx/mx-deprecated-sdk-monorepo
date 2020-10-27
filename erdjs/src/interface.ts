@@ -2,28 +2,45 @@ import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus }
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
-import { Nonce } from "./nonce";
 import { AccountOnNetwork } from "./account";
-import { Balance } from "./balance";
 
 /**
  * An interface that defines the endpoints of an HTTP API Provider.
  */
 export interface IProvider {
+    /**
+     * Fetches the Network configuration.
+     */
     getNetworkConfig(): Promise<NetworkConfig>;
 
+    /**
+     * Fetches the state of an {@link Account}.
+     */
     getAccount(address: Address): Promise<AccountOnNetwork>;
-    getBalance(address: Address): Promise<Balance>;
-    getNonce(address: Address): Promise<Nonce>;
-    
+
     getVMValueString(address: string, funcName: string, args: string[]): Promise<string>;
     getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint>;
     getVMValueHex(address: string, funcName: string, args: string[]): Promise<string>;
     getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any>;
     
+    /**
+     * Broadcasts an already-signed {@link Transaction}.
+     */
     sendTransaction(tx: Transaction): Promise<TransactionHash>;
+
+    /**
+     * Simulates the processing of an already-signed {@link Transaction}.
+     */
     simulateTransaction(tx: Transaction): Promise<TransactionHash>;
+
+    /**
+     * Fetches the state of a {@link Transaction}.
+     */
     getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
+
+    /**
+     * Queries the status of a {@link Transaction}.
+     */
     getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus>;
 }
 
