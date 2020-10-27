@@ -1,14 +1,35 @@
 import { IProvider } from "./interface";
 import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
 
-
+/**
+ * An object holding Network configuration parameters.
+ */
 export class NetworkConfig {
     private static default: NetworkConfig;
 
+    /**
+     * The chain ID. E.g. "1" for the Mainnet.
+     */
     public ChainID: ChainID;
+
+    /**
+     * The gas required by the Network to process a byte of the {@link TransactionPayload}.
+     */
     public GasPerDataByte: number;
+
+    /**
+     * The minimum gas limit required to be set when broadcasting a {@link Transaction}.
+     */
     public MinGasLimit: GasLimit;
+
+    /**
+     * The minimum gas price required to be set when broadcasting a {@link Transaction}.
+     */
     public MinGasPrice: GasPrice;
+
+    /**
+     * The oldest {@link TransactionVersion} accepted by the Network.
+     */
     public MinTransactionVersion: TransactionVersion;
 
     constructor() {
@@ -19,6 +40,9 @@ export class NetworkConfig {
         this.MinTransactionVersion = new TransactionVersion(1);
     }
 
+    /**
+     * Gets the default configuration object (think of the Singleton pattern).
+     */
     static getDefault(): NetworkConfig {
         if (!NetworkConfig.default) {
             NetworkConfig.default = new NetworkConfig();
@@ -27,11 +51,18 @@ export class NetworkConfig {
         return NetworkConfig.default;
     }
 
+    /**
+     * Synchronizes a configuration object by querying the Network, through a {@link IProvider}.
+     * @param provider The provider to use
+     */
     async sync(provider: IProvider): Promise<void> {
         let fresh: NetworkConfig = await provider.getNetworkConfig();
         Object.assign(this, fresh);
     }
 
+    /**
+     * Constructs a configuration object from a HTTP response (as returned by the provider).
+     */
     static fromHttpResponse(payload: any): NetworkConfig {
         let networkConfig = new NetworkConfig();
 

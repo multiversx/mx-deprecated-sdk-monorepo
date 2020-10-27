@@ -9,6 +9,9 @@ import { AccountOnNetwork } from "./account";
 import { Balance } from "./balance";
 import * as errors from "./errors";
 
+/**
+ * An {@link IProvider}, used for tests only.
+ */
 export class MockProvider implements IProvider {
     static AddressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     static AddressOfBob = new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx");

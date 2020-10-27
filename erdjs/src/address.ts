@@ -1,8 +1,14 @@
 import * as bech32 from "bech32";
 import * as errors from "./errors";
 
-
+/**
+ * The human-readable-part of the bech32 addresses.
+ */
 const HRP = "erd";
+
+/**
+ * The length (in bytes) of a public key (from which a bech32 address can be obtained).
+ */
 const PUBKEY_LENGTH = 32;
 
 /**
@@ -12,6 +18,9 @@ export class Address {
     // We keep a hex-encoded string as the "backing" value
     private valueHex: string = "";
 
+    /**
+     * Creates an address object, given a raw string (whether a hex pubkey or a Bech32 address), a sequence of bytes, or another Address object.
+     */
     public constructor(value?: Address | Buffer | string) {
         if (!value) {
             return;
@@ -133,12 +142,18 @@ export class Address {
         return Buffer.from(this.valueHex, "hex");
     }
 
+    /**
+     * Throws an error if the address is empty.
+     */
     assertNotEmpty() {
         if (this.isEmpty()) {
             throw new errors.ErrAddressEmpty();
         }
     }
 
+    /**
+     * Returns whether the address is empty.
+     */
     isEmpty() {
         return !this.valueHex;
     }
@@ -161,6 +176,9 @@ export class Address {
         return this.bech32();
     }
 
+    /**
+     * Converts the address to a pretty, plain JavaScript object.
+     */
     toJSON(): object {
         return {
             bech32: this.bech32(),

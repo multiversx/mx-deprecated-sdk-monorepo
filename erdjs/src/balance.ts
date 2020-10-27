@@ -1,17 +1,27 @@
 import * as errors from "./errors";
 import { BigNumber } from "bignumber.js";
 
+/**
+ * The number of decimals handled when working with eGLD values.
+ */
 const DENOMINATION = 18;
+
+/**
+ * One eGLD, in its big-integer form (as a string).
+ */
 const OneEGLDString = "1000000000000000000";
 
 BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 4 })
 
 /**
- * Balance, as an immutable object
+ * Balance, as an immutable object.
  */
 export class Balance {
     private readonly value: bigint = BigInt(0);
 
+    /**
+     * Creates a Balance object.
+     */
     public constructor(value: bigint) {
         this.value = value;
 
@@ -21,7 +31,7 @@ export class Balance {
     }
 
     /**
-     * Creates a balance object from an eGLD value (denomination will be applied)
+     * Creates a balance object from an eGLD value (denomination will be applied).
      */
     static eGLD(value: any): Balance {
         let bigGold = new BigNumber(value);
@@ -33,16 +43,22 @@ export class Balance {
     }
 
     /**
-     * Creates a balance object from a string (with denomination included)
+     * Creates a balance object from a string (with denomination included).
      */
     static fromString(value: string): Balance {
         return new Balance(BigInt(value));
     }
 
+    /**
+     * Creates a zero-valued balance object.
+     */
     static Zero(): Balance {
         return new Balance(BigInt(0));
     }
 
+    /**
+     * Returns the raw representation of the balance object, that is, its big-integer form (as a string).
+     */
     raw(): string {
         return this.value.toString();
     }
@@ -54,6 +70,9 @@ export class Balance {
         return `${integer}.${decimals} eGLD`;
     }
 
+    /**
+     * Converts the balance to a pretty, plain JavaScript object.
+     */
     toJSON(): object {
         return {
             value: this.raw(),

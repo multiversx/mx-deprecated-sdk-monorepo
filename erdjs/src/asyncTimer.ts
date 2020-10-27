@@ -10,6 +10,9 @@ export class AsyncTimer {
     private rejectionFunc: any = null;
     private correlationTag: number;
 
+    /**
+     * Creates an AsyncTimer.
+     */
     constructor(name: string) {
         this.name = name;
         this.correlationTag = 0;

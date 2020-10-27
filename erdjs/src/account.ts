@@ -3,11 +3,24 @@ import { Address } from "./address";
 import { Nonce } from "./nonce";
 import { Balance } from "./balance";
 
+/**
+ * An abstraction representing an account (user or Smart Contract) on the Network.
+ */
 export class Account {
+    /**
+     * The address of the account.
+     */
     readonly address: Address = new Address();
+
+    /**
+     * The nonce of the account (the account sequence number).
+     */
     nonce: Nonce = new Nonce(0);
+
+    /**
+     * The balance of the account.
+     */
     balance: Balance = new Balance(BigInt(0));
-    code: string = "";
 
     private asOnNetwork: AccountOnNetwork = new AccountOnNetwork();
 
@@ -52,20 +65,28 @@ export class Account {
         this.balance = this.asOnNetwork.balance;
     }
 
+    /**
+     * Increments (locally) the nonce (the account sequence number).
+     */
     incrementNonce() {
         this.nonce = this.nonce.increment();
     }
 
-    toPlainObject(): any {
+    /**
+     * Converts the account to a pretty, plain JavaScript object.
+     */
+    toJSON(): any {
         return {
             address: this.address.bech32(),
             nonce: this.nonce.value,
-            balance: this.balance.raw(),
-            code: this.code
+            balance: this.balance.raw()
         };
     }
 }
 
+/**
+ * A plain view of an account, as queried from the Network.
+ */
 export class AccountOnNetwork {
     address: Address = new Address();
     nonce: Nonce = new Nonce(0);
