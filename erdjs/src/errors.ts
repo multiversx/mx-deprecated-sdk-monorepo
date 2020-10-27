@@ -225,7 +225,7 @@ export class ErrInvalidFunctionName extends Err {
  */
 export class ErrProxyProviderGet extends Err {
     public constructor(url: string, error: string, inner?: Error) {
-        let message = `Cannot GET ${url}, error: ${error}`;
+        let message = `Cannot GET ${url}: [${error}]`;
         super(message, inner);
     }
 }
@@ -235,7 +235,7 @@ export class ErrProxyProviderGet extends Err {
  */
 export class ErrProxyProviderPost extends Err {
     public constructor(url: string, error: string, inner?: Error) {
-        let message = `Cannot POST ${url}, error: ${error}`;
+        let message = `Cannot POST ${url}: [${error}]`;
         super(message, inner);
     }
 }

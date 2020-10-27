@@ -68,7 +68,7 @@ export class ProxyProvider implements IProvider {
         } catch (error) {
             if (!error.response) {
                 console.warn(error);
-                throw new errors.ErrProxyProviderGet(resourceUrl, "", error);
+                throw new errors.ErrProxyProviderGet(resourceUrl, error.toString(), error);
             }
 
             let originalErrorMessage = error.response.data.error;
@@ -86,7 +86,7 @@ export class ProxyProvider implements IProvider {
         } catch (error) {
             if (!error.response) {
                 console.warn(error);
-                throw new errors.ErrProxyProviderPost(resourceUrl, "", error);
+                throw new errors.ErrProxyProviderPost(resourceUrl, error.toString(), error);
             }
 
             let originalErrorMessage = error.response.data.error || error.response.data;
