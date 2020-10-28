@@ -11,6 +11,8 @@ import { ISmartContract as ISmartContract } from "./interface";
 import { ArwenVirtualMachine } from "./transactionPayloadBuilders";
 import { Nonce } from "../nonce";
 import { ContractFunction } from "./function";
+import { Query, QueryResponse } from "./query";
+import { IProvider } from "../interface";
 const createKeccakHash = require("keccak");
 
 /**
@@ -161,7 +163,7 @@ export class SmartContract implements ISmartContract {
 
     /**
      * Creates a {@link Transaction} for calling (a function of) the Smart Contract.
-     */ 
+     */
     call({ func, args, value, gasLimit }
         : { func: ContractFunction, args?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction {
         args = args || [];
@@ -186,6 +188,22 @@ export class SmartContract implements ISmartContract {
 
     private onCallSigned({ transaction }: { transaction: Transaction, signedBy: Address }) {
         this.trackOfTransactions.push(transaction);
+    }
+
+    async runQuery(
+        provider: IProvider,
+        { func, args, value, caller }: { func: ContractFunction, args?: Argument[], value?: Balance, caller?: Address })
+        : Promise<QueryResponse> {
+        let query = new Query({
+            contractAddress: this.address,
+            contractFunction: func,
+            arguments: args,
+            value: value,
+            caller: caller
+        });
+
+        let response = await provider.queryContract(query);
+        return response;
     }
 
     /**

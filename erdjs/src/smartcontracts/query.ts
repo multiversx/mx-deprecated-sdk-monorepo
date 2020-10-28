@@ -27,13 +27,20 @@ export class Query {
     }
 
     toHttpRequest() {
-        return {
+        let request: any = {
             "ScAddress": this.contractAddress.bech32(),
             "FuncName": this.contractFunction.toString(),
-            "CallerAddr": this.caller.isEmpty() ? "" : this.caller.bech32(),
-            "CallValue": this.value.raw(),
-            "Arguments": []
+            "Arguments": [] // TODO: Add arguments.
         };
+
+        if (this.value) {
+            request["CallValue"] = this.value.raw();
+        }
+        if (this.caller) {
+            request["CallerAddr"] = this.caller.bech32();
+        }
+
+        return request;
     }
 }
 

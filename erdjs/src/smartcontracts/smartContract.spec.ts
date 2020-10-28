@@ -189,6 +189,60 @@ describe("test on local testnet", function () {
         console.log(JSON.stringify(await simulateOne.simulate(localTestnet), null, 4));
         console.log(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
     });
+
+    it.only("should deploy, call and query contract", async () => {
+        TransactionWatcher.DefaultPollingInterval = 5000;
+        TransactionWatcher.DefaultTimeout = 50000;
+
+        await NetworkConfig.getDefault().sync(localTestnet);
+        await alice.sync(localTestnet);
+
+        // Counter: deploy
+        let contract = new SmartContract({});
+        let transactionDeploy = contract.deploy({
+            code: Code.fromFile("./src/testdata/counter.wasm"),
+            gasLimit: new GasLimit(3000000)
+        });
+
+        transactionDeploy.setNonce(alice.nonce);
+        await aliceSigner.sign(transactionDeploy);
+
+        alice.incrementNonce();
+
+        // Counter: Increment
+        // ++
+        let transactionIncrementFirst = contract.call({
+            func: new ContractFunction("increment"),
+            gasLimit: new GasLimit(500000)
+        });
+
+        transactionIncrementFirst.setNonce(alice.nonce);
+        await aliceSigner.sign(transactionIncrementFirst);
+
+        alice.incrementNonce();
+
+        // ++
+        let transactionIncrementSecond = contract.call({
+            func: new ContractFunction("increment"),
+            gasLimit: new GasLimit(500000)
+        });
+
+        transactionIncrementSecond.setNonce(alice.nonce);
+        await aliceSigner.sign(transactionIncrementSecond);
+
+        alice.incrementNonce();
+
+        // Broadcast & execute
+        await transactionDeploy.send(localTestnet);
+        await transactionIncrementFirst.send(localTestnet);
+
+        await transactionDeploy.awaitExecuted(localTestnet);
+        await transactionIncrementFirst.awaitExecuted(localTestnet);
+
+        // Check counter
+        let q = await contract.runQuery(localTestnet, { func: new ContractFunction("increment") });
+        console.log(q);
+    });
 });
 
 function setupWatcherTimeouts() {
