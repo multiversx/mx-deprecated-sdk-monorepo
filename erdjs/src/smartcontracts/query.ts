@@ -28,13 +28,14 @@ export class Query {
         guardValueIsSet("contractFunction", this.contractFunction);
 
         this.contractAddress.assertNotEmpty();
+        this.arguments = this.arguments || [];
     }
 
     toHttpRequest() {
         let request: any = {
             "ScAddress": this.contractAddress.bech32(),
             "FuncName": this.contractFunction.toString(),
-            "Arguments": [] // TODO: Add arguments.
+            "Arguments": this.arguments.map(arg => arg.value)
         };
 
         if (this.value) {
@@ -105,7 +106,6 @@ export class QueryResponse {
         };
     }
 }
-
 
 export class ContractReturnData {
     raw: any;
