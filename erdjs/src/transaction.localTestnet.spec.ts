@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { Transaction } from "./transaction";
 import { GasLimit } from "./networkParams";
 import { Account } from "./account";
@@ -7,15 +6,15 @@ import { ProxyProvider } from "./proxyProvider";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
 import { TestWallets } from "./testutils/wallets";
+import { describeOnlyIf } from "./testutils/utils";
 
-
-describe("test transaction", () => {
+describeOnlyIf("localTestnet")("test transaction", () => {
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);
     let aliceSigner = aliceWallet.signer;
 
-    it.skip("should simulate transactions", async () => {
+    it("should simulate transactions", async () => {
         let localTestnet = new ProxyProvider("http://localhost:7950");
 
         await NetworkConfig.getDefault().sync(localTestnet);

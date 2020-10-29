@@ -9,7 +9,9 @@
     "out-browser/**/*"
   ],
   "scripts": {
-    "test": "mocha --timeout 80000",
+    "test": "mocha",
+    "test-local-testnet": "localTestnet=1 mocha",
+    "test-mainnet": "mainnet=1 mocha",
     "compile-browser": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.js --standalone erdjs --exclude=**/backendSigner.js",
     "compile-browser-min": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.min.js --standalone erdjs --exclude=**/backendSigner.js -p tinyify",
     "compile": "tsc -p tsconfig.json",

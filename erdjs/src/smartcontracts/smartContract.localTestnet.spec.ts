@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { Code } from "./code";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
@@ -8,8 +7,9 @@ import { Account } from "../account";
 import { ProxyProvider } from "../proxyProvider";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
+import { describeOnlyIf } from "../testutils/utils";
 
-describe("test on local testnet", function () {
+describeOnlyIf("localTestnet")("test on local testnet", function () {
     this.timeout(50000);
 
     let localTestnet = new ProxyProvider("http://localhost:7950");
@@ -18,7 +18,7 @@ describe("test on local testnet", function () {
     let alice = new Account(aliceWallet.address);
     let aliceSigner = aliceWallet.signer;
 
-    it.skip("should deploy, then simulate transactions", async () => {
+    it("counter: should deploy, then simulate transactions", async () => {
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
@@ -77,7 +77,7 @@ describe("test on local testnet", function () {
         console.log(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
     });
 
-    it.only("should deploy, call and query contract", async () => {
+    it("counter: should deploy, call and query contract", async () => {
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
