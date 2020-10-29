@@ -10,38 +10,38 @@ const MaxUint64 = BigInt("18446744073709551615");
 
 export class Query {
     caller: Address;
-    contractAddress: Address;
-    contractFunction: ContractFunction;
-    arguments: Argument[];
+    address: Address;
+    func: ContractFunction;
+    args: Argument[];
     value: Balance;
 
     constructor(init?: Partial<Query>) {
         this.caller = new Address();
-        this.contractAddress = new Address();
-        this.contractFunction = ContractFunction.none();
-        this.arguments = [];
+        this.address = new Address();
+        this.func = ContractFunction.none();
+        this.args = [];
         this.value = Balance.Zero();
 
         Object.assign(this, init);
 
-        guardValueIsSet("contractAddress", this.contractAddress);
-        guardValueIsSet("contractFunction", this.contractFunction);
+        guardValueIsSet("address", this.address);
+        guardValueIsSet("func", this.func);
 
-        this.contractAddress.assertNotEmpty();
-        this.arguments = this.arguments || [];
+        this.address.assertNotEmpty();
+        this.args = this.args || [];
+        this.caller = this.caller || new Address();
+        this.value = this.value || Balance.Zero();
     }
 
     toHttpRequest() {
         let request: any = {
-            "ScAddress": this.contractAddress.bech32(),
-            "FuncName": this.contractFunction.toString(),
-            "Args": this.arguments.map(arg => arg.value)
+            "ScAddress": this.address.bech32(),
+            "FuncName": this.func.toString(),
+            "Args": this.args.map(arg => arg.value),
+            "CallValue": this.value.raw()
         };
 
-        if (this.value) {
-            request["CallValue"] = this.value.raw();
-        }
-        if (this.caller) {
+        if (!this.caller.isEmpty()) {
             request["CallerAddr"] = this.caller.bech32();
         }
 

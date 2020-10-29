@@ -195,9 +195,9 @@ export class SmartContract implements ISmartContract {
         { func, args, value, caller }: { func: ContractFunction, args?: Argument[], value?: Balance, caller?: Address })
         : Promise<QueryResponse> {
         let query = new Query({
-            contractAddress: this.address,
-            contractFunction: func,
-            arguments: args,
+            address: this.address,
+            func: func,
+            args: args,
             value: value,
             caller: caller
         });

@@ -84,6 +84,15 @@ export class ErrBadType extends Err {
 }
 
 /**
+ * Signals a missing required value.
+ */
+export class ErrMissingValue extends Err {
+    public constructor(name: string) {
+        super(`"${name} is required, but missing.`);
+    }
+}
+
+/**
  * Signals issues with {@link Address} instantiation.
  */
 export class ErrAddressCannotCreate extends Err {
