@@ -1,5 +1,6 @@
 import * as errors from "./errors";
 import { ErrAsyncTimerAborted } from "./errors";
+import { Logger } from "./logger";
 
 /*
  * AsyncTimer is an async-friendly abstraction that wraps JavaScript's setTimeout() and clearTimeout().
@@ -28,7 +29,7 @@ export class AsyncTimer {
         }
 
         this.correlationTag++;
-        console.debug(`AsyncTimer[${this.name}'${this.correlationTag}].start()`);
+        Logger.trace(`AsyncTimer[${this.name}'${this.correlationTag}].start()`);
 
         return new Promise<void>((resolve, reject) => {
             this.rejectionFunc = reject;
@@ -47,7 +48,7 @@ export class AsyncTimer {
      * Aborts the timer: rejects the promise (if any) and stops the timer.
      */
     public abort() {
-        console.debug(`AsyncTimer[${this.name}'${this.correlationTag}].abort()`);
+        Logger.trace(`AsyncTimer[${this.name}'${this.correlationTag}].abort()`);
 
         if (this.rejectionFunc) {
             this.rejectionFunc(new ErrAsyncTimerAborted());
@@ -65,7 +66,7 @@ export class AsyncTimer {
             return;
         }
 
-        console.debug(`AsyncTimer[${this.name}'${this.correlationTag}].stop()`);
+        Logger.trace(`AsyncTimer[${this.name}'${this.correlationTag}].stop()`);
 
         if (this.timeoutHandle) {
             clearTimeout(this.timeoutHandle);

@@ -7,6 +7,7 @@ import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
 import { describeOnlyIf, getLocalTestnetProvider } from "../testutils/utils";
+import { Logger } from "../logger";
 
 describeOnlyIf("localTestnet")("test on local testnet", function () {
     this.timeout(50000);
@@ -72,8 +73,8 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         await transactionIncrement.awaitExecuted(localTestnet);
 
         // Simulate
-        console.log(JSON.stringify(await simulateOne.simulate(localTestnet), null, 4));
-        console.log(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
+        Logger.trace(JSON.stringify(await simulateOne.simulate(localTestnet), null, 4));
+        Logger.trace(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
     });
 
     it("counter: should deploy, call and query contract", async () => {
@@ -127,6 +128,6 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         // Check counter
         let queryResponse = await contract.runQuery(localTestnet, { func: new ContractFunction("increment") });
-        console.log(queryResponse.toJSON());
+        Logger.trace(queryResponse.toJSON());
     });
 });

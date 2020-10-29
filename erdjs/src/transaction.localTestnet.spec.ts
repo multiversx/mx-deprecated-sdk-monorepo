@@ -6,6 +6,7 @@ import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
 import { TestWallets } from "./testutils/wallets";
 import { describeOnlyIf, getLocalTestnetProvider } from "./testutils/utils";
+import { Logger } from "./logger";
 
 describeOnlyIf("localTestnet")("test transaction", () => {
     let wallets = new TestWallets();
@@ -39,7 +40,7 @@ describeOnlyIf("localTestnet")("test transaction", () => {
         await aliceSigner.sign(transactionOne);
         await aliceSigner.sign(transactionTwo);
 
-        console.log(JSON.stringify(await transactionOne.simulate(localTestnet), null, 4));
-        console.log(JSON.stringify(await transactionTwo.simulate(localTestnet), null, 4));
+        Logger.trace(JSON.stringify(await transactionOne.simulate(localTestnet), null, 4));
+        Logger.trace(JSON.stringify(await transactionTwo.simulate(localTestnet), null, 4));
     });
 });

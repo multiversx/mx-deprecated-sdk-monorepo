@@ -6,6 +6,7 @@ import { Address } from "./address";
 import * as errors from "./errors";
 import { AccountOnNetwork } from "./account";
 import { Query, QueryResponse } from "./smartcontracts/query";
+import { Logger } from "./logger";
 const JSONbig = require("json-bigint");
 
 export class ProxyProvider implements IProvider {
@@ -73,7 +74,7 @@ export class ProxyProvider implements IProvider {
             return payload;
         } catch (error) {
             if (!error.response) {
-                console.warn(error);
+                Logger.warn(error);
                 throw new errors.ErrProxyProviderGet(resourceUrl, error.toString(), error);
             }
 
@@ -92,7 +93,7 @@ export class ProxyProvider implements IProvider {
             return responsePayload;
         } catch (error) {
             if (!error.response) {
-                console.warn(error);
+                Logger.warn(error);
                 throw new errors.ErrProxyProviderPost(resourceUrl, error.toString(), error);
             }
 
