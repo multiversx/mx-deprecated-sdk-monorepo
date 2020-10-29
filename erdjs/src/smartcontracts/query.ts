@@ -35,7 +35,7 @@ export class Query {
         let request: any = {
             "ScAddress": this.contractAddress.bech32(),
             "FuncName": this.contractFunction.toString(),
-            "Arguments": this.arguments.map(arg => arg.value)
+            "Args": this.arguments.map(arg => arg.value)
         };
 
         if (this.value) {
@@ -64,11 +64,11 @@ export class QueryResponse {
         let result = new QueryResponse();
 
         result.vmOutput = payload;
-        result.returnData = ContractReturnData.fromArray(payload["returnData"] || []);
-        result.returnCode = payload["returnCode"] || "";
-        result.returnMessage = payload["returnMessage"] || "";
+        result.returnData = ContractReturnData.fromArray(payload["returnData"] || payload["ReturnData"] || []);
+        result.returnCode = payload["returnCode"] || (payload["ReturnCode"]).toString() || "";
+        result.returnMessage = payload["returnMessage"] || payload["ReturnMessage"] || "";
 
-        let gasRemaining = BigInt(payload["gasRemaining"] || 0);
+        let gasRemaining = BigInt(payload["gasRemaining"] || payload["GasRemaining"] || 0);
         let gasUsed = MaxUint64 - gasRemaining;
         result.gasUsed = new GasLimit(Number(gasUsed));
 
@@ -84,7 +84,7 @@ export class QueryResponse {
     }
 
     isSuccess(): boolean {
-        let ok = this.returnCode == "ok";
+        let ok = this.returnCode == "ok" || this.returnCode == "0";
         return ok;
     }
 
@@ -108,18 +108,20 @@ export class QueryResponse {
 }
 
 export class ContractReturnData {
-    raw: any;
+    asBuffer: Buffer;
+    asBase64: any;
     asHex: string;
     asNumber: number;
+    asBigInt: BigInt;
     asString: string;
 
-    constructor(raw: any) {
-        let buffer = Buffer.from(raw, "base64");
-
-        this.raw = raw;
-        this.asHex = buffer.toString("hex");
+    constructor(asBase64: any) {
+        this.asBase64 = asBase64;
+        this.asBuffer = Buffer.from(asBase64, "base64");
+        this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
-        this.asString = buffer.toString();
+        this.asBigInt = BigInt(`0x${this.asHex || "00"}`);
+        this.asString = this.asBuffer.toString();
     }
 
     static fromArray(raw: any[]): ContractReturnData[] {

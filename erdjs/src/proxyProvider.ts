@@ -3,7 +3,7 @@ import { IProvider } from "./interface";
 import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
-import  * as errors from "./errors";
+import * as errors from "./errors";
 import { AccountOnNetwork } from "./account";
 import { Query, QueryResponse } from "./smartcontracts/query";
 const JSONbig = require("json-bigint");
@@ -27,10 +27,14 @@ export class ProxyProvider implements IProvider {
      * Queries a Smart Contract - runs a pure function defined by the contract and returns its results.
      */
     async queryContract(query: Query): Promise<QueryResponse> {
-        let data = query.toHttpRequest();
-        let response = await this.doPost("vm-values/query", data);
-        let payload = response.data || response.vmOutput;
-        return QueryResponse.fromHttpResponse(payload);
+        try {
+            let data = query.toHttpRequest();
+            let response = await this.doPost("vm-values/query", data);
+            let payload = response.data || response.vmOutput;
+            return QueryResponse.fromHttpResponse(payload);
+        } catch (err) {
+            throw errors.ErrContractQuery.increaseSpecificity(err);
+        }
     }
 
     async sendTransaction(tx: Transaction): Promise<TransactionHash> {
@@ -64,7 +68,7 @@ export class ProxyProvider implements IProvider {
     private async doGet(resourceUrl: string): Promise<any> {
         try {
             let url = `${this.url}/${resourceUrl}`;
-            let response = await axios.get(url, {timeout: this.timeoutLimit});
+            let response = await axios.get(url, { timeout: this.timeoutLimit });
             let payload = response.data.data;
             return payload;
         } catch (error) {
@@ -83,7 +87,7 @@ export class ProxyProvider implements IProvider {
         try {
             let url = `${this.url}/${resourceUrl}`;
             let json = JSON.stringify(payload);
-            let response = await axios.post(url, json, {timeout: this.timeoutLimit});
+            let response = await axios.post(url, json, { timeout: this.timeoutLimit });
             let responsePayload = response.data.data;
             return responsePayload;
         } catch (error) {
@@ -100,6 +104,6 @@ export class ProxyProvider implements IProvider {
 }
 
 // See: https://github.com/axios/axios/issues/983
-axios.defaults.transformResponse =  [function (data) {
-	return JSONbig.parse(data);
+axios.defaults.transformResponse = [function (data) {
+    return JSONbig.parse(data);
 }];

@@ -15,11 +15,11 @@ export class Err extends Error {
     summary(): any[] {
         let result = [];
 
-        result.push({name: this.name, message: this.message});
+        result.push({ name: this.name, message: this.message });
 
         let inner: any = this.inner;
         while (inner) {
-            result.push({name: inner.name, message: inner.message});
+            result.push({ name: inner.name, message: inner.message });
             inner = inner.inner;
         }
 
@@ -52,7 +52,7 @@ export class Err extends Error {
         if (error instanceof Err) {
             return error.html();
         } else {
-            return `Unexpected error of type <strong>${error.name}</strong> occurred: ${error.message}.`
+            return `Unexpected error of type <strong>${error.name}</strong> occurred: ${error.message}.`;
         }
     }
 }
@@ -234,9 +234,13 @@ export class ErrProxyProviderGet extends Err {
  * Signals an error that happened during a HTTP POST request.
  */
 export class ErrProxyProviderPost extends Err {
+    readonly originalErrorMessage: string;
+
     public constructor(url: string, error: string, inner?: Error) {
         let message = `Cannot POST ${url}: [${error}]`;
         super(message, inner);
+
+        this.originalErrorMessage = error || "";
     }
 }
 
@@ -277,9 +281,38 @@ export class ErrContract extends Err {
 }
 
 /**
+ * Signals a generic error in the context of querying Smart Contracts.
+ */
+export class ErrContractQuery extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+
+    static increaseSpecificity(err: Err): Err {
+        if (err instanceof ErrProxyProviderPost) {
+            if (err.originalErrorMessage.indexOf("error running vm func")) {
+                let newErrorMessage = err.originalErrorMessage.replace(new RegExp("executeQuery:", "g"), "").trim();
+                return new ErrContractQuery(newErrorMessage);
+            }
+        }
+
+        return err;
+    }
+}
+
+/**
  * Signals an error thrown by the mock-like test objects.
  */
 export class ErrMock extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals an error thrown when setting up a test.
+ */
+export class ErrTest extends Err {
     public constructor(message: string) {
         super(message);
     }
