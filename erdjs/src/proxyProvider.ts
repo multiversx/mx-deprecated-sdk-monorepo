@@ -27,8 +27,9 @@ export class ProxyProvider implements IProvider {
      */
     async queryContract(query: Query): Promise<QueryResponse> {
         let data = query.toHttpRequest();
-        let response = await this.doPost("/vm-values/query", data);
-        return QueryResponse.fromHttpResponse(response);
+        let response = await this.doPost("vm-values/query", data);
+        let payload = response.data || response.vmOutput;
+        return QueryResponse.fromHttpResponse(payload);
     }
 
     async sendTransaction(tx: Transaction): Promise<TransactionHash> {

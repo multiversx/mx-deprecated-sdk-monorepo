@@ -5,7 +5,6 @@ import { Code } from "./code";
 import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
-import { SimpleSigner } from "../simpleSigner";
 import { MockProvider, Wait } from "../testutils/mockProvider";
 import { TransactionWatcher } from "../transactionWatcher";
 import { TransactionStatus } from "../transaction";
@@ -240,8 +239,8 @@ describe("test on local testnet", function () {
         await transactionIncrementFirst.awaitExecuted(localTestnet);
 
         // Check counter
-        let q = await contract.runQuery(localTestnet, { func: new ContractFunction("increment") });
-        console.log(q);
+        let queryResponse = await contract.runQuery(localTestnet, { func: new ContractFunction("increment") });
+        console.log(queryResponse.toJSON());
     });
 });
 

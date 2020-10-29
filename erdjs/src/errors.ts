@@ -268,6 +268,15 @@ export class ErrExpectedTransactionStatusNotReached extends Err {
 }
 
 /**
+ * Signals a generic error in the context of Smart Contracts.
+ */
+export class ErrContract extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
  * Signals an error thrown by the mock-like test objects.
  */
 export class ErrMock extends Err {
