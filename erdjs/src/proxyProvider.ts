@@ -73,7 +73,8 @@ export class ProxyProvider implements IProvider {
                 throw new errors.ErrProxyProviderGet(resourceUrl, error.toString(), error);
             }
 
-            let originalErrorMessage = error.response.data.error;
+            let errorData = error.response.data;
+            let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
             throw new errors.ErrProxyProviderGet(resourceUrl, originalErrorMessage, error);
         }
     }
@@ -91,7 +92,8 @@ export class ProxyProvider implements IProvider {
                 throw new errors.ErrProxyProviderPost(resourceUrl, error.toString(), error);
             }
 
-            let originalErrorMessage = error.response.data.error || error.response.data;
+            let errorData = error.response.data;
+            let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
             throw new errors.ErrProxyProviderPost(resourceUrl, originalErrorMessage, error);
         }
     }
