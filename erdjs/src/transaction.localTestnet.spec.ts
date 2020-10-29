@@ -2,11 +2,10 @@ import { Transaction } from "./transaction";
 import { GasLimit } from "./networkParams";
 import { Account } from "./account";
 import { TransactionPayload } from "./transactionPayload";
-import { ProxyProvider } from "./proxyProvider";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
 import { TestWallets } from "./testutils/wallets";
-import { describeOnlyIf } from "./testutils/utils";
+import { describeOnlyIf, getLocalTestnetProvider } from "./testutils/utils";
 
 describeOnlyIf("localTestnet")("test transaction", () => {
     let wallets = new TestWallets();
@@ -15,7 +14,7 @@ describeOnlyIf("localTestnet")("test transaction", () => {
     let aliceSigner = aliceWallet.signer;
 
     it("should simulate transactions", async () => {
-        let localTestnet = new ProxyProvider("http://localhost:7950");
+        let localTestnet = getLocalTestnetProvider();
 
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);

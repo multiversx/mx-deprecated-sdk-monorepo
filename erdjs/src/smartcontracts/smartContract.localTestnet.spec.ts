@@ -4,15 +4,14 @@ import { GasLimit } from "../networkParams";
 import { TransactionWatcher } from "../transactionWatcher";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
-import { ProxyProvider } from "../proxyProvider";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
-import { describeOnlyIf } from "../testutils/utils";
+import { describeOnlyIf, getLocalTestnetProvider } from "../testutils/utils";
 
 describeOnlyIf("localTestnet")("test on local testnet", function () {
     this.timeout(50000);
 
-    let localTestnet = new ProxyProvider("http://localhost:7950");
+    let localTestnet = getLocalTestnetProvider();
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);
