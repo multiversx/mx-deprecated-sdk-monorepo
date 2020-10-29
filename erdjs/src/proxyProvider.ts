@@ -6,6 +6,7 @@ import { Address } from "./address";
 import  * as errors from "./errors";
 import { AccountOnNetwork } from "./account";
 import { Query, QueryResponse } from "./smartcontracts/query";
+const JSONbig = require("json-bigint");
 
 export class ProxyProvider implements IProvider {
     private url: string;
@@ -95,3 +96,8 @@ export class ProxyProvider implements IProvider {
         }
     }
 }
+
+// See: https://github.com/axios/axios/issues/983
+axios.defaults.transformResponse =  [function (data) {
+	return JSONbig.parse(data);
+}];
