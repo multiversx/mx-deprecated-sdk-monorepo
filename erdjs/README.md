@@ -12,13 +12,13 @@ Features:
 
 The most comprehensive usage examples are captured within the unit and the integration tests. Specifically, in the `*.spec.ts` files of the source code. For example:
 
- - [transaction.localTestnet.spec.ts](src/transaction.localTestnet.spec.ts)
- - [address.spec.ts](src/address.spec.ts)
- - [transactionPayloadBuilders.spec.ts](src/smartcontracts/transactionPayloadBuilders.spec.ts)
- - [smartContract.spec.ts](src/smartcontracts/smartContract.spec.ts)
- - [smartContract.localTestnet.spec.ts](src/smartcontracts/smartContract.localTestnet.spec.ts)
- - [query.spec.ts](src/smartcontracts/query.spec.ts)
- - [query.mainnet.spec.ts](src/smartcontracts/query.mainnet.spec.ts)
+ - [transaction.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/transaction.localTestnet.spec.ts)
+ - [address.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/address.spec.ts)
+ - [transactionPayloadBuilders.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/transactionPayloadBuilders.spec.ts)
+ - [smartContract.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/smartContract.spec.ts)
+ - [smartContract.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/smartContract.localTestnet.spec.ts)
+ - [query.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/query.spec.ts)
+ - [query.mainnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/query.mainnet.spec.ts)
 
 Additional examples (please note that they are slighly _out-of-date_ though) can be found here:
 
