@@ -17,5 +17,5 @@ export function getLocalTestnetProvider(): ProxyProvider {
 }
 
 export function getMainnetProvider(): ProxyProvider {
-    return new ProxyProvider("https://api.elrond.com");
+    return new ProxyProvider("https://api.elrond.com", 2000);
 }
