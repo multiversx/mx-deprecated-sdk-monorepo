@@ -3,6 +3,9 @@ import  * as errors from "./errors";
 
 const SIGNATURE_LENGTH = 64;
 
+/**
+ * Signature, as an immutable object.
+ */
 export class Signature {
     private valueHex: string = "";
 

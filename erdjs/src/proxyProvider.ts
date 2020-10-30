@@ -13,11 +13,19 @@ export class ProxyProvider implements IProvider {
     private url: string;
     private timeoutLimit: number;
 
+    /**
+     * Creates a new ProxyProvider.
+     * @param url the URL of the Elrond Proxy
+     * @param timeout the timeout for any request-response, in milliseconds
+     */
     constructor(url: string, timeout?: number) {
         this.url = url;
         this.timeoutLimit = timeout || 1000;
     }
 
+    /**
+     * Fetches the state of an {@link Account}.
+     */
     async getAccount(address: Address): Promise<AccountOnNetwork> {
         let response = await this.doGet(`address/${address.bech32()}`);
         let payload = response.account;
@@ -38,28 +46,43 @@ export class ProxyProvider implements IProvider {
         }
     }
 
+    /**
+     * Broadcasts an already-signed {@link Transaction}.
+     */
     async sendTransaction(tx: Transaction): Promise<TransactionHash> {
         let response = await this.doPost("transaction/send", tx.toSendable());
         let txHash = response.txHash;
         return new TransactionHash(txHash);
     }
 
+    /**
+     * Simulates the processing of an already-signed {@link Transaction}.
+     */
     async simulateTransaction(tx: Transaction): Promise<any> {
         let response = await this.doPost("transaction/simulate", tx.toSendable());
         return response;
     }
 
+    /**
+     * Fetches the state of a {@link Transaction}.
+     */
     async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
         let response = await this.doGet(`transaction/${txHash.toString()}`);
         let payload = response.transaction;
         return TransactionOnNetwork.fromHttpResponse(payload);
     }
 
+    /**
+     * Queries the status of a {@link Transaction}.
+     */
     async getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus> {
         let response = await this.doGet(`transaction/${txHash.toString()}/status`);
         return new TransactionStatus(response.status);
     }
 
+    /**
+     * Fetches the Network configuration.
+     */
     async getNetworkConfig(): Promise<NetworkConfig> {
         let response = await this.doGet("network/config");
         let payload = response.config;

@@ -27,6 +27,10 @@ export class SimpleSigner implements ISigner {
         }
     }
 
+    /**
+     * Signs a message.
+     * @param signable the message to be signed (e.g. a {@link Transaction}).
+     */
     async sign(signable: ISignable): Promise<void> {
         try {
             this.trySign(signable);
@@ -35,6 +39,9 @@ export class SimpleSigner implements ISigner {
         }
     }
 
+    /**
+     * Gets the address of the signer.
+     */
     getAddress(): Address {
         let pair = tweetnacl.sign.keyPair.fromSeed(this.seed);
         let signedBy = new Address(Buffer.from(pair.publicKey));
