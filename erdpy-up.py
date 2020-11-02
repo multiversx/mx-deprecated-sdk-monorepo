@@ -227,6 +227,14 @@ def get_profile_file():
     return os.path.expanduser(file)
 
 
+class InstallError(Exception):
+    inner = None
+
+    def __init__(self, message, inner=None):
+        super().__init__(message)
+        self.inner = inner
+
+
 if __name__ == "__main__":
     try:
         main()
@@ -239,11 +247,3 @@ if __name__ == "__main__":
 For more information go to https://docs.elrond.com.
 For support, please contact us at https://t.me/ElrondDevelopers.
 """)
-
-
-class InstallError(Exception):
-    inner = None
-
-    def __init__(self, message, inner=None):
-        super().__init__(message)
-        self.inner = inner
