@@ -1,9 +1,9 @@
-@baseUrl = https://api-testnet.elrond.com
+@baseUrl = http://localhost:7950
 
 ###
 
 // Query contract function
-POST http://157.245.115.125:8080/vm-values/query HTTP/1.1
+POST {{baseUrl}}/vm-values/query HTTP/1.1
 Content-Type: application/json
 
 {
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 ### 
 
-POST http://157.245.115.125:8080/vm-values/query HTTP/1.1
+POST {{baseUrl}}/vm-values/query HTTP/1.1
 Content-Type: application/json
 
 {

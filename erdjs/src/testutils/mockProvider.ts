@@ -1,14 +1,18 @@
 
-import { IProvider } from "./interface";
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
-import { NetworkConfig } from "./networkConfig";
-import { Address } from "./address";
-import { Nonce } from "./nonce";
-import { AsyncTimer } from "./asyncTimer";
-import { AccountOnNetwork } from "./account";
-import { Balance } from "./balance";
-import * as errors from "./errors";
+import { IProvider } from "../interface";
+import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "../transaction";
+import { NetworkConfig } from "../networkConfig";
+import { Address } from "../address";
+import { Nonce } from "../nonce";
+import { AsyncTimer } from "../asyncTimer";
+import { AccountOnNetwork } from "../account";
+import { Balance } from "../balance";
+import * as errors from "../errors";
+import { Query, QueryResponse } from "../smartcontracts/query";
 
+/**
+ * A mock {@link IProvider}, used for tests only.
+ */
 export class MockProvider implements IProvider {
     static AddressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
     static AddressOfBob = new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx");
@@ -70,16 +74,6 @@ export class MockProvider implements IProvider {
         return new AccountOnNetwork();
     }
 
-    async getBalance(address: Address): Promise<Balance> {
-        let account = await this.getAccount(address);
-        return account.balance;
-    }
-
-    async getNonce(address: Address): Promise<Nonce> {
-        let account = await this.getAccount(address);
-        return account.nonce;
-    }
-
     async sendTransaction(transaction: Transaction): Promise<TransactionHash> {
         this.mockPutTransaction(transaction.hash, new TransactionOnNetwork({
             nonce: transaction.nonce,
@@ -119,20 +113,8 @@ export class MockProvider implements IProvider {
     }
 
 
-    async getVMValueString(_address: string, _funcName: string, _args: string[]): Promise<string> {
-        throw new errors.ErrMock("Not implemented");
-    }
-
-    async getVMValueInt(_address: string, _funcName: string, _args: string[]): Promise<bigint> {
-        throw new errors.ErrMock("Not implemented");
-    }
-
-    async getVMValueHex(_address: string, _funcName: string, _args: string[]): Promise<string> {
-        throw new errors.ErrMock("Not implemented");
-    }
-
-    async getVMValueQuery(_address: string, _funcName: string, _args: string[]): Promise<any> {
-        throw new errors.ErrMock("Not implemented");
+    async queryContract(_query: Query): Promise<QueryResponse> {
+        return new QueryResponse();
     }
 }
 

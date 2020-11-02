@@ -2,6 +2,7 @@ import { IProvider } from "./interface";
 import { AsyncTimer } from "./asyncTimer";
 import { TransactionHash, TransactionStatus } from "./transaction";
 import  * as errors from "./errors";
+import { Logger } from "./logger";
 
 /**
  * TransactionWatcher allows one to continuously watch (monitor), by means of polling, the status of a given transaction.
@@ -72,7 +73,7 @@ export class TransactionWatcher {
                     break;
                 }
             } catch (error) {
-                console.log("cannot (yet) get status");
+                Logger.trace("cannot (yet) get status");
             }
             
             await periodicTimer.start(this.pollingInterval);

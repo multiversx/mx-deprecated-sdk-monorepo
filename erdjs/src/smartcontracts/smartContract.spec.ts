@@ -5,23 +5,21 @@ import { Code } from "./code";
 import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
-import { SimpleSigner } from "../simpleSigner";
-import { MockProvider, Wait } from "../mockProvider";
-import { TransactionWatcher } from "../transactionWatcher";
-import { Transaction, TransactionStatus } from "../transaction";
+import { MockProvider, Wait } from "../testutils/mockProvider";
+import { TransactionStatus } from "../transaction";
 import { Argument } from "./argument";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
-import { ProxyProvider } from "../proxyProvider";
-import { TransactionPayload } from "../transactionPayload";
-import { NetworkConfig } from "../networkConfig";
+import { TestWallets } from "../testutils/wallets";
+import { TransactionWatcher } from "../transactionWatcher";
 
 
 describe("test contract", () => {
     let provider = new MockProvider();
-    let aliceSigner = new SimpleSigner("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9");
-    let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
-    let alice = new Account(aliceAddress);
+    let wallets = new TestWallets();
+    let aliceWallet = wallets.alice;
+    let alice = new Account(aliceWallet.address);
+    let aliceSigner = aliceWallet.signer;
 
     it("should compute contract address", async () => {
         let owner = new Address("93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e");
@@ -44,20 +42,20 @@ describe("test contract", () => {
             gasLimit: new GasLimit(1000000)
         });
 
-        provider.mockUpdateAccount(aliceAddress, account => {
+        provider.mockUpdateAccount(alice.address, account => {
             account.nonce = new Nonce(42);
         });
 
         await alice.sync(provider);
         deployTransaction.setNonce(alice.nonce);
 
-        assert.equal(deployTransaction.data.decoded(), "01020304@0500@0000");
+        assert.equal(deployTransaction.data.decoded(), "01020304@0500@0100");
         assert.equal(deployTransaction.gasLimit.value, 1000000);
         assert.equal(deployTransaction.nonce.value, 42);
 
         // Sign transaction, then check contract address (should be computed upon signing)
         aliceSigner.sign(deployTransaction);
-        assert.equal(contract.getOwner().bech32(), aliceAddress.bech32());
+        assert.equal(contract.getOwner().bech32(), alice.address.bech32());
         assert.equal(contract.getAddress().bech32(), "erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q");
 
         // Now let's broadcast the deploy transaction, and wait for its execution.
@@ -74,7 +72,7 @@ describe("test contract", () => {
     it("should call", async () => {
         let contract = new SmartContract({ address: new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3") });
 
-        provider.mockUpdateAccount(aliceAddress, account => {
+        provider.mockUpdateAccount(alice.address, account => {
             account.nonce = new Nonce(42);
         });
 
@@ -118,74 +116,6 @@ describe("test contract", () => {
 
         assert.isTrue((await provider.getTransactionStatus(hashOne)).isExecuted());
         assert.isTrue((await provider.getTransactionStatus(hashTwo)).isExecuted());
-    });
-});
-
-describe("test on local testnet", function() {
-    this.timeout(50000);
-
-    let localTestnet = new ProxyProvider("http://localhost:7950");
-    let aliceSigner = new SimpleSigner("413f42575f7f26fad3317a778771212fdb80245850981e48b58a4f25e344e8f9");
-    let aliceAddress = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th");
-    let alice = new Account(aliceAddress);
-
-    it.skip("should deploy, then simulate transactions", async () => {
-        TransactionWatcher.DefaultPollingInterval = 5000;
-        TransactionWatcher.DefaultTimeout = 50000;
-
-        await NetworkConfig.getDefault().sync(localTestnet);
-        await alice.sync(localTestnet);
-
-        // Counter: deploy
-        let contract = new SmartContract({});
-        let transactionDeploy = contract.deploy({
-            code: Code.fromFile("./src/testdata/counter.wasm"),
-            gasLimit: new GasLimit(3000000)
-        });
-
-        transactionDeploy.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionDeploy);
-
-        alice.incrementNonce();
-
-        // Counter: Increment
-        let transactionIncrement = contract.call({
-            func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(3000000)
-        });
-        
-        transactionIncrement.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionIncrement);
-
-        alice.incrementNonce();
-
-        // Now, let's build a few transactions, to be simulated
-        let simulateOne = contract.call({
-            func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(100000)
-        });
-
-        let simulateTwo = contract.call({
-            func: new ContractFunction("foobar"),
-            gasLimit: new GasLimit(500000)
-        });
-
-        simulateOne.setNonce(alice.nonce);
-        simulateTwo.setNonce(alice.nonce);
-
-        await aliceSigner.sign(simulateOne);
-        await aliceSigner.sign(simulateTwo);
-
-        // Broadcast & execute
-        await transactionDeploy.send(localTestnet);
-        await transactionIncrement.send(localTestnet);
-
-        await transactionDeploy.awaitExecuted(localTestnet);
-        await transactionIncrement.awaitExecuted(localTestnet);
-
-        // Simulate
-        console.log(JSON.stringify(await simulateOne.simulate(localTestnet), null, 4));
-        console.log(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
     });
 });
 

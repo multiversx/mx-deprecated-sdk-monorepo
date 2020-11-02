@@ -3,7 +3,6 @@ import * as tweetnacl from "tweetnacl";
 import { ISigner, ISignable } from "./interface";
 import { Address } from "./address";
 import { Signature } from "./signature";
-const core = require("@elrondnetwork/elrond-core-js");
 import * as errors from "./errors";
 
 export const SEED_LENGTH = 32;
@@ -28,13 +27,10 @@ export class SimpleSigner implements ISigner {
         }
     }
 
-    static fromWalletKey(walletKeyObject: any, password: string): ISigner {
-        let account = new core.account();
-        account.loadFromKeyFile(walletKeyObject, password);
-        let seed = account.privateKey.slice(0, 32);
-        return new SimpleSigner(seed);
-    }
-
+    /**
+     * Signs a message.
+     * @param signable the message to be signed (e.g. a {@link Transaction}).
+     */
     async sign(signable: ISignable): Promise<void> {
         try {
             this.trySign(signable);
@@ -43,6 +39,9 @@ export class SimpleSigner implements ISigner {
         }
     }
 
+    /**
+     * Gets the address of the signer.
+     */
     getAddress(): Address {
         let pair = tweetnacl.sign.keyPair.fromSeed(this.seed);
         let signedBy = new Address(Buffer.from(pair.publicKey));
