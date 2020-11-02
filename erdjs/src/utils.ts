@@ -20,6 +20,6 @@ export function guardType(name: string, type: any, value?: any, allowUndefined: 
 
 export function guardValueIsSet(name: string, value?: any | null | undefined) {
     if (value == null || value === undefined) {
-        throw new errors.Err(`"${name}" must be set`);
+        throw new errors.ErrMissingValue(name);
     }
 }

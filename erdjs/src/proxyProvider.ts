@@ -3,121 +3,86 @@ import { IProvider } from "./interface";
 import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
-import { Nonce } from "./nonce";
-import  * as errors from "./errors";
-import { Balance } from "./balance";
+import * as errors from "./errors";
 import { AccountOnNetwork } from "./account";
+import { Query, QueryResponse } from "./smartcontracts/query";
+import { Logger } from "./logger";
+const JSONbig = require("json-bigint");
 
 export class ProxyProvider implements IProvider {
     private url: string;
     private timeoutLimit: number;
 
+    /**
+     * Creates a new ProxyProvider.
+     * @param url the URL of the Elrond Proxy
+     * @param timeout the timeout for any request-response, in milliseconds
+     */
     constructor(url: string, timeout?: number) {
         this.url = url;
         this.timeoutLimit = timeout || 1000;
     }
 
+    /**
+     * Fetches the state of an {@link Account}.
+     */
     async getAccount(address: Address): Promise<AccountOnNetwork> {
         let response = await this.doGet(`address/${address.bech32()}`);
         let payload = response.account;
         return AccountOnNetwork.fromHttpResponse(payload);
     }
 
-    async getBalance(address: Address): Promise<Balance> {
-        let response = await this.doGet(`address/${address.bech32()}/balance`);
-        let payload = response.balance;
-        return Balance.fromString(payload);
+    /**
+     * Queries a Smart Contract - runs a pure function defined by the contract and returns its results.
+     */
+    async queryContract(query: Query): Promise<QueryResponse> {
+        try {
+            let data = query.toHttpRequest();
+            let response = await this.doPost("vm-values/query", data);
+            let payload = response.data || response.vmOutput;
+            return QueryResponse.fromHttpResponse(payload);
+        } catch (err) {
+            throw errors.ErrContractQuery.increaseSpecificity(err);
+        }
     }
 
-    async getNonce(address: Address): Promise<Nonce> {
-        let response = await this.doGet(`address/${address.bech32()}/nonce`);
-        let payload = response.nonce;
-        return new Nonce(payload);
-    }
-
-    getVMValueString(address: string, funcName: string, args: string[]): Promise<string> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/string`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data);
-    }
-
-    getVMValueInt(address: string, funcName: string, args: string[]): Promise<bigint> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/int`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => BigInt(response.data.data));
-    }
-
-    getVMValueHex(address: string, funcName: string, args: string[]): Promise<string> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/hex`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data);
-    }
-
-    getVMValueQuery(address: string, funcName: string, args: string[]): Promise<any> {
-        // TODO add error handling:
-        //  * if the POST request fails
-        let postBody = {
-            "scAddress": address,
-            "funcName": funcName,
-            "args": args
-        };
-        return axios.post(
-            this.url + `/vm-values/query`,
-            postBody,
-            { timeout: this.timeoutLimit }
-        ).then(response => response.data.data);
-    }
-
+    /**
+     * Broadcasts an already-signed {@link Transaction}.
+     */
     async sendTransaction(tx: Transaction): Promise<TransactionHash> {
         let response = await this.doPost("transaction/send", tx.toSendable());
         let txHash = response.txHash;
         return new TransactionHash(txHash);
     }
 
+    /**
+     * Simulates the processing of an already-signed {@link Transaction}.
+     */
     async simulateTransaction(tx: Transaction): Promise<any> {
-        console.log(tx.toSendable());
         let response = await this.doPost("transaction/simulate", tx.toSendable());
         return response;
     }
 
+    /**
+     * Fetches the state of a {@link Transaction}.
+     */
     async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
         let response = await this.doGet(`transaction/${txHash.toString()}`);
         let payload = response.transaction;
         return TransactionOnNetwork.fromHttpResponse(payload);
     }
 
+    /**
+     * Queries the status of a {@link Transaction}.
+     */
     async getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus> {
         let response = await this.doGet(`transaction/${txHash.toString()}/status`);
         return new TransactionStatus(response.status);
     }
 
+    /**
+     * Fetches the Network configuration.
+     */
     async getNetworkConfig(): Promise<NetworkConfig> {
         let response = await this.doGet("network/config");
         let payload = response.config;
@@ -127,16 +92,17 @@ export class ProxyProvider implements IProvider {
     private async doGet(resourceUrl: string): Promise<any> {
         try {
             let url = `${this.url}/${resourceUrl}`;
-            let response = await axios.get(url, {timeout: this.timeoutLimit});
+            let response = await axios.get(url, { timeout: this.timeoutLimit });
             let payload = response.data.data;
             return payload;
         } catch (error) {
             if (!error.response) {
-                console.warn(error);
-                throw new errors.ErrProxyProviderGet(resourceUrl, "", error);
+                Logger.warn(error);
+                throw new errors.ErrProxyProviderGet(resourceUrl, error.toString(), error);
             }
 
-            let originalErrorMessage = error.response.data.error;
+            let errorData = error.response.data;
+            let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
             throw new errors.ErrProxyProviderGet(resourceUrl, originalErrorMessage, error);
         }
     }
@@ -145,17 +111,23 @@ export class ProxyProvider implements IProvider {
         try {
             let url = `${this.url}/${resourceUrl}`;
             let json = JSON.stringify(payload);
-            let response = await axios.post(url, json, {timeout: this.timeoutLimit});
+            let response = await axios.post(url, json, { timeout: this.timeoutLimit });
             let responsePayload = response.data.data;
             return responsePayload;
         } catch (error) {
             if (!error.response) {
-                console.warn(error);
-                throw new errors.ErrProxyProviderPost(resourceUrl, "", error);
+                Logger.warn(error);
+                throw new errors.ErrProxyProviderPost(resourceUrl, error.toString(), error);
             }
 
-            let originalErrorMessage = error.response.data.error || error.response.data;
+            let errorData = error.response.data;
+            let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
             throw new errors.ErrProxyProviderPost(resourceUrl, originalErrorMessage, error);
         }
     }
 }
+
+// See: https://github.com/axios/axios/issues/983
+axios.defaults.transformResponse = [function (data) {
+    return JSONbig.parse(data);
+}];
