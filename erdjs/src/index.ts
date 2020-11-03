@@ -11,6 +11,7 @@ export * as valid from "./utils";
 export * as errors from "./errors";
 export * from "./proxyProvider";
 export * from "./simpleSigner";
+export * from "./backendSigner";
 export * from "./nullSigner";
 export * from "./smartcontracts/smartContract";
 export * from "./smartcontracts/interface";
