@@ -12,7 +12,7 @@ from erdpy.proxy import ElrondProxy
 from erdpy.transactions import Transaction
 from examples.shards import get_shard_of_address
 
-logger = logging.getLogger("bon_mission4")
+logger = logging.getLogger("relayed")
 
 counter = 0
 
