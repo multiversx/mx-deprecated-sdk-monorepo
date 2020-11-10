@@ -1,0 +1,237 @@
+import {IDappProvider, IDappMessageEvent} from "./interface";
+import {
+    DAPP_MESSAGE_INIT,
+    DAPP_DEFAULT_TIMEOUT,
+    DAPP_MESSAGE_IS_CONNECTED,
+    DAPP_MESSAGE_CONNECT_URL, DAPP_MESSAGE_SEND_TRANSACTION_URL
+} from "./constants";
+import {mainFrameStyle} from "./dom";
+import {Transaction} from "../transaction";
+
+export class WalletProvider implements IDappProvider {
+    walletUrl: string;
+    mainFrame: HTMLIFrameElement | undefined;
+
+    /**
+     * Creates a new WalletProvider
+     * @param walletURL
+     */
+    constructor(walletURL: string = '') {
+        this.walletUrl = walletURL;
+        this.attachMainFrame();
+    }
+
+    /**
+     * Waits for the wallet iframe to ping that it has been initialised
+     */
+    async init(): Promise<boolean> {
+        if (this.isInitialized()) {
+            return true;
+        }
+        return this.waitForRemote();
+    }
+
+    /**
+     * Returns if the wallet iframe is up and running
+     */
+    isInitialized(): boolean {
+        if (!this.mainFrame) {
+            return false;
+        }
+
+        return this.mainFrame.dataset.initialized === "true";
+    }
+
+    /**
+     * Unlike isInitialized, isConnected returns true if the user alredy went through the login process
+     *  and has the wallet session active
+     */
+    async isConnected(): Promise<boolean> {
+        if (!this.mainFrame) {
+            return false;
+        }
+
+        const {contentWindow} = this.mainFrame;
+        if (!contentWindow) {
+            return false;
+        }
+
+        return new Promise((resolve, reject) => {
+            contentWindow.postMessage({
+                type: DAPP_MESSAGE_IS_CONNECTED,
+            }, this.walletUrl);
+
+            const timeout = setTimeout(_ => reject('window not responding'), 5000);
+
+            const isConnected = (ev: IDappMessageEvent) => {
+                if (!this.isValidWalletSource(ev.origin)) {
+                    return;
+                }
+
+                const {data} = ev;
+                if (data.type !== DAPP_MESSAGE_IS_CONNECTED) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                window.removeEventListener('message', isConnected.bind(this));
+                return resolve(data.data);
+            };
+
+            window.addEventListener('message', isConnected);
+        });
+    }
+
+    /**
+     * Fetches the login hook url and redirects the client to the wallet login.
+     */
+    async login(): Promise<string> {
+        if (!this.mainFrame) {
+            return '';
+        }
+
+        const {contentWindow} = this.mainFrame;
+        if (!contentWindow) {
+            return '';
+        }
+
+        return new Promise<string>((resolve, reject) => {
+            contentWindow.postMessage({
+                type: DAPP_MESSAGE_CONNECT_URL,
+            }, this.walletUrl);
+
+            const timeout = setTimeout(_ => reject('connect url not responding'), 5000);
+            const connectUrl = (ev: IDappMessageEvent) => {
+                if (!this.isValidWalletSource(ev.origin)) {
+                    return;
+                }
+
+                const {data} = ev;
+                if (data.type !== DAPP_MESSAGE_CONNECT_URL) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                window.removeEventListener('message', connectUrl.bind(this));
+                return resolve(data.data.toString());
+            };
+
+            window.addEventListener('message', connectUrl);
+        }).then((connectionUrl: string) => {
+            const redirectParts = connectionUrl.split('=');
+            const redirectAddress = redirectParts[redirectParts.length - 1];
+            if (redirectParts.length < 2 || !redirectAddress.startsWith('erd1')) {
+
+            }
+            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${window.location.href}/dashboard`;
+            return window.location.href;
+        }).catch(_ => {
+            return '';
+        });
+    }
+
+    /**
+     * Packs a {@link Transaction} and fetches correct redirect URL from the wallet API. Then redirects
+     *   the client to the send transaction hook
+     * @param transaction
+     */
+    async sendTransaction(transaction: Transaction): Promise<Transaction> {
+        if (!this.mainFrame) {
+            throw new Error("Wallet provider is not initialised, call init() first");
+        }
+
+        const {contentWindow} = this.mainFrame;
+        if (!contentWindow) {
+            throw new Error("Wallet provider is not initialised, call init() first");
+        }
+
+        return new Promise<Transaction>((resolve, reject) => {
+            contentWindow.postMessage({
+                type: DAPP_MESSAGE_SEND_TRANSACTION_URL,
+                data: {
+                    transaction: {
+                        transaction
+                    }
+                }
+            }, this.walletUrl);
+
+            const timeout = setTimeout(_ => reject('send transaction url not responding'), 5000);
+            const sendTransactionUrl = (ev: IDappMessageEvent) => {
+                if (!this.isValidWalletSource(ev.origin)) {
+                    return;
+                }
+
+                const {data} = ev;
+                if (data.type !== DAPP_MESSAGE_SEND_TRANSACTION_URL) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                window.removeEventListener('message', sendTransactionUrl.bind(this));
+
+                if (data.error) {
+                    return reject(data.error);
+                }
+
+                return resolve(data.data.toString());
+            };
+
+            window.addEventListener('message', sendTransactionUrl);
+        }).then((sendTransactionUrl: any) => {
+            window.location.href = `${this.baseWalletUrl()}${sendTransactionUrl}?callbackUrl=${window.location.href}`;
+            return transaction;
+        });
+    }
+
+    private async waitForRemote(): Promise<boolean>{
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(_ => reject(false), DAPP_DEFAULT_TIMEOUT);
+            const setConnected = (ev: IDappMessageEvent) => {
+                if (!this.mainFrame) {
+                    return;
+                }
+                if (!this.isValidWalletSource(ev.origin)) {
+                    return;
+                }
+                const {data} = ev;
+                if (data.type !== DAPP_MESSAGE_INIT) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                window.removeEventListener('message', setConnected);
+                this.mainFrame.dataset.initialized = data.data.toString();
+
+                resolve(data.data);
+            };
+            window.addEventListener('message', setConnected.bind(this));
+        });
+    }
+
+    private attachMainFrame() {
+        const currentMainframe = <HTMLIFrameElement>document.querySelector(`iframe[src="${this.walletUrl}"]`);
+        if (currentMainframe) {
+            this.mainFrame = currentMainframe;
+            return;
+        }
+
+        let mainFrame = document.createElement('iframe');
+        mainFrame.src = this.walletUrl;
+        Object.assign(mainFrame.style, mainFrameStyle());
+        mainFrame.dataset.initialized = "false";
+        document.body.appendChild(mainFrame);
+
+        this.mainFrame = mainFrame;
+    }
+
+    private isValidWalletSource(origin: string): boolean {
+        return origin === this.walletUrl || origin === this.baseWalletUrl();
+    }
+
+    private baseWalletUrl(): string {
+        const pathArray = this.walletUrl.split( '/' );
+        const protocol = pathArray[0];
+        const host = pathArray[2];
+        return protocol + '//' + host;
+    }
+}
