@@ -4,7 +4,8 @@ import {
     DAPP_DEFAULT_TIMEOUT,
     DAPP_MESSAGE_IS_CONNECTED,
     DAPP_MESSAGE_GET_ADDRESS,
-    DAPP_MESSAGE_CONNECT_URL, DAPP_MESSAGE_SEND_TRANSACTION_URL
+    DAPP_MESSAGE_CONNECT_URL,
+    DAPP_MESSAGE_SEND_TRANSACTION_URL
 } from "./constants";
 import {mainFrameStyle} from "./dom";
 import {Transaction} from "../transaction";

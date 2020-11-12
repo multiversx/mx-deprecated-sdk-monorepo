@@ -1,5 +1,5 @@
-export const WALLET_PROVIDER_MAINNET = 'https://wallet.elrond.com';
-export const WALLET_PROVIDER_TESTNET = 'https://testnet-wallet.elrond.com';
+export const WALLET_PROVIDER_MAINNET = 'https://wallet.elrond.com/dapp/init';
+export const WALLET_PROVIDER_TESTNET = 'https://testnet-wallet.elrond.com/dapp/init';
 
 // Wallet intercom messages
 export const DAPP_DEFAULT_TIMEOUT = 5000;
