@@ -7,11 +7,11 @@ import platform from "platform";
 
 import {IDappProvider, IHWElrondApp} from "./interface";
 import {IProvider} from "../interface";
-import {Transaction, TransactionHash} from "../transaction";
+import {Transaction} from "../transaction";
 import {Address} from "../address";
 import {Signature} from "../signature";
 
-export default class HWProvider implements IDappProvider {
+export class HWProvider implements IDappProvider {
     provider: IProvider;
     hwApp?: IHWElrondApp;
 
@@ -48,7 +48,7 @@ export default class HWProvider implements IDappProvider {
     }
 
     /**
-     * Fetches current selected ledger address
+     * Mocks a login request by returning the ledger selected address
      */
     async login(): Promise<string> {
         if (!this.hwApp) {
@@ -62,6 +62,13 @@ export default class HWProvider implements IDappProvider {
     }
 
     /**
+     * Fetches current selected ledger address
+     */
+    async getAddress(): Promise<string> {
+        return this.getCurrentAddress();
+    }
+
+    /**
      * Signs and sends a transaction. Returns the transaction hash
      * @param transaction
      */
@@ -70,8 +77,7 @@ export default class HWProvider implements IDappProvider {
             throw new Error("HWApp not initialised, call init() first");
         }
 
-        const config = await this.hwApp.getAppConfiguration();
-        const { address } =  await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
+        const address = await this.getCurrentAddress();
         if (address !== transaction.sender.bech32()) {
             throw new Error("Invalid transaction to sign");
         }
@@ -82,5 +88,16 @@ export default class HWProvider implements IDappProvider {
         await transaction.send(this.provider);
 
         return transaction;
+    }
+
+    private async getCurrentAddress(): Promise<string> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+
+        const config = await this.hwApp.getAppConfiguration();
+        const { address } =  await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
+
+        return address;
     }
 }

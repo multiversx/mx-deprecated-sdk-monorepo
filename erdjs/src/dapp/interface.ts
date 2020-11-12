@@ -3,6 +3,7 @@ import {Transaction} from "../transaction";
 export interface IDappProvider {
     init(): Promise<boolean>;
     login(): Promise<string>;
+    getAddress(): Promise<string>;
     isInitialized(): boolean;
     isConnected(): Promise<boolean>;
     sendTransaction(transaction: Transaction): Promise<Transaction>;

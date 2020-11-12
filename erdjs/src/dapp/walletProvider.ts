@@ -3,6 +3,7 @@ import {
     DAPP_MESSAGE_INIT,
     DAPP_DEFAULT_TIMEOUT,
     DAPP_MESSAGE_IS_CONNECTED,
+    DAPP_MESSAGE_GET_ADDRESS,
     DAPP_MESSAGE_CONNECT_URL, DAPP_MESSAGE_SEND_TRANSACTION_URL
 } from "./constants";
 import {mainFrameStyle} from "./dom";
@@ -19,6 +20,7 @@ export class WalletProvider implements IDappProvider {
     constructor(walletURL: string = '') {
         this.walletUrl = walletURL;
         this.attachMainFrame();
+        this.init().then();
     }
 
     /**
@@ -92,6 +94,7 @@ export class WalletProvider implements IDappProvider {
 
         const {contentWindow} = this.mainFrame;
         if (!contentWindow) {
+            console.warn("Something went wrong, main wallet iframe does not contain a contentWindow");
             return '';
         }
 
@@ -118,15 +121,49 @@ export class WalletProvider implements IDappProvider {
 
             window.addEventListener('message', connectUrl);
         }).then((connectionUrl: string) => {
-            const redirectParts = connectionUrl.split('=');
-            const redirectAddress = redirectParts[redirectParts.length - 1];
-            if (redirectParts.length < 2 || !redirectAddress.startsWith('erd1')) {
-
-            }
-            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${window.location.href}/dashboard`;
+            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${window.location.href}`;
             return window.location.href;
         }).catch(_ => {
             return '';
+        });
+    }
+
+    /**
+     * Returns currently connected address. Empty string if not connected
+     */
+    async getAddress(): Promise<string> {
+        if (!this.mainFrame) {
+            return '';
+        }
+
+        const {contentWindow} = this.mainFrame;
+        if (!contentWindow) {
+            return '';
+        }
+
+        return new Promise((resolve, reject) => {
+            contentWindow.postMessage({
+                type: DAPP_MESSAGE_GET_ADDRESS,
+            }, this.walletUrl);
+
+            const timeout = setTimeout(_ => reject('window not responding'), 5000);
+
+            const getAddress = (ev: IDappMessageEvent) => {
+                if (!this.isValidWalletSource(ev.origin)) {
+                    return;
+                }
+
+                const {data} = ev;
+                if (data.type !== DAPP_MESSAGE_GET_ADDRESS) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                window.removeEventListener('message', getAddress.bind(this));
+                return resolve(data.data);
+            };
+
+            window.addEventListener('message', getAddress);
         });
     }
 
