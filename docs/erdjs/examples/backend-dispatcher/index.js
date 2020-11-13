@@ -1,7 +1,7 @@
 const os = require("os");
 const fs = require("fs");
 const { Command } = require("commander");
-const { ProxyProvider, SimpleSigner, Account, GasLimit, TransactionHash, TransactionPayload, NetworkConfig, Transaction, Address, Balance } = require("@elrondnetwork/erdjs");
+const { ProxyProvider, BackendSigner, Account, GasLimit, TransactionHash, TransactionPayload, NetworkConfig, Transaction, Address, Balance } = require("@elrondnetwork/erdjs");
 
 var PROXY_URL = "https://api-testnet.elrond.com";
 
@@ -73,7 +73,7 @@ function createSigner(keyFile, passwordFile) {
     let keyFileJson = readText(keyFile);
     let keyFileObject = JSON.parse(keyFileJson);
     let password = readText(passwordFile);
-    let signer = SimpleSigner.fromWalletKey(keyFileObject, password);
+    let signer = BackendSigner.fromWalletKey(keyFileObject, password);
     return signer;
 }
 
