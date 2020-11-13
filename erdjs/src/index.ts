@@ -8,7 +8,6 @@ export * from "./balance";
 export * from "./networkConfig";
 export * from "./networkParams";
 export * as valid from "./utils";
-export * as errors from "./errors";
 export * from "./proxyProvider";
 export * from "./simpleSigner";
 export * from "./backendSigner";
@@ -19,3 +18,8 @@ export * from "./smartcontracts/code";
 export * from "./smartcontracts/codeMetadata";
 export * from "./smartcontracts/argument";
 export * from "./smartcontracts/function";
+export * from "./dapp/constants";
+
+export * from "./dapp/interface";
+export * from "./dapp/hwProvider";
+export * from "./dapp/walletProvider";
