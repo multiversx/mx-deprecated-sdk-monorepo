@@ -326,3 +326,21 @@ export class ErrTest extends Err {
         super(message);
     }
 }
+
+/**
+ * Signals a generic serialization error.
+ */
+export class ErrSerialization extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals a generic serialization error.
+ */
+export class ErrSerializationCannotRead extends ErrSerialization {
+    public constructor(message: string) {
+        super(message);
+    }
+}
