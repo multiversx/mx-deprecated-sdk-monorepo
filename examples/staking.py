@@ -19,7 +19,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
 
     parser = ArgumentParser()
-    parser.add_argument("--proxy", default="https://api-testnet.elrond.com")
+    parser.add_argument("--proxy", default="https://testnet-api.elrond.com")
     parser.add_argument("--pem", required=True)
     parser.add_argument("--reward-address", required=True, help="the reward address")
     parser.add_argument("--nodes-file", required=True, help="file containing list of BLS keys, one per line")

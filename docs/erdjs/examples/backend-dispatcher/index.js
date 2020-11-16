@@ -3,7 +3,7 @@ const fs = require("fs");
 const { Command } = require("commander");
 const { ProxyProvider, BackendSigner, Account, GasLimit, TransactionHash, TransactionPayload, NetworkConfig, Transaction, Address, Balance } = require("@elrondnetwork/erdjs");
 
-var PROXY_URL = "https://api-testnet.elrond.com";
+var PROXY_URL = "https://testnet-api.elrond.com";
 
 (async () => {
     await main();
