@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.1] - 17.11.2020
+ - Corrected transaction object sent to the wallet provider.
+
 ## [1.1.0] - 13.11.2020
  - Add elrond-wallet and hardware wallet support.
 
