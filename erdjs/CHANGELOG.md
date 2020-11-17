@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.2] - 17.11.2020
+ - Removed useless check and add the current Ledger selection as sender.
+
 ## [1.1.1] - 17.11.2020
  - Corrected transaction object sent to the wallet provider.
 
