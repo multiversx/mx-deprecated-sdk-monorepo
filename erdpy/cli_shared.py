@@ -113,14 +113,17 @@ def prepare_nonce_in_args(args: Any):
         args.nonce = account.nonce
 
 
-def add_broadcast_args(sub: Any):
+def add_broadcast_args(sub: Any, simulate=True, relay=False):
     sub.add_argument("--send", action="store_true", default=False, help="✓ whether to broadcast the transaction (default: %(default)s)")
-    sub.add_argument("--simulate", action="store_true", default=False, help="whether to simulate the transaction (default: %(default)s)")
-    sub.add_argument("--relay", action="store_true", default=False, help="whether to relay the transaction (default: %(default)s)")
+
+    if simulate:
+        sub.add_argument("--simulate", action="store_true", default=False, help="whether to simulate the transaction (default: %(default)s)")
+    if relay:
+        sub.add_argument("--relay", action="store_true", default=False, help="whether to relay the transaction (default: %(default)s)")
 
 
 def check_broadcast_args(args: Any):
-    if args.relay and args.send:
+    if hasattr(args, "relay") and args.relay and args.send:
         raise errors.BadUsage("Cannot directly send a relayed transaction. Use 'erdpy tx new --relay' first, then 'erdpy tx send --data-file'")
     if args.send and args.simulate:
         raise errors.BadUsage("Cannot both 'simulate' and 'send' a transaction")

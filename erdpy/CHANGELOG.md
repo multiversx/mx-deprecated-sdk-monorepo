@@ -4,6 +4,14 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [...] - ...
+ - Refactor (mostly around validator commands).
+ - Add "send", "simulate" for `validator` commands.
+ - Fix `staking.py` example.
+ - Add `Address.is_contract_address()`.
+ - Change testnet URL.
+ - Fix tests, cleanup test data. 
+
 ## [0.9.5] - 28.10.2020
  - Add dependency tag for elrond-wasm-rs.
 

@@ -1,4 +1,4 @@
-@baseUrl = https://api-testnet.elrond.com
+@baseUrl = https://testnet-api.elrond.com
 
 ###
 
