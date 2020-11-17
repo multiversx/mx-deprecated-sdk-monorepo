@@ -10,6 +10,7 @@ import { describeOnlyIf, getLocalTestnetProvider } from "../testutils/utils";
 import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
+import { Balance } from "../balance";
 
 describeOnlyIf("localTestnet")("test on local testnet", function () {
     this.timeout(50000);
@@ -27,7 +28,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);
 
-        // Counter: deploy
+        // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
             code: Code.fromFile("./src/testdata/counter.wasm"),
@@ -39,7 +40,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         alice.incrementNonce();
 
-        // Counter: Increment
+        // ++
         let transactionIncrement = contract.call({
             func: new ContractFunction("increment"),
             gasLimit: new GasLimit(3000000)
@@ -86,7 +87,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);
 
-        // Counter: deploy
+        // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
             code: Code.fromFile("./src/testdata/counter.wasm"),
@@ -98,7 +99,6 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         alice.incrementNonce();
 
-        // Counter: Increment
         // ++
         let transactionIncrementFirst = contract.call({
             func: new ContractFunction("increment"),
@@ -210,5 +210,73 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
             args: [Argument.pubkey(wallets.carol.address)]
         });
         assert.equal(1500, queryResponse.firstResult().asNumber);
+    });
+
+    it("lottery: should deploy, call and query contract", async () => {
+        TransactionWatcher.DefaultPollingInterval = 5000;
+        TransactionWatcher.DefaultTimeout = 50000;
+
+        await NetworkConfig.getDefault().sync(localTestnet);
+        await alice.sync(localTestnet);
+
+        // Deploy
+        let contract = new SmartContract({});
+        let transactionDeploy = contract.deploy({
+            code: Code.fromFile("./src/testdata/lottery-egld.wasm"),
+            gasLimit: new GasLimit(100000000),
+            initArguments: []
+        });
+
+        // The deploy transaction should be signed, so that the address of the contract
+        // (required for the subsequent transactions) is computed.
+        transactionDeploy.setNonce(alice.nonce);
+        await aliceSigner.sign(transactionDeploy);
+        alice.incrementNonce();
+
+        // Start
+        let transactionStart = contract.call({
+            func: new ContractFunction("start"),
+            gasLimit: new GasLimit(50000000),
+            args: [
+                Argument.utf8("foobar"), 
+                Argument.bigInt(Balance.eGLD(1).value),
+                Argument.missingOptional(),
+                Argument.missingOptional(),
+                Argument.providedOptional(Argument.number(1)),
+                Argument.missingOptional(),
+                Argument.missingOptional()
+            ]
+        });
+
+        // Apply nonces and sign the remaining transactions
+        transactionStart.setNonce(alice.nonce);
+
+        await aliceSigner.sign(transactionStart);
+
+        // Broadcast & execute
+        await transactionDeploy.send(localTestnet);
+        await transactionStart.send(localTestnet);
+        // await transactionMintCarol.send(localTestnet);
+
+        await transactionDeploy.awaitExecuted(localTestnet);
+        await transactionStart.awaitExecuted(localTestnet);
+        // await transactionMintCarol.awaitExecuted(localTestnet);
+
+        // Query state, do some assertions
+        let queryResponse = await contract.runQuery(localTestnet, {
+            func: new ContractFunction("lotteryExists"),
+            args: [
+                Argument.utf8("foobar")
+            ]
+        });
+        assert.equal(true, queryResponse.firstResult().asBool);
+
+        queryResponse = await contract.runQuery(localTestnet, {
+            func: new ContractFunction("lotteryExists"),
+            args: [
+                Argument.utf8("missingLottery")
+            ]
+        });
+        assert.equal(false, queryResponse.firstResult().asBool);
     });
 });
