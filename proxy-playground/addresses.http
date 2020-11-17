@@ -1,4 +1,4 @@
-@baseUrl = https://api-testnet.elrond.com
+@baseUrl = https://testnet-api.elrond.com
 @alice = erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz
 @randomUser = erd1sea63y47u569ns3x5mqjf4vnygn9whkk7p6ry4rfpqyd6rd5addqyd9lf2
 
