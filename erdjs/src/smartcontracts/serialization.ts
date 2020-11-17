@@ -40,10 +40,8 @@ export class BinaryReader {
 
     readBigUInt(): BigInt {
         let length = this.readLength();
-        let bytes = this.buffer.slice(this.offset, this.offset + length);
-        this.incrementOffset(length);
-
-        let hex = bytes.toString("hex");
+        let slice = this.readSlice(length);
+        let hex = slice.toString("hex");
         let result = BigInt(`0x${hex}`);
         return result;
     }
@@ -51,14 +49,12 @@ export class BinaryReader {
     readU32(): number {
         let result = this.buffer.readUInt32BE(this.offset);
         this.incrementOffset(4);
-
         return result;
     }
 
     readU64(): bigint {
         let result = this.buffer.readBigUInt64BE(this.offset);
         this.incrementOffset(8);
-
         return result;
     }
 
@@ -81,10 +77,8 @@ export class BinaryReader {
         let length = this.readLength();
 
         for (let i = 0; i < length; i++) {
-            let bytes = this.buffer.slice(this.offset, this.offset + 32);
-            this.incrementOffset(32);
-
-            let address = new Address(bytes);
+            let slice = this.readSlice(32);
+            let address = new Address(slice);
             result.push(address);
         }
 
@@ -95,6 +89,12 @@ export class BinaryReader {
         let length = this.buffer.readUInt32BE(this.offset);
         this.incrementOffset(4);
         return length;
+    }
+
+    private readSlice(length: number): Buffer {
+        let slice = this.buffer.slice(this.offset, this.offset + length);
+        this.incrementOffset(length);
+        return slice;
     }
 
     private incrementOffset(value: number) {
