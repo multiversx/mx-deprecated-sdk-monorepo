@@ -112,6 +112,7 @@ export class ContractReturnData {
     asBase64: any;
     asHex: string;
     asNumber: number;
+    asBool: boolean;
     asBigInt: BigInt;
     asString: string;
 
@@ -120,6 +121,7 @@ export class ContractReturnData {
         this.asBuffer = Buffer.from(asBase64, "base64");
         this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
+        this.asBool = this.asNumber == 1 ? true : false;
         this.asBigInt = BigInt(`0x${this.asHex || "00"}`);
         this.asString = this.asBuffer.toString();
     }
