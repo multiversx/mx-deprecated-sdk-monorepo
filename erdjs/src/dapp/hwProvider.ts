@@ -78,9 +78,7 @@ export class HWProvider implements IDappProvider {
         }
 
         const address = await this.getCurrentAddress();
-        if (address !== transaction.sender.bech32()) {
-            throw new Error("Invalid transaction to sign");
-        }
+        transaction.sender = new Address(address);
 
         const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)));
         transaction.signature = new Signature(sig);
