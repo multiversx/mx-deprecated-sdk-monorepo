@@ -1,3 +1,5 @@
+import { PrimitiveType } from "./types";
+
 /**
  * Contract ABIs aren't yet implemented. A future release of `erdjs` will handle ABIs as well.
  */
@@ -44,17 +46,3 @@ export class StructFieldDefinition {
     }
 }
 
-export enum PrimitiveType {
-    Boolean,
-    U8,
-    U16,
-    U32,
-    U64,
-    I8,
-    I16,
-    I32,
-    I64,
-    BigUInt,
-    BigInt,
-    Address
-}

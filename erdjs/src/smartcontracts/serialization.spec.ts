@@ -1,8 +1,9 @@
 import { describe } from "mocha";
 import { assert } from "chai";
 import { Address } from "../address";
-import { Abi, StructDefinition, PrimitiveType } from "./abi";
+import { Abi, StructDefinition } from "./abi";
 import { BinarySerializer, BinaryReader } from "./serialization";
+import { PrimitiveType } from "./types";
 
 
 describe("test serialization", () => {

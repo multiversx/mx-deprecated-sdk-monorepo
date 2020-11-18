@@ -1,5 +1,6 @@
 import { Address } from "../address";
-import { StructDefinition, PrimitiveType } from "./abi";
+import { StructDefinition } from "./abi";
+import { PrimitiveType } from "./types";
 import * as errors from "../errors";
 
 export class BinarySerializer {
