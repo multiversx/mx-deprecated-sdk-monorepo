@@ -16,7 +16,8 @@ export enum PrimitiveType {
 }
 
 export interface IBoxedValue {
-    encodeBinary(nested: boolean): Buffer;
+    encodeBinaryNested(): Buffer;
+    encodeBinaryTopLevel(): Buffer;
     // TODO: decodeBinary(nested: boolean, buffer: Buffer): <?>
 }
 
@@ -29,6 +30,13 @@ export class IntegerValue implements IBoxedValue {
         this.sizeInBytes = sizeInBytes;
         this.withSign = withSign;
         this.value = value;
+
+        if (typeof (value) != "number") {
+            throw new errors.ErrInvalidArgument("value", value);
+        }
+        if (!this.withSign && value < 0) {
+            throw new errors.ErrInvalidArgument("value", value);
+        }
     }
 
     static create(value: number, type: PrimitiveType): IntegerValue {
@@ -88,7 +96,7 @@ export class IntegerValue implements IBoxedValue {
         return new IntegerValue(value, 8, true);
     }
 
-    encodeBinary(nested: boolean): Buffer {
+    encodeBinaryNested(): Buffer {
         const maxLength = 8;
         let buffer = Buffer.alloc(maxLength);
 
@@ -98,15 +106,18 @@ export class IntegerValue implements IBoxedValue {
             buffer.writeBigUInt64BE(BigInt(this.value));
         }
 
-        if (nested) {
-            // Cut to size.
-            buffer = buffer.slice(buffer.length - this.sizeInBytes);
+        // Cut to size.
+        buffer = buffer.slice(buffer.length - this.sizeInBytes);
+        return buffer;
+    }
+
+    encodeBinaryTopLevel(): Buffer {
+        let buffer: Buffer = this.encodeBinaryNested();
+
+        if (this.withSign) {
+            buffer = discardSuperfluousBytesInTwosComplement(buffer);
         } else {
-            if (this.withSign) {
-                buffer = discardSuperfluousBytesInTwosComplement(buffer);
-            } else {
-                buffer = discardSuperfluousZeroBytes(buffer);
-            }
+            buffer = discardSuperfluousZeroBytes(buffer);
         }
 
         return buffer;
@@ -141,7 +152,11 @@ export class BigIntegerValue implements IBoxedValue {
         return new BigIntegerValue(value, true);
     }
 
-    encodeBinary(_: boolean): Buffer {
+    encodeBinaryNested(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+
+    encodeBinaryTopLevel(): Buffer {
         throw new Error("Method not implemented.");
     }
 }
@@ -153,12 +168,20 @@ export class OptionalValue implements IBoxedValue {
         this.value = value;
     }
 
-    encodeBinary(nested: boolean): Buffer {
+    encodeBinaryNested(): Buffer {
         if (this.value) {
-            return Buffer.concat([Buffer.from([1]), this.value.encodeBinary(true)]);
+            return Buffer.concat([Buffer.from([1]), this.value.encodeBinaryNested()]);
         }
 
-        return nested ? Buffer.from([0]) : Buffer.from([]);
+        return Buffer.from([0]);
+    }
+
+    encodeBinaryTopLevel(): Buffer {
+        if (this.value) {
+            return this.encodeBinaryNested();
+        }
+
+        return Buffer.from([]);
     }
 }
 

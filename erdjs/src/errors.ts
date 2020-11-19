@@ -75,6 +75,15 @@ export class ErrInvalidArgument extends Err {
 }
 
 /**
+ * Signals an unsupported operation.
+ */
+export class ErrUnsupportedOperation extends Err {
+    public constructor(operation: string, reason: string = "not specified") {
+        super(`Operation "${operation}" not supported. Reason: ${reason}`);
+    }
+}
+
+/**
  * Signals the provisioning of objects of unexpected (bad) types.
  */
 export class ErrBadType extends Err {

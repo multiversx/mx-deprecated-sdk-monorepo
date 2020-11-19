@@ -1,10 +1,33 @@
 import { describe } from "mocha";
+import * as errors from "../errors";
 import { assert } from "chai";
-import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMostSignificantBitSet } from "./types";
+import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, IntegerValue, isMostSignificantBitSet, PrimitiveType } from "./types";
 
 describe("test types", () => {
-    it("should create numeric values", async () => {
+    it("should create integer values, then encode and decode", async () => {
+        let value: IntegerValue;
 
+        value = IntegerValue.create(42, PrimitiveType.U8);
+        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0x2A]));
+        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x2A]));
+
+        value = IntegerValue.create(42, PrimitiveType.U16);
+        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0x00, 0x2A]));
+        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x2A]));
+
+        value = IntegerValue.create(-10, PrimitiveType.I8);
+        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0xF6]));
+        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xF6]));
+
+        value = IntegerValue.create(-10, PrimitiveType.I16);
+        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0xFF, 0xF6]));
+        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xF6]));
+    });
+
+    it("for integer values, should throw error when invalid input", () => {
+        assert.throw(() => IntegerValue.create(42, PrimitiveType.Address), errors.ErrInvalidArgument);
+        assert.throw(() => IntegerValue.create(-42, PrimitiveType.U32), errors.ErrInvalidArgument);
+        assert.throw(() => IntegerValue.create(<any>BigInt(42), PrimitiveType.U16), errors.ErrInvalidArgument);
     });
 });
 
@@ -85,7 +108,7 @@ describe("test helper functions for types", () => {
         assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]));
         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
 
-        // Negative
+        // Negative, other
         buffer = Buffer.from([0b10000000]);
         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b10000000]));
 
@@ -95,6 +118,13 @@ describe("test helper functions for types", () => {
         buffer = Buffer.from([0b11111111, 0b10000000]);
         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b10000000]));
 
-        // Positive, max.
+        // Positive
+        buffer = Buffer.alloc(1);
+        buffer.writeInt8(127);
+        assert.deepEqual(buffer, Buffer.from([0x7F]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0x7F]));
+
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(Buffer.from([0x00, 0x00, 0xFF])), Buffer.from([0x00, 0xFF]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(Buffer.from([0x00, 0x00, 0x7F])), Buffer.from([0x7F]));
     });
 });
