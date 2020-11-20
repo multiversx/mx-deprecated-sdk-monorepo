@@ -171,8 +171,18 @@ export class BigIntegerValue implements IBoxedValue {
 
     static decodeNested(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
         let length = buffer.readUInt32BE();
-        let empty = length == 0;
-        let payload = buffer.slice(4);
+        let payload = Buffer.alloc(length);
+        // Copy, but skip header.
+        buffer.copy(payload, 0, 4);
+
+        let result = this.decodeTopLevel(payload, type);
+        return result;
+    }
+
+    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
+        let empty = buffer.length == 0;
+        let payload = Buffer.alloc(buffer.length);
+        buffer.copy(payload);
 
         if (type == PrimitiveType.BigUInt) {
             if (empty) {
@@ -198,9 +208,10 @@ export class BigIntegerValue implements IBoxedValue {
                 flipBuffer(payload);
                 let hex = payload.toString("hex");
                 let value = BigInt(`0x${hex}`);
-                let valueMinusOne = value - BigInt(1);
+                let negativeValue = value * BigInt(-1);
+                let negativeValueMinusOne = negativeValue - BigInt(1);
 
-                return BigIntegerValue.bigInt(valueMinusOne);
+                return BigIntegerValue.bigInt(negativeValueMinusOne);
             }
         } else {
             throw new errors.ErrInvalidArgument("type", type);
@@ -258,6 +269,10 @@ export class BigIntegerValue implements IBoxedValue {
             let buffer = Buffer.from(hex, "hex");
             return buffer;
         }
+    }
+
+    equals(other: BigIntegerValue): boolean {
+        return this.value == other.value;
     }
 }
 
