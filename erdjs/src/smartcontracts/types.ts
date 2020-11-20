@@ -18,7 +18,6 @@ export enum PrimitiveType {
 export interface IBoxedValue {
     encodeBinaryNested(): Buffer;
     encodeBinaryTopLevel(): Buffer;
-    // TODO: decodeBinary(nested: boolean, buffer: Buffer): <?>
 }
 
 export class IntegerValue implements IBoxedValue {
@@ -60,7 +59,32 @@ export class IntegerValue implements IBoxedValue {
                 return IntegerValue.i64(value);
 
             default:
-                throw new errors.ErrInvalidArgument("value", value);
+                throw new errors.ErrInvalidArgument("type", type);
+        }
+    }
+
+    static decodeNested(buffer: Buffer, type: PrimitiveType): IntegerValue {
+        switch (+type) {
+            case PrimitiveType.U8:
+                return IntegerValue.u8(buffer.readUInt8());
+            case PrimitiveType.U16:
+                return IntegerValue.u16(buffer.readUInt16BE());
+            case PrimitiveType.U32:
+                return IntegerValue.u32(buffer.readUInt32BE());
+            case PrimitiveType.U64:
+                throw new Error("Not implemented.");
+
+            case PrimitiveType.I8:
+                return IntegerValue.i8(buffer.readInt8());
+            case PrimitiveType.I16:
+                return IntegerValue.i16(buffer.readInt16BE());
+            case PrimitiveType.I32:
+                return IntegerValue.i32(buffer.readInt32BE());
+            case PrimitiveType.I64:
+                throw new Error("Not implemented.");
+
+            default:
+                throw new errors.ErrInvalidArgument("type", type);
         }
     }
 
@@ -144,6 +168,21 @@ export class BigIntegerValue implements IBoxedValue {
         }
     }
 
+    static decodeNested(buffer: Buffer, type: PrimitiveType): IntegerValue {
+        // read length first,
+        // then bytes as 2s complement.
+
+        switch (+type) {
+            case PrimitiveType.BigUInt:
+                return BigIntegerValue.bigUInt(value);
+            case PrimitiveType.BigInt:
+                return BigIntegerValue.bigInt(value);
+
+            default:
+                throw new errors.ErrInvalidArgument("type", type);
+        }
+    }
+
     static bigUInt(value: bigint): BigIntegerValue {
         return new BigIntegerValue(value, false);
     }
@@ -153,11 +192,36 @@ export class BigIntegerValue implements IBoxedValue {
     }
 
     encodeBinaryNested(): Buffer {
-        throw new Error("Method not implemented.");
+        let buffer = this.encodeBinaryTopLevel();
+        let length = Buffer.alloc(4);
+        length.writeUInt32BE(buffer.length);
+        return Buffer.concat([length, buffer]);
     }
 
     encodeBinaryTopLevel(): Buffer {
-        throw new Error("Method not implemented.");
+        // Nothing or Zero
+        if (!this.value) {
+            return Buffer.alloc(0);
+        }
+
+        if (this.withSign) {
+            if (this.value > 0) {
+                let hex = padHexString(this.value.toString(16));
+                let buffer = Buffer.from(hex, "hex");
+                return buffer;
+            } else {
+                // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
+                let valuePlusOne = this.value + BigInt(1);
+                let hex = padHexString(valuePlusOne.toString(16));
+                let buffer = Buffer.from(hex, "hex");
+                flipBuffer(buffer);
+                return buffer;
+            }
+        } else {
+            let hex = padHexString(this.value.toString(16));
+            let buffer = Buffer.from(hex, "hex");
+            return buffer;
+        }
     }
 }
 
@@ -230,4 +294,27 @@ export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
     }
 
     return buffer.slice(index);
+}
+
+export function padHexString(str: string, padding: string = "0"): string {
+    return str.length % 2 == 0 ? str : padding + str;
+}
+
+export function flipBuffer(buffer: Buffer) {
+    for (let i = 0; i < buffer.length; i++) {
+        buffer[i] = ~buffer[i];
+    }
+}
+
+export class Vector implements IBoxedValue {
+    constructor() {
+    }
+
+    encodeBinaryNested(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+
+    encodeBinaryTopLevel(): Buffer {
+        throw new Error("Method not implemented.");
+    }
 }
