@@ -168,18 +168,41 @@ export class BigIntegerValue implements IBoxedValue {
         }
     }
 
-    static decodeNested(buffer: Buffer, type: PrimitiveType): IntegerValue {
-        // read length first,
-        // then bytes as 2s complement.
+    static decodeNested(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
+        let length = buffer.readUInt32BE();
+        let empty = length == 0;
+        let payload = buffer.slice(4);
 
-        switch (+type) {
-            case PrimitiveType.BigUInt:
-                return BigIntegerValue.bigUInt(value);
-            case PrimitiveType.BigInt:
+        if (type == PrimitiveType.BigUInt) {
+            if (empty) {
+                return BigIntegerValue.bigUInt(BigInt(0));
+            }
+
+            let hex = payload.toString("hex");
+            let value = BigInt(`0x${hex}`);
+
+            return BigIntegerValue.bigUInt(value);
+        } else if (type == PrimitiveType.BigInt) {
+            if (empty) {
+                return BigIntegerValue.bigInt(BigInt(0));
+            }
+
+            if (isMbsZero(payload, 0)) {
+                let hex = payload.toString("hex");
+                let value = BigInt(`0x${hex}`);
+
                 return BigIntegerValue.bigInt(value);
+            } else {
+                // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
+                flipBuffer(payload);
+                let hex = payload.toString("hex");
+                let value = BigInt(`0x${hex}`);
+                let valueMinusOne = value - BigInt(1);
 
-            default:
-                throw new errors.ErrInvalidArgument("type", type);
+                return BigIntegerValue.bigInt(valueMinusOne);
+            }
+        } else {
+            throw new errors.ErrInvalidArgument("type", type);
         }
     }
 
@@ -208,6 +231,12 @@ export class BigIntegerValue implements IBoxedValue {
             if (this.value > 0) {
                 let hex = padHexString(this.value.toString(16));
                 let buffer = Buffer.from(hex, "hex");
+
+                // Fix ambiguity if any
+                if (isMbsOne(buffer, 0)) {
+                    buffer = Buffer.concat([Buffer.from([0x00]), buffer]);
+                }
+
                 return buffer;
             } else {
                 // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
@@ -215,6 +244,12 @@ export class BigIntegerValue implements IBoxedValue {
                 let hex = padHexString(valuePlusOne.toString(16));
                 let buffer = Buffer.from(hex, "hex");
                 flipBuffer(buffer);
+                
+                // Fix ambiguity if any
+                if (isMbsZero(buffer, 0)) {
+                    buffer = Buffer.concat([Buffer.from([0xFF]), buffer]);
+                }
+
                 return buffer;
             }
         } else {
@@ -254,13 +289,13 @@ export class OptionalValue implements IBoxedValue {
  * @param buffer A number, represented as a sequence of bytes (big-endian)
  */
 export function discardSuperfluousBytesInTwosComplement(buffer: Buffer): Buffer {
-    let isNegative = isMostSignificantBitSet(buffer, 0);
+    let isNegative = isMbsOne(buffer, 0);
     let signPadding: number = isNegative ? 0xFF : 0x00;
 
     let index;
     for (index = 0; index < buffer.length - 1; index++) {
         let isPaddingByte = buffer[index] == signPadding;
-        let hasSignBitOnNextByte = isMostSignificantBitSet(buffer, index + 1) === isNegative;
+        let hasSignBitOnNextByte = isMbsOne(buffer, index + 1) === isNegative;
         if (isPaddingByte && hasSignBitOnNextByte) {
             continue;
         }
@@ -273,15 +308,24 @@ export function discardSuperfluousBytesInTwosComplement(buffer: Buffer): Buffer 
 
 
 /**
- * Returns whether the most significant bit of a given byte (within a buffer) is set.
+ * Returns whether the most significant bit of a given byte (within a buffer) is 1.
  * @param buffer the buffer to test
  * @param byteIndex the index of the byte to test
  */
-export function isMostSignificantBitSet(buffer: Buffer, byteIndex: number = 0): boolean {
+export function isMbsOne(buffer: Buffer, byteIndex: number = 0): boolean {
     let byte = buffer[byteIndex];
     let bit = byte >> 7;
     let isSet = bit % 2 == 1;
     return isSet;
+}
+
+/**
+ * Returns whether the most significant bit of a given byte (within a buffer) is 0.
+ * @param buffer the buffer to test
+ * @param byteIndex the index of the byte to test
+ */
+export function isMbsZero(buffer: Buffer, byteIndex: number = 0): boolean {
+    return !isMbsOne(buffer, byteIndex);
 }
 
 /**
