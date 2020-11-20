@@ -28,7 +28,7 @@ export class BinaryReader {
 
     readPrimitive(type: PrimitiveType, asArray: boolean): any {
         let self: any = this;
-        let typeName = PrimitiveType[type];
+        let typeName = type.name;
         let readerFunctionName: string = asArray ? `read${typeName}Array` : `read${typeName}`;
         let readerFunction = <Function>self[readerFunctionName];
         if (!readerFunction) {
