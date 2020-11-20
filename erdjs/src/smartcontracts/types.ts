@@ -1,3 +1,4 @@
+import { strict } from "assert";
 import * as errors from "../errors";
 
 export enum PrimitiveType {
@@ -229,7 +230,7 @@ export class BigIntegerValue implements IBoxedValue {
 
         if (this.withSign) {
             if (this.value > 0) {
-                let hex = padHexString(this.value.toString(16));
+                let hex = getHexMagnitudeOfBigInt(this.value);
                 let buffer = Buffer.from(hex, "hex");
 
                 // Fix ambiguity if any
@@ -241,10 +242,10 @@ export class BigIntegerValue implements IBoxedValue {
             } else {
                 // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
                 let valuePlusOne = this.value + BigInt(1);
-                let hex = padHexString(valuePlusOne.toString(16));
+                let hex = getHexMagnitudeOfBigInt(valuePlusOne);
                 let buffer = Buffer.from(hex, "hex");
                 flipBuffer(buffer);
-                
+
                 // Fix ambiguity if any
                 if (isMbsZero(buffer, 0)) {
                     buffer = Buffer.concat([Buffer.from([0xFF]), buffer]);
@@ -253,7 +254,7 @@ export class BigIntegerValue implements IBoxedValue {
                 return buffer;
             }
         } else {
-            let hex = padHexString(this.value.toString(16));
+            let hex = getHexMagnitudeOfBigInt(this.value);
             let buffer = Buffer.from(hex, "hex");
             return buffer;
         }
@@ -340,8 +341,23 @@ export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
     return buffer.slice(index);
 }
 
-export function padHexString(str: string, padding: string = "0"): string {
-    return str.length % 2 == 0 ? str : padding + str;
+export function getHexMagnitudeOfBigInt(value: bigint): string {
+    if (!value) {
+        return "";
+    }
+
+    if (value < BigInt(0)) {
+        value = value * BigInt(-1);
+    }
+
+    let hex = value.toString(16);
+    let padding = "0";
+
+    if (hex.length % 2 == 1) {
+        hex = padding + hex;
+    }
+
+    return hex;
 }
 
 export function flipBuffer(buffer: Buffer) {
