@@ -72,21 +72,21 @@ export class PrimitiveType {
 
 
     static BigUInt = new PrimitiveType({
-        name:"BigUInt",
+        name: "BigUInt",
         isNumeric: true,
         canCastToNumber: false,
         withSign: false
     });
 
     static BigInt = new PrimitiveType({
-        name:"BigInt",
+        name: "BigInt",
         isNumeric: true,
         canCastToNumber: false,
         withSign: true
     });
 
     static Address = new PrimitiveType({
-        name:"Address",
+        name: "Address",
         sizeInBytes: 32
     });
 
@@ -109,7 +109,10 @@ export interface IBoxedValue {
     encodeBinaryTopLevel(): Buffer;
 }
 
-export class NumericValue implements IBoxedValue {
+/**
+ * A numerical value fed to or fetched from a Smart Contract contract, as a strongly-typed, immutable abstraction.
+ */
+export class NumericalValue implements IBoxedValue {
     private readonly value: bigint;
     private readonly type: PrimitiveType;
     private readonly sizeInBytes: number | undefined;
@@ -132,7 +135,14 @@ export class NumericValue implements IBoxedValue {
         }
     }
 
-    static decodeNested(buffer: Buffer, type: PrimitiveType): NumericValue {
+    /**
+     * Decodes a NumericalValue from a given buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the raw bytes
+     * @param type the primitive type
+     */
+    static decodeNested(buffer: Buffer, type: PrimitiveType): NumericalValue {
         let sizeInBytes = type.sizeInBytes;
         let payload: Buffer;
 
@@ -154,7 +164,14 @@ export class NumericValue implements IBoxedValue {
         return result;
     }
 
-    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericValue {
+    /**
+     * Decodes a NumericalValue from a given buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the raw bytes
+     * @param type the primitive type
+     */
+    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericalValue {
         let withSign = type.withSign;
         let empty = buffer.length == 0;
         let payload = Buffer.alloc(buffer.length);
@@ -162,23 +179,23 @@ export class NumericValue implements IBoxedValue {
 
         if (!withSign) {
             if (empty) {
-                return new NumericValue(BigInt(0), type);
+                return new NumericalValue(BigInt(0), type);
             }
 
             let hex = payload.toString("hex");
             let value = BigInt(`0x${hex}`);
 
-            return new NumericValue(value, type);
+            return new NumericalValue(value, type);
         } else {
             if (empty) {
-                return new NumericValue(BigInt(0), type);
+                return new NumericalValue(BigInt(0), type);
             }
 
             if (isMbsZero(payload, 0)) {
                 let hex = payload.toString("hex");
                 let value = BigInt(`0x${hex}`);
 
-                return new NumericValue(value, type);
+                return new NumericalValue(value, type);
             } else {
                 // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
                 flipBuffer(payload);
@@ -187,11 +204,15 @@ export class NumericValue implements IBoxedValue {
                 let negativeValue = value * BigInt(-1);
                 let negativeValueMinusOne = negativeValue - BigInt(1);
 
-                return new NumericValue(negativeValueMinusOne, type);
+                return new NumericalValue(negativeValueMinusOne, type);
             }
         }
     }
 
+    /**
+     * Encodes a NumericalValue to a buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     */
     encodeBinaryNested(): Buffer {
         if (this.sizeInBytes) {
             // Size is known: fixed-size integer. For simplicity, we will alloc a 64 bit buffer, write using "writeBig(*)Int64BE",
@@ -215,6 +236,10 @@ export class NumericValue implements IBoxedValue {
         return Buffer.concat([length, buffer]);
     }
 
+    /**
+     * Encodes a NumericalValue to a buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     */
     encodeBinaryTopLevel(): Buffer {
         let withSign = this.withSign;
 
@@ -255,14 +280,25 @@ export class NumericValue implements IBoxedValue {
         }
     }
 
-    equals(other: NumericValue): boolean {
+    /**
+     * Returns whether two objects have the same value.
+     * 
+     * @param other another NumericalValue
+     */
+    equals(other: NumericalValue): boolean {
         return this.value == other.value;
     }
 
+    /**
+     * Returns the inner value, as a JavaScript BigInt.
+     */
     asBigInt(): bigint {
         return this.value;
     }
 
+    /**
+     * Returns the inner value, casted to a JavaScript Number object, if possible.
+     */
     asNumber(): number {
         if (this.type.canCastToNumber) {
             return Number(this.value);
@@ -296,28 +332,6 @@ export class OptionalValue implements IBoxedValue {
     }
 }
 
-/**
- * Discards the leading bytes that are merely a padding of the leading sign bit (but keeps the payload).
- * @param buffer A number, represented as a sequence of bytes (big-endian)
- */
-export function discardSuperfluousBytesInTwosComplement(buffer: Buffer): Buffer {
-    let isNegative = isMbsOne(buffer, 0);
-    let signPadding: number = isNegative ? 0xFF : 0x00;
-
-    let index;
-    for (index = 0; index < buffer.length - 1; index++) {
-        let isPaddingByte = buffer[index] == signPadding;
-        let hasSignBitOnNextByte = isMbsOne(buffer, index + 1) === isNegative;
-        if (isPaddingByte && hasSignBitOnNextByte) {
-            continue;
-        }
-
-        break;
-    }
-
-    return buffer.slice(index);
-}
-
 
 /**
  * Returns whether the most significant bit of a given byte (within a buffer) is 1.
@@ -338,18 +352,6 @@ export function isMbsOne(buffer: Buffer, byteIndex: number = 0): boolean {
  */
 export function isMbsZero(buffer: Buffer, byteIndex: number = 0): boolean {
     return !isMbsOne(buffer, byteIndex);
-}
-
-/**
- * Discards the leading zero bytes.
- * @param buffer A number, represented as a sequence of bytes (big-endian)
- */
-export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
-    let index;
-    for (index = 0; index < buffer.length && buffer[index] == 0; index++) {
-    }
-
-    return buffer.slice(index);
 }
 
 export function getHexMagnitudeOfBigInt(value: bigint): string {
@@ -388,4 +390,38 @@ export class Vector implements IBoxedValue {
     encodeBinaryTopLevel(): Buffer {
         throw new Error("Method not implemented.");
     }
+}
+
+/**
+ * Discards the leading bytes that are merely a padding of the leading sign bit (but keeps the payload).
+ * @param buffer A number, represented as a sequence of bytes (big-endian)
+ */
+export function discardSuperfluousBytesInTwosComplement(buffer: Buffer): Buffer {
+    let isNegative = isMbsOne(buffer, 0);
+    let signPadding: number = isNegative ? 0xFF : 0x00;
+
+    let index;
+    for (index = 0; index < buffer.length - 1; index++) {
+        let isPaddingByte = buffer[index] == signPadding;
+        let hasSignBitOnNextByte = isMbsOne(buffer, index + 1) === isNegative;
+        if (isPaddingByte && hasSignBitOnNextByte) {
+            continue;
+        }
+
+        break;
+    }
+
+    return buffer.slice(index);
+}
+
+/**
+ * Discards the leading zero bytes.
+ * @param buffer A number, represented as a sequence of bytes (big-endian)
+ */
+export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
+    let index;
+    for (index = 0; index < buffer.length && buffer[index] == 0; index++) {
+    }
+
+    return buffer.slice(index);
 }
