@@ -186,11 +186,12 @@ export class BigIntegerValue implements IBoxedValue {
     }
 
     static decodeTopLevel(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
+        let withSign = type.withSign;
         let empty = buffer.length == 0;
         let payload = Buffer.alloc(buffer.length);
         buffer.copy(payload);
 
-        if (type == PrimitiveType.BigUInt) {
+        if (!withSign) {
             if (empty) {
                 return new BigIntegerValue(BigInt(0), type);
             }
@@ -199,7 +200,7 @@ export class BigIntegerValue implements IBoxedValue {
             let value = BigInt(`0x${hex}`);
 
             return new BigIntegerValue(value, type);
-        } else if (type == PrimitiveType.BigInt) {
+        } else {
             if (empty) {
                 return new BigIntegerValue(BigInt(0), type);
             }
@@ -219,8 +220,6 @@ export class BigIntegerValue implements IBoxedValue {
 
                 return new BigIntegerValue(negativeValueMinusOne, type);
             }
-        } else {
-            throw new errors.ErrInvalidArgument("type", type);
         }
     }
 
@@ -232,12 +231,14 @@ export class BigIntegerValue implements IBoxedValue {
     }
 
     encodeBinaryTopLevel(): Buffer {
+        let withSign = this.withSign;
+
         // Nothing or Zero
         if (!this.value) {
             return Buffer.alloc(0);
         }
 
-        if (this.withSign) {
+        if (withSign) {
             if (this.value > 0) {
                 let hex = getHexMagnitudeOfBigInt(this.value);
                 let buffer = Buffer.from(hex, "hex");
