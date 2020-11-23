@@ -196,14 +196,14 @@ export class NumericalValue implements IBoxedValue {
             return new NumericalValue(BigInt(0), type);
         }
 
-        let isNotNegative = !type.withSign || isMbsZero(payload, 0);
+        let isNotNegative = !type.withSign || isMbsZero(payload);
         if (isNotNegative) {
             let value = bufferToBigInt(payload);
             return new NumericalValue(value, type);
         }
 
         // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
-        flipBuffer(payload);
+        flipBufferBitsInPlace(payload);
         let value = bufferToBigInt(payload);
         let negativeValue = value * BigInt(-1);
         let negativeValueMinusOne = negativeValue - BigInt(1);
@@ -245,41 +245,41 @@ export class NumericalValue implements IBoxedValue {
     encodeBinaryTopLevel(): Buffer {
         let withSign = this.withSign;
 
-        // Nothing or Zero
+        // Nothing or Zero:
         if (!this.value) {
             return Buffer.alloc(0);
         }
 
-        if (withSign) {
-            if (this.value > 0) {
-                let hex = getHexMagnitudeOfBigInt(this.value);
-                let buffer = Buffer.from(hex, "hex");
-
-                // Fix ambiguity if any
-                if (isMbsOne(buffer, 0)) {
-                    buffer = Buffer.concat([Buffer.from([0x00]), buffer]);
-                }
-
-                return buffer;
-            } else {
-                // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
-                let valuePlusOne = this.value + BigInt(1);
-                let hex = getHexMagnitudeOfBigInt(valuePlusOne);
-                let buffer = Buffer.from(hex, "hex");
-                flipBuffer(buffer);
-
-                // Fix ambiguity if any
-                if (isMbsZero(buffer, 0)) {
-                    buffer = Buffer.concat([Buffer.from([0xFF]), buffer]);
-                }
-
-                return buffer;
-            }
-        } else {
-            let hex = getHexMagnitudeOfBigInt(this.value);
-            let buffer = Buffer.from(hex, "hex");
+        // I don't care about the sign:
+        if (!withSign) {
+            let buffer = bigIntToBuffer(this.value);
             return buffer;
         }
+
+        // Positive:
+        if (this.value > 0) {
+            let buffer = bigIntToBuffer(this.value);
+
+            // Fix ambiguity if any
+            if (isMbsOne(buffer)) {
+                buffer = prependByteToBuffer(buffer, 0x00);
+            }
+
+            return buffer;
+        }
+
+        // Negative:
+        // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
+        let valuePlusOne = this.value + BigInt(1);
+        let buffer = bigIntToBuffer(valuePlusOne);
+        flipBufferBitsInPlace(buffer);
+
+        // Fix ambiguity if any
+        if (isMbsZero(buffer)) {
+            buffer = prependByteToBuffer(buffer, 0xFF);
+        }
+
+        return buffer;
     }
 
     /**
@@ -334,6 +334,19 @@ export class OptionalValue implements IBoxedValue {
     }
 }
 
+export class Vector implements IBoxedValue {
+    constructor() {
+    }
+
+    encodeBinaryNested(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+
+    encodeBinaryTopLevel(): Buffer {
+        throw new Error("Method not implemented.");
+    }
+}
+
 /**
  * Returns whether the most significant bit of a given byte (within a buffer) is 1.
  * @param buffer the buffer to test
@@ -355,7 +368,27 @@ export function isMbsZero(buffer: Buffer, byteIndex: number = 0): boolean {
     return !isMbsOne(buffer, byteIndex);
 }
 
-export function getHexMagnitudeOfBigInt(value: bigint): string {
+function cloneBuffer(buffer: Buffer) {
+    let clone = Buffer.alloc(buffer.length);
+    buffer.copy(clone);
+    return clone;
+}
+
+function bufferToBigInt(buffer: Buffer): bigint {
+    // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size Buffer to BigInt conversion.
+    let hex = buffer.toString("hex");
+    let value = BigInt(`0x${hex}`);
+    return value;
+}
+
+function bigIntToBuffer(value: bigint): Buffer {
+    // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size BigInt to Buffer conversion.
+    let hex = getHexMagnitudeOfBigInt(value);
+    let buffer = Buffer.from(hex, "hex");
+    return buffer;
+}
+
+function getHexMagnitudeOfBigInt(value: bigint): string {
     if (!value) {
         return "";
     }
@@ -374,36 +407,14 @@ export function getHexMagnitudeOfBigInt(value: bigint): string {
     return hex;
 }
 
-export function flipBuffer(buffer: Buffer) {
+function flipBufferBitsInPlace(buffer: Buffer) {
     for (let i = 0; i < buffer.length; i++) {
         buffer[i] = ~buffer[i];
     }
 }
 
-export class Vector implements IBoxedValue {
-    constructor() {
-    }
-
-    encodeBinaryNested(): Buffer {
-        throw new Error("Method not implemented.");
-    }
-
-    encodeBinaryTopLevel(): Buffer {
-        throw new Error("Method not implemented.");
-    }
-}
-
-function cloneBuffer(buffer: Buffer) {
-    let clone = Buffer.alloc(buffer.length);
-    buffer.copy(clone);
-    return clone;
-}
-
-function bufferToBigInt(buffer: Buffer): bigint {
-    // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size buffer to BigInt conversion.
-    let hex = buffer.toString("hex");
-    let value = BigInt(`0x${hex}`);
-    return value;
+function prependByteToBuffer(buffer: Buffer, byte: number) {
+    return Buffer.concat([Buffer.from([byte]), buffer]);
 }
 
 /**
