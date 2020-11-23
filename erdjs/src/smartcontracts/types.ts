@@ -1,3 +1,4 @@
+import { Address } from "../address";
 import * as errors from "../errors";
 
 /**
@@ -144,17 +145,15 @@ export class BooleanValue implements IBoxedValue {
     constructor(value: boolean) {
         this.value = value;
     }
-    
-     /**
-     * Reads and decodes a BooleanValue from a given buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
+
+    /**
+    * Reads and decodes a BooleanValue from a given buffer, 
+    * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+    * 
+    * @param buffer the input buffer
+    */
     static decodeNested(buffer: Buffer): BooleanValue {
-        if (buffer.length != 1) {
-            throw new errors.ErrInvalidArgument("buffer", buffer, "should be a buffer of size == 1");
-        }
+        // We don't not check the size of the buffer, we just read the first byte.
 
         let byte = buffer.readUInt8();
         return new BooleanValue(byte == BooleanValue.TRUE);
@@ -395,11 +394,92 @@ export class NumericalValue implements IBoxedValue {
     }
 }
 
+
+/**
+ * An address fed to or fetched from a Smart Contract contract, as an immutable abstraction.
+ */
+export class AddressValue implements IBoxedValue {
+    private readonly value: Address;
+
+    constructor(value: Address) {
+        this.value = value;
+    }
+
+    /**
+     * Reads and decodes an AddressValue from a given buffer.
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeNested(buffer: Buffer): AddressValue {
+        // We don't not check the size of the buffer, we just read 32 bytes.
+
+        let slice = buffer.slice(0, 32);
+        let value = new Address(slice);
+        return new AddressValue(value);
+    }
+
+    /**
+     * Reads and decodes an AddressValue from a given buffer.
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeTopLevel(buffer: Buffer): AddressValue {
+        return AddressValue.decodeNested(buffer);
+    }
+
+    /**
+     * Encodes an AddressValue to a buffer.
+     */
+    encodeBinaryNested(): Buffer {
+        return this.value.pubkey();
+    }
+
+    /**
+     * Encodes an AddressValue to a buffer.
+     */
+    encodeBinaryTopLevel(): Buffer {
+        return this.value.pubkey();
+    }
+
+    /**
+     * Returns whether two objects have the same value.
+     * 
+     * @param other another AddressValue
+     */
+    equals(other: AddressValue): boolean {
+        return this.value.equals(other.value);
+    }
+
+    getValue(): Address {
+        return this.value;
+    }
+}
+
 export class OptionalValue implements IBoxedValue {
     private readonly value: IBoxedValue | undefined;
 
     constructor(value: IBoxedValue | undefined) {
         this.value = value;
+    }
+
+    /**
+     * Reads and decodes an OptionalValue from a given buffer,
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeNested(_: Buffer): OptionalValue {
+        throw new Error("Method not implemented.");
+    }
+
+    /**
+     * Reads and decodes an OptionalValue from a given buffer,
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeTopLevel(_: Buffer): OptionalValue {
+        throw new Error("Method not implemented.");
     }
 
     encodeBinaryNested(): Buffer {
@@ -421,6 +501,26 @@ export class OptionalValue implements IBoxedValue {
 
 export class Vector implements IBoxedValue {
     constructor() {
+    }
+
+    /**
+     * Reads and decodes a Vector from a given buffer,
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeNested(_: Buffer): Vector {
+        throw new Error("Not implemented");
+    }
+
+    /**
+     * Reads and decodes a Vector from a given buffer,
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeTopLevel(_: Buffer): Vector {
+        throw new Error("Not implemented");
     }
 
     encodeBinaryNested(): Buffer {

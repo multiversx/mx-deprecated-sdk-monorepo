@@ -12,10 +12,6 @@ export class BinarySerializer {
             into[field.name] = reader.readPrimitive(field.type, field.asArray);
         });
     }
-
-    // serialize(obj: Any, struct: StructDefinition) {
-    //     //TODO: implement
-    // }
 }
 
 export class BinaryReader {
