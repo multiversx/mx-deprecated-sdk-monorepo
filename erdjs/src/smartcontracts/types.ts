@@ -1,6 +1,8 @@
 import { Address } from "../address";
 import * as errors from "../errors";
 
+// TODO: Type -> PrimitiveType, Type -> UserType. UserType.Register();
+
 /**
  * Smart enum pattern for primitive types.
  */
@@ -152,11 +154,11 @@ export class BooleanValue implements IBoxedValue {
     * 
     * @param buffer the input buffer
     */
-    static decodeNested(buffer: Buffer): BooleanValue {
+    static decodeNested(buffer: Buffer): [BooleanValue, number] {
         // We don't not check the size of the buffer, we just read the first byte.
 
         let byte = buffer.readUInt8();
-        return new BooleanValue(byte == BooleanValue.TRUE);
+        return [new BooleanValue(byte == BooleanValue.TRUE), 1];
     }
 
     /**
@@ -249,20 +251,21 @@ export class NumericalValue implements IBoxedValue {
      * @param buffer the input buffer
      * @param type the primitive type
      */
-    static decodeNested(buffer: Buffer, type: PrimitiveType): NumericalValue {
+    static decodeNested(buffer: Buffer, type: PrimitiveType): [NumericalValue, number] {
         let offset = 0;
         let length = type.sizeInBytes;
 
         if (!length) {
             // Size of type is not known: arbitrary-size big integer.
             // Therefore, we must read the length from the header.
-            length = buffer.readUInt32BE();
             offset = 4;
+            length = buffer.readUInt32BE();
         }
 
         let payload = buffer.slice(offset, offset + length);
         let result = this.decodeTopLevel(payload, type);
-        return result;
+        let decodedLength = length + offset;
+        return [result, decodedLength];
     }
 
     /**
@@ -394,7 +397,6 @@ export class NumericalValue implements IBoxedValue {
     }
 }
 
-
 /**
  * An address fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
@@ -410,12 +412,12 @@ export class AddressValue implements IBoxedValue {
      * 
      * @param buffer the input buffer
      */
-    static decodeNested(buffer: Buffer): AddressValue {
+    static decodeNested(buffer: Buffer): [AddressValue, number] {
         // We don't not check the size of the buffer, we just read 32 bytes.
 
         let slice = buffer.slice(0, 32);
         let value = new Address(slice);
-        return new AddressValue(value);
+        return [new AddressValue(value), 32];
     }
 
     /**
@@ -424,7 +426,8 @@ export class AddressValue implements IBoxedValue {
      * @param buffer the input buffer
      */
     static decodeTopLevel(buffer: Buffer): AddressValue {
-        return AddressValue.decodeNested(buffer);
+        let [decoded, length] = AddressValue.decodeNested(buffer);
+        return decoded;
     }
 
     /**
@@ -500,7 +503,10 @@ export class OptionalValue implements IBoxedValue {
 }
 
 export class Vector implements IBoxedValue {
-    constructor() {
+    private readonly values: IBoxedValue[];
+
+    constructor(values: IBoxedValue[]) {
+        this.values = values;
     }
 
     /**
@@ -509,8 +515,17 @@ export class Vector implements IBoxedValue {
      * 
      * @param buffer the input buffer
      */
-    static decodeNested(_: Buffer): Vector {
-        throw new Error("Not implemented");
+    static decodeNested(buffer: Buffer, type: PrimitiveType): Vector {
+        let result: IBoxedValue[] = [];
+        let numItems = buffer.readUInt32BE();
+
+        for (let i = 0; i < numItems; i++) {
+            let [decoded, decodedLength] = decodeNested(buffer, type);
+            buffer = buffer.slice(decodedLength);
+            result.push(decoded);
+        }
+
+        return new Vector(result);
     }
 
     /**
@@ -519,8 +534,16 @@ export class Vector implements IBoxedValue {
      * 
      * @param buffer the input buffer
      */
-    static decodeTopLevel(_: Buffer): Vector {
-        throw new Error("Not implemented");
+    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): Vector {
+        let result: IBoxedValue[] = [];
+
+        while (buffer.length > 0) {
+            let [decoded, decodedLength] = decodeNested(buffer, type);
+            buffer = buffer.slice(decodedLength);
+            result.push(decoded);
+        }
+
+        return new Vector(result);
     }
 
     encodeBinaryNested(): Buffer {
@@ -634,4 +657,34 @@ export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
     }
 
     return buffer.slice(index);
+}
+
+export function decodeNested(buffer: Buffer, type: PrimitiveType): [IBoxedValue, number] {
+    if (type.isNumeric) {
+        return NumericalValue.decodeNested(buffer, type);
+    }
+    if (type == PrimitiveType.Boolean) {
+        return BooleanValue.decodeNested(buffer);
+    }
+    if (type == PrimitiveType.Address) {
+        return AddressValue.decodeNested(buffer);
+    }
+
+    // TODO: For user-defined types, call decode.
+    throw new errors.ErrUnsupportedOperation("decodeNested", `unknown type "${type}"`);
+}
+
+export function decodeTopLevel(buffer: Buffer, type: PrimitiveType): IBoxedValue {
+    if (type.isNumeric) {
+        return NumericalValue.decodeTopLevel(buffer, type);
+    }
+    if (type == PrimitiveType.Boolean) {
+        return BooleanValue.decodeTopLevel(buffer);
+    }
+    if (type == PrimitiveType.Address) {
+        return AddressValue.decodeTopLevel(buffer);
+    }
+
+    // TODO: For user-defined types, call decode.
+    throw new errors.ErrUnsupportedOperation("decodeTopLevel", `unknown type "${type}"`);
 }

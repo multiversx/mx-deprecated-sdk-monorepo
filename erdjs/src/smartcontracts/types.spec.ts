@@ -1,25 +1,27 @@
 import { describe } from "mocha";
 import * as errors from "../errors";
-import { assert } from "chai";
+import { assert, AssertionError } from "chai";
 import { BooleanValue, NumericalValue, discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne, PrimitiveType } from "./types";
 
 describe("test types", () => {
     it("should create boolean values, encode and decode", async () => {
-        let value: BooleanValue;
+        check(true, [0x01], [0x01]);
+        check(false, [0x00], []);
 
-        value = new BooleanValue(true);
-        assert.isTrue(value.isTrue());
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0x01]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x01]));
-        assert.isTrue(BooleanValue.decodeNested(Buffer.from([0x01])).equals(value));
-        assert.isTrue(BooleanValue.decodeTopLevel(Buffer.from([0x01])).equals(value));
+        function check(asBoolean: boolean, nested: number[], topLevel: number[]) {
+            let value = new BooleanValue(asBoolean);
 
-        value = new BooleanValue(false);
-        assert.isTrue(value.isFalse());
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0x00]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([]));
-        assert.isTrue(BooleanValue.decodeNested(Buffer.from([0x00])).equals(value));
-        assert.isTrue(BooleanValue.decodeTopLevel(Buffer.from([])).equals(value));
+            assert.equal(value.isTrue(), asBoolean);
+            assert.deepEqual(value.encodeBinaryNested(), Buffer.from(nested));
+            assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from(topLevel));
+
+            let [decodedNested, nestedLength] = BooleanValue.decodeNested(Buffer.from(nested));
+            assert.isTrue(decodedNested.equals(value));
+            assert.equal(nestedLength, 1);
+
+            let decodedTop = BooleanValue.decodeTopLevel(Buffer.from(topLevel));
+            assert.isTrue(decodedTop.equals(value));
+        }
     });
 
     it("should create numeric values, encode and decode", async () => {
@@ -27,117 +29,49 @@ describe("test types", () => {
 
         // Small int
 
-        value = new NumericalValue(BigInt(42), PrimitiveType.U8);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0x2A]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x2A]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0x2A]), PrimitiveType.U8).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x2A]), PrimitiveType.U8).equals(value));
-
-        value = new NumericalValue(BigInt(42), PrimitiveType.U16);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0x00, 0x2A]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x2A]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0x00, 0x2A]), PrimitiveType.U16).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x2A]), PrimitiveType.U16).equals(value));
-
-        value = new NumericalValue(BigInt(-10), PrimitiveType.I8);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0xF6]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xF6]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0xF6]), PrimitiveType.I8).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xF6]), PrimitiveType.I8).equals(value));
-
-        value = new NumericalValue(BigInt(-10), PrimitiveType.I16);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0xFF, 0xF6]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xF6]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0xFF, 0xF6]), PrimitiveType.I16).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xF6]), PrimitiveType.I16).equals(value));
+        check(BigInt(42), PrimitiveType.U8, [0x2A], [0x2A]);
+        check(BigInt(42), PrimitiveType.U16, [0x00, 0x2A], [0x2A]);
+        check(BigInt(-10), PrimitiveType.I8, [0xF6], [0xF6]);
+        check(BigInt(-10), PrimitiveType.I16, [0xFF, 0xF6], [0xF6]);
 
         // BigInt
 
-        value = new NumericalValue(BigInt(0), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 0]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 0]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(1), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 1, 0x01]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x01]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 1, 0x01]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x01]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(-1), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 1, 0xFF]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xFF]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 1, 0x0FF]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xFF]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(-2), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 1, 0xFE]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xFE]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 1, 0xFE]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xFE]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(127), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 1, 0x7F]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x7F]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 1, 0x7F]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x7F]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(128), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 2, 0x00, 0x80]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x00, 0x80]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0x00, 0x80]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x00, 0x80]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(255), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 2, 0x00, 0xFF]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x00, 0xFF]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0x00, 0xFF]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x00, 0xFF]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(256), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 2, 0x01, 0x00]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0x01, 0x00]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0x01, 0x00]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0x01, 0x00]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(-255), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 2, 0xFF, 0x01]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xFF, 0x01]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0xFF, 0x01]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xFF, 0x01]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(-256), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 2, 0xFF, 0x00]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xFF, 0x00]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0xFF, 0x00]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xFF, 0x00]), PrimitiveType.BigInt).equals(value));
-
-        value = new NumericalValue(BigInt(-257), PrimitiveType.BigInt);
-        assert.deepEqual(value.encodeBinaryNested(), Buffer.from([0, 0, 0, 2, 0xFE, 0xFF]));
-        assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xFE, 0xFF]));
-        assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0xFE, 0xFF]), PrimitiveType.BigInt).equals(value));
-        assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xFE, 0xFF]), PrimitiveType.BigInt).equals(value));
+        check(BigInt(0), PrimitiveType.BigInt, [0, 0, 0, 0], []);
+        check(BigInt(1), PrimitiveType.BigInt, [0, 0, 0, 1, 0x01], [0x01]);
+        check(BigInt(-1), PrimitiveType.BigInt, [0, 0, 0, 1, 0xFF], [0xFF]);
+        check(BigInt(-2), PrimitiveType.BigInt, [0, 0, 0, 1, 0xFE], [0xFE]);
+        check(BigInt(127), PrimitiveType.BigInt, [0, 0, 0, 1, 0x7F], [0x7F]);
+        check(BigInt(128), PrimitiveType.BigInt, [0, 0, 0, 2, 0x00, 0x80], [0x00, 0x80]);
+        check(BigInt(255), PrimitiveType.BigInt, [0, 0, 0, 2, 0x00, 0xFF], [0x00, 0xFF]);
+        check(BigInt(256), PrimitiveType.BigInt, [0, 0, 0, 2, 0x01, 0x00], [0x01, 0x00]);
+        check(BigInt(-255), PrimitiveType.BigInt, [0, 0, 0, 2, 0xFF, 0x01], [0xFF, 0x01]);
+        check(BigInt(-257), PrimitiveType.BigInt, [0, 0, 0, 2, 0xFE, 0xFF], [0xFE, 0xFF]);
 
         // Zero, fixed-size
 
         PrimitiveType.numericTypes().filter(type => type.hasFixedSize()).forEach(type => {
-            let zero = new NumericalValue(BigInt(0), type);
-            assert.deepEqual(zero.encodeBinaryNested(), Buffer.alloc(type.sizeInBytes!));
-            assert.deepEqual(zero.encodeBinaryTopLevel(), Buffer.from([]));
-            assert.isTrue(NumericalValue.decodeNested(Buffer.from([0]), type).equals(zero));
-            assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([]), type).equals(zero));
+            check(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
         });
 
         // Zero, arbitrary-size (big)
 
         PrimitiveType.numericTypes().filter(type => type.hasArbitrarySize()).forEach(type => {
-            let zero = new NumericalValue(BigInt(0), type);
-            assert.deepEqual(zero.encodeBinaryNested(), Buffer.from([0, 0, 0, 0]));
-            assert.deepEqual(zero.encodeBinaryTopLevel(), Buffer.from([]));
-            assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 0]), type).equals(zero));
-            assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([]), type).equals(zero));
+            check(BigInt(0), type, [0, 0, 0, 0], []);
         });
+
+        function check(asBigInt: bigint, type: PrimitiveType, nested: number[], topLevel: number[]) {
+            let value = new NumericalValue(asBigInt, type);
+
+            assert.deepEqual(value.encodeBinaryNested(), Buffer.from(nested));
+            assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from(topLevel));
+
+            let [decodedNested, nestedLength] = NumericalValue.decodeNested(Buffer.from(nested), type);
+            assert.isTrue(decodedNested.equals(value));
+            assert.equal(nestedLength, nested.length);
+
+            let decodedTop = NumericalValue.decodeTopLevel(Buffer.from(topLevel), type);
+            assert.isTrue(decodedTop.equals(value));
+        }
     });
 
     it("for numeric values, should throw error when invalid input", () => {
