@@ -133,6 +133,91 @@ export interface IBoxedValue {
 }
 
 /**
+ * A boolean value fed to or fetched from a Smart Contract contract, as an immutable abstraction.
+ */
+export class BooleanValue implements IBoxedValue {
+    private static readonly TRUE: number = 0x01;
+    private static readonly FALSE: number = 0x00;
+
+    private readonly value: boolean;
+
+    constructor(value: boolean) {
+        this.value = value;
+    }
+    
+     /**
+     * Reads and decodes a BooleanValue from a given buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeNested(buffer: Buffer): BooleanValue {
+        if (buffer.length != 1) {
+            throw new errors.ErrInvalidArgument("buffer", buffer, "should be a buffer of size == 1");
+        }
+
+        let byte = buffer.readUInt8();
+        return new BooleanValue(byte == BooleanValue.TRUE);
+    }
+
+    /**
+     * Reads and decodes a BooleanValue from a given buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    static decodeTopLevel(buffer: Buffer): BooleanValue {
+        if (buffer.length > 1) {
+            throw new errors.ErrInvalidArgument("buffer", buffer, "should be a buffer of size <= 1");
+        }
+
+        let firstByte = buffer[0];
+        return new BooleanValue(firstByte == BooleanValue.TRUE);
+    }
+
+    /**
+     * Encodes a BooleanValue to a buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     */
+    encodeBinaryNested(): Buffer {
+        if (this.value) {
+            return Buffer.from([BooleanValue.TRUE]);
+        }
+
+        return Buffer.from([BooleanValue.FALSE]);
+    }
+
+    /**
+     * Encodes a BooleanValue to a buffer, 
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     */
+    encodeBinaryTopLevel(): Buffer {
+        if (this.value) {
+            return Buffer.from([BooleanValue.TRUE]);
+        }
+
+        return Buffer.from([]);
+    }
+
+    /**
+     * Returns whether two objects have the same value.
+     * 
+     * @param other another BooleanValue
+     */
+    equals(other: BooleanValue): boolean {
+        return this.value == other.value;
+    }
+
+    isTrue(): boolean {
+        return this.value == true;
+    }
+
+    isFalse(): boolean {
+        return !this.isTrue();
+    }
+}
+
+/**
  * A numerical value fed to or fetched from a Smart Contract contract, as a strongly-typed, immutable abstraction.
  */
 export class NumericalValue implements IBoxedValue {
