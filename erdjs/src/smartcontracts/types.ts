@@ -8,24 +8,26 @@ export class PrimitiveType {
     readonly name: string;
     readonly size: number | undefined;
     readonly withSign: boolean;
+    readonly canCastToNumber: boolean;
 
-    static Boolean = new PrimitiveType("Boolean", 1, false);
-    static U8 = new PrimitiveType("U8", 1, false);
-    static U16 = new PrimitiveType("U16", 2, false);
-    static U32 = new PrimitiveType("U32", 4, false);
-    static U64 = new PrimitiveType("U64", 8, false);
-    static I8 = new PrimitiveType("I8", 1, true);
-    static I16 = new PrimitiveType("I16", 2, true);
-    static I32 = new PrimitiveType("I32", 4, true);
-    static I64 = new PrimitiveType("I64", 8, true);
-    static BigUInt = new PrimitiveType("BigUInt", undefined, false);
-    static BigInt = new PrimitiveType("BigInt", undefined, true);
-    static Address = new PrimitiveType("Address", 32, false);
+    static Boolean = new PrimitiveType("Boolean", 1, false, false);
+    static U8 = new PrimitiveType("U8", 1, false, true);
+    static U16 = new PrimitiveType("U16", 2, false, true);
+    static U32 = new PrimitiveType("U32", 4, false, true);
+    static U64 = new PrimitiveType("U64", 8, false, false);
+    static I8 = new PrimitiveType("I8", 1, true, true);
+    static I16 = new PrimitiveType("I16", 2, true, true);
+    static I32 = new PrimitiveType("I32", 4, true, true);
+    static I64 = new PrimitiveType("I64", 8, true, false);
+    static BigUInt = new PrimitiveType("BigUInt", undefined, false, false,);
+    static BigInt = new PrimitiveType("BigInt", undefined, true, false);
+    static Address = new PrimitiveType("Address", 32, false, false);
 
-    constructor(name: string, size: number | undefined, withSign: boolean) {
+    constructor(name: string, size: number | undefined, withSign: boolean, safeAsNumber: boolean) {
         this.name = name;
         this.size = size;
         this.withSign = withSign;
+        this.canCastToNumber = safeAsNumber;
     }
 }
 
@@ -269,6 +271,18 @@ export class BigIntegerValue implements IBoxedValue {
 
     equals(other: BigIntegerValue): boolean {
         return this.value == other.value;
+    }
+
+    asBigInt(): bigint {
+        return this.value;
+    }
+
+    asNumber(): number {
+        if (this.type.canCastToNumber) {
+            return Number(this.value);
+        }
+
+        throw new errors.ErrUnsupportedOperation("asNumber", "unsafe casting");
     }
 }
 
