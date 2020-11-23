@@ -39,14 +39,11 @@ export interface IBoxedValue {
 export class IntegerValue implements IBoxedValue {
     private readonly value: number;
     private readonly type: PrimitiveType;
-    private readonly sizeInBytes: number;
     private readonly withSign: boolean;
-    
 
     private constructor(value: number, type: PrimitiveType) {
         this.value = value;
         this.type = type;
-        this.sizeInBytes = type.sizeInBytes!;
         this.withSign = type.withSign;
 
         if (typeof (value) != "number") {
@@ -62,28 +59,9 @@ export class IntegerValue implements IBoxedValue {
     }
 
     static decodeNested(buffer: Buffer, type: PrimitiveType): IntegerValue {
-        switch (type) {
-            case PrimitiveType.U8:
-                return new IntegerValue(buffer.readUInt8(), type);
-            case PrimitiveType.U16:
-                return new IntegerValue(buffer.readUInt16BE(), type);
-            case PrimitiveType.U32:
-                return new IntegerValue(buffer.readUInt32BE(), type);
-            case PrimitiveType.U64:
-                throw new Error("Not implemented.");
-
-            case PrimitiveType.I8:
-                return new IntegerValue(buffer.readInt8(), type);
-            case PrimitiveType.I16:
-                return new IntegerValue(buffer.readInt16BE(), type);
-            case PrimitiveType.I32:
-                return new IntegerValue(buffer.readInt32BE(), type);
-            case PrimitiveType.I64:
-                throw new Error("Not implemented.");
-
-            default:
-                throw new errors.ErrInvalidArgument("type", type);
-        }
+        let bigValue = BigIntegerValue.decodeNested(buffer, type);
+        let number = bigValue.asNumber();
+        return new IntegerValue(number, type);
     }
 
     encodeBinaryNested(): Buffer {
@@ -113,10 +91,22 @@ export class BigIntegerValue implements IBoxedValue {
     }
 
     static decodeNested(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
-        let length = buffer.readUInt32BE();
-        let payload = Buffer.alloc(length);
-        // Copy, but skip header.
-        buffer.copy(payload, 0, 4);
+        let sizeInBytes = type.sizeInBytes;
+        let payload: Buffer;
+
+        if (sizeInBytes) {
+            // Size is known: fixed-size integer.
+            payload = Buffer.alloc(sizeInBytes);
+            buffer.copy(payload);
+        } else {
+            // Size is not known: arbitrary-size big integer.
+            // Therefore, we must read the length from the header.
+
+            let length = buffer.readUInt32BE();
+            payload = Buffer.alloc(length);
+            // Copy, but skip header.
+            buffer.copy(payload, 0, 4);
+        }
 
         let result = this.decodeTopLevel(payload, type);
         return result;
