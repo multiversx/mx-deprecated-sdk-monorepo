@@ -87,18 +87,9 @@ export class IntegerValue implements IBoxedValue {
     }
 
     encodeBinaryNested(): Buffer {
-        const maxLength = 8;
-        let buffer = Buffer.alloc(maxLength);
-
-        if (this.withSign) {
-            buffer.writeBigInt64BE(BigInt(this.value));
-        } else {
-            buffer.writeBigUInt64BE(BigInt(this.value));
-        }
-
-        // Cut to size.
-        buffer = buffer.slice(buffer.length - this.sizeInBytes);
-        return buffer;
+        let big = BigInt(this.value);
+        let bigValue = new BigIntegerValue(big, this.type);
+        return bigValue.encodeBinaryNested();
     }
 
     encodeBinaryTopLevel(): Buffer {
@@ -170,10 +161,22 @@ export class BigIntegerValue implements IBoxedValue {
     }
 
     encodeBinaryNested(): Buffer {
-        // if (this.sizeInBytes) {
-        //     // Size is known,
-        // }
+        if (this.sizeInBytes) {
+            // Size is known: fixed-size integer. For simplicity (and efficiency), we will alloc a 64 bit buffer, write using "writeBig(*)Int64BE",
+            // then cut the buffer to the desired size
+            let buffer = Buffer.alloc(8);
+            if (this.withSign) {
+                buffer.writeBigInt64BE(BigInt(this.value));
+            } else {
+                buffer.writeBigUInt64BE(BigInt(this.value));
+            }
 
+            // Cut to size.
+            buffer = buffer.slice(buffer.length - this.sizeInBytes);
+            return buffer;
+        }
+
+        // Size is not known: arbitrary-size big integer. Therefore, we must emit the length (as U32) before the actual payload.
         let buffer = this.encodeBinaryTopLevel();
         let length = Buffer.alloc(4);
         length.writeUInt32BE(buffer.length);
