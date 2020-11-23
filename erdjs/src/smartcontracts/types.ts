@@ -72,7 +72,6 @@ export class PrimitiveType {
         withSign: true
     });
 
-
     static BigUInt = new PrimitiveType({
         name: "BigUInt",
         isNumeric: true,
@@ -190,26 +189,22 @@ export class NumericalValue implements IBoxedValue {
      * @param type the primitive type
      */
     static decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericalValue {
-        let withSign = type.withSign;
-        let empty = buffer.length == 0;
-        let payload = Buffer.alloc(buffer.length);
-        buffer.copy(payload);
+        let payload = cloneBuffer(buffer);
 
+        let empty = buffer.length == 0;
         if (empty) {
             return new NumericalValue(BigInt(0), type);
         }
 
-        let isNotNegative = !withSign || isMbsZero(payload, 0);
+        let isNotNegative = !type.withSign || isMbsZero(payload, 0);
         if (isNotNegative) {
-            let hex = payload.toString("hex");
-            let value = BigInt(`0x${hex}`);
+            let value = bufferToBigInt(payload);
             return new NumericalValue(value, type);
         }
 
         // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
         flipBuffer(payload);
-        let hex = payload.toString("hex");
-        let value = BigInt(`0x${hex}`);
+        let value = bufferToBigInt(payload);
         let negativeValue = value * BigInt(-1);
         let negativeValueMinusOne = negativeValue - BigInt(1);
 
@@ -339,7 +334,6 @@ export class OptionalValue implements IBoxedValue {
     }
 }
 
-
 /**
  * Returns whether the most significant bit of a given byte (within a buffer) is 1.
  * @param buffer the buffer to test
@@ -397,6 +391,19 @@ export class Vector implements IBoxedValue {
     encodeBinaryTopLevel(): Buffer {
         throw new Error("Method not implemented.");
     }
+}
+
+function cloneBuffer(buffer: Buffer) {
+    let clone = Buffer.alloc(buffer.length);
+    buffer.copy(clone);
+    return clone;
+}
+
+function bufferToBigInt(buffer: Buffer): bigint {
+    // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size buffer to BigInt conversion.
+    let hex = buffer.toString("hex");
+    let value = BigInt(`0x${hex}`);
+    return value;
 }
 
 /**
