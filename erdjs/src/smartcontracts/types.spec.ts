@@ -91,7 +91,7 @@ describe("test types", () => {
     });
 
     it("for numeric values, should throw error when invalid input", () => {
-        //assert.throw(() => new NumericValue(BigInt(42), PrimitiveType.Address), errors.ErrInvalidArgument);
+        assert.throw(() => new NumericValue(BigInt(42), PrimitiveType.Address), errors.ErrInvalidArgument);
         assert.throw(() => new NumericValue(BigInt(-42), PrimitiveType.U32), errors.ErrInvalidArgument);
         assert.throw(() => new NumericValue(<any>Number(42), PrimitiveType.U16), errors.ErrInvalidArgument);
     });

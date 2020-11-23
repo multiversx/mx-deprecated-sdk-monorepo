@@ -1,4 +1,3 @@
-import { strict } from "assert";
 import * as errors from "../errors";
 
 /**
@@ -7,27 +6,101 @@ import * as errors from "../errors";
 export class PrimitiveType {
     readonly name: string;
     readonly sizeInBytes: number | undefined;
-    readonly withSign: boolean;
+    readonly isNumeric: boolean;
     readonly canCastToNumber: boolean;
+    readonly withSign: boolean;
 
-    static Boolean = new PrimitiveType("Boolean", 1, false, false);
-    static U8 = new PrimitiveType("U8", 1, false, true);
-    static U16 = new PrimitiveType("U16", 2, false, true);
-    static U32 = new PrimitiveType("U32", 4, false, true);
-    static U64 = new PrimitiveType("U64", 8, false, false);
-    static I8 = new PrimitiveType("I8", 1, true, true);
-    static I16 = new PrimitiveType("I16", 2, true, true);
-    static I32 = new PrimitiveType("I32", 4, true, true);
-    static I64 = new PrimitiveType("I64", 8, true, false);
-    static BigUInt = new PrimitiveType("BigUInt", undefined, false, false);
-    static BigInt = new PrimitiveType("BigInt", undefined, true, false);
-    static Address = new PrimitiveType("Address", 32, false, false);
+    static U8 = new PrimitiveType({
+        name: "U8",
+        sizeInBytes: 1,
+        isNumeric: true,
+        canCastToNumber: true
+    });
 
-    constructor(name: string, size: number | undefined, withSign: boolean, safeAsNumber: boolean) {
-        this.name = name;
-        this.sizeInBytes = size;
-        this.withSign = withSign;
-        this.canCastToNumber = safeAsNumber;
+    static U16 = new PrimitiveType({
+        name: "U16",
+        sizeInBytes: 2,
+        isNumeric: true,
+        canCastToNumber: true
+    });
+
+    static U32 = new PrimitiveType({
+        name: "U32",
+        sizeInBytes: 4,
+        isNumeric: true,
+        canCastToNumber: true
+    });
+
+    static U64 = new PrimitiveType({
+        name: "U64",
+        sizeInBytes: 8,
+        isNumeric: true,
+        canCastToNumber: false
+    });
+
+    static I8 = new PrimitiveType({
+        name: "I8",
+        sizeInBytes: 1,
+        isNumeric: true,
+        canCastToNumber: true,
+        withSign: true
+    });
+
+    static I16 = new PrimitiveType({
+        name: "I16",
+        sizeInBytes: 2,
+        isNumeric: true,
+        canCastToNumber: true,
+        withSign: true
+    });
+
+    static I32 = new PrimitiveType({
+        name: "I32",
+        sizeInBytes: 4,
+        isNumeric: true,
+        canCastToNumber: true,
+        withSign: true
+    });
+
+    static I64 = new PrimitiveType({
+        name: "I64",
+        sizeInBytes: 8,
+        isNumeric: true,
+        canCastToNumber: false,
+        withSign: true
+    });
+
+
+    static BigUInt = new PrimitiveType({
+        name:"BigUInt",
+        isNumeric: true,
+        canCastToNumber: false,
+        withSign: false
+    });
+
+    static BigInt = new PrimitiveType({
+        name:"BigInt",
+        isNumeric: true,
+        canCastToNumber: false,
+        withSign: true
+    });
+
+    static Address = new PrimitiveType({
+        name:"Address",
+        sizeInBytes: 32
+    });
+
+    static Boolean = new PrimitiveType({
+        name: "Boolean",
+        sizeInBytes: 1
+    });
+
+    constructor(init: Partial<PrimitiveType>) {
+        this.name = init.name!;
+        this.sizeInBytes = init.sizeInBytes;
+        this.isNumeric = init.isNumeric || false;
+        this.withSign = init.withSign || false;
+        this.canCastToNumber = init.canCastToNumber || false;
     }
 }
 
@@ -49,10 +122,13 @@ export class NumericValue implements IBoxedValue {
         this.withSign = type.withSign;
 
         if (typeof (value) != "bigint") {
-            throw new errors.ErrInvalidArgument("value", value);
+            throw new errors.ErrInvalidArgument("value", value, "not a bigint");
+        }
+        if (!type.isNumeric) {
+            throw new errors.ErrInvalidArgument("type", type, "isn't numeric");
         }
         if (!this.withSign && value < 0) {
-            throw new errors.ErrInvalidArgument("value", value);
+            throw new errors.ErrInvalidArgument("value", value, "negative, but type is unsigned");
         }
     }
 
@@ -118,7 +194,7 @@ export class NumericValue implements IBoxedValue {
 
     encodeBinaryNested(): Buffer {
         if (this.sizeInBytes) {
-            // Size is known: fixed-size integer. For simplicity (and efficiency), we will alloc a 64 bit buffer, write using "writeBig(*)Int64BE",
+            // Size is known: fixed-size integer. For simplicity, we will alloc a 64 bit buffer, write using "writeBig(*)Int64BE",
             // then cut the buffer to the desired size
             let buffer = Buffer.alloc(8);
             if (this.withSign) {
