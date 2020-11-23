@@ -88,6 +88,24 @@ describe("test types", () => {
         assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xFE, 0xFF]));
         assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 2, 0xFE, 0xFF]), PrimitiveType.BigInt).equals(value));
         assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([0xFE, 0xFF]), PrimitiveType.BigInt).equals(value));
+
+        // Zero, fixed-size
+        PrimitiveType.numericTypes().filter(type => type.hasFixedSize()).forEach(type => {
+            let zero = new NumericalValue(BigInt(0), type);
+            assert.deepEqual(zero.encodeBinaryNested(), Buffer.alloc(type.sizeInBytes!));
+            assert.deepEqual(zero.encodeBinaryTopLevel(), Buffer.from([]));
+            assert.isTrue(NumericalValue.decodeNested(Buffer.from([0]), type).equals(zero));
+            assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([]), type).equals(zero));
+        });
+
+        // Zero, arbitrary-size (big)
+        PrimitiveType.numericTypes().filter(type => type.hasArbitrarySize()).forEach(type => {
+            let zero = new NumericalValue(BigInt(0), type);
+            assert.deepEqual(zero.encodeBinaryNested(), Buffer.from([0, 0, 0, 0]));
+            assert.deepEqual(zero.encodeBinaryTopLevel(), Buffer.from([]));
+            assert.isTrue(NumericalValue.decodeNested(Buffer.from([0, 0, 0, 0]), type).equals(zero));
+            assert.isTrue(NumericalValue.decodeTopLevel(Buffer.from([]), type).equals(zero));
+        });
     });
 
     it("for numeric values, should throw error when invalid input", () => {

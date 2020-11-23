@@ -4,6 +4,8 @@ import * as errors from "../errors";
  * Smart enum pattern for primitive types.
  */
 export class PrimitiveType {
+    private static AllTypes: PrimitiveType[] = [];
+
     readonly name: string;
     readonly sizeInBytes: number | undefined;
     readonly isNumeric: boolean;
@@ -95,12 +97,34 @@ export class PrimitiveType {
         sizeInBytes: 1
     });
 
-    constructor(init: Partial<PrimitiveType>) {
+    private constructor(init: Partial<PrimitiveType>) {
         this.name = init.name!;
         this.sizeInBytes = init.sizeInBytes;
         this.isNumeric = init.isNumeric || false;
         this.withSign = init.withSign || false;
         this.canCastToNumber = init.canCastToNumber || false;
+
+        PrimitiveType.AllTypes.push(this);
+    }
+
+    hasFixedSize(): boolean {
+        return this.sizeInBytes ? true : false;
+    }
+
+    hasArbitrarySize(): boolean {
+        return !this.hasFixedSize();
+    }
+
+    toString(): string {
+        return this.name;
+    }
+
+    static allTypes(): ReadonlyArray<PrimitiveType> {
+        return PrimitiveType.AllTypes;
+    }
+
+    static numericTypes(): PrimitiveType[] {
+        return PrimitiveType.AllTypes.filter(e => e.isNumeric == true);
     }
 }
 
@@ -136,39 +160,33 @@ export class NumericalValue implements IBoxedValue {
     }
 
     /**
-     * Decodes a NumericalValue from a given buffer, 
+     * Reads and decodes a NumericalValue from a given buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      * 
-     * @param buffer the raw bytes
+     * @param buffer the input buffer
      * @param type the primitive type
      */
     static decodeNested(buffer: Buffer, type: PrimitiveType): NumericalValue {
-        let sizeInBytes = type.sizeInBytes;
-        let payload: Buffer;
+        let offset = 0;
+        let length = type.sizeInBytes;
 
-        if (sizeInBytes) {
-            // Size is known: fixed-size integer.
-            payload = Buffer.alloc(sizeInBytes);
-            buffer.copy(payload);
-        } else {
-            // Size is not known: arbitrary-size big integer.
+        if (!length) {
+            // Size of type is not known: arbitrary-size big integer.
             // Therefore, we must read the length from the header.
-
-            let length = buffer.readUInt32BE();
-            payload = Buffer.alloc(length);
-            // Copy, but skip header.
-            buffer.copy(payload, 0, 4);
+            length = buffer.readUInt32BE();
+            offset = 4;
         }
 
+        let payload = buffer.slice(offset, offset + length);
         let result = this.decodeTopLevel(payload, type);
         return result;
     }
 
     /**
-     * Decodes a NumericalValue from a given buffer, 
+     * Reads and decodes a NumericalValue from a given buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      * 
-     * @param buffer the raw bytes
+     * @param buffer the input buffer
      * @param type the primitive type
      */
     static decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericalValue {
@@ -177,36 +195,25 @@ export class NumericalValue implements IBoxedValue {
         let payload = Buffer.alloc(buffer.length);
         buffer.copy(payload);
 
-        if (!withSign) {
-            if (empty) {
-                return new NumericalValue(BigInt(0), type);
-            }
+        if (empty) {
+            return new NumericalValue(BigInt(0), type);
+        }
 
+        let isNotNegative = !withSign || isMbsZero(payload, 0);
+        if (isNotNegative) {
             let hex = payload.toString("hex");
             let value = BigInt(`0x${hex}`);
-
             return new NumericalValue(value, type);
-        } else {
-            if (empty) {
-                return new NumericalValue(BigInt(0), type);
-            }
-
-            if (isMbsZero(payload, 0)) {
-                let hex = payload.toString("hex");
-                let value = BigInt(`0x${hex}`);
-
-                return new NumericalValue(value, type);
-            } else {
-                // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
-                flipBuffer(payload);
-                let hex = payload.toString("hex");
-                let value = BigInt(`0x${hex}`);
-                let negativeValue = value * BigInt(-1);
-                let negativeValueMinusOne = negativeValue - BigInt(1);
-
-                return new NumericalValue(negativeValueMinusOne, type);
-            }
         }
+
+        // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
+        flipBuffer(payload);
+        let hex = payload.toString("hex");
+        let value = BigInt(`0x${hex}`);
+        let negativeValue = value * BigInt(-1);
+        let negativeValueMinusOne = negativeValue - BigInt(1);
+
+        return new NumericalValue(negativeValueMinusOne, type);
     }
 
     /**
