@@ -19,7 +19,7 @@ export class PrimitiveType {
     static I16 = new PrimitiveType("I16", 2, true, true);
     static I32 = new PrimitiveType("I32", 4, true, true);
     static I64 = new PrimitiveType("I64", 8, true, false);
-    static BigUInt = new PrimitiveType("BigUInt", undefined, false, false,);
+    static BigUInt = new PrimitiveType("BigUInt", undefined, false, false);
     static BigInt = new PrimitiveType("BigInt", undefined, true, false);
     static Address = new PrimitiveType("Address", 32, false, false);
 
@@ -36,48 +36,7 @@ export interface IBoxedValue {
     encodeBinaryTopLevel(): Buffer;
 }
 
-export class IntegerValue implements IBoxedValue {
-    private readonly value: number;
-    private readonly type: PrimitiveType;
-    private readonly withSign: boolean;
-
-    private constructor(value: number, type: PrimitiveType) {
-        this.value = value;
-        this.type = type;
-        this.withSign = type.withSign;
-
-        if (typeof (value) != "number") {
-            throw new errors.ErrInvalidArgument("value", value);
-        }
-        if (!this.withSign && value < 0) {
-            throw new errors.ErrInvalidArgument("value", value);
-        }
-    }
-
-    static create(value: number, type: PrimitiveType): IntegerValue {
-        return new IntegerValue(value, type);
-    }
-
-    static decodeNested(buffer: Buffer, type: PrimitiveType): IntegerValue {
-        let bigValue = BigIntegerValue.decodeNested(buffer, type);
-        let number = bigValue.asNumber();
-        return new IntegerValue(number, type);
-    }
-
-    encodeBinaryNested(): Buffer {
-        let big = BigInt(this.value);
-        let bigValue = new BigIntegerValue(big, this.type);
-        return bigValue.encodeBinaryNested();
-    }
-
-    encodeBinaryTopLevel(): Buffer {
-        let big = BigInt(this.value);
-        let bigValue = new BigIntegerValue(big, this.type);
-        return bigValue.encodeBinaryTopLevel();
-    }
-}
-
-export class BigIntegerValue implements IBoxedValue {
+export class NumericValue implements IBoxedValue {
     private readonly value: bigint;
     private readonly type: PrimitiveType;
     private readonly sizeInBytes: number | undefined;
@@ -88,9 +47,16 @@ export class BigIntegerValue implements IBoxedValue {
         this.type = type;
         this.sizeInBytes = type.sizeInBytes;
         this.withSign = type.withSign;
+
+        if (typeof (value) != "bigint") {
+            throw new errors.ErrInvalidArgument("value", value);
+        }
+        if (!this.withSign && value < 0) {
+            throw new errors.ErrInvalidArgument("value", value);
+        }
     }
 
-    static decodeNested(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
+    static decodeNested(buffer: Buffer, type: PrimitiveType): NumericValue {
         let sizeInBytes = type.sizeInBytes;
         let payload: Buffer;
 
@@ -112,7 +78,7 @@ export class BigIntegerValue implements IBoxedValue {
         return result;
     }
 
-    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): BigIntegerValue {
+    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericValue {
         let withSign = type.withSign;
         let empty = buffer.length == 0;
         let payload = Buffer.alloc(buffer.length);
@@ -120,23 +86,23 @@ export class BigIntegerValue implements IBoxedValue {
 
         if (!withSign) {
             if (empty) {
-                return new BigIntegerValue(BigInt(0), type);
+                return new NumericValue(BigInt(0), type);
             }
 
             let hex = payload.toString("hex");
             let value = BigInt(`0x${hex}`);
 
-            return new BigIntegerValue(value, type);
+            return new NumericValue(value, type);
         } else {
             if (empty) {
-                return new BigIntegerValue(BigInt(0), type);
+                return new NumericValue(BigInt(0), type);
             }
 
             if (isMbsZero(payload, 0)) {
                 let hex = payload.toString("hex");
                 let value = BigInt(`0x${hex}`);
 
-                return new BigIntegerValue(value, type);
+                return new NumericValue(value, type);
             } else {
                 // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
                 flipBuffer(payload);
@@ -145,7 +111,7 @@ export class BigIntegerValue implements IBoxedValue {
                 let negativeValue = value * BigInt(-1);
                 let negativeValueMinusOne = negativeValue - BigInt(1);
 
-                return new BigIntegerValue(negativeValueMinusOne, type);
+                return new NumericValue(negativeValueMinusOne, type);
             }
         }
     }
@@ -213,7 +179,7 @@ export class BigIntegerValue implements IBoxedValue {
         }
     }
 
-    equals(other: BigIntegerValue): boolean {
+    equals(other: NumericValue): boolean {
         return this.value == other.value;
     }
 
