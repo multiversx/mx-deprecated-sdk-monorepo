@@ -6,7 +6,7 @@ import * as errors from "../errors";
  */
 export class PrimitiveType {
     readonly name: string;
-    readonly size: number | undefined;
+    readonly sizeInBytes: number | undefined;
     readonly withSign: boolean;
     readonly canCastToNumber: boolean;
 
@@ -25,7 +25,7 @@ export class PrimitiveType {
 
     constructor(name: string, size: number | undefined, withSign: boolean, safeAsNumber: boolean) {
         this.name = name;
-        this.size = size;
+        this.sizeInBytes = size;
         this.withSign = withSign;
         this.canCastToNumber = safeAsNumber;
     }
@@ -37,14 +37,17 @@ export interface IBoxedValue {
 }
 
 export class IntegerValue implements IBoxedValue {
+    private readonly value: number;
+    private readonly type: PrimitiveType;
     private readonly sizeInBytes: number;
     private readonly withSign: boolean;
-    private readonly value: number;
+    
 
-    private constructor(value: number, sizeInBytes: number, withSign: boolean) {
-        this.sizeInBytes = sizeInBytes;
-        this.withSign = withSign;
+    private constructor(value: number, type: PrimitiveType) {
         this.value = value;
+        this.type = type;
+        this.sizeInBytes = type.sizeInBytes!;
+        this.withSign = type.withSign;
 
         if (typeof (value) != "number") {
             throw new errors.ErrInvalidArgument("value", value);
@@ -55,85 +58,32 @@ export class IntegerValue implements IBoxedValue {
     }
 
     static create(value: number, type: PrimitiveType): IntegerValue {
-        switch (type) {
-            case PrimitiveType.U8:
-                return IntegerValue.u8(value);
-            case PrimitiveType.U16:
-                return IntegerValue.u16(value);
-            case PrimitiveType.U32:
-                return IntegerValue.u32(value);
-            case PrimitiveType.U64:
-                return IntegerValue.u64(value);
-
-            case PrimitiveType.I8:
-                return IntegerValue.i8(value);
-            case PrimitiveType.I16:
-                return IntegerValue.i16(value);
-            case PrimitiveType.I32:
-                return IntegerValue.i32(value);
-            case PrimitiveType.I64:
-                return IntegerValue.i64(value);
-
-            default:
-                throw new errors.ErrInvalidArgument("type", type);
-        }
+        return new IntegerValue(value, type);
     }
 
     static decodeNested(buffer: Buffer, type: PrimitiveType): IntegerValue {
         switch (type) {
             case PrimitiveType.U8:
-                return IntegerValue.u8(buffer.readUInt8());
+                return new IntegerValue(buffer.readUInt8(), type);
             case PrimitiveType.U16:
-                return IntegerValue.u16(buffer.readUInt16BE());
+                return new IntegerValue(buffer.readUInt16BE(), type);
             case PrimitiveType.U32:
-                return IntegerValue.u32(buffer.readUInt32BE());
+                return new IntegerValue(buffer.readUInt32BE(), type);
             case PrimitiveType.U64:
                 throw new Error("Not implemented.");
 
             case PrimitiveType.I8:
-                return IntegerValue.i8(buffer.readInt8());
+                return new IntegerValue(buffer.readInt8(), type);
             case PrimitiveType.I16:
-                return IntegerValue.i16(buffer.readInt16BE());
+                return new IntegerValue(buffer.readInt16BE(), type);
             case PrimitiveType.I32:
-                return IntegerValue.i32(buffer.readInt32BE());
+                return new IntegerValue(buffer.readInt32BE(), type);
             case PrimitiveType.I64:
                 throw new Error("Not implemented.");
 
             default:
                 throw new errors.ErrInvalidArgument("type", type);
         }
-    }
-
-    static u8(value: number): IntegerValue {
-        return new IntegerValue(value, 1, false);
-    }
-
-    static u16(value: number): IntegerValue {
-        return new IntegerValue(value, 2, false);
-    }
-
-    static u32(value: number): IntegerValue {
-        return new IntegerValue(value, 4, false);
-    }
-
-    static u64(value: number): IntegerValue {
-        return new IntegerValue(value, 8, false);
-    }
-
-    static i8(value: number): IntegerValue {
-        return new IntegerValue(value, 1, true);
-    }
-
-    static i16(value: number): IntegerValue {
-        return new IntegerValue(value, 2, true);
-    }
-
-    static i32(value: number): IntegerValue {
-        return new IntegerValue(value, 4, true);
-    }
-
-    static i64(value: number): IntegerValue {
-        return new IntegerValue(value, 8, true);
     }
 
     encodeBinaryNested(): Buffer {
@@ -152,26 +102,22 @@ export class IntegerValue implements IBoxedValue {
     }
 
     encodeBinaryTopLevel(): Buffer {
-        let buffer: Buffer = this.encodeBinaryNested();
-
-        if (this.withSign) {
-            buffer = discardSuperfluousBytesInTwosComplement(buffer);
-        } else {
-            buffer = discardSuperfluousZeroBytes(buffer);
-        }
-
-        return buffer;
+        let big = BigInt(this.value);
+        let bigValue = new BigIntegerValue(big, this.type);
+        return bigValue.encodeBinaryTopLevel();
     }
 }
 
 export class BigIntegerValue implements IBoxedValue {
     private readonly value: bigint;
     private readonly type: PrimitiveType;
+    private readonly sizeInBytes: number | undefined;
     private readonly withSign: boolean;
 
     constructor(value: bigint, type: PrimitiveType) {
         this.value = value;
         this.type = type;
+        this.sizeInBytes = type.sizeInBytes;
         this.withSign = type.withSign;
     }
 
@@ -224,6 +170,10 @@ export class BigIntegerValue implements IBoxedValue {
     }
 
     encodeBinaryNested(): Buffer {
+        // if (this.sizeInBytes) {
+        //     // Size is known,
+        // }
+
         let buffer = this.encodeBinaryTopLevel();
         let length = Buffer.alloc(4);
         length.writeUInt32BE(buffer.length);

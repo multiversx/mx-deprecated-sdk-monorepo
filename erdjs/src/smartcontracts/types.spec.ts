@@ -24,11 +24,11 @@ describe("test types", () => {
         assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from([0xF6]));
     });
 
-    it("for integer values, should throw error when invalid input", () => {
-        assert.throw(() => IntegerValue.create(42, PrimitiveType.Address), errors.ErrInvalidArgument);
-        assert.throw(() => IntegerValue.create(-42, PrimitiveType.U32), errors.ErrInvalidArgument);
-        assert.throw(() => IntegerValue.create(<any>BigInt(42), PrimitiveType.U16), errors.ErrInvalidArgument);
-    });
+    // it("for integer values, should throw error when invalid input", () => {
+    //     assert.throw(() => IntegerValue.create(42, PrimitiveType.Address), errors.ErrInvalidArgument);
+    //     assert.throw(() => IntegerValue.create(-42, PrimitiveType.U32), errors.ErrInvalidArgument);
+    //     assert.throw(() => IntegerValue.create(<any>BigInt(42), PrimitiveType.U16), errors.ErrInvalidArgument);
+    // });
 
     it("should create big integer values, encode and decode", async () => {
         let value: BigIntegerValue;
