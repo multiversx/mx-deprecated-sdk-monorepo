@@ -102,6 +102,15 @@ export class ErrMissingValue extends Err {
 }
 
 /**
+ * Signals that an invariant failed.
+ */
+export class ErrInvariantFailed extends Err {
+    public constructor(message: string) {
+        super(`"Invariant failed: ${message}`);
+    }
+}
+
+/**
  * Signals issues with {@link Address} instantiation.
  */
 export class ErrAddressCannotCreate extends Err {

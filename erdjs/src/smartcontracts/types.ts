@@ -137,6 +137,9 @@ export class PrimitiveType {
     }
 }
 
+// TODO: Common parent for CustomType and PrimitiveType: TypeDefinition.
+// TODO: ITypedValue, getType() : TypeDefinition. Switch if primitive, vector, optional.
+
 export abstract class CustomType {
     constructor() {
     }
@@ -157,7 +160,7 @@ export class BooleanValue implements IPrimitiveValue {
     constructor(value: boolean) {
         this.value = value;
     }
-    
+
     /**
      * Returns whether two objects have the same value.
      * 
@@ -342,16 +345,83 @@ export class Vector {
     }
 }
 
-export function isPrimitive(value: any) {
+export function isPrimitive(value: any): boolean {
+    return onPrimitiveValueSelect(value, {
+        onBoolean: () => true,
+        onNumerical: () => true,
+        onAddress: () => true,
+        onOther: () => false
+    });
+}
+
+export function isTyped(value: any) {
+    return onTypedValueSelect(value, {
+        onPrimitive: () => true,
+        onOptional: () => true,
+        onVector: () => true,
+        onCustom: () => true,
+        onOther: () => false
+    });
+}
+
+export function onPrimitiveValueSelect<TResult>(value: any, selectors: {
+    onBoolean: () => TResult,
+    onNumerical: () => TResult,
+    onAddress: () => TResult,
+    onOther: () => TResult
+}): TResult {
     if (value instanceof BooleanValue) {
-        return true;
+        return selectors.onBoolean();
     }
     if (value instanceof NumericalValue) {
-        return true;
+        return selectors.onNumerical();
     }
     if (value instanceof AddressValue) {
-        return true;
+        return selectors.onAddress();
     }
 
-    return false;
+    return selectors.onOther();
 }
+
+export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {
+    onBoolean: () => TResult,
+    onNumerical: () => TResult,
+    onAddress: () => TResult,
+    onOther: () => TResult
+}): TResult {
+    if (type == PrimitiveType.Boolean) {
+        return selectors.onBoolean();
+    }
+    if (type.isNumeric) {
+        return selectors.onNumerical();
+    }
+    if (type == PrimitiveType.Address) {
+        return selectors.onAddress();
+    }
+
+    return selectors.onOther();
+}
+
+export function onTypedValueSelect<TResult>(value: any, selectors: {
+    onPrimitive: () => TResult,
+    onOptional: () => TResult,
+    onVector: () => TResult,
+    onCustom: () => TResult,
+    onOther: () => TResult
+}): TResult {
+    if (isPrimitive(value)) {
+        return selectors.onPrimitive();
+    }
+    if (value instanceof OptionalValue) {
+        return selectors.onOptional();
+    }
+    if (value instanceof Vector) {
+        return selectors.onVector();
+    }
+
+    // TODO: onCustom.
+
+    return selectors.onOther();
+}
+
+// TODO: export function onTypeDefinitionSelect()

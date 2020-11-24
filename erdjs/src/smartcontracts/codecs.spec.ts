@@ -6,8 +6,7 @@ import { BinaryCodec, discardSuperfluousBytesInTwosComplement, discardSuperfluou
 import { BooleanValue, NumericalValue, PrimitiveType } from "./types";
 
 describe("test binary codec (basic)", () => {
-    let abiRegistry = new AbiRegistry();
-    let codec = new BinaryCodec(abiRegistry);
+    let codec = new BinaryCodec();
 
     it("should create boolean values, encode and decode", async () => {
         check(true, [0x01], [0x01]);
@@ -15,8 +14,6 @@ describe("test binary codec (basic)", () => {
 
         function check(asBoolean: boolean, nested: number[], topLevel: number[]) {
             let value = new BooleanValue(asBoolean);
-
-            codec.
 
             assert.deepEqual(value.encodeBinaryNested(), Buffer.from(nested));
             assert.deepEqual(value.encodeBinaryTopLevel(), Buffer.from(topLevel));

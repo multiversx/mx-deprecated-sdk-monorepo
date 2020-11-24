@@ -1,24 +1,18 @@
 import { Address } from "../address";
-import { AbiRegistry, StructureDefinition } from "./abi";
-import { AddressValue, BooleanValue, IPrimitiveValue, NumericalValue, OptionalValue, PrimitiveType, Vector } from "./types";
+import { FunctionDefinition, StructureDefinition } from "./abi";
+import { AddressValue, BooleanValue, IPrimitiveValue, isTyped, NumericalValue, onPrimitiveTypeSelect, onPrimitiveValueSelect, onTypedValueSelect, OptionalValue, PrimitiveType, Vector } from "./types";
 import * as errors from "../errors";
+import { guardSameLength } from "../utils";
 
 export class BinaryCodec {
-    private readonly abiRegistry: AbiRegistry;
+    private readonly primitiveCodec: PrimitiveBinaryCodec;
     private readonly vectorCodec: VectorBinaryCodec;
     private readonly optionalCodec: OptionalValueBinaryCodec;
-    private readonly booleanCodec: BooleanBinaryCodec;
-    private readonly numericalCodec: NumericalBinaryCoded;
-    private readonly addressCoded: AddressBinaryCodec;
 
-    constructor(abiRegistry: AbiRegistry) {
-        this.abiRegistry = abiRegistry;
-
+    constructor() {
+        this.primitiveCodec = new PrimitiveBinaryCodec(this);
         this.vectorCodec = new VectorBinaryCodec(this);
         this.optionalCodec = new OptionalValueBinaryCodec(this);
-        this.booleanCodec = new BooleanBinaryCodec();
-        this.numericalCodec = new NumericalBinaryCoded();
-        this.addressCoded = new AddressBinaryCodec();
     }
 
     // decodeExecutionOutput()
@@ -38,43 +32,87 @@ export class BinaryCodec {
     //     });
     // }
 
-    encodeNested(_: any): Buffer {
-        // if is primitive, get which one and switch to that codec.
-        // if is vector, then...
-        // if is convertible to...
-        throw new Error("Method not implemented.");
+    decodeFunctionOutput(outputItems: Buffer[], definition: FunctionDefinition) {
+        guardSameLength(outputItems, definition.output);
+
+        for (let i = 0; i < outputItems.length; i++) {
+            let buffer = outputItems[i];
+            let parameterDefinition = definition.output[i];
+
+            //parameterDefinition.
+        }
     }
 
-    encodeTopLevel(_: any): Buffer {
-        throw new Error("Method not implemented.");
+    encodeNested(typedValue: any): Buffer {
+        return onTypedValueSelect(typedValue, {
+            onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
+            onOptional: () => this.optionalCodec.encodeNested(typedValue),
+            onVector: () => this.vectorCodec.encodeNested(typedValue),
+            onCustom: () => Buffer.alloc(0),
+            onOther: () => {throw new errors.ErrInvalidArgument("typedValue", typedValue, "is untyped"); }
+        });
     }
 
-    decodePrimitiveNested(buffer: Buffer, type: PrimitiveType): [IPrimitiveValue, number] {
-        if (type.isNumeric) {
-            return this.numericalCodec.decodeNested(buffer, type);
-        }
-        if (type == PrimitiveType.Boolean) {
-            return this.booleanCodec.decodeNested(buffer);
-        }
-        if (type == PrimitiveType.Address) {
-            return this.addressCoded.decodeNested(buffer);
-        }
+    encodeTopLevel(typedValue: any): Buffer {
+        return onTypedValueSelect(typedValue, {
+            onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
+            onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
+            onVector: () => this.vectorCodec.encodeTopLevel(typedValue),
+            onCustom: () => Buffer.alloc(0),
+            onOther: () => {throw new errors.ErrInvalidArgument("typedValue", typedValue, "is untyped"); }
+        });
+    }
+}
 
-        throw new errors.ErrUnsupportedOperation("decodePrimitiveNested", `unknown type "${type}"`);
+class PrimitiveBinaryCodec {
+    private readonly parentCodec: BinaryCodec;
+
+    private readonly booleanCodec: BooleanBinaryCodec;
+    private readonly numericalCodec: NumericalBinaryCoded;
+    private readonly addressCoded: AddressBinaryCodec;
+
+    constructor(parentCodec: BinaryCodec) {
+        this.parentCodec = parentCodec;
+
+        this.booleanCodec = new BooleanBinaryCodec();
+        this.numericalCodec = new NumericalBinaryCoded();
+        this.addressCoded = new AddressBinaryCodec();
     }
 
-    decodePrimitiveTopLevel(buffer: Buffer, type: PrimitiveType): IPrimitiveValue {
-        if (type.isNumeric) {
-            return this.numericalCodec.decodeTopLevel(buffer, type);
-        }
-        if (type == PrimitiveType.Boolean) {
-            return this.booleanCodec.decodeTopLevel(buffer);
-        }
-        if (type == PrimitiveType.Address) {
-            return this.addressCoded.decodeTopLevel(buffer);
-        }
+    decodeNested(buffer: Buffer, type: PrimitiveType): [IPrimitiveValue, number] {
+        return onPrimitiveTypeSelect<[IPrimitiveValue, number]>(type, {
+            onBoolean: () => this.booleanCodec.decodeNested(buffer),
+            onNumerical: () => this.numericalCodec.decodeNested(buffer, type),
+            onAddress: () => this.addressCoded.decodeNested(buffer),
+            onOther: () => { throw new errors.ErrUnsupportedOperation("decodeNested", `unknown type "${type}"`); }
+        });
+    }
 
-        throw new errors.ErrUnsupportedOperation("decodePrimitiveTopLevel", `unknown type "${type}"`);
+    decodeTopLevel(buffer: Buffer, type: PrimitiveType): IPrimitiveValue {
+        return onPrimitiveTypeSelect<IPrimitiveValue>(type, {
+            onBoolean: () => this.booleanCodec.decodeTopLevel(buffer),
+            onNumerical: () => this.numericalCodec.decodeTopLevel(buffer, type),
+            onAddress: () => this.addressCoded.decodeTopLevel(buffer),
+            onOther: () => { throw new errors.ErrUnsupportedOperation("decodeTopLevel", `unknown type "${type}"`); }
+        });
+    }
+
+    encodeNested(value: IPrimitiveValue): Buffer {
+        return onPrimitiveValueSelect<Buffer>(value, {
+            onBoolean: () => this.booleanCodec.encodeNested(<BooleanValue>value),
+            onNumerical: () => this.numericalCodec.encodeNested(<NumericalValue>value),
+            onAddress: () => this.addressCoded.encodeNested(<AddressValue>value),
+            onOther: () => { throw new errors.ErrUnsupportedOperation("encodeNested", `unknown type of "${value}"`); }
+        });
+    }
+
+    encodeTopLevel(value: IPrimitiveValue): Buffer {
+        return onPrimitiveValueSelect<Buffer>(value, {
+            onBoolean: () => this.booleanCodec.encodeTopLevel(<BooleanValue>value),
+            onNumerical: () => this.numericalCodec.encodeTopLevel(<NumericalValue>value),
+            onAddress: () => this.addressCoded.encodeTopLevel(<AddressValue>value),
+            onOther: () => { throw new errors.ErrUnsupportedOperation("encodeTopLevel", `unknown type of "${value}"`); }
+        });
     }
 }
 
@@ -91,7 +129,7 @@ class VectorBinaryCodec {
      * 
      * @param buffer the input buffer
      */
-    decodeVectorNested(buffer: Buffer, type: PrimitiveType): Vector {
+    decodeNested(buffer: Buffer, type: PrimitiveType): Vector {
         let result: any[] = [];
         let numItems = buffer.readUInt32BE();
 
@@ -110,7 +148,7 @@ class VectorBinaryCodec {
      * 
      * @param buffer the input buffer
      */
-    decodeVectorTopLevel(buffer: Buffer, type: PrimitiveType): Vector {
+    decodeTopLevel(buffer: Buffer, type: PrimitiveType): Vector {
         let result: any[] = [];
 
         while (buffer.length > 0) {
@@ -122,11 +160,11 @@ class VectorBinaryCodec {
         return new Vector(result);
     }
 
-    encodeBinaryNested(_: Vector): Buffer {
+    encodeNested(_: Vector): Buffer {
         throw new Error("Method not implemented.");
     }
 
-    encodeBinaryTopLevel(_: Vector): Buffer {
+    encodeTopLevel(_: Vector): Buffer {
         throw new Error("Method not implemented.");
     }
 }
@@ -158,7 +196,7 @@ class OptionalValueBinaryCodec {
         throw new Error("Method not implemented.");
     }
 
-    encodeBinaryNested(optionalValue: OptionalValue): Buffer {
+    encodeNested(optionalValue: OptionalValue): Buffer {
         if (optionalValue.isSet()) {
             return Buffer.concat([Buffer.from([1]), this.parentCodec.encodeNested(optionalValue)]);
         }
@@ -166,7 +204,7 @@ class OptionalValueBinaryCodec {
         return Buffer.from([0]);
     }
 
-    encodeBinaryTopLevel(optionalValue: OptionalValue): Buffer {
+    encodeTopLevel(optionalValue: OptionalValue): Buffer {
         if (optionalValue.isSet()) {
             return this.parentCodec.encodeNested(optionalValue);
         }
@@ -211,7 +249,7 @@ class BooleanBinaryCodec {
      * Encodes a BooleanValue to a buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    encodeBinaryNested(primitive: BooleanValue): Buffer {
+    encodeNested(primitive: BooleanValue): Buffer {
         if (primitive.isTrue()) {
             return Buffer.from([BooleanBinaryCodec.TRUE]);
         }
@@ -223,7 +261,7 @@ class BooleanBinaryCodec {
      * Encodes a BooleanValue to a buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    encodeBinaryTopLevel(primitive: BooleanValue): Buffer {
+    encodeTopLevel(primitive: BooleanValue): Buffer {
         if (primitive.isTrue()) {
             return Buffer.from([BooleanBinaryCodec.TRUE]);
         }
@@ -291,7 +329,7 @@ class NumericalBinaryCoded {
      * Encodes a NumericalValue to a buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    encodeBinaryNested(primitive: NumericalValue): Buffer {
+    encodeNested(primitive: NumericalValue): Buffer {
         if (primitive.sizeInBytes) {
             // Size is known: fixed-size integer. For simplicity, we will alloc a 64 bit buffer, write using "writeBig(*)Int64BE",
             // then cut the buffer to the desired size
@@ -308,7 +346,7 @@ class NumericalBinaryCoded {
         }
 
         // Size is not known: arbitrary-size big integer. Therefore, we must emit the length (as U32) before the actual payload.
-        let buffer = this.encodeBinaryTopLevel(primitive);
+        let buffer = this.encodeTopLevel(primitive);
         let length = Buffer.alloc(4);
         length.writeUInt32BE(buffer.length);
         return Buffer.concat([length, buffer]);
@@ -318,7 +356,7 @@ class NumericalBinaryCoded {
      * Encodes a NumericalValue to a buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    encodeBinaryTopLevel(primitive: NumericalValue): Buffer {
+    encodeTopLevel(primitive: NumericalValue): Buffer {
         let withSign = primitive.withSign;
 
         // Nothing or Zero:
@@ -386,14 +424,14 @@ class AddressBinaryCodec {
     /**
      * Encodes an AddressValue to a buffer.
      */
-    encodeBinaryNested(primitive: AddressValue): Buffer {
+    encodeNested(primitive: AddressValue): Buffer {
         return primitive.getValue().pubkey();
     }
 
     /**
      * Encodes an AddressValue to a buffer.
      */
-    encodeBinaryTopLevel(primitive: AddressValue): Buffer {
+    encodeTopLevel(primitive: AddressValue): Buffer {
         return primitive.getValue().pubkey();
     }
 }
