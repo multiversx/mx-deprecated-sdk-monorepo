@@ -142,76 +142,22 @@ export abstract class CustomType {
     }
 }
 
-export interface IBoxedValue {
-    encodeBinaryNested(): Buffer;
-    encodeBinaryTopLevel(): Buffer;
+export interface IPrimitiveValue {
+    getValue(): any;
+    canConvertTo(jsType: string): boolean;
+    convertTo(jsType: string): any;
 }
 
 /**
  * A boolean value fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
-export class BooleanValue implements IBoxedValue {
-    private static readonly TRUE: number = 0x01;
-    private static readonly FALSE: number = 0x00;
-
+export class BooleanValue implements IPrimitiveValue {
     private readonly value: boolean;
 
     constructor(value: boolean) {
         this.value = value;
     }
-
-    /**
-    * Reads and decodes a BooleanValue from a given buffer, 
-    * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-    * 
-    * @param buffer the input buffer
-    */
-    static decodeNested(buffer: Buffer): [BooleanValue, number] {
-        // We don't not check the size of the buffer, we just read the first byte.
-
-        let byte = buffer.readUInt8();
-        return [new BooleanValue(byte == BooleanValue.TRUE), 1];
-    }
-
-    /**
-     * Reads and decodes a BooleanValue from a given buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeTopLevel(buffer: Buffer): BooleanValue {
-        if (buffer.length > 1) {
-            throw new errors.ErrInvalidArgument("buffer", buffer, "should be a buffer of size <= 1");
-        }
-
-        let firstByte = buffer[0];
-        return new BooleanValue(firstByte == BooleanValue.TRUE);
-    }
-
-    /**
-     * Encodes a BooleanValue to a buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
-    encodeBinaryNested(): Buffer {
-        if (this.value) {
-            return Buffer.from([BooleanValue.TRUE]);
-        }
-
-        return Buffer.from([BooleanValue.FALSE]);
-    }
-
-    /**
-     * Encodes a BooleanValue to a buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
-    encodeBinaryTopLevel(): Buffer {
-        if (this.value) {
-            return Buffer.from([BooleanValue.TRUE]);
-        }
-
-        return Buffer.from([]);
-    }
-
+    
     /**
      * Returns whether two objects have the same value.
      * 
@@ -228,16 +174,32 @@ export class BooleanValue implements IBoxedValue {
     isFalse(): boolean {
         return !this.isTrue();
     }
+
+    getValue(): boolean {
+        return this.value;
+    }
+
+    canConvertTo(jsType: string): boolean {
+        return jsType == "boolean";
+    }
+
+    convertTo(jsType: string): any {
+        if (this.canConvertTo(jsType)) {
+            return this.getValue();
+        }
+
+        throw new errors.ErrBadTypeConversion(this, jsType);
+    }
 }
 
 /**
  * A numerical value fed to or fetched from a Smart Contract contract, as a strongly-typed, immutable abstraction.
  */
-export class NumericalValue implements IBoxedValue {
-    private readonly value: bigint;
-    private readonly type: PrimitiveType;
-    private readonly sizeInBytes: number | undefined;
-    private readonly withSign: boolean;
+export class NumericalValue implements IPrimitiveValue {
+    readonly value: bigint;
+    readonly type: PrimitiveType;
+    readonly sizeInBytes: number | undefined;
+    readonly withSign: boolean;
 
     constructor(value: bigint, type: PrimitiveType) {
         this.value = value;
@@ -254,131 +216,6 @@ export class NumericalValue implements IBoxedValue {
         if (!this.withSign && value < 0) {
             throw new errors.ErrInvalidArgument("value", value, "negative, but type is unsigned");
         }
-    }
-
-    /**
-     * Reads and decodes a NumericalValue from a given buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     * @param type the primitive type
-     */
-    static decodeNested(buffer: Buffer, type: PrimitiveType): [NumericalValue, number] {
-        let offset = 0;
-        let length = type.sizeInBytes;
-
-        if (!length) {
-            // Size of type is not known: arbitrary-size big integer.
-            // Therefore, we must read the length from the header.
-            offset = 4;
-            length = buffer.readUInt32BE();
-        }
-
-        let payload = buffer.slice(offset, offset + length);
-        let result = this.decodeTopLevel(payload, type);
-        let decodedLength = length + offset;
-        return [result, decodedLength];
-    }
-
-    /**
-     * Reads and decodes a NumericalValue from a given buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     * @param type the primitive type
-     */
-    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericalValue {
-        let payload = cloneBuffer(buffer);
-
-        let empty = buffer.length == 0;
-        if (empty) {
-            return new NumericalValue(BigInt(0), type);
-        }
-
-        let isNotNegative = !type.withSign || isMbsZero(payload);
-        if (isNotNegative) {
-            let value = bufferToBigInt(payload);
-            return new NumericalValue(value, type);
-        }
-
-        // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
-        flipBufferBitsInPlace(payload);
-        let value = bufferToBigInt(payload);
-        let negativeValue = value * BigInt(-1);
-        let negativeValueMinusOne = negativeValue - BigInt(1);
-
-        return new NumericalValue(negativeValueMinusOne, type);
-    }
-
-    /**
-     * Encodes a NumericalValue to a buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
-    encodeBinaryNested(): Buffer {
-        if (this.sizeInBytes) {
-            // Size is known: fixed-size integer. For simplicity, we will alloc a 64 bit buffer, write using "writeBig(*)Int64BE",
-            // then cut the buffer to the desired size
-            let buffer = Buffer.alloc(8);
-            if (this.withSign) {
-                buffer.writeBigInt64BE(BigInt(this.value));
-            } else {
-                buffer.writeBigUInt64BE(BigInt(this.value));
-            }
-
-            // Cut to size.
-            buffer = buffer.slice(buffer.length - this.sizeInBytes);
-            return buffer;
-        }
-
-        // Size is not known: arbitrary-size big integer. Therefore, we must emit the length (as U32) before the actual payload.
-        let buffer = this.encodeBinaryTopLevel();
-        let length = Buffer.alloc(4);
-        length.writeUInt32BE(buffer.length);
-        return Buffer.concat([length, buffer]);
-    }
-
-    /**
-     * Encodes a NumericalValue to a buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
-    encodeBinaryTopLevel(): Buffer {
-        let withSign = this.withSign;
-
-        // Nothing or Zero:
-        if (!this.value) {
-            return Buffer.alloc(0);
-        }
-
-        // I don't care about the sign:
-        if (!withSign) {
-            let buffer = bigIntToBuffer(this.value);
-            return buffer;
-        }
-
-        // Positive:
-        if (this.value > 0) {
-            let buffer = bigIntToBuffer(this.value);
-
-            // Fix ambiguity if any
-            if (isMbsOne(buffer)) {
-                buffer = prependByteToBuffer(buffer, 0x00);
-            }
-
-            return buffer;
-        }
-
-        // Negative:
-        // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
-        let valuePlusOne = this.value + BigInt(1);
-        let buffer = bigIntToBuffer(valuePlusOne);
-        flipBufferBitsInPlace(buffer);
-
-        // Fix ambiguity if any
-        if (isMbsZero(buffer)) {
-            buffer = prependByteToBuffer(buffer, 0xFF);
-        }
-
-        return buffer;
     }
 
     /**
@@ -407,53 +244,44 @@ export class NumericalValue implements IBoxedValue {
 
         throw new errors.ErrUnsupportedOperation("asNumber", "unsafe casting");
     }
+
+    getValue(): bigint {
+        return this.asBigInt();
+    }
+
+    canConvertTo(jsType: string): boolean {
+        if (jsType == "bigint") {
+            return true;
+        }
+
+        if (jsType == "number") {
+            return this.type.canCastToNumber;
+        }
+
+        return false;
+    }
+
+    convertTo(jsType: string): any {
+        if (jsType == "bigint") {
+            return this.asBigInt();
+        }
+
+        if (jsType == "number") {
+            return this.asNumber();
+        }
+
+        throw new errors.ErrBadTypeConversion(this, jsType);
+    }
 }
 
 /**
  * An address fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
-export class AddressValue implements IBoxedValue {
+export class AddressValue implements IPrimitiveValue {
     private readonly value: Address;
 
     constructor(value: Address) {
         this.value = value;
-    }
-
-    /**
-     * Reads and decodes an AddressValue from a given buffer.
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeNested(buffer: Buffer): [AddressValue, number] {
-        // We don't not check the size of the buffer, we just read 32 bytes.
-
-        let slice = buffer.slice(0, 32);
-        let value = new Address(slice);
-        return [new AddressValue(value), 32];
-    }
-
-    /**
-     * Reads and decodes an AddressValue from a given buffer.
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeTopLevel(buffer: Buffer): AddressValue {
-        let [decoded, length] = AddressValue.decodeNested(buffer);
-        return decoded;
-    }
-
-    /**
-     * Encodes an AddressValue to a buffer.
-     */
-    encodeBinaryNested(): Buffer {
-        return this.value.pubkey();
-    }
-
-    /**
-     * Encodes an AddressValue to a buffer.
-     */
-    encodeBinaryTopLevel(): Buffer {
-        return this.value.pubkey();
     }
 
     /**
@@ -468,205 +296,62 @@ export class AddressValue implements IBoxedValue {
     getValue(): Address {
         return this.value;
     }
+
+    canConvertTo(jsType: string): boolean {
+        return jsType == "string" || jsType == "Address" || jsType == "Buffer";
+    }
+
+    convertTo(jsType: string): any {
+        if (jsType == "string") {
+            return this.value.bech32();
+        }
+
+        if (jsType == "Address") {
+            return this.value;
+        }
+
+        if (jsType == "Buffer") {
+            return this.value.pubkey();
+        }
+
+        throw new errors.ErrBadTypeConversion(this, jsType);
+    }
 }
 
-export class OptionalValue implements IBoxedValue {
-    private readonly value: IBoxedValue | undefined;
+export class OptionalValue {
+    private readonly value: any;
 
-    constructor(value: IBoxedValue | undefined) {
+    constructor(value: any) {
+        if (!isPrimitive(value)) {
+            throw new errors.ErrInvalidArgument("value", value, "cannot be wrapped into an optional");
+        }
+
         this.value = value;
     }
 
-    /**
-     * Reads and decodes an OptionalValue from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeNested(_: Buffer): OptionalValue {
-        throw new Error("Method not implemented.");
-    }
-
-    /**
-     * Reads and decodes an OptionalValue from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeTopLevel(_: Buffer): OptionalValue {
-        throw new Error("Method not implemented.");
-    }
-
-    encodeBinaryNested(): Buffer {
-        if (this.value) {
-            return Buffer.concat([Buffer.from([1]), this.value.encodeBinaryNested()]);
-        }
-
-        return Buffer.from([0]);
-    }
-
-    encodeBinaryTopLevel(): Buffer {
-        if (this.value) {
-            return this.encodeBinaryNested();
-        }
-
-        return Buffer.from([]);
+    isSet(): boolean {
+        return this.value ? true : false;
     }
 }
 
-export class Vector implements IBoxedValue {
-    private readonly values: IBoxedValue[];
+export class Vector {
+    private readonly values: any[];
 
-    constructor(values: IBoxedValue[]) {
+    constructor(values: any[]) {
         this.values = values;
     }
-
-    /**
-     * Reads and decodes a Vector from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeNested(buffer: Buffer, type: PrimitiveType): Vector {
-        let result: IBoxedValue[] = [];
-        let numItems = buffer.readUInt32BE();
-
-        for (let i = 0; i < numItems; i++) {
-            let [decoded, decodedLength] = decodeNested(buffer, type);
-            buffer = buffer.slice(decodedLength);
-            result.push(decoded);
-        }
-
-        return new Vector(result);
-    }
-
-    /**
-     * Reads and decodes a Vector from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    static decodeTopLevel(buffer: Buffer, type: PrimitiveType): Vector {
-        let result: IBoxedValue[] = [];
-
-        while (buffer.length > 0) {
-            let [decoded, decodedLength] = decodeNested(buffer, type);
-            buffer = buffer.slice(decodedLength);
-            result.push(decoded);
-        }
-
-        return new Vector(result);
-    }
-
-    encodeBinaryNested(): Buffer {
-        throw new Error("Method not implemented.");
-    }
-
-    encodeBinaryTopLevel(): Buffer {
-        throw new Error("Method not implemented.");
-    }
 }
 
-/**
- * Returns whether the most significant bit of a given byte (within a buffer) is 1.
- * @param buffer the buffer to test
- * @param byteIndex the index of the byte to test
- */
-export function isMbsOne(buffer: Buffer, byteIndex: number = 0): boolean {
-    let byte = buffer[byteIndex];
-    let bit = byte >> 7;
-    let isSet = bit % 2 == 1;
-    return isSet;
-}
-
-/**
- * Returns whether the most significant bit of a given byte (within a buffer) is 0.
- * @param buffer the buffer to test
- * @param byteIndex the index of the byte to test
- */
-export function isMbsZero(buffer: Buffer, byteIndex: number = 0): boolean {
-    return !isMbsOne(buffer, byteIndex);
-}
-
-function cloneBuffer(buffer: Buffer) {
-    let clone = Buffer.alloc(buffer.length);
-    buffer.copy(clone);
-    return clone;
-}
-
-function bufferToBigInt(buffer: Buffer): bigint {
-    // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size Buffer to BigInt conversion.
-    let hex = buffer.toString("hex");
-    let value = BigInt(`0x${hex}`);
-    return value;
-}
-
-function bigIntToBuffer(value: bigint): Buffer {
-    // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size BigInt to Buffer conversion.
-    let hex = getHexMagnitudeOfBigInt(value);
-    let buffer = Buffer.from(hex, "hex");
-    return buffer;
-}
-
-function getHexMagnitudeOfBigInt(value: bigint): string {
-    if (!value) {
-        return "";
+export function isPrimitive(value: any) {
+    if (value instanceof BooleanValue) {
+        return true;
+    }
+    if (value instanceof NumericalValue) {
+        return true;
+    }
+    if (value instanceof AddressValue) {
+        return true;
     }
 
-    if (value < BigInt(0)) {
-        value = value * BigInt(-1);
-    }
-
-    let hex = value.toString(16);
-    let padding = "0";
-
-    if (hex.length % 2 == 1) {
-        hex = padding + hex;
-    }
-
-    return hex;
-}
-
-function flipBufferBitsInPlace(buffer: Buffer) {
-    for (let i = 0; i < buffer.length; i++) {
-        buffer[i] = ~buffer[i];
-    }
-}
-
-function prependByteToBuffer(buffer: Buffer, byte: number) {
-    return Buffer.concat([Buffer.from([byte]), buffer]);
-}
-
-/**
- * Discards the leading bytes that are merely a padding of the leading sign bit (but keeps the payload).
- * @param buffer A number, represented as a sequence of bytes (big-endian)
- */
-export function discardSuperfluousBytesInTwosComplement(buffer: Buffer): Buffer {
-    let isNegative = isMbsOne(buffer, 0);
-    let signPadding: number = isNegative ? 0xFF : 0x00;
-
-    let index;
-    for (index = 0; index < buffer.length - 1; index++) {
-        let isPaddingByte = buffer[index] == signPadding;
-        let hasSignBitOnNextByte = isMbsOne(buffer, index + 1) === isNegative;
-        if (isPaddingByte && hasSignBitOnNextByte) {
-            continue;
-        }
-
-        break;
-    }
-
-    return buffer.slice(index);
-}
-
-/**
- * Discards the leading zero bytes.
- * @param buffer A number, represented as a sequence of bytes (big-endian)
- */
-export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
-    let index;
-    for (index = 0; index < buffer.length && buffer[index] == 0; index++) {
-    }
-
-    return buffer.slice(index);
+    return false;
 }

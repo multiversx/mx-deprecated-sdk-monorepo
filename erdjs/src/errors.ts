@@ -371,3 +371,12 @@ export class ErrUnknownType extends ErrTypingSystem {
         super(`Unknown type: ${typeName}`);
     }
 }
+
+/**
+ * Signals a bad type-conversion.
+ */
+export class ErrBadTypeConversion extends ErrTypingSystem {
+    public constructor(value: any, destinationTypeName: string) {
+        super(`Bad type-conversion: [${value}] to type ${destinationTypeName}`);
+    }
+}
