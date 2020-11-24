@@ -1,14 +1,14 @@
 import { describe } from "mocha";
 import { assert } from "chai";
 import { Address } from "../address";
-import { Abi, StructDefinition } from "./abi";
+import { AbiRegistry, StructureDefinition } from "./abi";
 import { BinarySerializer, BinaryReader } from "./serialization";
 import { PrimitiveType } from "./types";
 
 
 describe("test serialization", () => {
     it("should deserialize struct", async () => {
-        let definition = new StructDefinition();
+        let definition = new StructureDefinition();
         definition.addField("ticket_price", PrimitiveType.BigUInt);
         definition.addField("tickets_left", PrimitiveType.U32);
         definition.addField("deadline", PrimitiveType.U64);

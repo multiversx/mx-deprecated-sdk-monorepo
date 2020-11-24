@@ -1,8 +1,6 @@
 import { Address } from "../address";
 import * as errors from "../errors";
 
-// TODO: Type -> PrimitiveType, Type -> UserType. UserType.Register();
-
 /**
  * Smart enum pattern for primitive types.
  */
@@ -127,6 +125,20 @@ export class PrimitiveType {
 
     static numericTypes(): PrimitiveType[] {
         return PrimitiveType.AllTypes.filter(e => e.isNumeric == true);
+    }
+
+    static getByName(name: string): PrimitiveType {
+        let result = PrimitiveType.AllTypes.find(item => item.name == name);
+        if (!result) {
+            throw new errors.ErrUnknownType(name);
+        }
+
+        return result;
+    }
+}
+
+export abstract class CustomType {
+    constructor() {
     }
 }
 

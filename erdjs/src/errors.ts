@@ -353,3 +353,21 @@ export class ErrSerializationCannotRead extends ErrSerialization {
         super(message);
     }
 }
+
+/**
+ * Signals a generic type error.
+ */
+export class ErrTypingSystem extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals an unknown type.
+ */
+export class ErrUnknownType extends ErrTypingSystem {
+    public constructor(typeName: string) {
+        super(`Unknown type: ${typeName}`);
+    }
+}

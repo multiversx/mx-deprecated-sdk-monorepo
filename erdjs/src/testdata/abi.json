@@ -1,0 +1,160 @@
+[
+    {
+        "namespace": "ultimate-answer",
+        "functions": [
+            {
+                "name": "getUltimateAnswer",
+                "input": [],
+                "output": [
+                    {
+                        "description": "the ultimate answer",
+                        "primitiveType": "I64"
+                    }
+                ]
+            }
+        ],
+        "structures": []
+    },
+    {
+        "namespace": "counter",
+        "functions": [
+            {
+                "name": "increment",
+                "input": [],
+                "output": [
+                    {
+                        "description": "the current value",
+                        "primitiveType": "I64"
+                    }
+                ]
+            },
+            {
+                "name": "decrement",
+                "input": [],
+                "output": [
+                    {
+                        "description": "the current value",
+                        "primitiveType": "I64"
+                    }
+                ]
+            },
+            {
+                "name": "get",
+                "input": [],
+                "output": [
+                    {
+                        "description": "the current value",
+                        "primitiveType": "I64"
+                    }
+                ],
+                "isPure": true
+            }
+        ],
+        "structures": []
+    },
+    {
+        "namespace": "lottery-egld",
+        "functions": [
+            {
+                "name": "start",
+                "input": [
+                    {
+                        "description": "lottery name",
+                        "primitiveType": "U8",
+                        "isArray": true
+                    },
+                    {
+                        "description": "ticket price",
+                        "primitiveType": "BigUInt"
+                    },
+                    {
+                        "description": "total tickets",
+                        "primitiveType": "U32",
+                        "isOptional": true
+                    },
+                    {
+                        "description": "deadline",
+                        "primitiveType": "U64",
+                        "isOptional": true
+                    },
+                    {
+                        "description": "max entries per user",
+                        "primitiveType": "U32",
+                        "isOptional": true
+                    },
+                    {
+                        "description": "prize distribution",
+                        "primitiveType": "U8",
+                        "isArray": true,
+                        "isOptional": true
+                    },
+                    {
+                        "description": "whitelist",
+                        "primitiveType": "Address",
+                        "isArray": true,
+                        "isOptional": true
+                    }
+                ],
+                "output": []
+            },
+            {
+                "name": "lotteryInfo",
+                "isPure": true,
+                "input": [
+                    {
+                        "description": "lottery name",
+                        "primitiveType": "U8",
+                        "isArray": true
+                    }
+                ],
+                "output": [
+                    {
+                        "description": "lottery info",
+                        "customType": "lottery-info"
+                    }
+                ]
+            }
+        ],
+        "structures": [
+            {
+                "name": "lottery-info",
+                "fields": [
+                    {
+                        "description": "ticket price",
+                        "primitiveType": "BigUInt"
+                    },
+                    {
+                        "description": "tickets left",
+                        "primitiveType": "U32"
+                    },
+                    {
+                        "description": "deadline",
+                        "primitiveType": "U64"
+                    },
+                    {
+                        "description": "max entries per user",
+                        "primitiveType": "U32"
+                    },
+                    {
+                        "description": "prize distribution",
+                        "primitiveType": "U8",
+                        "isArray": true
+                    },
+                    {
+                        "description": "whitelist",
+                        "primitiveType": "Address",
+                        "isArray": true
+                    },
+                    {
+                        "description": "current ticket number",
+                        "primitiveType": "U32"
+                    },
+                    {
+                        "description": "prize pool",
+                        "primitiveType": "BigUInt"
+                    }
+                ]
+            }
+        ]
+    }
+]
