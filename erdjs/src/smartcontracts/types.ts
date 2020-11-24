@@ -670,33 +670,3 @@ export function discardSuperfluousZeroBytes(buffer: Buffer): Buffer {
 
     return buffer.slice(index);
 }
-
-export function decodeNested(buffer: Buffer, type: PrimitiveType): [IBoxedValue, number] {
-    if (type.isNumeric) {
-        return NumericalValue.decodeNested(buffer, type);
-    }
-    if (type == PrimitiveType.Boolean) {
-        return BooleanValue.decodeNested(buffer);
-    }
-    if (type == PrimitiveType.Address) {
-        return AddressValue.decodeNested(buffer);
-    }
-
-    // TODO: For user-defined types, call decode.
-    throw new errors.ErrUnsupportedOperation("decodeNested", `unknown type "${type}"`);
-}
-
-export function decodeTopLevel(buffer: Buffer, type: PrimitiveType): IBoxedValue {
-    if (type.isNumeric) {
-        return NumericalValue.decodeTopLevel(buffer, type);
-    }
-    if (type == PrimitiveType.Boolean) {
-        return BooleanValue.decodeTopLevel(buffer);
-    }
-    if (type == PrimitiveType.Address) {
-        return AddressValue.decodeTopLevel(buffer);
-    }
-
-    // TODO: For user-defined types, call decode.
-    throw new errors.ErrUnsupportedOperation("decodeTopLevel", `unknown type "${type}"`);
-}
