@@ -22,12 +22,6 @@ export abstract class PrimitiveType extends Type {
     }
 }
 
-export abstract class CustomType extends Type {
-    constructor(name: string) {
-        super(name);
-    }
-}
-
 export abstract class TypedValue {
     abstract getType(): Type;
 }
@@ -40,4 +34,3 @@ export abstract class PrimitiveValue extends TypedValue {
 export function isTyped(value: any) {
     return value instanceof TypedValue;
 }
-

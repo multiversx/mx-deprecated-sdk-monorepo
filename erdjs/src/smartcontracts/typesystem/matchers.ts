@@ -2,6 +2,7 @@ import { AddressType, AddressValue } from "./address";
 import { BooleanType, BooleanValue } from "./boolean";
 import { OptionalValue, Vector } from "./generic";
 import { NumericalType, NumericalValue } from "./numerical";
+import { Structure } from "./structure";
 import { PrimitiveType, PrimitiveValue } from "./types";
 
 export function onPrimitiveValueSelect<TResult>(value: any, selectors: {
@@ -46,7 +47,7 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     onPrimitive: () => TResult,
     onOptional: () => TResult,
     onVector: () => TResult,
-    onCustom: () => TResult,
+    onStructure: () => TResult,
     onOther: () => TResult
 }): TResult {
     if (value instanceof PrimitiveValue) {
@@ -58,8 +59,33 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     if (value instanceof Vector) {
         return selectors.onVector();
     }
-
-    // TODO: onCustom.
+    if (value instanceof Structure) {
+        return selectors.onStructure();
+    }
 
     return selectors.onOther();
 }
+
+export function onTypeNameSelect<TResult>(typeName: string, selectors: {
+    // onPrimitive: () => TResult,
+    // onOptional: () => TResult,
+    // onVector: () => TResult,
+    // onStructure: () => TResult,
+    // onOther: () => TResult
+    // what to do on primitive U32?
+    // typesRegistry. private constructors la booltype, optionaltype, vectortype, primitivetype, add to registry - name, instance.
+    //
+});
+
+// if (typeName == "Optional") {
+//     return new OptionalType();
+// }
+// if (typeName == "Vector") {
+//     return new VectorType();
+// }
+// if (typeName == "Boolean") {
+//     return new BooleanType();
+// }
+// if (typeName == "Address") {
+//     return new AddressType();
+// }

@@ -1,5 +1,5 @@
 import { Address } from "../address";
-import { FunctionDefinition, StructureDefinition } from "./typesystem/abi";
+import { FunctionDefinition, StructureDefinition } from "./typesystem/abiRegistry";
 import { AddressValue, BooleanValue, PrimitiveValue, isTyped, NumericalValue, onPrimitiveTypeSelect, onPrimitiveValueSelect, onTypedValueSelect, OptionalValue, PrimitiveType, Vector, NumericalType } from "./types";
 import * as errors from "../errors";
 import { guardSameLength } from "../utils";
