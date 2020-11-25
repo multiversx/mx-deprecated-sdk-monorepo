@@ -13,9 +13,11 @@ export class StructureType extends Type {
 export class Structure extends TypedValue {
     private readonly type: StructureType;
 
-    constructor(type: StructureType) {
+    constructor(type: StructureType, init: any) {
         super();
         this.type = type;
+
+        Object.assign(this, init);
     }
 
     getType(): StructureType {
@@ -37,10 +39,12 @@ export class StructureDefinition {
 }
 
 export class StructureFieldDefinition {
+    readonly name: string;
     readonly description: string;
     readonly scopedTypeNames: string[];
 
-    constructor(init: { description: string, type: string[] }) {
+    constructor(init: { name: string, description: string, type: string[] }) {
+        this.name = name;
         this.description = init.description;
         this.scopedTypeNames = init.type;
     }

@@ -1,46 +1,65 @@
 import { Address } from "../address";
-import { FunctionDefinition, StructureDefinition } from "./typesystem/abiRegistry";
-import { AddressValue, BooleanValue, PrimitiveValue, isTyped, NumericalValue, onPrimitiveTypeSelect, onPrimitiveValueSelect, onTypedValueSelect, OptionalValue, PrimitiveType, Vector, NumericalType } from "./types";
+import { AddressValue, BooleanValue, PrimitiveValue, isTyped, NumericalValue, onPrimitiveTypeSelect, onPrimitiveValueSelect, onTypedValueSelect, OptionalValue, Vector, NumericalType, U8Type, Structure, StructureType } from "./typesystem";
 import * as errors from "../errors";
 import { guardSameLength } from "../utils";
+import { FunctionDefinition, onTypeSelect, PrimitiveType, TypeDescriptor, TypedValue } from "./typesystem";
 
 export class BinaryCodec {
-    private readonly primitiveCodec: PrimitiveBinaryCodec;
-    private readonly vectorCodec: VectorBinaryCodec;
     private readonly optionalCodec: OptionalValueBinaryCodec;
-
+    private readonly vectorCodec: VectorBinaryCodec;
+    private readonly primitiveCodec: PrimitiveBinaryCodec;
+    
     constructor() {
-        this.primitiveCodec = new PrimitiveBinaryCodec(this);
-        this.vectorCodec = new VectorBinaryCodec(this);
         this.optionalCodec = new OptionalValueBinaryCodec(this);
+        this.vectorCodec = new VectorBinaryCodec(this);
+        this.primitiveCodec = new PrimitiveBinaryCodec(this);
     }
 
-    // decodeExecutionOutput()
-    // decodeQueryOutput()
-    // encodeFunctionInput()
-    // decodeOutput() (generic output, ReturnData array)
-    // encodeStructure()
-    // decodeStructure()
-
-
-    // decodeStructure(buffer: Buffer, into: any): any {
-    //     let fields = structDefinition.getFields();
-    //     let reader = new BinaryReader(buffer);
-
-    //     fields.forEach(field => {
-    //         into[field.name] = reader.readPrimitive(field.type, field.asArray);
-    //     });
-    // }
-
-    decodeFunctionOutput(outputItems: Buffer[], definition: FunctionDefinition) {
+    decodeFunctionOutput(outputItems: Buffer[], definition: FunctionDefinition): TypedValue[] {
         guardSameLength(outputItems, definition.output);
 
+        let result: TypedValue[] = [];
+
+        // For output parameters, top-level decoding is normally used.
+        // TODO: Question for review - is this assumption correct?
         for (let i = 0; i < outputItems.length; i++) {
             let buffer = outputItems[i];
             let parameterDefinition = definition.output[i];
+            let typeDescriptor = parameterDefinition.getTypeDescriptor();
 
-            //parameterDefinition.
+            let decoded = this.decodeTopLevel(buffer, typeDescriptor);
+            result.push(decoded);
         }
+
+        return result;
+    }
+
+    decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): TypedValue {
+        let type = typeDescriptor.getOutmostType();
+
+        // Open types (generics) will require the scoped type descriptor as well.
+        let scoped = typeDescriptor.scopeInto();
+
+        return onTypeSelect<TypedValue>(type, {
+            onOptional: () => this.optionalCodec.decodeTopLevel(buffer, scoped),
+            onVector: () => this.vectorCodec.decodeTopLevel(buffer, scoped),
+            onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
+            onStructure: () => new NumericalValue(BigInt(42), U8Type.One) // TODO!
+        });
+    }
+
+    decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [TypedValue, number] {
+        let type = typeDescriptor.getOutmostType();
+
+        // Open types (generics) will require the scoped type descriptor as well.
+        let scoped = typeDescriptor.scopeInto();
+
+        return onTypeSelect<[TypedValue, number]>(type, {
+            onOptional: () => this.optionalCodec.decodeNested(buffer, scoped),
+            onVector: () => this.vectorCodec.decodeNested(buffer, scoped),
+            onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
+            onStructure: () => [new NumericalValue(BigInt(42), U8Type.One), 0] // TODO!
+        });
     }
 
     encodeNested(typedValue: any): Buffer {
@@ -48,8 +67,7 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
             onOptional: () => this.optionalCodec.encodeNested(typedValue),
             onVector: () => this.vectorCodec.encodeNested(typedValue),
-            onCustom: () => Buffer.alloc(0),
-            onOther: () => {throw new errors.ErrInvalidArgument("typedValue", typedValue, "is untyped"); }
+            onStructure: () => Buffer.alloc(0), // TODO!
         });
     }
 
@@ -58,114 +76,8 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
             onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
             onVector: () => this.vectorCodec.encodeTopLevel(typedValue),
-            onCustom: () => Buffer.alloc(0),
-            onOther: () => {throw new errors.ErrInvalidArgument("typedValue", typedValue, "is untyped"); }
+            onStructure: () => Buffer.alloc(0), // TODO!
         });
-    }
-}
-
-class PrimitiveBinaryCodec {
-    private readonly parentCodec: BinaryCodec;
-
-    private readonly booleanCodec: BooleanBinaryCodec;
-    private readonly numericalCodec: NumericalBinaryCoded;
-    private readonly addressCoded: AddressBinaryCodec;
-
-    constructor(parentCodec: BinaryCodec) {
-        this.parentCodec = parentCodec;
-
-        this.booleanCodec = new BooleanBinaryCodec();
-        this.numericalCodec = new NumericalBinaryCoded();
-        this.addressCoded = new AddressBinaryCodec();
-    }
-
-    decodeNested(buffer: Buffer, type: PrimitiveType): [PrimitiveValue, number] {
-        return onPrimitiveTypeSelect<[PrimitiveValue, number]>(type, {
-            onBoolean: () => this.booleanCodec.decodeNested(buffer),
-            onNumerical: () => this.numericalCodec.decodeNested(buffer, <NumericalType>type),
-            onAddress: () => this.addressCoded.decodeNested(buffer),
-            onOther: () => { throw new errors.ErrUnsupportedOperation("decodeNested", `unknown type "${type}"`); }
-        });
-    }
-
-    decodeTopLevel(buffer: Buffer, type: PrimitiveType): PrimitiveValue {
-        return onPrimitiveTypeSelect<PrimitiveValue>(type, {
-            onBoolean: () => this.booleanCodec.decodeTopLevel(buffer),
-            onNumerical: () => this.numericalCodec.decodeTopLevel(buffer, <NumericalType>type),
-            onAddress: () => this.addressCoded.decodeTopLevel(buffer),
-            onOther: () => { throw new errors.ErrUnsupportedOperation("decodeTopLevel", `unknown type "${type}"`); }
-        });
-    }
-
-    encodeNested(value: PrimitiveValue): Buffer {
-        return onPrimitiveValueSelect<Buffer>(value, {
-            onBoolean: () => this.booleanCodec.encodeNested(<BooleanValue>value),
-            onNumerical: () => this.numericalCodec.encodeNested(<NumericalValue>value),
-            onAddress: () => this.addressCoded.encodeNested(<AddressValue>value),
-            onOther: () => { throw new errors.ErrUnsupportedOperation("encodeNested", `unknown type of "${value}"`); }
-        });
-    }
-
-    encodeTopLevel(value: PrimitiveValue): Buffer {
-        return onPrimitiveValueSelect<Buffer>(value, {
-            onBoolean: () => this.booleanCodec.encodeTopLevel(<BooleanValue>value),
-            onNumerical: () => this.numericalCodec.encodeTopLevel(<NumericalValue>value),
-            onAddress: () => this.addressCoded.encodeTopLevel(<AddressValue>value),
-            onOther: () => { throw new errors.ErrUnsupportedOperation("encodeTopLevel", `unknown type of "${value}"`); }
-        });
-    }
-}
-
-class VectorBinaryCodec {
-    private readonly parentCodec: BinaryCodec;
-
-    constructor(parentCodec: BinaryCodec) {
-        this.parentCodec = parentCodec;
-    }
-
-    /**
-     * Reads and decodes a Vector from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    decodeNested(buffer: Buffer, type: PrimitiveType): Vector {
-        let result: any[] = [];
-        let numItems = buffer.readUInt32BE();
-
-        for (let i = 0; i < numItems; i++) {
-            let [decoded, decodedLength] = this.parentCodec.decodePrimitiveNested(buffer, type);
-            buffer = buffer.slice(decodedLength);
-            result.push(decoded);
-        }
-
-        return new Vector(result);
-    }
-
-    /**
-     * Reads and decodes a Vector from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
-     */
-    decodeTopLevel(buffer: Buffer, type: PrimitiveType): Vector {
-        let result: any[] = [];
-
-        while (buffer.length > 0) {
-            let [decoded, decodedLength] = this.parentCodec.decodePrimitiveNested(buffer, type);
-            buffer = buffer.slice(decodedLength);
-            result.push(decoded);
-        }
-
-        return new Vector(result);
-    }
-
-    encodeNested(_: Vector): Buffer {
-        throw new Error("Method not implemented.");
-    }
-
-    encodeTopLevel(_: Vector): Buffer {
-        throw new Error("Method not implemented.");
     }
 }
 
@@ -182,7 +94,7 @@ class OptionalValueBinaryCodec {
      * 
      * @param buffer the input buffer
      */
-    decodeNested(_: Buffer): OptionalValue {
+    decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [OptionalValue, number] {
         throw new Error("Method not implemented.");
     }
 
@@ -192,7 +104,7 @@ class OptionalValueBinaryCodec {
      * 
      * @param buffer the input buffer
      */
-    decodeTopLevel(_: Buffer): OptionalValue {
+    decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): OptionalValue {
         throw new Error("Method not implemented.");
     }
 
@@ -210,6 +122,59 @@ class OptionalValueBinaryCodec {
         }
 
         return Buffer.from([]);
+    }
+}
+
+class VectorBinaryCodec {
+    private readonly parentCodec: BinaryCodec;
+
+    constructor(parentCodec: BinaryCodec) {
+        this.parentCodec = parentCodec;
+    }
+
+    /**
+     * Reads and decodes a Vector from a given buffer,
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [Vector, number] {
+        let result: any[] = [];
+        let numItems = buffer.readUInt32BE();
+
+        for (let i = 0; i < numItems; i++) {
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeDescriptor);
+            buffer = buffer.slice(decodedLength);
+            result.push(decoded);
+        }
+
+        return [new Vector(result), 42]; // TODO!
+    }
+
+    /**
+     * Reads and decodes a Vector from a given buffer,
+     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
+     * 
+     * @param buffer the input buffer
+     */
+    decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): Vector {
+        let result: any[] = [];
+
+        while (buffer.length > 0) {
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeDescriptor);
+            buffer = buffer.slice(decodedLength);
+            result.push(decoded);
+        }
+
+        return new Vector(result);
+    }
+
+    encodeNested(_: Vector): Buffer {
+        throw new Error("Method not implemented.");
+    }
+
+    encodeTopLevel(_: Vector): Buffer {
+        throw new Error("Method not implemented.");
     }
 }
 
@@ -267,6 +232,54 @@ class BooleanBinaryCodec {
         }
 
         return Buffer.from([]);
+    }
+}
+
+class PrimitiveBinaryCodec {
+    private readonly parentCodec: BinaryCodec;
+
+    private readonly booleanCodec: BooleanBinaryCodec;
+    private readonly numericalCodec: NumericalBinaryCoded;
+    private readonly addressCoded: AddressBinaryCodec;
+
+    constructor(parentCodec: BinaryCodec) {
+        this.parentCodec = parentCodec;
+
+        this.booleanCodec = new BooleanBinaryCodec();
+        this.numericalCodec = new NumericalBinaryCoded();
+        this.addressCoded = new AddressBinaryCodec();
+    }
+
+    decodeNested(buffer: Buffer, type: PrimitiveType): [PrimitiveValue, number] {
+        return onPrimitiveTypeSelect<[PrimitiveValue, number]>(type, {
+            onBoolean: () => this.booleanCodec.decodeNested(buffer),
+            onNumerical: () => this.numericalCodec.decodeNested(buffer, <NumericalType>type),
+            onAddress: () => this.addressCoded.decodeNested(buffer)
+        });
+    }
+
+    decodeTopLevel(buffer: Buffer, type: PrimitiveType): PrimitiveValue {
+        return onPrimitiveTypeSelect<PrimitiveValue>(type, {
+            onBoolean: () => this.booleanCodec.decodeTopLevel(buffer),
+            onNumerical: () => this.numericalCodec.decodeTopLevel(buffer, <NumericalType>type),
+            onAddress: () => this.addressCoded.decodeTopLevel(buffer)
+        });
+    }
+
+    encodeNested(value: PrimitiveValue): Buffer {
+        return onPrimitiveValueSelect<Buffer>(value, {
+            onBoolean: () => this.booleanCodec.encodeNested(<BooleanValue>value),
+            onNumerical: () => this.numericalCodec.encodeNested(<NumericalValue>value),
+            onAddress: () => this.addressCoded.encodeNested(<AddressValue>value)
+        });
+    }
+
+    encodeTopLevel(value: PrimitiveValue): Buffer {
+        return onPrimitiveValueSelect<Buffer>(value, {
+            onBoolean: () => this.booleanCodec.encodeTopLevel(<BooleanValue>value),
+            onNumerical: () => this.numericalCodec.encodeTopLevel(<NumericalValue>value),
+            onAddress: () => this.addressCoded.encodeTopLevel(<AddressValue>value)
+        });
     }
 }
 
@@ -433,6 +446,31 @@ class AddressBinaryCodec {
      */
     encodeTopLevel(primitive: AddressValue): Buffer {
         return primitive.getValue().pubkey();
+    }
+}
+
+class StructureBinaryCodec {
+    private readonly parentCodec: BinaryCodec;
+
+    constructor(parentCodec: BinaryCodec) {
+        this.parentCodec = parentCodec;
+    }
+
+    decode(buffer: Buffer, type: StructureType): Structure {
+        let fieldDefinitions = type.definition.fields;
+        let data: any = {};
+
+        fieldDefinitions.forEach(field => {
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, field.getTypeDescriptor());
+            data[field.name] = decoded;
+
+            // TODO: Fix. Wrong. Does not correctly advance the offset.
+            // Use a Reader!
+            buffer = buffer.slice(decodedLength);
+        });
+        
+        let structure = new Structure(type, data);
+        return structure;
     }
 }
 

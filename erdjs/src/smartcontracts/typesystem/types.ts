@@ -1,12 +1,19 @@
 import * as errors from "../../errors";
+import { guardValueIsSet } from "../../utils";
 import { TypesRegistry } from "./typesRegistry";
 
 export abstract class Type {
     readonly name: string;
 
     constructor(name: string) {
+        guardValueIsSet("name", name);
+
         this.name = name;
         TypesRegistry.registerType(this);
+    }
+
+    toString() {
+        return this.name;
     }
 }
 

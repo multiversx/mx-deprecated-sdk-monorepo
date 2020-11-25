@@ -146,30 +146,35 @@
                 "name": "lottery-info",
                 "fields": [
                     {
+                        "name": "ticket_price",
                         "description": "ticket price",
                         "type": [
                             "BigUInt"
                         ]
                     },
                     {
+                        "name": "tickets_left",
                         "description": "tickets left",
                         "type": [
                             "U32"
                         ]
                     },
                     {
+                        "name": "deadline",
                         "description": "deadline",
                         "type": [
                             "U64"
                         ]
                     },
                     {
+                        "name": "max_entries_per_user",
                         "description": "max entries per user",
                         "type": [
                             "U32"
                         ]
                     },
                     {
+                        "name": "prize_distribution",
                         "description": "prize distribution",
                         "type": [
                             "Vector",
@@ -177,6 +182,7 @@
                         ]
                     },
                     {
+                        "name": "whitelist",
                         "description": "whitelist",
                         "type": [
                             "Vector",
@@ -184,12 +190,14 @@
                         ]
                     },
                     {
+                        "name": "current_ticket_number",
                         "description": "current ticket number",
                         "type": [
                             "U32"
                         ]
                     },
                     {
+                        "name": "prize_pool",
                         "description": "prize pool",
                         "type": [
                             "BigUInt"

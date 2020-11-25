@@ -28,15 +28,12 @@ export class TypeDescriptor {
         return new TypeDescriptor(this.scopedTypes.slice(1));
     }
 
-    /**
-     * Will return `true` for types such as Vector, Optional.
-     */
-    isGenericType(): boolean {
-        return this.scopedTypes.length > 1;
-    }
-
     getGenericType(): Type {
         this.assertIsGenericType();
+        return this.getOutmostType();
+    }
+
+    getOutmostType(): Type {
         return this.scopedTypes[0];
     }
 
@@ -48,9 +45,26 @@ export class TypeDescriptor {
         return this.scopedTypes[1];
     }
 
-    private assertIsGenericType() {
+    assertIsGenericType() {
         if (!this.isGenericType()) {
             throw new errors.ErrTypingSystem("not a generic type");
         }
+    }
+
+    /**
+     * Will return `true` for types such as Vector, Optional.
+     */
+    isGenericType(): boolean {
+        return this.scopedTypes.length > 1;
+    }
+
+    assertNotVoid() {
+        if (this.isVoid()) {
+            throw new errors.ErrTypingSystem("void (trivial) type descriptor");
+        }
+    }
+
+    isVoid() {
+        return this.scopedTypes.length == 0;
     }
 }
