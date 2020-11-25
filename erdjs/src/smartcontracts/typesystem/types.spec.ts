@@ -1,5 +1,5 @@
 import { describe } from "mocha";
-import * as errors from "../errors";
+import * as errors from "../../errors";
 import { assert, AssertionError } from "chai";
 import { BooleanValue, NumericalValue, PrimitiveType } from "./types";
 

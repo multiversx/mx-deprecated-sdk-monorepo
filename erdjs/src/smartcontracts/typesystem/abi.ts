@@ -1,16 +1,25 @@
-import { PrimitiveType, TypeDescriptor } from "./types";
+import { ITypeResolver } from "./interfaces";
+import { PrimitiveType, Type, TypeDescriptor } from "./types";
 
 /**
  * Contract ABIs aren't yet fully implemented. This is just a prototype.
  * A future release of `erdjs` will handle ABIs properly.
  */
-export class AbiRegistry {
+export class AbiRegistry implements ITypeResolver {
     readonly namespaces: Namespace[] = [];
 
     extend(obj: any) {
         for (let item of obj.namespaces || []) {
             this.namespaces.push(new Namespace(item));
         }
+    }
+
+    resolveTypeDescriptor(scopedTypeNames: string[]): TypeDescriptor {
+        throw new Error("Method not implemented.");
+    }
+    
+    resolveType(typeName: string): Type {
+        throw new Error("Method not implemented.");
     }
 }
 
@@ -64,7 +73,7 @@ export class FunctionParameterDefinition {
     }
 
     getTypeDescriptor(): TypeDescriptor {
-
+        return TypeDescriptor.res
     }
 }
 

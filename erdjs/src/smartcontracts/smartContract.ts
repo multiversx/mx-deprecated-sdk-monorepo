@@ -3,7 +3,7 @@ import { Address } from "../address";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
 import { TransactionPayload } from "../transactionPayload";
-import { AbiRegistry } from "./abi";
+import { AbiRegistry } from "./typesystem/abi";
 import { Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
