@@ -1,7 +1,7 @@
 import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec } from "./binary";
-import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, PrimitiveType, PrimitiveValue, TypeDescriptor, U16Type, U8Type } from "../typesystem";
+import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, PrimitiveType, PrimitiveValue, TypeDescriptor, TypesRegistry, U16Type, U8Type } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
 
 describe("test binary codec (basic)", () => {
@@ -54,15 +54,15 @@ describe("test binary codec (basic)", () => {
 
         // Zero, fixed-size
 
-        // PrimitiveType.numericTypes().filter(type => type.hasFixedSize()).forEach(type => {
-        //     check(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
-        // });
+        (<NumericalType[]>TypesRegistry.findTypes(type => type instanceof NumericalType && type.hasFixedSize())).forEach(type => {
+            check(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
+        });
 
-        // // Zero, arbitrary-size (big)
+        // Zero, arbitrary-size (big)
 
-        // PrimitiveType.numericTypes().filter(type => type.hasArbitrarySize()).forEach(type => {
-        //     check(BigInt(0), type, [0, 0, 0, 0], []);
-        // });
+        (<NumericalType[]>TypesRegistry.findTypes(type => type instanceof NumericalType && type.hasArbitrarySize())).forEach(type => {
+            check(BigInt(0), type, [0, 0, 0, 0], []);
+        });
 
         function check(asBigInt: bigint, type: NumericalType, nested: number[], topLevel: number[]) {
             let value = new NumericalValue(asBigInt, type);

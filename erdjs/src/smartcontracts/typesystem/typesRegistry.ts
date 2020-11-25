@@ -26,4 +26,10 @@ export class TypesRegistry {
 
         return type;
     }
+
+    static findTypes(predicate: (type: Type) => boolean): Type[] {
+        let values = Array.from(TypesRegistry.typesByName.values());
+        let filtered = values.filter(item => predicate(item));
+        return filtered;
+    }
 }

@@ -11,6 +11,14 @@ export abstract class NumericalType extends PrimitiveType {
         this.withSign = withSign;
     }
 
+    hasFixedSize(): boolean {
+        return this.sizeInBytes ? true : false;
+    }
+
+    hasArbitrarySize(): boolean {
+        return !this.hasFixedSize();
+    }
+
     canConvertTo(jsType: string): boolean {
         return jsType == "bigint" || (jsType == "number" && this.sizeInBytes < 8);
     }
