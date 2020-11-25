@@ -2,6 +2,7 @@ import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec } from "./binary";
 import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, PrimitiveType, PrimitiveValue, TypeDescriptor, U16Type, U8Type } from "../typesystem";
+import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
 
 describe("test binary codec (basic)", () => {
     let codec = new BinaryCodec();
@@ -125,6 +126,12 @@ describe("test binary codec (basic)", () => {
 //     });
 // });
 
+function serialized(prettyHex: string): Buffer {
+    let uglyHex = prettyHex.replace(/[\|\s\[\]]/gi, "");
+    let buffer = Buffer.from(uglyHex, "hex");
+    return buffer;
+}
+
 // describe("test reader", () => {
 //     it("should read big ints", async () => {
 //         let data = serialized("00000008|8ac7230489e80000");
@@ -147,106 +154,100 @@ describe("test binary codec (basic)", () => {
 //     });
 // });
 
-// describe("test codec utilities", () => {
-//     it("should check whether isMbsOne", async () => {
-//         assert.isTrue(isMbsOne(Buffer.from([0xFF]), 0));
-//         assert.isTrue(isMbsOne(Buffer.from([0x00, 0xFF]), 1));
-//         assert.isTrue(isMbsOne(Buffer.from([0x00, 0xFF, 0xFF]), 2));
+describe("test codec utilities", () => {
+    it("should check whether isMbsOne", async () => {
+        assert.isTrue(isMbsOne(Buffer.from([0xFF]), 0));
+        assert.isTrue(isMbsOne(Buffer.from([0x00, 0xFF]), 1));
+        assert.isTrue(isMbsOne(Buffer.from([0x00, 0xFF, 0xFF]), 2));
 
-//         assert.isFalse(isMbsOne(Buffer.from([1])));
-//         assert.isFalse(isMbsOne(Buffer.from([2])));
-//         assert.isFalse(isMbsOne(Buffer.from([3])));
-//         assert.isFalse(isMbsOne(Buffer.from([127])));
-//         assert.isTrue(isMbsOne(Buffer.from([128])));
-//         assert.isTrue(isMbsOne(Buffer.from([255])));
+        assert.isFalse(isMbsOne(Buffer.from([1])));
+        assert.isFalse(isMbsOne(Buffer.from([2])));
+        assert.isFalse(isMbsOne(Buffer.from([3])));
+        assert.isFalse(isMbsOne(Buffer.from([127])));
+        assert.isTrue(isMbsOne(Buffer.from([128])));
+        assert.isTrue(isMbsOne(Buffer.from([255])));
 
-//         assert.isTrue(isMbsOne(Buffer.from([0b10001000]), 0));
-//         assert.isFalse(isMbsOne(Buffer.from([0b01001000]), 0));
-//         assert.isTrue(isMbsOne(Buffer.from([0b00000000, 0b10000000]), 1));
-//         assert.isFalse(isMbsOne(Buffer.from([0b00000000, 0b01000000]), 1));
+        assert.isTrue(isMbsOne(Buffer.from([0b10001000]), 0));
+        assert.isFalse(isMbsOne(Buffer.from([0b01001000]), 0));
+        assert.isTrue(isMbsOne(Buffer.from([0b00000000, 0b10000000]), 1));
+        assert.isFalse(isMbsOne(Buffer.from([0b00000000, 0b01000000]), 1));
 
-//         let buffer: Buffer;
+        let buffer: Buffer;
 
-//         buffer = Buffer.alloc(2);
-//         buffer.writeUInt16BE(65535);
-//         assert.isTrue(isMbsOne(buffer));
-//         buffer.writeInt16BE(-32768);
-//         assert.isTrue(isMbsOne(buffer));
-//         buffer.writeInt16BE(32767);
-//         assert.isFalse(isMbsOne(buffer));
+        buffer = Buffer.alloc(2);
+        buffer.writeUInt16BE(65535);
+        assert.isTrue(isMbsOne(buffer));
+        buffer.writeInt16BE(-32768);
+        assert.isTrue(isMbsOne(buffer));
+        buffer.writeInt16BE(32767);
+        assert.isFalse(isMbsOne(buffer));
 
-//         buffer = Buffer.alloc(8);
-//         buffer.writeBigUInt64BE(BigInt("18446744073709551615"));
-//         assert.isTrue(isMbsOne(buffer));
-//         buffer.writeBigInt64BE(BigInt("-9223372036854775808"));
-//         assert.isTrue(isMbsOne(buffer));
-//         buffer.writeBigInt64BE(BigInt("9223372036854775807"));
-//         assert.isFalse(isMbsOne(buffer));
-//     });
+        buffer = Buffer.alloc(8);
+        buffer.writeBigUInt64BE(BigInt("18446744073709551615"));
+        assert.isTrue(isMbsOne(buffer));
+        buffer.writeBigInt64BE(BigInt("-9223372036854775808"));
+        assert.isTrue(isMbsOne(buffer));
+        buffer.writeBigInt64BE(BigInt("9223372036854775807"));
+        assert.isFalse(isMbsOne(buffer));
+    });
 
-//     it("should discardSuperfluousZeroBytes", async () => {
-//         let buffer: Buffer;
+    it("should discardSuperfluousZeroBytes", async () => {
+        let buffer: Buffer;
 
-//         buffer = discardSuperfluousZeroBytes(Buffer.from([0, 0, 0, 1, 2, 3, 4, 5]));
-//         assert.deepEqual(buffer, Buffer.from([1, 2, 3, 4, 5]));
-//         assert.equal(buffer.toString("hex"), "0102030405");
+        buffer = discardSuperfluousZeroBytes(Buffer.from([0, 0, 0, 1, 2, 3, 4, 5]));
+        assert.deepEqual(buffer, Buffer.from([1, 2, 3, 4, 5]));
+        assert.equal(buffer.toString("hex"), "0102030405");
 
-//         buffer = discardSuperfluousZeroBytes(Buffer.from([0, 0]));
-//         assert.deepEqual(buffer, Buffer.from([]));
-//         assert.equal(buffer.toString("hex"), "");
+        buffer = discardSuperfluousZeroBytes(Buffer.from([0, 0]));
+        assert.deepEqual(buffer, Buffer.from([]));
+        assert.equal(buffer.toString("hex"), "");
 
-//         buffer = discardSuperfluousZeroBytes(Buffer.from([5, 0, 0]));
-//         assert.deepEqual(buffer, Buffer.from([5, 0, 0]));
-//         assert.equal(buffer.toString("hex"), "050000");
-//     });
+        buffer = discardSuperfluousZeroBytes(Buffer.from([5, 0, 0]));
+        assert.deepEqual(buffer, Buffer.from([5, 0, 0]));
+        assert.equal(buffer.toString("hex"), "050000");
+    });
 
-//     it("should discardSuperfluousBytesInTwosComplement", async () => {
-//         let buffer: Buffer;
+    it("should discardSuperfluousBytesInTwosComplement", async () => {
+        let buffer: Buffer;
 
-//         // Negative, -1
-//         buffer = Buffer.alloc(1);
-//         buffer.writeInt8(-1);
-//         assert.deepEqual(buffer, Buffer.from([0xFF]));
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
+        // Negative, -1
+        buffer = Buffer.alloc(1);
+        buffer.writeInt8(-1);
+        assert.deepEqual(buffer, Buffer.from([0xFF]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
 
-//         buffer = Buffer.alloc(2);
-//         buffer.writeInt16BE(-1);
-//         assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF]));
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
+        buffer = Buffer.alloc(2);
+        buffer.writeInt16BE(-1);
+        assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
 
-//         buffer = Buffer.alloc(4);
-//         buffer.writeInt32BE(-1);
-//         assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]));
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
+        buffer = Buffer.alloc(4);
+        buffer.writeInt32BE(-1);
+        assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF, 0xFF, 0xFF]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
 
-//         buffer = Buffer.alloc(8);
-//         buffer.writeBigInt64BE(BigInt("-1"));
-//         assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]));
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
+        buffer = Buffer.alloc(8);
+        buffer.writeBigInt64BE(BigInt("-1"));
+        assert.deepEqual(buffer, Buffer.from([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0xFF]));
 
-//         // Negative, other
-//         buffer = Buffer.from([0b10000000]);
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b10000000]));
+        // Negative, other
+        buffer = Buffer.from([0b10000000]);
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b10000000]));
 
-//         buffer = Buffer.from([0b11111111, 0b00000000]);
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b11111111, 0b00000000]));
+        buffer = Buffer.from([0b11111111, 0b00000000]);
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b11111111, 0b00000000]));
 
-//         buffer = Buffer.from([0b11111111, 0b10000000]);
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b10000000]));
+        buffer = Buffer.from([0b11111111, 0b10000000]);
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0b10000000]));
 
-//         // Positive
-//         buffer = Buffer.alloc(1);
-//         buffer.writeInt8(127);
-//         assert.deepEqual(buffer, Buffer.from([0x7F]));
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0x7F]));
+        // Positive
+        buffer = Buffer.alloc(1);
+        buffer.writeInt8(127);
+        assert.deepEqual(buffer, Buffer.from([0x7F]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(buffer), Buffer.from([0x7F]));
 
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(Buffer.from([0x00, 0x00, 0xFF])), Buffer.from([0x00, 0xFF]));
-//         assert.deepEqual(discardSuperfluousBytesInTwosComplement(Buffer.from([0x00, 0x00, 0x7F])), Buffer.from([0x7F]));
-//     });
-// });
-
-// function serialized(prettyHex: string): Buffer {
-//     let uglyHex = prettyHex.replace(/[\|\s\[\]]/gi, "");
-//     let buffer = Buffer.from(uglyHex, "hex");
-//     return buffer;
-// }
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(Buffer.from([0x00, 0x00, 0xFF])), Buffer.from([0x00, 0xFF]));
+        assert.deepEqual(discardSuperfluousBytesInTwosComplement(Buffer.from([0x00, 0x00, 0x7F])), Buffer.from([0x7F]));
+    });
+});
