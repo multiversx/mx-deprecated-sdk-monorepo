@@ -1,4 +1,3 @@
-import { Namespace } from "./namespace";
 import { TypeDescriptor } from "./typeDescriptor";
 import { Type, TypedValue } from "./types";
 
@@ -24,33 +23,29 @@ export class Structure extends TypedValue {
     }
 }
 
-
 export class StructureDefinition {
-    private readonly namespace: Namespace;
     readonly name: string;
     readonly fields: StructureFieldDefinition[] = [];
 
-    constructor(namespace: Namespace, init: { name: string, fields: any[] }) {
-        this.namespace = namespace;
+    constructor(init: { name: string, fields: any[] }) {
         this.name = init.name;
 
         for (let item of init.fields || []) {
-            this.fields.push(new StructureFieldDefinition(namespace, item));
+            this.fields.push(new StructureFieldDefinition(item));
         }
     }
 }
 
 export class StructureFieldDefinition {
-    private readonly namespace: Namespace;
     readonly description: string;
     readonly scopedTypeNames: string[];
 
-    constructor(namespace: Namespace, init: { description: string, type: string[] }) {
-        this.namespace = namespace;
+    constructor(init: { description: string, type: string[] }) {
         this.description = init.description;
         this.scopedTypeNames = init.type;
     }
 
     getTypeDescriptor(): TypeDescriptor {
+        return TypeDescriptor.createFromTypeNames(this.scopedTypeNames);
     }
 }

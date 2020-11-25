@@ -1,7 +1,9 @@
-import { PrimitiveType, PrimitiveValue } from "./types";
+import { Type, PrimitiveType, PrimitiveValue } from "./types";
 
 export class BooleanType extends PrimitiveType {
-    constructor() {
+    static One = new BooleanType();
+
+    private constructor() {
         super("Boolean");
     }
 
@@ -14,7 +16,6 @@ export class BooleanType extends PrimitiveType {
  * A boolean value fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
 export class BooleanValue extends PrimitiveValue {
-    private readonly type: BooleanType = new BooleanType();
     private readonly value: boolean;
 
     constructor(value: boolean) {
@@ -44,11 +45,11 @@ export class BooleanValue extends PrimitiveValue {
     }
 
     convertTo(jsType: string): any {
-        this.type.assertCanConvertTo(jsType);
+        BooleanType.One.assertCanConvertTo(jsType);
         return this.getValue();
     }
 
-    getType(): BooleanType {
-        return this.type;
+    getType(): Type {
+        return BooleanType.One;
     }
 }

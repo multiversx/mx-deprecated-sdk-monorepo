@@ -5,7 +5,7 @@ export abstract class NumericalType extends PrimitiveType {
     readonly sizeInBytes: number;
     readonly withSign: boolean;
 
-    constructor(name: string, sizeInBytes: number, withSign: boolean) {
+    protected constructor(name: string, sizeInBytes: number, withSign: boolean) {
         super(name);
         this.sizeInBytes = sizeInBytes;
         this.withSign = withSign;
@@ -16,62 +16,82 @@ export abstract class NumericalType extends PrimitiveType {
     }
 }
 
-export abstract class U8Type extends NumericalType {
-    constructor() {
+export class U8Type extends NumericalType {
+    static One = new U8Type();
+
+    private constructor() {
         super("U8", 1, false);
     }
 }
 
-export abstract class I8Type extends NumericalType {
-    constructor() {
+export class I8Type extends NumericalType {
+    static One = new I8Type();
+
+    private constructor() {
         super("I8", 1, true);
     }
 }
 
-export abstract class U16Type extends NumericalType {
-    constructor() {
+export class U16Type extends NumericalType {
+    static One = new U16Type();
+
+    private constructor() {
         super("U16", 2, false);
     }
 }
 
-export abstract class I16Type extends NumericalType {
-    constructor() {
+export class I16Type extends NumericalType {
+    static One = new I16Type();
+
+    private constructor() {
         super("I16", 2, true);
     }
 }
 
-export abstract class U32Type extends NumericalType {
-    constructor() {
+export class U32Type extends NumericalType {
+    static One = new U32Type();
+
+    private constructor() {
         super("U32", 4, false);
     }
 }
 
-export abstract class I32Type extends NumericalType {
-    constructor() {
+export class I32Type extends NumericalType {
+    static One = new I32Type();
+
+    private constructor() {
         super("I32", 4, true);
     }
 }
 
-export abstract class U64Type extends NumericalType {
-    constructor() {
+export class U64Type extends NumericalType {
+    static One = new U64Type();
+
+    private constructor() {
         super("U64", 8, false);
     }
 }
 
-export abstract class I64Type extends NumericalType {
-    constructor() {
+export class I64Type extends NumericalType {
+    static One = new I64Type();
+
+    private constructor() {
         super("I64", 8, true);
     }
 }
 
-export abstract class BigUIntType extends NumericalType {
-    constructor() {
+export class BigUIntType extends NumericalType {
+    static One = new BigUIntType();
+
+    private constructor() {
         super("BigUInt", 0, false);
     }
 }
 
-export abstract class BigIntType extends NumericalType {
-    constructor() {
+export class BigIntType extends NumericalType {
+    static One = new BigIntType();
+
+    private constructor() {
         super("BigInt", 0, true);
     }
 }

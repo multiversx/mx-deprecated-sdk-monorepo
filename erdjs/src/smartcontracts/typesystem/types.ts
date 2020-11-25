@@ -1,15 +1,17 @@
 import * as errors from "../../errors";
+import { TypesRegistry } from "./typesRegistry";
 
-export class Type {
+export abstract class Type {
     readonly name: string;
 
     constructor(name: string) {
         this.name = name;
+        TypesRegistry.registerType(this);
     }
 }
 
 export abstract class PrimitiveType extends Type {
-    constructor(name: string) {
+    protected constructor(name: string) {
         super(name);
     }
 

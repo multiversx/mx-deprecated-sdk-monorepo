@@ -1,9 +1,11 @@
 import * as errors from "../../errors";
 import { Address } from "../../address";
-import { PrimitiveType, PrimitiveValue } from "./types";
+import { Type, PrimitiveType, PrimitiveValue } from "./types";
 
 export class AddressType extends PrimitiveType {
-    constructor() {
+    static One = new AddressType();
+
+    private constructor() {
         super("Address");
     }
 
@@ -16,7 +18,6 @@ export class AddressType extends PrimitiveType {
  * An address fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
 export class AddressValue extends PrimitiveValue {
-    private readonly type: AddressType = new AddressType();
     private readonly value: Address;
 
     constructor(value: Address) {
@@ -38,7 +39,7 @@ export class AddressValue extends PrimitiveValue {
     }
 
     convertTo(jsType: string): any {
-        this.type.assertCanConvertTo(jsType);
+        AddressType.One.assertCanConvertTo(jsType);
 
         if (jsType == "string") {
             return this.value.bech32();
@@ -55,7 +56,7 @@ export class AddressValue extends PrimitiveValue {
         throw new errors.ErrBadTypeConversion(this, jsType);
     }
 
-    getType(): AddressType {
-        return this.type;
+    getType(): Type {
+        return AddressType.One;
     }
 }

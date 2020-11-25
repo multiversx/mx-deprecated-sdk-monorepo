@@ -1,5 +1,6 @@
 import * as errors from "../../errors";
 import { Type } from "./types";
+import { TypesRegistry } from "./typesRegistry";
 
 /**
  * Handles nested generic types.
@@ -10,6 +11,17 @@ export class TypeDescriptor {
 
     constructor(scopedTypes: Type[]) {
         this.scopedTypes = scopedTypes;
+    }
+
+    static createFromTypeNames(scopedTypeNames: string[]): TypeDescriptor {
+        let types: Type[] = [];
+
+        for (const typeName of scopedTypeNames) {
+            let type = TypesRegistry.resolveType(typeName);
+            types.push(type);
+        }
+
+        return new TypeDescriptor(types);
     }
 
     scopeInto(): TypeDescriptor {

@@ -65,27 +65,3 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
 
     return selectors.onOther();
 }
-
-export function onTypeNameSelect<TResult>(typeName: string, selectors: {
-    // onPrimitive: () => TResult,
-    // onOptional: () => TResult,
-    // onVector: () => TResult,
-    // onStructure: () => TResult,
-    // onOther: () => TResult
-    // what to do on primitive U32?
-    // typesRegistry. private constructors la booltype, optionaltype, vectortype, primitivetype, add to registry - name, instance.
-    //
-});
-
-// if (typeName == "Optional") {
-//     return new OptionalType();
-// }
-// if (typeName == "Vector") {
-//     return new VectorType();
-// }
-// if (typeName == "Boolean") {
-//     return new BooleanType();
-// }
-// if (typeName == "Address") {
-//     return new AddressType();
-// }

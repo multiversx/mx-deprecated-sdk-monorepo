@@ -10,11 +10,11 @@ export class Namespace {
         this.namespace = init.namespace;
 
         for (let item of init.functions || []) {
-            this.functions.push(new FunctionDefinition(this, item));
+            this.functions.push(new FunctionDefinition(item));
         }
 
         for (let item of init.structures || []) {
-            this.structures.push(new StructureDefinition(this, item));
+            this.structures.push(new StructureDefinition(item));
         }
     }
 }

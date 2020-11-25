@@ -1,36 +1,29 @@
-import { ITypeResolver } from "./interfaces";
 import { Namespace } from "./namespace";
 import { StructureType } from "./structure";
-import { Type } from "./types";
+import { TypesRegistry } from "./typesRegistry";
 
 /**
  * Contract ABIs aren't yet fully implemented. This is just a prototype.
  * A future release of `erdjs` will handle ABIs properly.
  */
-export class AbiRegistry implements ITypeResolver {
+export class AbiRegistry {
     readonly namespaces: Namespace[] = [];
 
     extend(json: any) {
         for (let item of json.namespaces || []) {
             this.namespaces.push(new Namespace(item));
         }
+
+        this.registerStructures();
     }
 
-    /**
-     * Resolves a typeName to a custom structure type (user-defined).
-     * Will not resolve primitive types, nor generics.
-     * 
-     * @param typeName the typeName to be resolved to a Type
-     */
-    resolveType(typeName: string): Type | null {
+    private registerStructures() {
         for (const namespace of this.namespaces) {
-            let definition = namespace.structures.find(item => item.name == typeName);
-            if (definition) {
-                return new StructureType(definition);
+            for (const definition of namespace.structures) {
+                let type = new StructureType(definition);
+                TypesRegistry.registerType(type);
             }
         }
-
-        return null;
     }
 }
 
