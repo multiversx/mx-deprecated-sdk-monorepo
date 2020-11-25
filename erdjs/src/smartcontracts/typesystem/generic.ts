@@ -1,4 +1,3 @@
-import * as errors from "../../errors";
 import { isTyped, Type, TypedValue } from "./types";
 
 export class OptionalType extends Type {
@@ -18,15 +17,10 @@ export class VectorType extends Type {
 }
 
 export class OptionalValue extends TypedValue {
-    private readonly value: any;
+    private readonly value: TypedValue | null;
 
-    constructor(value: any) {
+    constructor(value: TypedValue | null = null) {
         super();
-
-        if (!isTyped(value)) {
-            throw new errors.ErrInvalidArgument("value", value, "cannot be wrapped into an optional");
-        }
-
         this.value = value;
     }
 
@@ -40,15 +34,10 @@ export class OptionalValue extends TypedValue {
 }
 
 export class Vector extends TypedValue {
-    private readonly values: any[];
+    private readonly values: TypedValue[];
 
-    constructor(values: any[]) {
+    constructor(values: TypedValue[]) {
         super();
-
-        if (values.some(value => !isTyped(value))) {
-            throw new errors.ErrInvalidArgument("value", values, "cannot be wrapped into a vector");
-        }
-
         this.values = values;
     }
 

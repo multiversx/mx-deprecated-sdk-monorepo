@@ -389,3 +389,12 @@ export class ErrBadTypeConversion extends ErrTypingSystem {
         super(`Bad type-conversion: [${value}] to type ${destinationTypeName}`);
     }
 }
+
+/**
+ * Signals a generic codec (encode / decode) error.
+ */
+export class ErrCodec extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}

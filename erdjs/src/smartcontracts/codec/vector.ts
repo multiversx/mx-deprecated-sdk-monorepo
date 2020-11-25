@@ -1,4 +1,4 @@
-import { TypeDescriptor, Vector } from "../typesystem";
+import { TypeDescriptor, TypedValue, Vector } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
 export class VectorBinaryCodec {
@@ -11,11 +11,9 @@ export class VectorBinaryCodec {
     /**
      * Reads and decodes a Vector from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
      */
     decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [Vector, number] {
-        let result: any[] = [];
+        let result: TypedValue[] = [];
         let numItems = buffer.readUInt32BE();
         let offset = 4;
 
@@ -34,11 +32,9 @@ export class VectorBinaryCodec {
     /**
      * Reads and decodes a Vector from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
      */
     decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): Vector {
-        let result: any[] = [];
+        let result: TypedValue[] = [];
 
         while (buffer.length > 0) {
             let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeDescriptor);

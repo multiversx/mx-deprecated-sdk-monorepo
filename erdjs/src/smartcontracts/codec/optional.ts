@@ -1,3 +1,4 @@
+import * as errors from "../../errors";
 import { OptionalValue, TypeDescriptor } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
@@ -11,21 +12,31 @@ export class OptionalValueBinaryCodec {
     /**
      * Reads and decodes an OptionalValue from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
      */
     decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [OptionalValue, number] {
-        throw new Error("Method not implemented.");
+        if (buffer[0] == 0x00) {
+            return [new OptionalValue(), 1];
+        }
+
+        let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer.slice(1), typeDescriptor);
+        return [new OptionalValue(decoded), decodedLength + 1];
     }
 
     /**
      * Reads and decodes an OptionalValue from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     * 
-     * @param buffer the input buffer
      */
     decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): OptionalValue {
-        throw new Error("Method not implemented.");
+        if (buffer.length == 0) {
+            return new OptionalValue();
+        }
+
+        if (buffer[0] != 0x01) {
+            throw new errors.ErrCodec("invalid buffer for optional value");
+        }
+
+        let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer.slice(1), typeDescriptor);
+        return new OptionalValue(decoded);
     }
 
     encodeNested(optionalValue: OptionalValue): Buffer {
