@@ -8,7 +8,9 @@
                 "output": [
                     {
                         "description": "the ultimate answer",
-                        "primitiveType": "I64"
+                        "type": [
+                            "I64"
+                        ]
                     }
                 ]
             }
@@ -24,7 +26,9 @@
                 "output": [
                     {
                         "description": "the current value",
-                        "primitiveType": "I64"
+                        "type": [
+                            "I64"
+                        ]
                     }
                 ]
             },
@@ -34,7 +38,9 @@
                 "output": [
                     {
                         "description": "the current value",
-                        "primitiveType": "I64"
+                        "type": [
+                            "I64"
+                        ]
                     }
                 ]
             },
@@ -44,7 +50,9 @@
                 "output": [
                     {
                         "description": "the current value",
-                        "primitiveType": "I64"
+                        "type": [
+                            "I64"
+                        ]
                     }
                 ],
                 "isPure": true
@@ -60,39 +68,53 @@
                 "input": [
                     {
                         "description": "lottery name",
-                        "primitiveType": "U8",
-                        "isArray": true
+                        "type": [
+                            "Vector",
+                            "U8"
+                        ]
                     },
                     {
                         "description": "ticket price",
-                        "primitiveType": "BigUInt"
+                        "type": [
+                            "BigUInt"
+                        ]
                     },
                     {
                         "description": "total tickets",
-                        "primitiveType": "U32",
-                        "isOptional": true
+                        "type": [
+                            "Optional",
+                            "U32"
+                        ]
                     },
                     {
                         "description": "deadline",
-                        "primitiveType": "U64",
-                        "isOptional": true
+                        "type": [
+                            "Optional",
+                            "U64"
+                        ]
                     },
                     {
                         "description": "max entries per user",
-                        "primitiveType": "U32",
-                        "isOptional": true
+                        "type": [
+                            "Optional",
+                            "U32"
+                        ]
                     },
                     {
                         "description": "prize distribution",
-                        "primitiveType": "U8",
-                        "isArray": true,
-                        "isOptional": true
+                        "type": [
+                            "Optional",
+                            "Vector",
+                            "U8"
+                        ]
                     },
                     {
                         "description": "whitelist",
-                        "primitiveType": "Address",
-                        "isArray": true,
-                        "isOptional": true
+                        "type": [
+                            "Optional",
+                            "Vector",
+                            "Address"
+                        ]
                     }
                 ],
                 "output": []
@@ -103,14 +125,18 @@
                 "input": [
                     {
                         "description": "lottery name",
-                        "primitiveType": "U8",
-                        "isArray": true
+                        "type": [
+                            "Vector",
+                            "U8"
+                        ]
                     }
                 ],
                 "output": [
                     {
                         "description": "lottery info",
-                        "customType": "lottery-info"
+                        "type": [
+                            "lottery-info"
+                        ]
                     }
                 ]
             }
@@ -121,37 +147,53 @@
                 "fields": [
                     {
                         "description": "ticket price",
-                        "primitiveType": "BigUInt"
+                        "type": [
+                            "BigUInt"
+                        ]
                     },
                     {
                         "description": "tickets left",
-                        "primitiveType": "U32"
+                        "type": [
+                            "U32"
+                        ]
                     },
                     {
                         "description": "deadline",
-                        "primitiveType": "U64"
+                        "type": [
+                            "U64"
+                        ]
                     },
                     {
                         "description": "max entries per user",
-                        "primitiveType": "U32"
+                        "type": [
+                            "U32"
+                        ]
                     },
                     {
                         "description": "prize distribution",
-                        "primitiveType": "U8",
-                        "isArray": true
+                        "type": [
+                            "Vector",
+                            "U8"
+                        ]
                     },
                     {
                         "description": "whitelist",
-                        "primitiveType": "Address",
-                        "isArray": true
+                        "type": [
+                            "Vector",
+                            "Address"
+                        ]
                     },
                     {
                         "description": "current ticket number",
-                        "primitiveType": "U32"
+                        "type": [
+                            "U32"
+                        ]
                     },
                     {
                         "description": "prize pool",
-                        "primitiveType": "BigUInt"
+                        "type": [
+                            "BigUInt"
+                        ]
                     }
                 ]
             }

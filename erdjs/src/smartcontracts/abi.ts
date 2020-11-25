@@ -1,4 +1,4 @@
-import { PrimitiveType } from "./types";
+import { PrimitiveType, TypeDescriptor } from "./types";
 
 /**
  * Contract ABIs aren't yet fully implemented. This is just a prototype.
@@ -34,7 +34,6 @@ export class Namespace {
 
 export class FunctionDefinition {
     private readonly namespace: Namespace;
-
     readonly name: string;
     readonly input: FunctionParameterDefinition[] = [];
     readonly output: FunctionParameterDefinition[] = [];
@@ -55,33 +54,22 @@ export class FunctionDefinition {
 
 export class FunctionParameterDefinition {
     private readonly namespace: Namespace;
-
     readonly description: string;
-    readonly isArray: boolean;
-    readonly isOptional: boolean;
-    readonly primitiveType: PrimitiveType | undefined;
-    private readonly customTypeName: string | undefined;
+    readonly scopedTypeNames: string[];
 
-    constructor(namespace: Namespace, init: { description: string, isArray: boolean, isOptional: boolean, primitiveType: string, customType: string }) {
+    constructor(namespace: Namespace, init: { description: string, type: string[] }) {
         this.namespace = namespace;
         this.description = init.description;
-        this.isArray = init.isArray;
-        this.isOptional = init.isOptional;
-        this.customTypeName = init.customType;
-
-        if (init.primitiveType) {
-            this.primitiveType = PrimitiveType.getByName(init.primitiveType);
-        }
+        this.scopedTypeNames = init.type;
     }
 
-    getCustomType(): StructureDefinition | undefined {
-        return this.namespace.structures.find(item => item.name == this.customTypeName);
+    getTypeDescriptor(): TypeDescriptor {
+
     }
 }
 
 export class StructureDefinition {
     private readonly namespace: Namespace;
-
     readonly name: string;
     readonly fields: StructureFieldDefinition[] = [];
 
@@ -97,27 +85,16 @@ export class StructureDefinition {
 
 export class StructureFieldDefinition {
     private readonly namespace: Namespace;
-
     readonly description: string;
-    readonly isArray: boolean;
-    readonly isOptional: boolean;
-    readonly primitiveType: PrimitiveType | undefined;
-    private readonly customTypeName: string | undefined;
+    readonly scopedTypeNames: string[];
 
-    constructor(namespace: Namespace, init: { description: string, isArray: boolean, isOptional: boolean, primitiveType: string, customType: string }) {
+    constructor(namespace: Namespace, init: { description: string, type: string[] }) {
         this.namespace = namespace;
         this.description = init.description;
-        this.isArray = init.isArray;
-        this.isOptional = init.isOptional;
-        this.customTypeName = init.customType;
-
-        if (init.primitiveType) {
-            this.primitiveType = PrimitiveType.getByName(init.primitiveType);
-        }
+        this.scopedTypeNames = init.type;
     }
 
-    getCustomType(): StructureDefinition | undefined {
-        return this.namespace.structures.find(item => item.name == this.customTypeName);
+    getTypeDescriptor(): TypeDescriptor {
     }
 }
 

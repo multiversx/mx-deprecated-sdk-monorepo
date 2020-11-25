@@ -1,6 +1,6 @@
 import { Address } from "../address";
 import { FunctionDefinition, StructureDefinition } from "./abi";
-import { AddressValue, BooleanValue, IPrimitiveValue, isTyped, NumericalValue, onPrimitiveTypeSelect, onPrimitiveValueSelect, onTypedValueSelect, OptionalValue, PrimitiveType, Vector } from "./types";
+import { AddressValue, BooleanValue, PrimitiveValue, isTyped, NumericalValue, onPrimitiveTypeSelect, onPrimitiveValueSelect, onTypedValueSelect, OptionalValue, PrimitiveType, Vector, NumericalType } from "./types";
 import * as errors from "../errors";
 import { guardSameLength } from "../utils";
 
@@ -79,25 +79,25 @@ class PrimitiveBinaryCodec {
         this.addressCoded = new AddressBinaryCodec();
     }
 
-    decodeNested(buffer: Buffer, type: PrimitiveType): [IPrimitiveValue, number] {
-        return onPrimitiveTypeSelect<[IPrimitiveValue, number]>(type, {
+    decodeNested(buffer: Buffer, type: PrimitiveType): [PrimitiveValue, number] {
+        return onPrimitiveTypeSelect<[PrimitiveValue, number]>(type, {
             onBoolean: () => this.booleanCodec.decodeNested(buffer),
-            onNumerical: () => this.numericalCodec.decodeNested(buffer, type),
+            onNumerical: () => this.numericalCodec.decodeNested(buffer, <NumericalType>type),
             onAddress: () => this.addressCoded.decodeNested(buffer),
             onOther: () => { throw new errors.ErrUnsupportedOperation("decodeNested", `unknown type "${type}"`); }
         });
     }
 
-    decodeTopLevel(buffer: Buffer, type: PrimitiveType): IPrimitiveValue {
-        return onPrimitiveTypeSelect<IPrimitiveValue>(type, {
+    decodeTopLevel(buffer: Buffer, type: PrimitiveType): PrimitiveValue {
+        return onPrimitiveTypeSelect<PrimitiveValue>(type, {
             onBoolean: () => this.booleanCodec.decodeTopLevel(buffer),
-            onNumerical: () => this.numericalCodec.decodeTopLevel(buffer, type),
+            onNumerical: () => this.numericalCodec.decodeTopLevel(buffer, <NumericalType>type),
             onAddress: () => this.addressCoded.decodeTopLevel(buffer),
             onOther: () => { throw new errors.ErrUnsupportedOperation("decodeTopLevel", `unknown type "${type}"`); }
         });
     }
 
-    encodeNested(value: IPrimitiveValue): Buffer {
+    encodeNested(value: PrimitiveValue): Buffer {
         return onPrimitiveValueSelect<Buffer>(value, {
             onBoolean: () => this.booleanCodec.encodeNested(<BooleanValue>value),
             onNumerical: () => this.numericalCodec.encodeNested(<NumericalValue>value),
@@ -106,7 +106,7 @@ class PrimitiveBinaryCodec {
         });
     }
 
-    encodeTopLevel(value: IPrimitiveValue): Buffer {
+    encodeTopLevel(value: PrimitiveValue): Buffer {
         return onPrimitiveValueSelect<Buffer>(value, {
             onBoolean: () => this.booleanCodec.encodeTopLevel(<BooleanValue>value),
             onNumerical: () => this.numericalCodec.encodeTopLevel(<NumericalValue>value),
@@ -278,7 +278,7 @@ class NumericalBinaryCoded {
      * @param buffer the input buffer
      * @param type the primitive type
      */
-    decodeNested(buffer: Buffer, type: PrimitiveType): [NumericalValue, number] {
+    decodeNested(buffer: Buffer, type: NumericalType): [NumericalValue, number] {
         let offset = 0;
         let length = type.sizeInBytes;
 
@@ -302,7 +302,7 @@ class NumericalBinaryCoded {
      * @param buffer the input buffer
      * @param type the primitive type
      */
-    decodeTopLevel(buffer: Buffer, type: PrimitiveType): NumericalValue {
+    decodeTopLevel(buffer: Buffer, type: NumericalType): NumericalValue {
         let payload = cloneBuffer(buffer);
 
         let empty = buffer.length == 0;

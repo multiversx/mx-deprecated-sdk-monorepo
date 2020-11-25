@@ -2,162 +2,203 @@ import { Address } from "../address";
 import * as errors from "../errors";
 
 /**
- * Smart enum pattern for primitive types.
+ * Handles nested generic types.
+ * A nested type parameter is a type parameter that is also a generic type. 
  */
-export class PrimitiveType {
-    private static AllTypes: PrimitiveType[] = [];
+export class TypeDescriptor {
+    private readonly scopedTypes: Type[] = [];
 
+    constructor(scopedTypes: Type[]) {
+        this.scopedTypes = scopedTypes;
+    }
+
+    scopeInto(): TypeDescriptor {
+        return new TypeDescriptor(this.scopedTypes.slice(1));
+    }
+
+    /**
+     * Will return `true` for types such as Vector, Optional.
+     */
+    isGenericType(): boolean {
+        return this.scopedTypes.length > 1;
+    }
+
+    getGenericType(): Type {
+        this.assertIsGenericType();
+        return this.scopedTypes[0];
+    }
+
+    /**
+     * Only one (direct) type parameter is supported (e.g. Map<TKey, TValue> isn't supported). The type parameter can be a generic type, though.
+     */
+    getTypeParameter(): Type {
+        this.assertIsGenericType();
+        return this.scopedTypes[1];
+    }
+
+    private assertIsGenericType() {
+        if (!this.isGenericType()) {
+            throw new errors.ErrTypingSystem("not a generic type");
+        }
+    }
+
+    static resolve(scopedTypeNames)
+}
+
+export class Type {
     readonly name: string;
-    readonly sizeInBytes: number | undefined;
-    readonly isNumeric: boolean;
-    readonly canCastToNumber: boolean;
+
+    constructor(name: string) {
+        this.name = name;
+    }
+}
+
+export abstract class PrimitiveType extends Type {
+    constructor(name: string) {
+        super(name);
+    }
+
+    abstract canConvertTo(jsType: string): boolean;
+
+    assertCanConvertTo(jsType: string) {
+        if (!this.canConvertTo(jsType)) {
+            throw new errors.ErrInvariantFailed(`cannot convert ${this.name} to ${jsType}`);
+        }
+    }
+}
+
+export class BooleanType extends PrimitiveType {
+    constructor() {
+        super("Boolean");
+    }
+
+    canConvertTo(jsType: string): boolean {
+        return jsType == "boolean";
+    }
+}
+
+export abstract class NumericalType extends PrimitiveType {
+    readonly sizeInBytes: number;
     readonly withSign: boolean;
 
-    static U8 = new PrimitiveType({
-        name: "U8",
-        sizeInBytes: 1,
-        isNumeric: true,
-        canCastToNumber: true
-    });
-
-    static U16 = new PrimitiveType({
-        name: "U16",
-        sizeInBytes: 2,
-        isNumeric: true,
-        canCastToNumber: true
-    });
-
-    static U32 = new PrimitiveType({
-        name: "U32",
-        sizeInBytes: 4,
-        isNumeric: true,
-        canCastToNumber: true
-    });
-
-    static U64 = new PrimitiveType({
-        name: "U64",
-        sizeInBytes: 8,
-        isNumeric: true,
-        canCastToNumber: false
-    });
-
-    static I8 = new PrimitiveType({
-        name: "I8",
-        sizeInBytes: 1,
-        isNumeric: true,
-        canCastToNumber: true,
-        withSign: true
-    });
-
-    static I16 = new PrimitiveType({
-        name: "I16",
-        sizeInBytes: 2,
-        isNumeric: true,
-        canCastToNumber: true,
-        withSign: true
-    });
-
-    static I32 = new PrimitiveType({
-        name: "I32",
-        sizeInBytes: 4,
-        isNumeric: true,
-        canCastToNumber: true,
-        withSign: true
-    });
-
-    static I64 = new PrimitiveType({
-        name: "I64",
-        sizeInBytes: 8,
-        isNumeric: true,
-        canCastToNumber: false,
-        withSign: true
-    });
-
-    static BigUInt = new PrimitiveType({
-        name: "BigUInt",
-        isNumeric: true,
-        canCastToNumber: false,
-        withSign: false
-    });
-
-    static BigInt = new PrimitiveType({
-        name: "BigInt",
-        isNumeric: true,
-        canCastToNumber: false,
-        withSign: true
-    });
-
-    static Address = new PrimitiveType({
-        name: "Address",
-        sizeInBytes: 32
-    });
-
-    static Boolean = new PrimitiveType({
-        name: "Boolean",
-        sizeInBytes: 1
-    });
-
-    private constructor(init: Partial<PrimitiveType>) {
-        this.name = init.name!;
-        this.sizeInBytes = init.sizeInBytes;
-        this.isNumeric = init.isNumeric || false;
-        this.withSign = init.withSign || false;
-        this.canCastToNumber = init.canCastToNumber || false;
-
-        PrimitiveType.AllTypes.push(this);
+    constructor(name: string, sizeInBytes: number, withSign: boolean) {
+        super(name);
+        this.sizeInBytes = sizeInBytes;
+        this.withSign = withSign;
     }
 
-    hasFixedSize(): boolean {
-        return this.sizeInBytes ? true : false;
-    }
-
-    hasArbitrarySize(): boolean {
-        return !this.hasFixedSize();
-    }
-
-    toString(): string {
-        return this.name;
-    }
-
-    static allTypes(): ReadonlyArray<PrimitiveType> {
-        return PrimitiveType.AllTypes;
-    }
-
-    static numericTypes(): PrimitiveType[] {
-        return PrimitiveType.AllTypes.filter(e => e.isNumeric == true);
-    }
-
-    static getByName(name: string): PrimitiveType {
-        let result = PrimitiveType.AllTypes.find(item => item.name == name);
-        if (!result) {
-            throw new errors.ErrUnknownType(name);
-        }
-
-        return result;
+    canConvertTo(jsType: string): boolean {
+        return jsType == "bigint" || (jsType == "number" && this.sizeInBytes < 8);
     }
 }
 
-// TODO: Common parent for CustomType and PrimitiveType: TypeDefinition.
-// TODO: ITypedValue, getType() : TypeDefinition. Switch if primitive, vector, optional.
-
-export abstract class CustomType {
+export abstract class U8Type extends NumericalType {
     constructor() {
+        super("U8", 1, false);
     }
 }
 
-export interface IPrimitiveValue {
-    getValue(): any;
-    canConvertTo(jsType: string): boolean;
-    convertTo(jsType: string): any;
+export abstract class I8Type extends NumericalType {
+    constructor() {
+        super("I8", 1, true);
+    }
+}
+
+export abstract class U16Type extends NumericalType {
+    constructor() {
+        super("U16", 2, false);
+    }
+}
+
+export abstract class I16Type extends NumericalType {
+    constructor() {
+        super("I16", 2, true);
+    }
+}
+
+export abstract class U32Type extends NumericalType {
+    constructor() {
+        super("U32", 4, false);
+    }
+}
+
+export abstract class I32Type extends NumericalType {
+    constructor() {
+        super("I32", 4, true);
+    }
+}
+
+export abstract class U64Type extends NumericalType {
+    constructor() {
+        super("U64", 8, false);
+    }
+}
+
+export abstract class I64Type extends NumericalType {
+    constructor() {
+        super("I64", 8, true);
+    }
+}
+
+export abstract class BigUIntType extends NumericalType {
+    constructor() {
+        super("BigUInt", 0, false);
+    }
+}
+
+export abstract class BigIntType extends NumericalType {
+    constructor() {
+        super("BigInt", 0, true);
+    }
+}
+
+export class AddressType extends PrimitiveType {
+    constructor() {
+        super("Address");
+    }
+
+    canConvertTo(jsType: string): boolean {
+        return jsType == "string" || jsType == "Address" || jsType == "Buffer";
+    }
+}
+
+export class OptionalType extends Type {
+    constructor() {
+        super("Optional");
+    }
+}
+
+export class VectorType extends Type {
+    constructor() {
+        super("Vector");
+    }
+}
+
+export abstract class CustomType extends Type {
+    // namespace?
+    constructor(name: string) {
+        super(name);
+    }
+}
+
+export abstract class TypedValue {
+    abstract getType(): Type;
+}
+
+export abstract class PrimitiveValue extends TypedValue {
+    abstract getValue(): any;
+    abstract convertTo(jsType: string): any;
 }
 
 /**
  * A boolean value fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
-export class BooleanValue implements IPrimitiveValue {
+export class BooleanValue extends PrimitiveValue {
+    private readonly type: BooleanType = new BooleanType();
     private readonly value: boolean;
 
     constructor(value: boolean) {
+        super();
         this.value = value;
     }
 
@@ -182,29 +223,28 @@ export class BooleanValue implements IPrimitiveValue {
         return this.value;
     }
 
-    canConvertTo(jsType: string): boolean {
-        return jsType == "boolean";
+    convertTo(jsType: string): any {
+        this.type.assertCanConvertTo(jsType);
+        return this.getValue();
     }
 
-    convertTo(jsType: string): any {
-        if (this.canConvertTo(jsType)) {
-            return this.getValue();
-        }
-
-        throw new errors.ErrBadTypeConversion(this, jsType);
+    getType(): BooleanType {
+        return this.type;
     }
 }
 
 /**
  * A numerical value fed to or fetched from a Smart Contract contract, as a strongly-typed, immutable abstraction.
  */
-export class NumericalValue implements IPrimitiveValue {
-    readonly value: bigint;
+export class NumericalValue extends PrimitiveValue {
     readonly type: PrimitiveType;
+    readonly value: bigint;
     readonly sizeInBytes: number | undefined;
     readonly withSign: boolean;
 
-    constructor(value: bigint, type: PrimitiveType) {
+    constructor(value: bigint, type: NumericalType) {
+        super();
+
         this.value = value;
         this.type = type;
         this.sizeInBytes = type.sizeInBytes;
@@ -212,9 +252,6 @@ export class NumericalValue implements IPrimitiveValue {
 
         if (typeof (value) != "bigint") {
             throw new errors.ErrInvalidArgument("value", value, "not a bigint");
-        }
-        if (!type.isNumeric) {
-            throw new errors.ErrInvalidArgument("type", type, "isn't numeric");
         }
         if (!this.withSign && value < 0) {
             throw new errors.ErrInvalidArgument("value", value, "negative, but type is unsigned");
@@ -241,49 +278,39 @@ export class NumericalValue implements IPrimitiveValue {
      * Returns the inner value, casted to a JavaScript Number object, if possible.
      */
     asNumber(): number {
-        if (this.type.canCastToNumber) {
-            return Number(this.value);
-        }
-
-        throw new errors.ErrUnsupportedOperation("asNumber", "unsafe casting");
+        this.type.assertCanConvertTo("number");
+        return Number(this.value);
     }
 
     getValue(): bigint {
         return this.asBigInt();
     }
 
-    canConvertTo(jsType: string): boolean {
-        if (jsType == "bigint") {
-            return true;
-        }
-
-        if (jsType == "number") {
-            return this.type.canCastToNumber;
-        }
-
-        return false;
-    }
-
     convertTo(jsType: string): any {
+        this.type.assertCanConvertTo(jsType);
+
         if (jsType == "bigint") {
             return this.asBigInt();
         }
-
         if (jsType == "number") {
             return this.asNumber();
         }
+    }
 
-        throw new errors.ErrBadTypeConversion(this, jsType);
+    getType(): Type {
+        return this.type;
     }
 }
 
 /**
  * An address fed to or fetched from a Smart Contract contract, as an immutable abstraction.
  */
-export class AddressValue implements IPrimitiveValue {
+export class AddressValue extends PrimitiveValue {
+    private readonly type: AddressType = new AddressType();
     private readonly value: Address;
 
     constructor(value: Address) {
+        super();
         this.value = value;
     }
 
@@ -300,11 +327,9 @@ export class AddressValue implements IPrimitiveValue {
         return this.value;
     }
 
-    canConvertTo(jsType: string): boolean {
-        return jsType == "string" || jsType == "Address" || jsType == "Buffer";
-    }
-
     convertTo(jsType: string): any {
+        this.type.assertCanConvertTo(jsType);
+
         if (jsType == "string") {
             return this.value.bech32();
         }
@@ -319,13 +344,17 @@ export class AddressValue implements IPrimitiveValue {
 
         throw new errors.ErrBadTypeConversion(this, jsType);
     }
+
+    getType(): AddressType {
+        return this.type;
+    }
 }
 
 export class OptionalValue {
     private readonly value: any;
 
     constructor(value: any) {
-        if (!isPrimitive(value)) {
+        if (!(value instanceof TypedValue)) {
             throw new errors.ErrInvalidArgument("value", value, "cannot be wrapped into an optional");
         }
 
@@ -343,15 +372,6 @@ export class Vector {
     constructor(values: any[]) {
         this.values = values;
     }
-}
-
-export function isPrimitive(value: any): boolean {
-    return onPrimitiveValueSelect(value, {
-        onBoolean: () => true,
-        onNumerical: () => true,
-        onAddress: () => true,
-        onOther: () => false
-    });
 }
 
 export function isTyped(value: any) {
@@ -389,13 +409,13 @@ export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {
     onAddress: () => TResult,
     onOther: () => TResult
 }): TResult {
-    if (type == PrimitiveType.Boolean) {
+    if (type instanceof BooleanType) {
         return selectors.onBoolean();
     }
-    if (type.isNumeric) {
+    if (type instanceof NumericalType) {
         return selectors.onNumerical();
     }
-    if (type == PrimitiveType.Address) {
+    if (type instanceof AddressType) {
         return selectors.onAddress();
     }
 
@@ -409,7 +429,7 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     onCustom: () => TResult,
     onOther: () => TResult
 }): TResult {
-    if (isPrimitive(value)) {
+    if (value instanceof PrimitiveValue) {
         return selectors.onPrimitive();
     }
     if (value instanceof OptionalValue) {
@@ -423,5 +443,3 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
 
     return selectors.onOther();
 }
-
-// TODO: export function onTypeDefinitionSelect()
