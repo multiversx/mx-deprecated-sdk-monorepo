@@ -17,14 +17,18 @@ export class VectorBinaryCodec {
     decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [Vector, number] {
         let result: any[] = [];
         let numItems = buffer.readUInt32BE();
+        let offset = 4;
+
+        buffer = buffer.slice(offset);
 
         for (let i = 0; i < numItems; i++) {
             let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeDescriptor);
-            buffer = buffer.slice(decodedLength);
             result.push(decoded);
+            offset += decodedLength;
+            buffer = buffer.slice(offset);
         }
 
-        return [new Vector(result), 42]; // TODO!
+        return [new Vector(result), offset];
     }
 
     /**

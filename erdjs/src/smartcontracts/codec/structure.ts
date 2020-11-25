@@ -16,18 +16,16 @@ export class StructureBinaryCodec {
     decodeNested(buffer: Buffer, type: StructureType): [Structure, number] {
         let fieldDefinitions = type.definition.fields;
         let data: any = {};
+        let offset = 0;
 
         fieldDefinitions.forEach(field => {
             let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, field.getTypeDescriptor());
             data[field.name] = decoded;
-
-            // TODO: Fix. Wrong. Does not correctly advance the offset.
-            // Use a Reader!
-            buffer = buffer.slice(decodedLength);
+            offset += decodedLength;
+            buffer = buffer.slice(offset);
         });
         
         let structure = new Structure(type, data);
-        // TODO: Fix!
-        return [structure, 42];
+        return [structure, offset];
     }
 }
