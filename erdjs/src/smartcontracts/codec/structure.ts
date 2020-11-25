@@ -8,7 +8,12 @@ export class StructureBinaryCodec {
         this.parentCodec = parentCodec;
     }
 
-    decode(buffer: Buffer, type: StructureType): Structure {
+    decodeTopLevel(buffer: Buffer, type: StructureType): Structure {
+        let [decoded, length] = this.decodeNested(buffer, type);
+        return decoded;
+    }
+
+    decodeNested(buffer: Buffer, type: StructureType): [Structure, number] {
         let fieldDefinitions = type.definition.fields;
         let data: any = {};
 
@@ -22,6 +27,7 @@ export class StructureBinaryCodec {
         });
         
         let structure = new Structure(type, data);
-        return structure;
+        // TODO: Fix!
+        return [structure, 42];
     }
 }

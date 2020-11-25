@@ -1,18 +1,21 @@
-import { FunctionDefinition, NumericalValue, onTypedValueSelect, onTypeSelect, PrimitiveType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
+import { FunctionDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
 import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { VectorBinaryCodec } from "./vector";
+import { StructureBinaryCodec } from "./structure";
 
 export class BinaryCodec {
     private readonly optionalCodec: OptionalValueBinaryCodec;
     private readonly vectorCodec: VectorBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
+    private readonly structureCodec: StructureBinaryCodec;
     
     constructor() {
         this.optionalCodec = new OptionalValueBinaryCodec(this);
         this.vectorCodec = new VectorBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
+        this.structureCodec = new  StructureBinaryCodec(this);
     }
 
     decodeFunctionOutput(outputItems: Buffer[], definition: FunctionDefinition): TypedValue[] {
@@ -44,7 +47,7 @@ export class BinaryCodec {
             onOptional: () => this.optionalCodec.decodeTopLevel(buffer, scoped),
             onVector: () => this.vectorCodec.decodeTopLevel(buffer, scoped),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
-            onStructure: () => new NumericalValue(BigInt(42), U8Type.One) // TODO!
+            onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructureType>type)
         });
     }
 
@@ -58,7 +61,7 @@ export class BinaryCodec {
             onOptional: () => this.optionalCodec.decodeNested(buffer, scoped),
             onVector: () => this.vectorCodec.decodeNested(buffer, scoped),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
-            onStructure: () => [new NumericalValue(BigInt(42), U8Type.One), 0] // TODO!
+            onStructure: () => this.structureCodec.decodeNested(buffer, <StructureType>type)
         });
     }
 
