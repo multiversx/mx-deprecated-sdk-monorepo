@@ -1,9 +1,5 @@
 import { describe } from "mocha";
 import { assert } from "chai";
-import { Address } from "../address";
-import { AbiRegistry, StructureDefinition } from "./typesystem/abi";
-import { BinaryCodec, discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./codecs";
-import { BooleanValue, NumericalValue, PrimitiveType } from "./types";
 
 describe("test binary codec (basic)", () => {
     let codec = new BinaryCodec();
