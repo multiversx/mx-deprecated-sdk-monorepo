@@ -6,15 +6,15 @@ export class Namespace {
     readonly functions: FunctionDefinition[] = [];
     readonly structures: StructureDefinition[] = [];
 
-    constructor(init: { namespace: string, functions: any[], structures: any[] }) {
-        this.namespace = init.namespace;
+    constructor(namespace: string, functions: FunctionDefinition[], structures: StructureDefinition[]) {
+        this.namespace = namespace;
+        this.functions = functions;
+        this.structures = structures;
+    }
 
-        for (let item of init.functions || []) {
-            this.functions.push(new FunctionDefinition(item));
-        }
-
-        for (let item of init.structures || []) {
-            this.structures.push(new StructureDefinition(item));
-        }
+    static fromJSON(json: { namespace: string, functions: any[], structures: any[] }): Namespace {
+        let functions = json.functions.map(item => FunctionDefinition.fromJSON(item));
+        let structures = json.structures.map(item => StructureDefinition.fromJSON(item));
+        return new Namespace(json.namespace, functions, structures);
     }
 }

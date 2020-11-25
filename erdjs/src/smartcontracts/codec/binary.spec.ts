@@ -1,7 +1,7 @@
 import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec } from "./binary";
-import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, PrimitiveType, PrimitiveValue, TypeDescriptor, TypesRegistry, U16Type, U8Type } from "../typesystem";
+import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, StructureDefinition, StructureFieldDefinition, StructureType, TypeDescriptor, TypesRegistry, U16Type, U8Type } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
 
 describe("test binary codec (basic)", () => {
@@ -30,7 +30,6 @@ describe("test binary codec (basic)", () => {
     });
 
     it("should create numeric values, encode and decode", async () => {
-        let value: NumericalValue;
 
         // Small int
 
@@ -82,77 +81,62 @@ describe("test binary codec (basic)", () => {
     });
 });
 
+describe("test binary codec (advanced)", () => {
+    let codec = new BinaryCodec();
 
-// describe("test serialization", () => {
-//     it("should deserialize struct", async () => {
-//         let definition = new StructureDefinition();
-//         definition.addField("ticket_price", PrimitiveType.BigUInt);
-//         definition.addField("tickets_left", PrimitiveType.U32);
-//         definition.addField("deadline", PrimitiveType.U64);
-//         definition.addField("max_entries_per_user", PrimitiveType.U32);
-//         definition.addField("prize_distribution", PrimitiveType.U8, true);
-//         definition.addField("whitelist", PrimitiveType.Address, true);
-//         definition.addField("current_ticket_number", PrimitiveType.U32);
-//         definition.addField("prize_pool", PrimitiveType.BigUInt);
+    it("should deserialize struct", async () => {
+        let lotterInfoDefinition = new StructureDefinition(
+            "LotteryInfo",
+            [
+                new StructureFieldDefinition("ticket_price", "", ["BigUInt"]),
+                new StructureFieldDefinition("tickets_left", "", ["U32"]),
+                new StructureFieldDefinition("deadline", "", ["U64"]),
+                new StructureFieldDefinition("max_entries_per_user", "", ["U8"]),
+                new StructureFieldDefinition("prize_distribution", "", ["Vector", "U32"]),
+                new StructureFieldDefinition("whitelist", "", ["Vector", "Address"]),
+                new StructureFieldDefinition("current_ticket_number", "", ["U32"]),
+                new StructureFieldDefinition("prize_pool", "", ["BigUInt"])
+            ]
+        );
 
-//         // TODO: this is user defined...
-//         class Foo {
-//             ticket_price: BigInt = BigInt(0);
-//             tickets_left: number = 0;
-//             deadline: BigInt = BigInt(0);
-//             max_entries_per_user: number = 0;
-//             prize_distribution: number[] = [];
-//             whitelist: Address[] = [];
-//             current_ticket_number: number = 0;
-//             prize_pool: BigInt = BigInt(0);
-//         }
+        let lotterInfoType = new StructureType(lotterInfoDefinition);
+        //TypesRegistry.registerType(lotterInfoType);
 
-//         let foo = new Foo();
+        // // TODO: this is user defined...
+        // class Foo {
+        //     ticket_price: BigInt = BigInt(0);
+        //     tickets_left: number = 0;
+        //     deadline: BigInt = BigInt(0);
+        //     max_entries_per_user: number = 0;
+        //     prize_distribution: number[] = [];
+        //     whitelist: Address[] = [];
+        //     current_ticket_number: number = 0;
+        //     prize_pool: BigInt = BigInt(0);
+        // }
 
-//         let serializer = new BinarySerializer();
-//         let data = serialized("[00000008|8ac7230489e80000] [00000000] [000000005fc2b9db] [ffffffff] [00000001|64] [00000000] [00002500] [0000000a|140ec80fa7ee88000000]");
-//         serializer.deserialize(data, foo, definition);
+        //let foo = new Foo();
 
-//         assert.deepEqual(foo, {
-//             ticket_price: BigInt("10000000000000000000"),
-//             tickets_left: 0,
-//             deadline: BigInt("0x000000005fc2b9db"),
-//             max_entries_per_user: parseInt("ffffffff", 16),
-//             prize_distribution: [100],
-//             whitelist: [],
-//             current_ticket_number: 9472,
-//             prize_pool: BigInt("94720000000000000000000")
-//         });
-//     });
-// });
+        let data = serialized("[00000008|8ac7230489e80000] [00000000] [000000005fc2b9db] [ffffffff] [00000001|64] [00000000] [00002500] [0000000a|140ec80fa7ee88000000]");
+        codec.decodeNested(data, new TypeDescriptor([lotterInfoType]));
+
+        // assert.deepEqual(foo, {
+        //     ticket_price: BigInt("10000000000000000000"),
+        //     tickets_left: 0,
+        //     deadline: BigInt("0x000000005fc2b9db"),
+        //     max_entries_per_user: parseInt("ffffffff", 16),
+        //     prize_distribution: [100],
+        //     whitelist: [],
+        //     current_ticket_number: 9472,
+        //     prize_pool: BigInt("94720000000000000000000")
+        // });
+    });
+});
 
 function serialized(prettyHex: string): Buffer {
     let uglyHex = prettyHex.replace(/[\|\s\[\]]/gi, "");
     let buffer = Buffer.from(uglyHex, "hex");
     return buffer;
 }
-
-// describe("test reader", () => {
-//     it("should read big ints", async () => {
-//         let data = serialized("00000008|8ac7230489e80000");
-//         let reader = new BinaryReader(data);
-//         let result = reader.readBigUInt();
-//         assert.equal(result, BigInt("10000000000000000000"));
-
-//         data = serialized("0000000a|140ec80fa7ee88000000");
-//         reader = new BinaryReader(data);
-//         result = reader.readBigUInt();
-//         assert.equal(result, BigInt("94720000000000000000000"));
-
-//         // Now read both
-//         data = serialized("[00000008|8ac7230489e80000] [0000000a|140ec80fa7ee88000000]");
-//         reader = new BinaryReader(data);
-//         assert.equal(reader.readBigUInt(), BigInt("10000000000000000000"));
-//         assert.equal(reader.readBigUInt(), BigInt("94720000000000000000000"));
-
-//         // TODO: Also read signed big ints.
-//     });
-// });
 
 describe("test codec utilities", () => {
     it("should check whether isMbsOne", async () => {

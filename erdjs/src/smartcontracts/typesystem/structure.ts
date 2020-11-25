@@ -29,12 +29,14 @@ export class StructureDefinition {
     readonly name: string;
     readonly fields: StructureFieldDefinition[] = [];
 
-    constructor(init: { name: string, fields: any[] }) {
-        this.name = init.name;
+    constructor(name: string, fields: StructureFieldDefinition[]) {
+        this.name = name;
+        this.fields = fields || [];
+    }
 
-        for (let item of init.fields || []) {
-            this.fields.push(new StructureFieldDefinition(item));
-        }
+    static fromJSON(json: { name: string, fields: any[] }): StructureDefinition {
+        let fields = json.fields.map(field => StructureFieldDefinition.fromJSON(field));
+        return new StructureDefinition(json.name, fields);
     }
 }
 
@@ -43,10 +45,14 @@ export class StructureFieldDefinition {
     readonly description: string;
     readonly scopedTypeNames: string[];
 
-    constructor(init: { name: string, description: string, type: string[] }) {
+    constructor(name: string, description: string, type: string[]) {
         this.name = name;
-        this.description = init.description;
-        this.scopedTypeNames = init.type;
+        this.description = description;
+        this.scopedTypeNames = type;
+    }
+
+    static fromJSON(json: { name: string, description: string, type: string[] }): StructureFieldDefinition {
+        return new StructureFieldDefinition(json.name, json.description, json.type);
     }
 
     getTypeDescriptor(): TypeDescriptor {
