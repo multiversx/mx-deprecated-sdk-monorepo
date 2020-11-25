@@ -107,6 +107,7 @@ export class QueryResponse {
     }
 }
 
+// TODO: use types & codecs
 export class ContractReturnData {
     asBuffer: Buffer;
     asBase64: any;

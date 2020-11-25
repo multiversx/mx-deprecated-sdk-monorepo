@@ -37,32 +37,36 @@ export class BinaryCodec {
         return result;
     }
 
-    decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): TypedValue {
+    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): TResult {
         let type = typeDescriptor.getOutmostType();
 
         // Open types (generics) will require the scoped type descriptor as well.
         let scoped = typeDescriptor.scopeInto();
 
-        return onTypeSelect<TypedValue>(type, {
+        let typedValue = onTypeSelect<TypedValue>(type, {
             onOptional: () => this.optionalCodec.decodeTopLevel(buffer, scoped),
             onVector: () => this.vectorCodec.decodeTopLevel(buffer, scoped),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
             onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructureType>type)
         });
+
+        return <TResult>typedValue;
     }
 
-    decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [TypedValue, number] {
+    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): [TResult, number] {
         let type = typeDescriptor.getOutmostType();
 
         // Open types (generics) will require the scoped type descriptor as well.
         let scoped = typeDescriptor.scopeInto();
 
-        return onTypeSelect<[TypedValue, number]>(type, {
+        let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {
             onOptional: () => this.optionalCodec.decodeNested(buffer, scoped),
             onVector: () => this.vectorCodec.decodeNested(buffer, scoped),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
             onStructure: () => this.structureCodec.decodeNested(buffer, <StructureType>type)
         });
+
+        return [<TResult>typedResult, decodedLength];
     }
 
     encodeNested(typedValue: any): Buffer {

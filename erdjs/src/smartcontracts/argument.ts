@@ -1,8 +1,7 @@
 import { Buffer } from "buffer";
 import { Address } from "../address";
 
-// TODO: signed number
-// TODO: signed big int
+// TODO: use types & codecs
 
 /**
  * The Argument abstraction allows one to prepare arguments for Smart Contract calls (and deployments).
@@ -75,6 +74,7 @@ export class Argument {
     /**
      * Creates an Argument object, as a missing optional argument.
      */
+    // TODO: use types & codecs
     static missingOptional(): Argument {
         return new Argument("");
     }
@@ -82,6 +82,7 @@ export class Argument {
     /**
      * Creates an Argument object, as a provided optional argument.
      */
+    // TODO: use types & codecs
     static providedOptional(arg: Argument): Argument {
         // TODO: FIX! Won't work (size unknown).
         return new Argument(`01${arg.value}`);
