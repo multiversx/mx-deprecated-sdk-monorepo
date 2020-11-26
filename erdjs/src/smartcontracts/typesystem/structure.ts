@@ -22,6 +22,8 @@ export class Structure extends TypedValue {
         // TODO: Also check fields against structure definition.
     }
 
+    // TODO: setField(), convenience method.
+
     getFields(): ReadonlyArray<StructureField> {
         return this.fields;
     }

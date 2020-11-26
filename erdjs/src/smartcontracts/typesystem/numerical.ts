@@ -172,3 +172,63 @@ export class NumericalValue extends PrimitiveValue {
         return this.type;
     }
 }
+
+export class U8Value extends NumericalValue {
+    constructor(value: number | bigint) {
+        super(BigInt(value), U8Type.One);
+    }
+}
+
+export class I8Value extends NumericalValue {
+    constructor(value: number | bigint) {
+        super(BigInt(value), I8Type.One);
+    }
+}
+
+export class U16Value extends NumericalValue {
+    constructor(value: number | bigint) {
+        super(BigInt(value), U16Type.One);
+    }
+}
+
+export class I16Value extends NumericalValue {
+    constructor(value: number | bigint) {
+        super(BigInt(value), I16Type.One);
+    }
+}
+
+export class U32Value extends NumericalValue {
+    constructor(value: number | bigint) {
+        super(BigInt(value), U32Type.One);
+    }
+}
+
+export class I32Value extends NumericalValue {
+    constructor(value: number | bigint) {
+        super(BigInt(value), I32Type.One);
+    }
+}
+
+export class U64Value extends NumericalValue {
+    constructor(value: bigint) {
+        super(value, U64Type.One);
+    }
+}
+
+export class I64Value extends NumericalValue {
+    constructor(value: bigint) {
+        super(value, I64Type.One);
+    }
+}
+
+export class BigUIntValue extends NumericalValue {
+    constructor(value: bigint) {
+        super(value, BigUIntType.One);
+    }
+}
+
+export class BigIntValue extends NumericalValue {
+    constructor(value: bigint) {
+        super(value, BigIntType.One);
+    }
+}

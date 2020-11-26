@@ -17,7 +17,6 @@ BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 4 })
  * Balance, as an immutable object.
  */
 export class Balance {
-    // TODO: use "valueOf()"
     readonly value: bigint = BigInt(0);
 
     /**
@@ -79,5 +78,9 @@ export class Balance {
             value: this.raw(),
             formatted: this.formatted()
         };
+    }
+
+    valueOf(): bigint {
+        return this.value;
     }
 }

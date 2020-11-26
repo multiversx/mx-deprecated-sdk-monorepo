@@ -1,7 +1,7 @@
 import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
-import { AddressType, AddressValue, BigIntType, BigUIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, TypesRegistry, U16Type, U32Type, U64Type, U8Type, Vector, VectorType } from "../typesystem";
+import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, TypesRegistry, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
@@ -117,7 +117,7 @@ describe("test binary codec (advanced)", () => {
         let items: TypedValue[] = [];
 
         for (let i = 0; i < numItems; i++) {
-            items.push(new NumericalValue(BigInt(i), U32Type.One));
+            items.push(new U32Value(i));
         }
 
         let vector = new Vector(items);
@@ -152,14 +152,14 @@ describe("test binary codec (advanced)", () => {
 
         let fooType = new StructureType(fooDefinition);
         let fooStructure = new Structure(fooType, [
-            new StructureField(new NumericalValue(BigInt(Balance.eGLD(10).value), BigUIntType.One), "ticket_price"),
-            new StructureField(new NumericalValue(BigInt(0), U32Type.One), "tickets_left"),
-            new StructureField(new NumericalValue(BigInt("0x000000005fc2b9db"), U64Type.One), "deadline"),
-            new StructureField(new NumericalValue(BigInt(0xffffffff), U32Type.One), "max_entries_per_user"),
-            new StructureField(new Vector([new NumericalValue(BigInt(0x64), U8Type.One)]), "prize_distribution"),
+            new StructureField(new BigUIntValue(Balance.eGLD(10).valueOf()), "ticket_price"),
+            new StructureField(new U32Value(0), "tickets_left"),
+            new StructureField(new U64Value(BigInt("0x000000005fc2b9db")), "deadline"),
+            new StructureField(new U32Value(0xffffffff), "max_entries_per_user"),
+            new StructureField(new Vector([new U8Value(0x64)]), "prize_distribution"),
             new StructureField(new Vector([]), "whitelist"),
-            new StructureField(new NumericalValue(BigInt(9472), U32Type.One), "current_ticket_number"),
-            new StructureField(new NumericalValue(BigInt("94720000000000000000000"), BigUIntType.One), "prize_pool")
+            new StructureField(new U32Value(9472), "current_ticket_number"),
+            new StructureField(new BigUIntValue(BigInt("94720000000000000000000")), "prize_pool")
         ]);
 
         let encodedExpected = serialized("[00000008|8ac7230489e80000] [00000000] [000000005fc2b9db] [ffffffff] [00000001|64] [00000000] [00002500] [0000000a|140ec80fa7ee88000000]");
