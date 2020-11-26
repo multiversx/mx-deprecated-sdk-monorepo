@@ -32,12 +32,12 @@ export class Structure extends TypedValue {
 }
 
 export class StructureField {
-    readonly name: string;
     readonly value: TypedValue;
+    readonly name: string;
 
-    constructor(name: string, value: TypedValue) {
-        this.name = name;
+    constructor(value: TypedValue, name: string = "") {
         this.value = value;
+        this.name = name;
     }
 }
 
