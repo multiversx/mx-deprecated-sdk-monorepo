@@ -37,7 +37,7 @@ export class Query {
         let request: any = {
             "ScAddress": this.address.bech32(),
             "FuncName": this.func.toString(),
-            "Args": this.args.map(arg => arg.value),
+            "Args": this.args.map(arg => arg.valueOf()),
             "CallValue": this.value.raw()
         };
 

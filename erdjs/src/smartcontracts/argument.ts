@@ -1,24 +1,29 @@
 import { Buffer } from "buffer";
 import { Address } from "../address";
-
-// TODO: use types & codecs
+import { BinaryCodec } from "./codec";
+import { OptionalValue, TypedValue } from "./typesystem";
 
 /**
  * The Argument abstraction allows one to prepare arguments for Smart Contract calls (and deployments).
  */
 export class Argument {
     /**
-     * The actual value of the argument (as a hex-encoded string).
+     * For the moment, this is the only codec used.
      */
-    public readonly value: string = "";
+    private static codec = new BinaryCodec();
+
+    /**
+     * The actual value of the argument, to be passed to the Protocol (as a hex-encoded string).
+     */
+    private readonly hexEncoded: string = "";
 
     /**
      * Creates an Argument object from the actual value (hex-encoded).
      * 
-     * @param argumentValue The actual value of the argument
+     * @param hexEncoded The actual value of the argument
      */
-    private constructor(argumentValue: string) {
-        this.value = Argument.ensureEvenLength(argumentValue);
+    private constructor(hexEncoded: string) {
+        this.hexEncoded = Argument.ensureEvenLength(hexEncoded);
     }
 
     private static ensureEvenLength(argument: string): string {
@@ -74,18 +79,25 @@ export class Argument {
     /**
      * Creates an Argument object, as a missing optional argument.
      */
-    // TODO: use types & codecs
     static missingOptional(): Argument {
-        return new Argument("");
+        return Argument.typed(new OptionalValue());
     }
 
     /**
      * Creates an Argument object, as a provided optional argument.
      */
-    // TODO: use types & codecs
-    static providedOptional(arg: Argument): Argument {
-        // TODO: FIX! Won't work (size unknown).
-        return new Argument(`01${arg.value}`);
+    static providedOptional(typedValue: TypedValue): Argument {
+        return Argument.typed(typedValue);
+    }
+
+    static typed(typedValue: TypedValue): Argument {
+        let buffer = Argument.codec.encodeTopLevel(typedValue);
+        let hexEncoded = buffer.toString("hex");
+        return new Argument(hexEncoded);
+    }
+
+    valueOf(): string {
+        return this.hexEncoded;
     }
 }
 
@@ -109,7 +121,7 @@ export function appendArguments(to: string, args: Argument[]): string {
     }
 
     args.forEach(arg => {
-        to += "@" + arg.value;
+        to += "@" + arg.valueOf();
     });
 
     return to;

@@ -11,6 +11,7 @@ import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
 import { Balance } from "../balance";
+import { OptionalValue, U32Value } from "./typesystem";
 
 describeOnlyIf("localTestnet")("test on local testnet", function () {
     this.timeout(50000);
@@ -242,7 +243,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
                 Argument.bigInt(Balance.eGLD(1).value),
                 Argument.missingOptional(),
                 Argument.missingOptional(),
-                Argument.providedOptional(Argument.number(1)),
+                Argument.providedOptional(new U32Value(1)),
                 Argument.missingOptional(),
                 Argument.missingOptional()
             ]
