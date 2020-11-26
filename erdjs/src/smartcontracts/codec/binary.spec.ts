@@ -85,41 +85,28 @@ describe("test binary codec (basic)", () => {
 describe("test binary codec (advanced)", () => {
     let codec = new BinaryCodec();
 
-    it("should deserialize struct", async () => {
-        let lotterInfoDefinition = new StructureDefinition(
-            "LotteryInfo",
+        let fooDefinition = new StructureDefinition(
+            "Foo",
             [
                 new StructureFieldDefinition("ticket_price", "", ["BigUInt"]),
                 new StructureFieldDefinition("tickets_left", "", ["U32"]),
                 new StructureFieldDefinition("deadline", "", ["U64"]),
                 new StructureFieldDefinition("max_entries_per_user", "", ["U32"]),
-                new StructureFieldDefinition("prize_distribution", "", ["Vector", "U32"]),
+                new StructureFieldDefinition("prize_distribution", "", ["Vector", "U8"]),
                 new StructureFieldDefinition("whitelist", "", ["Vector", "Address"]),
                 new StructureFieldDefinition("current_ticket_number", "", ["U32"]),
                 new StructureFieldDefinition("prize_pool", "", ["BigUInt"])
             ]
         );
 
-        let lotterInfoType = new StructureType(lotterInfoDefinition);
-        //TypesRegistry.registerType(lotterInfoType);
-
-        // // TODO: this is user defined...
-        // class Foo {
-        //     ticket_price: BigInt = BigInt(0);
-        //     tickets_left: number = 0;
-        //     deadline: BigInt = BigInt(0);
-        //     max_entries_per_user: number = 0;
-        //     prize_distribution: number[] = [];
-        //     whitelist: Address[] = [];
-        //     current_ticket_number: number = 0;
-        //     prize_pool: BigInt = BigInt(0);
-        // }
-
-        //let foo = new Foo();
-
+        let fooType = new StructureType(fooDefinition);
         let data = serialized("[00000008|8ac7230489e80000] [00000000] [000000005fc2b9db] [ffffffff] [00000001|64] [00000000] [00002500] [0000000a|140ec80fa7ee88000000]");
-        codec.decodeNested(data, new TypeDescriptor([lotterInfoType]));
+        let [decoded, decodedLength] = codec.decodeNested(data, new TypeDescriptor([fooType]));
+        assert.equal(decodedLength, data.length);
 
+
+        console.log(decoded);
+        // todo: unwrap all values etc.
         // assert.deepEqual(foo, {
         //     ticket_price: BigInt("10000000000000000000"),
         //     tickets_left: 0,
