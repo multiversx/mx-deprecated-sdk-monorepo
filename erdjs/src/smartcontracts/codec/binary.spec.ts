@@ -1,7 +1,7 @@
 import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec } from "./binary";
-import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, StructureDefinition, StructureFieldDefinition, StructureType, TypeDescriptor, TypesRegistry, U16Type, U8Type } from "../typesystem";
+import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, StructureDefinition, StructureFieldDefinition, StructureType, TypeDescriptor, TypesRegistry, U16Type, U64Type, U8Type } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
 
 describe("test binary codec (basic)", () => {
@@ -35,6 +35,7 @@ describe("test binary codec (basic)", () => {
 
         check(BigInt(42), U8Type.One, [0x2A], [0x2A]);
         check(BigInt(42), U16Type.One, [0x00, 0x2A], [0x2A]);
+        check(BigInt(42), U64Type.One, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A], [0x2A]);
         check(BigInt(-10), I8Type.One, [0xF6], [0xF6]);
         check(BigInt(-10), I16Type.One, [0xFF, 0xF6], [0xF6]);
 
@@ -91,7 +92,7 @@ describe("test binary codec (advanced)", () => {
                 new StructureFieldDefinition("ticket_price", "", ["BigUInt"]),
                 new StructureFieldDefinition("tickets_left", "", ["U32"]),
                 new StructureFieldDefinition("deadline", "", ["U64"]),
-                new StructureFieldDefinition("max_entries_per_user", "", ["U8"]),
+                new StructureFieldDefinition("max_entries_per_user", "", ["U32"]),
                 new StructureFieldDefinition("prize_distribution", "", ["Vector", "U32"]),
                 new StructureFieldDefinition("whitelist", "", ["Vector", "Address"]),
                 new StructureFieldDefinition("current_ticket_number", "", ["U32"]),
