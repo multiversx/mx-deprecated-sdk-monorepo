@@ -355,15 +355,6 @@ export class ErrSerialization extends Err {
 }
 
 /**
- * Signals a generic serialization error.
- */
-export class ErrSerializationCannotRead extends ErrSerialization {
-    public constructor(message: string) {
-        super(message);
-    }
-}
-
-/**
  * Signals a generic type error.
  */
 export class ErrTypingSystem extends Err {
