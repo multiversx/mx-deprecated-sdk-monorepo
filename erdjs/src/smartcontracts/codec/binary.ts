@@ -1,3 +1,4 @@
+import * as errors from "../../errors";
 import { FunctionDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
 import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
@@ -6,12 +7,14 @@ import { VectorBinaryCodec } from "./vector";
 import { StructureBinaryCodec } from "./structure";
 
 export class BinaryCodec {
+    readonly constraints: BinaryCodecConstraints;
     private readonly optionalCodec: OptionalValueBinaryCodec;
     private readonly vectorCodec: VectorBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
     private readonly structureCodec: StructureBinaryCodec;
     
-    constructor() {
+    constructor(constraints: BinaryCodecConstraints | null = null) {
+        this.constraints = constraints || new BinaryCodecConstraints();
         this.optionalCodec = new OptionalValueBinaryCodec(this);
         this.vectorCodec = new VectorBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
@@ -38,8 +41,9 @@ export class BinaryCodec {
     }
 
     decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): TResult {
-        let type = typeDescriptor.getOutmostType();
+        this.constraints.checkBufferLength(buffer);
 
+        let type = typeDescriptor.getOutmostType();
         // Open types (generics) will require the scoped type descriptor as well.
         let scoped = typeDescriptor.scopeInto();
 
@@ -54,8 +58,9 @@ export class BinaryCodec {
     }
 
     decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): [TResult, number] {
-        let type = typeDescriptor.getOutmostType();
+        this.constraints.checkBufferLength(buffer);
 
+        let type = typeDescriptor.getOutmostType();
         // Open types (generics) will require the scoped type descriptor as well.
         let scoped = typeDescriptor.scopeInto();
 
@@ -85,5 +90,25 @@ export class BinaryCodec {
             onVector: () => this.vectorCodec.encodeTopLevel(typedValue),
             onStructure: () => Buffer.alloc(0), // TODO!
         });
+    }
+}
+
+export class BinaryCodecConstraints {
+    maxBufferLength: number = 4096;
+    maxVectorLength: number = 1024;
+
+    checkBufferLength(buffer: Buffer) {
+        if (buffer.length > this.maxBufferLength) {
+            throw new errors.ErrCodec(`Buffer too large: ${buffer.length} > ${this.maxBufferLength}`);
+        }
+    }
+
+    /**
+     * This constraint avoids computer-freezing decode bugs (e.g. due to invalid ABI or structure definitions).
+     */
+    checkVectorLength(length: number) {
+        if (length > this.maxVectorLength) {
+            throw new errors.ErrCodec(`Vector too large: ${length} > ${this.maxVectorLength}`);
+        }
     }
 }

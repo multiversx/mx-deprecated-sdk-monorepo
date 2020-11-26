@@ -15,11 +15,10 @@ export class VectorBinaryCodec {
     decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [Vector, number] {
         let result: TypedValue[] = [];
         let numItems = buffer.readUInt32BE();
-        
+        this.parentCodec.constraints.checkVectorLength(numItems);
+
         let originalBuffer = buffer;
         let offset = 4;
-
-        buffer = buffer.slice(offset);
 
         buffer = originalBuffer.slice(offset);
 
@@ -48,16 +47,20 @@ export class VectorBinaryCodec {
             result.push(decoded);
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);
+
+            this.parentCodec.constraints.checkVectorLength(result.length);
         }
 
         return new Vector(result);
     }
 
     encodeNested(_: Vector): Buffer {
+        //TODO
         throw new Error("Method not implemented.");
     }
 
     encodeTopLevel(_: Vector): Buffer {
+        //TODO
         throw new Error("Method not implemented.");
     }
 }
