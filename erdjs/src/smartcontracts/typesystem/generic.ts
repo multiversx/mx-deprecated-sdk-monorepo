@@ -34,11 +34,19 @@ export class OptionalValue extends TypedValue {
 }
 
 export class Vector extends TypedValue {
-    private readonly values: TypedValue[];
+    private readonly items: TypedValue[];
 
-    constructor(values: TypedValue[]) {
+    constructor(items: TypedValue[]) {
         super();
-        this.values = values;
+        this.items = items;
+    }
+
+    getLength(): number {
+        return this.items.length;
+    }
+
+    getItems(): ReadonlyArray<TypedValue> {
+        return this.items;
     }
 
     getType(): Type {

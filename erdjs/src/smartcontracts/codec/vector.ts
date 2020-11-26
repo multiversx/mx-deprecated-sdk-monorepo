@@ -54,13 +54,31 @@ export class VectorBinaryCodec {
         return new Vector(result);
     }
 
-    encodeNested(_: Vector): Buffer {
-        //TODO
-        throw new Error("Method not implemented.");
+    encodeNested(vector: Vector): Buffer {
+        let length = vector.getLength();
+        let lengthBuffer = Buffer.alloc(4);
+        lengthBuffer.writeUInt32BE(length);
+
+        let itemsBuffers: Buffer[] = [];
+
+        for (const item of vector.getItems()) {
+            let itemBuffer = this.parentCodec.encodeNested(item);
+            itemsBuffers.push(itemBuffer);
+        }
+
+        let buffer = Buffer.concat([lengthBuffer, ...itemsBuffers]);
+        return buffer;
     }
 
-    encodeTopLevel(_: Vector): Buffer {
-        //TODO
-        throw new Error("Method not implemented.");
+    encodeTopLevel(vector: Vector): Buffer {
+        let itemsBuffers: Buffer[] = [];
+
+        for (const item of vector.getItems()) {
+            let itemBuffer = this.parentCodec.encodeNested(item);
+            itemsBuffers.push(itemBuffer);
+        }
+
+        let buffer = Buffer.concat(itemsBuffers);
+        return buffer;
     }
 }
