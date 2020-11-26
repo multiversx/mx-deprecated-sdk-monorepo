@@ -29,13 +29,13 @@ export class AddressBinaryCodec {
      * Encodes an AddressValue to a buffer.
      */
     encodeNested(primitive: AddressValue): Buffer {
-        return primitive.getValue().pubkey();
+        return primitive.valueOf().pubkey();
     }
 
     /**
      * Encodes an AddressValue to a buffer.
      */
     encodeTopLevel(primitive: AddressValue): Buffer {
-        return primitive.getValue().pubkey();
+        return primitive.valueOf().pubkey();
     }
 }

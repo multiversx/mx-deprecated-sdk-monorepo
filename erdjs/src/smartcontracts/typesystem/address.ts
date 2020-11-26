@@ -8,10 +8,6 @@ export class AddressType extends PrimitiveType {
     private constructor() {
         super("Address");
     }
-
-    canConvertTo(jsType: string): boolean {
-        return jsType == "string" || jsType == "Address" || jsType == "Buffer";
-    }
 }
 
 /**
@@ -34,26 +30,8 @@ export class AddressValue extends PrimitiveValue {
         return this.value.equals(other.value);
     }
 
-    getValue(): Address {
+    valueOf(): Address {
         return this.value;
-    }
-
-    convertTo(jsType: string): any {
-        AddressType.One.assertCanConvertTo(jsType);
-
-        if (jsType == "string") {
-            return this.value.bech32();
-        }
-
-        if (jsType == "Address") {
-            return this.value;
-        }
-
-        if (jsType == "Buffer") {
-            return this.value.pubkey();
-        }
-
-        throw new errors.ErrBadTypeConversion(this, jsType);
     }
 
     getType(): Type {

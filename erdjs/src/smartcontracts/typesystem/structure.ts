@@ -28,6 +28,34 @@ export class Structure extends TypedValue {
         return this.fields;
     }
 
+    valueOf(): any {
+        return {};
+    }
+
+    equals(other: Structure): boolean {
+        if (!this.type.equals(other.type)) {
+            return false;
+        }
+
+        let selfFields = this.getFields();
+        let otherFields = other.getFields();
+        
+        if (selfFields.length != otherFields.length) {
+            return false;
+        }
+
+        for (let i = 0; i < selfFields.length; i++) {
+            let selfField = selfFields[i];
+            let otherField = otherFields[i];
+
+            if (!selfField.equals(otherField)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     getType(): StructureType {
         return this.type;
     }
@@ -40,6 +68,10 @@ export class StructureField {
     constructor(value: TypedValue, name: string = "") {
         this.value = value;
         this.name = name;
+    }
+
+    equals(other: StructureField) {
+        return this.name == other.name && this.value.equals(other.value);
     }
 }
 

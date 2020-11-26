@@ -28,11 +28,20 @@ export class OptionalValue extends TypedValue {
         return this.value ? true : false;
     }
 
+    valueOf(): any {
+        return this.value ? this.value.valueOf() : null;
+    }
+
+    equals(other: OptionalValue): boolean {
+        return this.value?.equals(other.value) || false;
+    }
+
     getType(): Type {
         return OptionalType.One;
     }
 }
 
+// TODO: make generic (in TypeScript's sense) or check homogenity.
 export class Vector extends TypedValue {
     private readonly items: TypedValue[];
 
@@ -47,6 +56,27 @@ export class Vector extends TypedValue {
 
     getItems(): ReadonlyArray<TypedValue> {
         return this.items;
+    }
+
+    valueOf(): any[] {
+        return this.items.map(item => item.valueOf());
+    }
+
+    equals(other: Vector): boolean {
+        if (this.getLength() != other.getLength()) {
+            return false;
+        }
+
+        for (let i = 0; i < this.getLength(); i++) {
+            let selfItem = this.items[i];
+            let otherItem = other.items[i];
+
+            if (!selfItem.equals(otherItem)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     getType(): Type {

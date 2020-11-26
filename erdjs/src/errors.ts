@@ -382,15 +382,6 @@ export class ErrUnknownType extends ErrTypingSystem {
 }
 
 /**
- * Signals a bad type-conversion.
- */
-export class ErrBadTypeConversion extends ErrTypingSystem {
-    public constructor(value: any, destinationTypeName: string) {
-        super(`Bad type-conversion: [${value}] to type ${destinationTypeName}`);
-    }
-}
-
-/**
  * Signals a generic codec (encode / decode) error.
  */
 export class ErrCodec extends Err {

@@ -6,10 +6,6 @@ export class BooleanType extends PrimitiveType {
     private constructor() {
         super("Boolean");
     }
-
-    canConvertTo(jsType: string): boolean {
-        return jsType == "boolean";
-    }
 }
 
 /**
@@ -40,13 +36,8 @@ export class BooleanValue extends PrimitiveValue {
         return !this.isTrue();
     }
 
-    getValue(): boolean {
+    valueOf(): boolean {
         return this.value;
-    }
-
-    convertTo(jsType: string): any {
-        BooleanType.One.assertCanConvertTo(jsType);
-        return this.getValue();
     }
 
     getType(): Type {

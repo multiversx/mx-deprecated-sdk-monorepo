@@ -18,10 +18,6 @@ export abstract class NumericalType extends PrimitiveType {
     hasArbitrarySize(): boolean {
         return !this.hasFixedSize();
     }
-
-    canConvertTo(jsType: string): boolean {
-        return jsType == "bigint" || (jsType == "number" && this.sizeInBytes < 8);
-    }
 }
 
 export class U8Type extends NumericalType {
@@ -138,34 +134,8 @@ export class NumericalValue extends PrimitiveValue {
         return this.value == other.value;
     }
 
-    /**
-     * Returns the inner value, as a JavaScript BigInt.
-     */
-    asBigInt(): bigint {
+    valueOf(): bigint {
         return this.value;
-    }
-
-    /**
-     * Returns the inner value, casted to a JavaScript Number object, if possible.
-     */
-    asNumber(): number {
-        this.type.assertCanConvertTo("number");
-        return Number(this.value);
-    }
-
-    getValue(): bigint {
-        return this.asBigInt();
-    }
-
-    convertTo(jsType: string): any {
-        this.type.assertCanConvertTo(jsType);
-
-        if (jsType == "bigint") {
-            return this.asBigInt();
-        }
-        if (jsType == "number") {
-            return this.asNumber();
-        }
     }
 
     getType(): Type {
