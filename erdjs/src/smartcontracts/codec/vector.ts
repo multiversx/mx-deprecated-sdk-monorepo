@@ -55,9 +55,10 @@ export class VectorBinaryCodec {
     }
 
     encodeNested(vector: Vector): Buffer {
-        let length = vector.getLength();
+        this.parentCodec.constraints.checkVectorLength(vector.getLength());
+
         let lengthBuffer = Buffer.alloc(4);
-        lengthBuffer.writeUInt32BE(length);
+        lengthBuffer.writeUInt32BE(vector.getLength());
 
         let itemsBuffers: Buffer[] = [];
 
@@ -71,6 +72,8 @@ export class VectorBinaryCodec {
     }
 
     encodeTopLevel(vector: Vector): Buffer {
+        this.parentCodec.constraints.checkVectorLength(vector.getLength());
+
         let itemsBuffers: Buffer[] = [];
 
         for (const item of vector.getItems()) {

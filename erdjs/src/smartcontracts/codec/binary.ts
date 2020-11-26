@@ -94,8 +94,13 @@ export class BinaryCodec {
 }
 
 export class BinaryCodecConstraints {
-    maxBufferLength: number = 4096;
-    maxVectorLength: number = 1024;
+    maxBufferLength: number;
+    maxVectorLength: number;
+
+    constructor(init?: Partial<BinaryCodecConstraints>) {
+        this.maxBufferLength = init?.maxBufferLength || 4096;
+        this.maxVectorLength = init?.maxVectorLength || 1024;
+    }
 
     checkBufferLength(buffer: Buffer) {
         if (buffer.length > this.maxBufferLength) {

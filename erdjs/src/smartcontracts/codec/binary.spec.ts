@@ -1,8 +1,9 @@
 import { describe } from "mocha";
 import { assert } from "chai";
-import { BinaryCodec } from "./binary";
-import { BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, StructureDefinition, StructureFieldDefinition, StructureType, TypeDescriptor, TypesRegistry, U16Type, U64Type, U8Type } from "../typesystem";
+import { BinaryCodec, BinaryCodecConstraints } from "./binary";
+import { AddressType, AddressValue, BigIntType, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, StructureDefinition, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, TypesRegistry, U16Type, U32Type, U64Type, U8Type, Vector, VectorType } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
+import { Address } from "../../address";
 
 describe("test binary codec (basic)", () => {
     let codec = new BinaryCodec();
@@ -83,8 +84,57 @@ describe("test binary codec (basic)", () => {
 });
 
 describe("test binary codec (advanced)", () => {
-    let codec = new BinaryCodec();
+    it("should encode / decode vectors", async () => {
+        let codec = new BinaryCodec();
+        let vector = new Vector([
+            new AddressValue(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th")),
+            new AddressValue(new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx")),
+            new AddressValue(new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8"))
+        ]);
 
+        let bufferNested = codec.encodeNested(vector);
+        let bufferTopLevel = codec.encodeTopLevel(vector);
+        assert.equal(bufferNested.length, 4 + vector.getLength() * 32);
+        assert.equal(bufferTopLevel.length, vector.getLength() * 32);
+
+        let [decodedNested, decodedNestedLength] = codec.decodeNested<Vector>(bufferNested, new TypeDescriptor([VectorType.One, AddressType.One]));
+        let decodedTopLevel = codec.decodeTopLevel<Vector>(bufferTopLevel, TypeDescriptor.createFromTypeNames(["Vector", "Address"]));
+        assert.equal(decodedNestedLength, bufferNested.length);
+        assert.equal(decodedNested.getLength(), 3);
+        assert.equal(decodedTopLevel.getLength(), 3);
+
+        assert.deepEqual(decodedNested, vector);
+        assert.deepEqual(decodedTopLevel, vector);
+    });
+
+    it("benchmark: should work well with large vectors", async () => {
+        let numItems = 2**16;
+        let codec = new BinaryCodec(new BinaryCodecConstraints({
+            maxVectorLength: numItems,
+            maxBufferLength: numItems * 4 + 4
+        }));
+        let items: TypedValue[] = [];
+
+        for (let i = 0; i < numItems; i++) {
+            items.push(new NumericalValue(BigInt(i), U32Type.One));
+        }
+
+        let vector = new Vector(items);
+
+        console.time("encoding");
+        let buffer = codec.encodeNested(vector);
+        console.timeEnd("encoding");
+        assert.equal(buffer.length, 4 + numItems * 4);
+
+        console.time("decoding");
+        let [decodedVector, decodedLength] = codec.decodeNested<Vector>(buffer, TypeDescriptor.createFromTypeNames(["Vector", "U32"]));
+        console.timeEnd("decoding");
+        assert.equal(decodedLength, buffer.length);
+        assert.deepEqual(decodedVector, vector);
+    });
+
+    it("should decode struct", async () => {
+        let codec = new BinaryCodec();
         let fooDefinition = new StructureDefinition(
             "Foo",
             [
