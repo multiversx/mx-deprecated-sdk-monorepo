@@ -79,7 +79,7 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
             onOptional: () => this.optionalCodec.encodeNested(typedValue),
             onVector: () => this.vectorCodec.encodeNested(typedValue),
-            onStructure: () => Buffer.alloc(0), // TODO!
+            onStructure: () => this.structureCodec.encodeNested(typedValue)
         });
     }
 
@@ -88,7 +88,7 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
             onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
             onVector: () => this.vectorCodec.encodeTopLevel(typedValue),
-            onStructure: () => Buffer.alloc(0), // TODO!
+            onStructure: () => this.structureCodec.encodeTopLevel(typedValue)
         });
     }
 }

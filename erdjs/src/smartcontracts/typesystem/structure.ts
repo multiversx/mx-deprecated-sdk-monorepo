@@ -12,16 +12,32 @@ export class StructureType extends Type {
 
 export class Structure extends TypedValue {
     private readonly type: StructureType;
+    private readonly fields: StructureField[] = [];
 
-    constructor(type: StructureType, init: any) {
+    constructor(type: StructureType, fields: StructureField[]) {
         super();
         this.type = type;
+        this.fields = fields;
 
-        Object.assign(this, init);
+        // TODO: Also check fields against structure definition.
+    }
+
+    getFields(): ReadonlyArray<StructureField> {
+        return this.fields;
     }
 
     getType(): StructureType {
         return this.type;
+    }
+}
+
+export class StructureField {
+    readonly name: string;
+    readonly value: TypedValue;
+
+    constructor(name: string, value: TypedValue) {
+        this.name = name;
+        this.value = value;
     }
 }
 
