@@ -87,7 +87,7 @@ export class Argument {
      * Creates an Argument object, as a provided optional argument.
      */
     static providedOptional(typedValue: TypedValue): Argument {
-        return Argument.typed(typedValue);
+        return Argument.typed(new OptionalValue(typedValue));
     }
 
     static typed(typedValue: TypedValue): Argument {
