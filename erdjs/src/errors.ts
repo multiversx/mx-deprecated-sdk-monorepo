@@ -373,6 +373,15 @@ export class ErrTypingSystem extends Err {
 }
 
 /**
+ * Signals a generic structure typing error.
+ */
+export class ErrStructureTyping extends Err {
+    public constructor(reason: string) {
+        super(`Incorrect structure typing: ${reason}`);
+    }
+}
+
+/**
  * Signals an unknown type.
  */
 export class ErrUnknownType extends ErrTypingSystem {

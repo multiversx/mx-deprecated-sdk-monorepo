@@ -1,3 +1,4 @@
+import * as errors from "../../errors";
 import { TypeDescriptor } from "./typeDescriptor";
 import { Type, TypedValue } from "./types";
 
@@ -10,26 +11,59 @@ export class StructureType extends Type {
     }
 }
 
+
+// TODO: implement setField(), convenience method.
+// TODO: Hold fields in a map (by name), and use the order within "field definitions" to perform codec operations.
 export class Structure extends TypedValue {
     private readonly type: StructureType;
     private readonly fields: StructureField[] = [];
 
+    /**
+     * Currently, one can only set fields at initialization time. Construction will be improved at a later time.
+     */
     constructor(type: StructureType, fields: StructureField[]) {
         super();
         this.type = type;
         this.fields = fields;
 
-        // TODO: Also check fields against structure definition.
+        this.checkTyping();
     }
 
-    // TODO: setField(), convenience method.
+    private checkTyping() {
+        let fields = this.fields;
+        let definitions = this.type.definition.fields;
+
+        if (fields.length != definitions.length) {
+            throw new errors.ErrStructureTyping("fields length vs. field definitions length");
+        }
+
+        for (let i = 0; i < fields.length; i++) {
+            let field = fields[i];
+            let definition = definitions[i];
+            let fieldType = field.value.getType();
+            let definitionType = definition.getTypeDescriptor().getOutmostType();
+
+            if (!fieldType.equals(definitionType)) {
+                throw new errors.ErrStructureTyping(`check type of field "${definition.name}"`);
+            }
+            if (field.name != definition.name) {
+                throw new errors.ErrStructureTyping(`check name of field "${definition.name}"`);
+            }
+        }
+    }
 
     getFields(): ReadonlyArray<StructureField> {
         return this.fields;
     }
 
     valueOf(): any {
-        return {};
+        let result: any = {};
+
+        for (const field of this.fields) {
+            result[field.name] = field.value.valueOf();
+        }
+
+        return result;
     }
 
     equals(other: Structure): boolean {
@@ -39,7 +73,7 @@ export class Structure extends TypedValue {
 
         let selfFields = this.getFields();
         let otherFields = other.getFields();
-        
+
         if (selfFields.length != otherFields.length) {
             return false;
         }

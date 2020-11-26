@@ -170,18 +170,17 @@ describe("test binary codec (advanced)", () => {
         assert.equal(decodedLength, encodedExpected.length);
         assert.deepEqual(decoded, fooStructure);
 
-        console.log(decoded);
-        // todo: unwrap all values etc.
-        // assert.deepEqual(foo, {
-        //     ticket_price: BigInt("10000000000000000000"),
-        //     tickets_left: 0,
-        //     deadline: BigInt("0x000000005fc2b9db"),
-        //     max_entries_per_user: parseInt("ffffffff", 16),
-        //     prize_distribution: [100],
-        //     whitelist: [],
-        //     current_ticket_number: 9472,
-        //     prize_pool: BigInt("94720000000000000000000")
-        // });
+        let plainFoo = decoded.valueOf();
+        assert.deepEqual(plainFoo, {
+            ticket_price: BigInt("10000000000000000000"),
+            tickets_left: BigInt(0),
+            deadline: BigInt("0x000000005fc2b9db"),
+            max_entries_per_user: BigInt(0xffffffff),
+            prize_distribution: [BigInt(100)],
+            whitelist: [],
+            current_ticket_number: BigInt(9472),
+            prize_pool: BigInt("94720000000000000000000")
+        });
     });
 });
 
