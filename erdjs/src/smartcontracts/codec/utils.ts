@@ -4,7 +4,7 @@
  * @param buffer the buffer to test
  * @param byteIndex the index of the byte to test
  */
-export function isMbsOne(buffer: Buffer, byteIndex: number = 0): boolean {
+export function isMsbOne(buffer: Buffer, byteIndex: number = 0): boolean {
     let byte = buffer[byteIndex];
     let bit = byte >> 7;
     let isSet = bit % 2 == 1;
@@ -16,8 +16,8 @@ export function isMbsOne(buffer: Buffer, byteIndex: number = 0): boolean {
  * @param buffer the buffer to test
  * @param byteIndex the index of the byte to test
  */
-export function isMbsZero(buffer: Buffer, byteIndex: number = 0): boolean {
-    return !isMbsOne(buffer, byteIndex);
+export function isMsbZero(buffer: Buffer, byteIndex: number = 0): boolean {
+    return !isMsbOne(buffer, byteIndex);
 }
 
 export function cloneBuffer(buffer: Buffer) {
@@ -75,13 +75,13 @@ export function prependByteToBuffer(buffer: Buffer, byte: number) {
  * @param buffer A number, represented as a sequence of bytes (big-endian)
  */
 export function discardSuperfluousBytesInTwosComplement(buffer: Buffer): Buffer {
-    let isNegative = isMbsOne(buffer, 0);
+    let isNegative = isMsbOne(buffer, 0);
     let signPadding: number = isNegative ? 0xFF : 0x00;
 
     let index;
     for (index = 0; index < buffer.length - 1; index++) {
         let isPaddingByte = buffer[index] == signPadding;
-        let hasSignBitOnNextByte = isMbsOne(buffer, index + 1) === isNegative;
+        let hasSignBitOnNextByte = isMsbOne(buffer, index + 1) === isNegative;
         if (isPaddingByte && hasSignBitOnNextByte) {
             continue;
         }

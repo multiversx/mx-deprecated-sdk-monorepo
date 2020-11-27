@@ -270,7 +270,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
                 Argument.utf8("foobar")
             ]
         });
-        assert.equal(true, queryResponse.firstResult().asBool);
+        assert.equal(queryResponse.firstResult().asBool, true);
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("lotteryExists"),
@@ -278,6 +278,6 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
                 Argument.utf8("missingLottery")
             ]
         });
-        assert.equal(false, queryResponse.firstResult().asBool);
+        assert.equal(queryResponse.firstResult().asBool, false);
     });
 });

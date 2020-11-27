@@ -41,7 +41,7 @@ export class OptionalValueBinaryCodec {
 
     encodeNested(optionalValue: OptionalValue): Buffer {
         if (optionalValue.isSet()) {
-            return Buffer.concat([Buffer.from([1]), this.parentCodec.encodeNested(optionalValue)]);
+            return Buffer.concat([Buffer.from([1]), this.parentCodec.encodeNested(optionalValue.getTypedValue())]);
         }
 
         return Buffer.from([0]);
@@ -49,7 +49,7 @@ export class OptionalValueBinaryCodec {
 
     encodeTopLevel(optionalValue: OptionalValue): Buffer {
         if (optionalValue.isSet()) {
-            return this.parentCodec.encodeNested(optionalValue);
+            return Buffer.concat([Buffer.from([1]), this.parentCodec.encodeNested(optionalValue.getTypedValue())]);
         }
 
         return Buffer.from([]);
