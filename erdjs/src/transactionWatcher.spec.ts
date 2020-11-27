@@ -2,7 +2,7 @@ import { describe } from "mocha";
 import { assert } from "chai";
 import { TransactionWatcher } from "./transactionWatcher";
 import { TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
-import { MockProvider, Wait } from "./testutils/mockProvider";
+import { MockProvider, Wait } from "./testutils";
 import { Nonce } from "./nonce";
 
 

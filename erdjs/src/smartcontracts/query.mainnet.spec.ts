@@ -2,7 +2,7 @@ import { describe } from "mocha";
 import { assert } from "chai";
 import { Address } from "../address";
 import { ContractFunction } from "./function";
-import { describeOnlyIf, getMainnetProvider } from "../testutils/utils";
+import { describeOnlyIf, getMainnetProvider } from "../testutils";
 import { SmartContract } from "./smartContract";
 import * as errors from "../errors";
 import { Argument } from "./argument";

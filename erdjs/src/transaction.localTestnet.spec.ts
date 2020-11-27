@@ -4,8 +4,8 @@ import { Account } from "./account";
 import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
-import { TestWallets } from "./testutils/wallets";
-import { describeOnlyIf, getLocalTestnetProvider } from "./testutils/utils";
+import { TestWallets } from "./testutils";
+import { describeOnlyIf, getLocalTestnetProvider } from "./testutils";
 import { Logger } from "./logger";
 import { assert } from "chai";
 

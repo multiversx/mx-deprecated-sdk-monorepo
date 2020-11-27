@@ -6,7 +6,7 @@ import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
-import { describeOnlyIf, getLocalTestnetProvider } from "../testutils/utils";
+import { describeOnlyIf, getLocalTestnetProvider } from "../testutils";
 import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";

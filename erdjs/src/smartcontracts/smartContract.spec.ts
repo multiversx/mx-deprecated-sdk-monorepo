@@ -5,12 +5,12 @@ import { Code } from "./code";
 import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
-import { MockProvider, Wait } from "../testutils/mockProvider";
+import { MockProvider, Wait } from "../testutils";
 import { TransactionStatus } from "../transaction";
 import { Argument } from "./argument";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
-import { TestWallets } from "../testutils/wallets";
+import { TestWallets } from "../testutils";
 import { TransactionWatcher } from "../transactionWatcher";
 
 
