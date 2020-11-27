@@ -17,7 +17,7 @@ describe("test contract payload builders", () => {
             .addInitArg(Argument.number(1024))
             .build();
 
-        assert.equal(payload.decoded(), "01020304@0500@0102@0400");
+        assert.equal(payload.valueOf().toString(), "01020304@0500@0102@0400");
     });
 
     it("should prepare upgrade correctly", async () => {
@@ -28,7 +28,7 @@ describe("test contract payload builders", () => {
             .addInitArg(Argument.number(1024))
             .build();
 
-        assert.equal(payload.decoded(), "upgradeContract@01020304@0102@0400");
+        assert.equal(payload.valueOf().toString(), "upgradeContract@01020304@0102@0400");
     });
 
     it("should prepare call correctly", async () => {
@@ -40,7 +40,7 @@ describe("test contract payload builders", () => {
             .addArg(Argument.number(1024))
             .build();
 
-        assert.equal(payload.decoded(), "transferToken@fd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293@0400");
+        assert.equal(payload.valueOf().toString(), "transferToken@fd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293@0400");
     });
 });
 

@@ -28,8 +28,8 @@ describeOnlyIf("mainnet")("test queries on mainnet", function () {
         assert.isTrue(response.isSuccess());
         assert.lengthOf(response.returnData, 1);
         assert.isAtLeast(response.firstResult().asNumber, 5000);
-        assert.isAtLeast(response.gasUsed.value, 25000000);
-        assert.isAtMost(response.gasUsed.value, 35000000);
+        assert.isAtLeast(response.gasUsed.valueOf(), 25000000);
+        assert.isAtMost(response.gasUsed.valueOf(), 35000000);
     });
 
     it("delegation: should getFullWaitingList", async () => {

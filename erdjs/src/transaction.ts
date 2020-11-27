@@ -143,15 +143,15 @@ export class Transaction implements ISignable {
      */
     toPlainObject(sender?: Address): any {
         let result: any = {
-            nonce: this.nonce.value,
+            nonce: this.nonce.valueOf(),
             value: this.value.raw(),
             receiver: this.receiver.bech32(),
             sender: sender ? sender.bech32() : this.sender.bech32(),
-            gasPrice: this.gasPrice.value,
-            gasLimit: this.gasLimit.value,
+            gasPrice: this.gasPrice.valueOf(),
+            gasLimit: this.gasLimit.valueOf(),
             data: this.data.isEmpty() ? undefined : this.data.encoded(),
-            chainID: this.chainID.value,
-            version: this.version.value,
+            chainID: this.chainID.valueOf(),
+            version: this.version.valueOf(),
             signature: this.signature.isEmpty() ? undefined : this.signature.hex()
         };
 
@@ -400,7 +400,7 @@ export class TransactionOnNetwork {
         result.sender = Address.fromBech32(payload["sender"]);
         result.receiver = Address.fromBech32(payload["receiver"]);
         result.gasPrice = new GasPrice(payload["gasPrice"]);
-        result.gasLimit = new GasPrice(payload["gasLimit"]);
+        result.gasLimit = new GasLimit(payload["gasLimit"]);
         result.data = TransactionPayload.fromEncoded(payload["data"]);
         result.status = new TransactionStatus(payload["status"]);
 

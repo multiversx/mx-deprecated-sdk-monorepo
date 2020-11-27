@@ -7,7 +7,7 @@ export class Nonce {
     /**
      * The actual numeric value.
      */
-    value: number;
+    private readonly value: number;
 
     /**
      * Creates a Nonce object given a value.
@@ -27,5 +27,9 @@ export class Nonce {
      */
     increment(): Nonce {
         return new Nonce(this.value + 1);
+    }
+
+    valueOf(): number {
+        return this.value;
     }
 }

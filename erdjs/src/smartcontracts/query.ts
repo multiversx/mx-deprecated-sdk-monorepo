@@ -102,7 +102,7 @@ export class QueryResponse {
             returnData: this.returnData,
             returnCode: this.returnCode,
             returnMessage: this.returnMessage,
-            gasUsed: this.gasUsed.value
+            gasUsed: this.gasUsed.valueOf()
         };
     }
 }
