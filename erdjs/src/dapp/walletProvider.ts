@@ -187,9 +187,7 @@ export class WalletProvider implements IDappProvider {
             contentWindow.postMessage({
                 type: DAPP_MESSAGE_SEND_TRANSACTION_URL,
                 data: {
-                    transaction: {
-                        transaction
-                    }
+                    transaction
                 }
             }, this.walletUrl);
 
