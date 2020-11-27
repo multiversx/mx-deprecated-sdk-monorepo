@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "test": "mocha",
-    "test-local-testnet": "localTestnet=1 mocha",
+    "test-devnet": "localTestnet=1 mocha",
     "test-testnet": "testnet=1 mocha",
     "test-mainnet": "mainnet=1 mocha",
     "compile-browser": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.js --standalone erdjs --exclude=**/backendSigner.js",
