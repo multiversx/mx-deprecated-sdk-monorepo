@@ -17,7 +17,7 @@ BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 4 })
  * Balance, as an immutable object.
  */
 export class Balance {
-    readonly value: bigint = BigInt(0);
+    private readonly value: bigint = BigInt(0);
 
     /**
      * Creates a Balance object.

@@ -240,7 +240,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
             gasLimit: new GasLimit(50000000),
             args: [
                 Argument.utf8("foobar"), 
-                Argument.bigInt(Balance.eGLD(1).value),
+                Argument.bigInt(Balance.eGLD(1).valueOf()),
                 Argument.missingOptional(),
                 Argument.missingOptional(),
                 Argument.providedOptional(new U32Value(1)),

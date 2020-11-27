@@ -54,7 +54,7 @@ describeOnlyIf("localTestnet")("test transaction", function () {
         await bob.sync(localTestnet);
         let newBalanceOfBob = bob.balance;
 
-        assert.equal(Balance.eGLD(85).value, newBalanceOfBob.value - initialBalanceOfBob.value);
+        assert.equal(Balance.eGLD(85).valueOf(), newBalanceOfBob.valueOf() - initialBalanceOfBob.valueOf());
     });
 
     it("should simulate transactions", async () => {
