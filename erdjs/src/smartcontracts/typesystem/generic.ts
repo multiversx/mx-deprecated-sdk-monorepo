@@ -1,3 +1,4 @@
+import { guardValueIsSet } from "../../utils";
 import { isTyped, Type, TypedValue } from "./types";
 
 export class OptionalType extends Type {
@@ -26,6 +27,11 @@ export class OptionalValue extends TypedValue {
 
     isSet(): boolean {
         return this.value ? true : false;
+    }
+
+    getTypedValue(): TypedValue {
+        guardValueIsSet("value", this.value);
+        return this.value!;
     }
 
     valueOf(): any {

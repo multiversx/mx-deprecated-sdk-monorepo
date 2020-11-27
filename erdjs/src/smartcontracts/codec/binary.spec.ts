@@ -2,7 +2,7 @@ import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
 import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, TypesRegistry, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
-import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMbsOne } from "./utils";
+import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMsbOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
 
@@ -191,40 +191,40 @@ function serialized(prettyHex: string): Buffer {
 }
 
 describe("test codec utilities", () => {
-    it("should check whether isMbsOne", async () => {
-        assert.isTrue(isMbsOne(Buffer.from([0xFF]), 0));
-        assert.isTrue(isMbsOne(Buffer.from([0x00, 0xFF]), 1));
-        assert.isTrue(isMbsOne(Buffer.from([0x00, 0xFF, 0xFF]), 2));
+    it("should check whether isMsbOne", async () => {
+        assert.isTrue(isMsbOne(Buffer.from([0xFF]), 0));
+        assert.isTrue(isMsbOne(Buffer.from([0x00, 0xFF]), 1));
+        assert.isTrue(isMsbOne(Buffer.from([0x00, 0xFF, 0xFF]), 2));
 
-        assert.isFalse(isMbsOne(Buffer.from([1])));
-        assert.isFalse(isMbsOne(Buffer.from([2])));
-        assert.isFalse(isMbsOne(Buffer.from([3])));
-        assert.isFalse(isMbsOne(Buffer.from([127])));
-        assert.isTrue(isMbsOne(Buffer.from([128])));
-        assert.isTrue(isMbsOne(Buffer.from([255])));
+        assert.isFalse(isMsbOne(Buffer.from([1])));
+        assert.isFalse(isMsbOne(Buffer.from([2])));
+        assert.isFalse(isMsbOne(Buffer.from([3])));
+        assert.isFalse(isMsbOne(Buffer.from([127])));
+        assert.isTrue(isMsbOne(Buffer.from([128])));
+        assert.isTrue(isMsbOne(Buffer.from([255])));
 
-        assert.isTrue(isMbsOne(Buffer.from([0b10001000]), 0));
-        assert.isFalse(isMbsOne(Buffer.from([0b01001000]), 0));
-        assert.isTrue(isMbsOne(Buffer.from([0b00000000, 0b10000000]), 1));
-        assert.isFalse(isMbsOne(Buffer.from([0b00000000, 0b01000000]), 1));
+        assert.isTrue(isMsbOne(Buffer.from([0b10001000]), 0));
+        assert.isFalse(isMsbOne(Buffer.from([0b01001000]), 0));
+        assert.isTrue(isMsbOne(Buffer.from([0b00000000, 0b10000000]), 1));
+        assert.isFalse(isMsbOne(Buffer.from([0b00000000, 0b01000000]), 1));
 
         let buffer: Buffer;
 
         buffer = Buffer.alloc(2);
         buffer.writeUInt16BE(65535);
-        assert.isTrue(isMbsOne(buffer));
+        assert.isTrue(isMsbOne(buffer));
         buffer.writeInt16BE(-32768);
-        assert.isTrue(isMbsOne(buffer));
+        assert.isTrue(isMsbOne(buffer));
         buffer.writeInt16BE(32767);
-        assert.isFalse(isMbsOne(buffer));
+        assert.isFalse(isMsbOne(buffer));
 
         buffer = Buffer.alloc(8);
         buffer.writeBigUInt64BE(BigInt("18446744073709551615"));
-        assert.isTrue(isMbsOne(buffer));
+        assert.isTrue(isMsbOne(buffer));
         buffer.writeBigInt64BE(BigInt("-9223372036854775808"));
-        assert.isTrue(isMbsOne(buffer));
+        assert.isTrue(isMsbOne(buffer));
         buffer.writeBigInt64BE(BigInt("9223372036854775807"));
-        assert.isFalse(isMbsOne(buffer));
+        assert.isFalse(isMsbOne(buffer));
     });
 
     it("should discardSuperfluousZeroBytes", async () => {

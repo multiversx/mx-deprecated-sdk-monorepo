@@ -1,5 +1,5 @@
 import { NumericalType, NumericalValue } from "../typesystem";
-import { isMbsZero, isMbsOne, bigIntToBuffer, bufferToBigInt, cloneBuffer, flipBufferBitsInPlace, prependByteToBuffer } from "./utils";
+import { isMsbZero, isMsbOne, bigIntToBuffer, bufferToBigInt, cloneBuffer, flipBufferBitsInPlace, prependByteToBuffer } from "./utils";
 
 export class NumericalBinaryCoded {
     /**
@@ -41,7 +41,7 @@ export class NumericalBinaryCoded {
             return new NumericalValue(BigInt(0), type);
         }
 
-        let isNotNegative = !type.withSign || isMbsZero(payload);
+        let isNotNegative = !type.withSign || isMsbZero(payload);
         if (isNotNegative) {
             let value = bufferToBigInt(payload);
             return new NumericalValue(value, type);
@@ -106,7 +106,7 @@ export class NumericalBinaryCoded {
             let buffer = bigIntToBuffer(primitive.value);
 
             // Fix ambiguity if any
-            if (isMbsOne(buffer)) {
+            if (isMsbOne(buffer)) {
                 buffer = prependByteToBuffer(buffer, 0x00);
             }
 
@@ -120,7 +120,7 @@ export class NumericalBinaryCoded {
         flipBufferBitsInPlace(buffer);
 
         // Fix ambiguity if any
-        if (isMbsZero(buffer)) {
+        if (isMsbZero(buffer)) {
             buffer = prependByteToBuffer(buffer, 0xFF);
         }
 
