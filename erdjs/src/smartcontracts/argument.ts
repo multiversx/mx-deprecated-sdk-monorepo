@@ -33,7 +33,7 @@ export class Argument {
     /**
      * Creates an Argument object given a buffer (a sequence of bytes).
      */
-    static bytes(buffer: Buffer): Argument {
+    static fromBytes(buffer: Buffer): Argument {
         let hex = buffer.toString("hex");
         return new Argument(hex);
     }
@@ -41,14 +41,14 @@ export class Argument {
     /**
      * Creates an Argument object from a number.
      */
-    static number(value: number): Argument {
-        return Argument.bigInt(BigInt(value));
+    static fromNumber(value: number): Argument {
+        return Argument.fromBigInt(BigInt(value));
     }
 
     /**
      * Creates an Argument object from a big integer.
      */
-    static bigInt(value: BigInt): Argument {
+    static fromBigInt(value: BigInt): Argument {
         let hex = value.toString(16);
         return new Argument(hex);
     }
@@ -56,14 +56,14 @@ export class Argument {
     /**
      * Creates an Argument object from an already-encoded hex string.
      */
-    static hex(value: string): Argument {
+    static fromHex(value: string): Argument {
         return new Argument(value);
     }
 
     /**
      * Creates an Argument object from a utf-8 string.
      */
-    static utf8(value: string): Argument {
+    static fromUTF8(value: string): Argument {
         let buffer = Buffer.from(value, "utf-8");
         let hex = buffer.toString("hex");
         return new Argument(hex);
@@ -72,25 +72,25 @@ export class Argument {
     /**
      * Creates an Argument object, as the pubkey of an {@link Address}.
      */
-    static pubkey(value: Address): Argument {
+    static fromPubkey(value: Address): Argument {
         return new Argument(value.hex());
     }
 
     /**
      * Creates an Argument object, as a missing optional argument.
      */
-    static missingOptional(): Argument {
-        return Argument.typed(new OptionalValue());
+    static fromMissingOptional(): Argument {
+        return Argument.fromTypedValue(new OptionalValue());
     }
 
     /**
      * Creates an Argument object, as a provided optional argument.
      */
-    static providedOptional(typedValue: TypedValue): Argument {
-        return Argument.typed(new OptionalValue(typedValue));
+    static fromProvidedOptional(typedValue: TypedValue): Argument {
+        return Argument.fromTypedValue(new OptionalValue(typedValue));
     }
 
-    static typed(typedValue: TypedValue): Argument {
+    static fromTypedValue(typedValue: TypedValue): Argument {
         let buffer = Argument.codec.encodeTopLevel(typedValue);
         let hexEncoded = buffer.toString("hex");
         return new Argument(hexEncoded);

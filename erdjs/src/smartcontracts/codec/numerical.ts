@@ -1,7 +1,7 @@
 import { NumericalType, NumericalValue } from "../typesystem";
 import { isMsbZero, isMsbOne, bigIntToBuffer, bufferToBigInt, cloneBuffer, flipBufferBitsInPlace, prependByteToBuffer } from "./utils";
 
-export class NumericalBinaryCoded {
+export class NumericalBinaryCodec {
     /**
      * Reads and decodes a NumericalValue from a given buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 

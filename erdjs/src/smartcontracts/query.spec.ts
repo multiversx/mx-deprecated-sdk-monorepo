@@ -26,7 +26,12 @@ describe("test smart contract queries", () => {
         let query = new Query({
             func: new ContractFunction("foo"),
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
-            args: [Argument.number(100), Argument.utf8("!"), Argument.hex("abba"), Argument.bigInt(BigInt("1000000000000000000000000000000000"))]
+            args: [
+                Argument.fromNumber(100),
+                Argument.fromUTF8("!"),
+                Argument.fromHex("abba"),
+                Argument.fromBigInt(BigInt("1000000000000000000000000000000000"))
+            ]
         });
 
         let request = query.toHttpRequest();
