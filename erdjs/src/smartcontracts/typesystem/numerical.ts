@@ -1,7 +1,9 @@
 import * as errors from "../../errors";
 import { PrimitiveType, PrimitiveValue, Type } from "./types";
 
-export abstract class NumericalType extends PrimitiveType {
+export class NumericalType extends PrimitiveType {
+    static One = new NumericalType("NumericalType", 0, false);
+
     readonly sizeInBytes: number;
     readonly withSign: boolean;
 
