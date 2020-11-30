@@ -10,9 +10,11 @@ import { TransactionPayload } from "./transactionPayload";
 import * as errors from "./errors";
 import { TypedEvent } from "./events";
 import { TransactionWatcher } from "./transactionWatcher";
-const createKeccakHash = require("keccak");
+import { ProtoSerializer } from "./proto";
+const createTransactionHasher = require("blake2b");
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
+const TRANSACTION_HASH_LENGTH = 32;
 
 /**
  * An abstraction for creating, signing and broadcasting Elrond transactions.
@@ -290,16 +292,19 @@ export class TransactionHash {
         return this.hash;
     }
 
+    valueOf(): string {
+        return this.hash;
+    }
+
     /**
      * Computes the hash of a transaction.
      * Not yet implemented.
      */
     static compute(transaction: Transaction): TransactionHash {
-        // TODO: Fix this, to use the actual algorithm, not a dummy one.
-        let dummyData = `this!is!not!the!real!hash!${JSON.stringify(transaction)}`;
-        let buffer = Buffer.from(dummyData);
-        let hash = createKeccakHash("keccak256").update(buffer).digest();
-        return new TransactionHash(hash.toString("hex"));
+        let serializer = new ProtoSerializer();
+        let buffer = serializer.serializeTransaction(transaction);
+        let hash = createTransactionHasher(TRANSACTION_HASH_LENGTH).update(buffer).digest("hex");
+        return new TransactionHash(hash);
     }
 }
 

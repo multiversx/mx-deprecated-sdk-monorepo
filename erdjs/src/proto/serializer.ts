@@ -18,17 +18,17 @@ export class ProtoSerializer {
             Nonce: transaction.nonce.valueOf(),
             Value: this.serializeBalance(transaction.value),
             RcvAddr: transaction.receiver.pubkey(),
-            RcvUserName: Buffer.alloc(0),
+            RcvUserName: null,
             SndAddr: transaction.sender.pubkey(),
-            SndUserName: Buffer.alloc(0),
+            SndUserName: null,
             GasPrice: transaction.gasPrice.valueOf(),
             GasLimit: transaction.gasLimit.valueOf(),
-            Data: transaction.data.valueOf(),
+            Data: transaction.data.isEmpty() ? null : transaction.data.valueOf(),
             ChainID: Buffer.from(transaction.chainID.valueOf()),
             Version: transaction.version.valueOf(),
             Signature: Buffer.from(transaction.signature.hex(), "hex")
-        });
-
+        });        
+        
         let encoded = proto.Transaction.encode(protoTransaction).finish();
         let buffer = Buffer.from(encoded);
         return buffer;
@@ -39,6 +39,10 @@ export class ProtoSerializer {
      */
     private serializeBalance(balance: Balance): Buffer {
         let value = balance.valueOf();
+        if (value == BigInt(0)) {
+            return Buffer.from([0, 0]);
+        }
+
         // Will retain the magnitude, as a buffer.
         let buffer = bigIntToBuffer(value);
         // We prepend the "positive" sign marker, in order to be compatible with Elrond Go's "sign & magnitude" proto-representation (a custom one).
@@ -47,6 +51,7 @@ export class ProtoSerializer {
     }
 
     deserializeTransaction(_buffer: Buffer): Transaction {
-        return new Transaction();
+        // Not needed (yet).
+        throw new errors.ErrUnsupportedOperation("deserializeTransaction");
     }
 }
