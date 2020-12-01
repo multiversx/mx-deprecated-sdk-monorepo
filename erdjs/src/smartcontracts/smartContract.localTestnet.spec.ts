@@ -257,11 +257,9 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         // Broadcast & execute
         await transactionDeploy.send(localTestnet);
         await transactionStart.send(localTestnet);
-        // await transactionMintCarol.send(localTestnet);
 
         await transactionDeploy.awaitExecuted(localTestnet);
         await transactionStart.awaitExecuted(localTestnet);
-        // await transactionMintCarol.awaitExecuted(localTestnet);
 
         // Query state, do some assertions
         let queryResponse = await contract.runQuery(localTestnet, {
