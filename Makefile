@@ -71,3 +71,6 @@ test-deployment:
 
 list-s3:
 	aws s3 ls s3://ide.elrond.com --recursive --human-readable --summarize
+
+linguist:
+	github-linguist --breakdown
