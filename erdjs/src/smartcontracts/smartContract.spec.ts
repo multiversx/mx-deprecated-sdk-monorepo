@@ -121,5 +121,5 @@ describe("test contract", () => {
 
 function setupWatcherTimeouts() {
     TransactionWatcher.DefaultPollingInterval = 42;
-    TransactionWatcher.DefaultTimeout = 42 * 3;
+    TransactionWatcher.DefaultTimeout = 42 * 42;
 }

@@ -10,7 +10,7 @@ describe("test transactionWatcher", () => {
     it("should await status == executed", async () => {
         let hash = new TransactionHash("abba");
         let provider = new MockProvider();
-        let watcher = new TransactionWatcher(hash, provider, 42, 42 * 3);
+        let watcher = new TransactionWatcher(hash, provider, 42, 42 * 42);
 
         provider.mockPutTransaction(hash, new TransactionOnNetwork({
             nonce: new Nonce(7),
