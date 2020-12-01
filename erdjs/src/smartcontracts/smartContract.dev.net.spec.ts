@@ -13,8 +13,8 @@ import { assert } from "chai";
 import { Balance } from "../balance";
 import { OptionalValue, U32Value } from "./typesystem";
 
-describe("test on local testnet", function () {
-    let localTestnet = getDevnetProvider();
+describe("test on devnet (local)", function () {
+    let devnet = getDevnetProvider();
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);
@@ -26,8 +26,8 @@ describe("test on local testnet", function () {
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
-        await NetworkConfig.getDefault().sync(localTestnet);
-        await alice.sync(localTestnet);
+        await NetworkConfig.getDefault().sync(devnet);
+        await alice.sync(devnet);
 
         // Deploy
         let contract = new SmartContract({});
@@ -70,15 +70,15 @@ describe("test on local testnet", function () {
         await aliceSigner.sign(simulateTwo);
 
         // Broadcast & execute
-        await transactionDeploy.send(localTestnet);
-        await transactionIncrement.send(localTestnet);
+        await transactionDeploy.send(devnet);
+        await transactionIncrement.send(devnet);
 
-        await transactionDeploy.awaitExecuted(localTestnet);
-        await transactionIncrement.awaitExecuted(localTestnet);
+        await transactionDeploy.awaitExecuted(devnet);
+        await transactionIncrement.awaitExecuted(devnet);
 
         // Simulate
-        Logger.trace(JSON.stringify(await simulateOne.simulate(localTestnet), null, 4));
-        Logger.trace(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
+        Logger.trace(JSON.stringify(await simulateOne.simulate(devnet), null, 4));
+        Logger.trace(JSON.stringify(await simulateTwo.simulate(devnet), null, 4));
     });
 
     it("counter: should deploy, call and query contract", async function() {
@@ -87,8 +87,8 @@ describe("test on local testnet", function () {
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
-        await NetworkConfig.getDefault().sync(localTestnet);
-        await alice.sync(localTestnet);
+        await NetworkConfig.getDefault().sync(devnet);
+        await alice.sync(devnet);
 
         // Deploy
         let contract = new SmartContract({});
@@ -125,16 +125,16 @@ describe("test on local testnet", function () {
         alice.incrementNonce();
 
         // Broadcast & execute
-        await transactionDeploy.send(localTestnet);
-        await transactionIncrementFirst.send(localTestnet);
-        await transactionIncrementSecond.send(localTestnet);
+        await transactionDeploy.send(devnet);
+        await transactionIncrementFirst.send(devnet);
+        await transactionIncrementSecond.send(devnet);
 
-        await transactionDeploy.awaitExecuted(localTestnet);
-        await transactionIncrementFirst.awaitExecuted(localTestnet);
-        await transactionIncrementSecond.awaitExecuted(localTestnet);
+        await transactionDeploy.awaitExecuted(devnet);
+        await transactionIncrementFirst.awaitExecuted(devnet);
+        await transactionIncrementSecond.awaitExecuted(devnet);
 
         // Check counter
-        let queryResponse = await contract.runQuery(localTestnet, { func: new ContractFunction("get") });
+        let queryResponse = await contract.runQuery(devnet, { func: new ContractFunction("get") });
         assert.equal(3, queryResponse.firstResult().asNumber);
     });
 
@@ -144,8 +144,8 @@ describe("test on local testnet", function () {
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
-        await NetworkConfig.getDefault().sync(localTestnet);
-        await alice.sync(localTestnet);
+        await NetworkConfig.getDefault().sync(devnet);
+        await alice.sync(devnet);
 
         // Deploy
         let contract = new SmartContract({});
@@ -184,33 +184,33 @@ describe("test on local testnet", function () {
         await aliceSigner.sign(transactionMintCarol);
 
         // Broadcast & execute
-        await transactionDeploy.send(localTestnet);
-        await transactionMintBob.send(localTestnet);
-        await transactionMintCarol.send(localTestnet);
+        await transactionDeploy.send(devnet);
+        await transactionMintBob.send(devnet);
+        await transactionMintCarol.send(devnet);
 
-        await transactionDeploy.awaitExecuted(localTestnet);
-        await transactionMintBob.awaitExecuted(localTestnet);
-        await transactionMintCarol.awaitExecuted(localTestnet);
+        await transactionDeploy.awaitExecuted(devnet);
+        await transactionMintBob.awaitExecuted(devnet);
+        await transactionMintCarol.awaitExecuted(devnet);
 
         // Query state, do some assertions
-        let queryResponse = await contract.runQuery(localTestnet, {
+        let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("totalSupply")
         });
         assert.equal(10000, queryResponse.firstResult().asNumber);
 
-        queryResponse = await contract.runQuery(localTestnet, {
+        queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.alice.address)]
         });
         assert.equal(7500, queryResponse.firstResult().asNumber);
 
-        queryResponse = await contract.runQuery(localTestnet, {
+        queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.bob.address)]
         });
         assert.equal(1000, queryResponse.firstResult().asNumber);
 
-        queryResponse = await contract.runQuery(localTestnet, {
+        queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.carol.address)]
         });
@@ -223,8 +223,8 @@ describe("test on local testnet", function () {
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
-        await NetworkConfig.getDefault().sync(localTestnet);
-        await alice.sync(localTestnet);
+        await NetworkConfig.getDefault().sync(devnet);
+        await alice.sync(devnet);
 
         // Deploy
         let contract = new SmartContract({});
@@ -261,14 +261,14 @@ describe("test on local testnet", function () {
         await aliceSigner.sign(transactionStart);
 
         // Broadcast & execute
-        await transactionDeploy.send(localTestnet);
-        await transactionStart.send(localTestnet);
+        await transactionDeploy.send(devnet);
+        await transactionStart.send(devnet);
 
-        await transactionDeploy.awaitExecuted(localTestnet);
-        await transactionStart.awaitExecuted(localTestnet);
+        await transactionDeploy.awaitExecuted(devnet);
+        await transactionStart.awaitExecuted(devnet);
 
         // Query state, do some assertions
-        let queryResponse = await contract.runQuery(localTestnet, {
+        let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("lotteryExists"),
             args: [
                 Argument.fromUTF8("foobar")
@@ -276,7 +276,7 @@ describe("test on local testnet", function () {
         });
         assert.equal(queryResponse.firstResult().asBool, true);
 
-        queryResponse = await contract.runQuery(localTestnet, {
+        queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("lotteryExists"),
             args: [
                 Argument.fromUTF8("missingLottery")
