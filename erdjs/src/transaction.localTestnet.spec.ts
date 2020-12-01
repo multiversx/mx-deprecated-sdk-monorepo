@@ -5,13 +5,11 @@ import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
 import { TestWallets } from "./testutils";
-import { describeOnlyIf, getLocalTestnetProvider } from "./testutils";
+import { getDevnetProvider } from "./testutils";
 import { Logger } from "./logger";
 import { assert } from "chai";
 
-describeOnlyIf("localTestnet")("test transaction", function () {
-    this.timeout(20000);
-
+describe("test transaction", function () {
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);
@@ -19,8 +17,10 @@ describeOnlyIf("localTestnet")("test transaction", function () {
     let bobWallet = wallets.bob;
     let bob = new Account(bobWallet.address);
 
-    it("should send transactions", async () => {
-        let localTestnet = getLocalTestnetProvider();
+    it("should send transactions", async function() {
+        this.timeout(20000);
+
+        let localTestnet = getDevnetProvider();
 
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);
@@ -57,8 +57,10 @@ describeOnlyIf("localTestnet")("test transaction", function () {
         assert.equal(Balance.eGLD(85).valueOf(), newBalanceOfBob.valueOf() - initialBalanceOfBob.valueOf());
     });
 
-    it("should simulate transactions", async () => {
-        let localTestnet = getLocalTestnetProvider();
+    it("should simulate transactions", async function() {
+        this.timeout(20000);
+
+        let localTestnet = getDevnetProvider();
 
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);

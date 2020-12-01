@@ -27,10 +27,6 @@
         "out",
         "out-tests",
         "out-browser",
-        "src/examples",
-        "**/*.localTestnet.spec.ts",
-        "**/*.devnet.spec.ts",
-        "**/*.testnet.spec.ts",
-        "**/*.mainnet.spec.ts",
+        "src/examples"
     ]
 }

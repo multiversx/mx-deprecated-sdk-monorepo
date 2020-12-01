@@ -1,12 +1,12 @@
 import { assert } from "chai";
 import { Address } from "../address";
 import { ContractFunction } from "./function";
-import { describeOnlyIf, getMainnetProvider } from "../testutils";
+import { getMainnetProvider } from "../testutils";
 import { SmartContract } from "./smartContract";
 import * as errors from "../errors";
 import { Argument } from "./argument";
 
-describeOnlyIf("mainnet")("test queries on mainnet", function () {
+describe("test queries on mainnet", function () {
     let provider = getMainnetProvider();
     let delegationContract = new SmartContract({ address: new Address("erd1qqqqqqqqqqqqqpgqxwakt2g7u9atsnr03gqcgmhcv38pt7mkd94q6shuwt") });
 
@@ -31,7 +31,7 @@ describeOnlyIf("mainnet")("test queries on mainnet", function () {
         assert.isAtMost(response.gasUsed.valueOf(), 35000000);
     });
 
-    it("delegation: should getFullWaitingList", async () => {
+    it("delegation: should getFullWaitingList", async function() {
         this.timeout(5000);
 
         let response = await delegationContract.runQuery(provider, {
@@ -42,7 +42,7 @@ describeOnlyIf("mainnet")("test queries on mainnet", function () {
         assert.isAtLeast(response.returnData.length, 20000);
     });
 
-    it("delegation: should getClaimableRewards", async () => {
+    it("delegation: should getClaimableRewards", async function() {
         this.timeout(5000);
 
         // First, expect an error (bad arguments):

@@ -6,23 +6,23 @@ import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
-import { describeOnlyIf, getLocalTestnetProvider } from "../testutils";
+import { getDevnetProvider } from "../testutils";
 import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
 import { Balance } from "../balance";
 import { OptionalValue, U32Value } from "./typesystem";
 
-describeOnlyIf("localTestnet")("test on local testnet", function () {
-    this.timeout(50000);
-
-    let localTestnet = getLocalTestnetProvider();
+describe("test on local testnet", function () {
+    let localTestnet = getDevnetProvider();
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);
     let aliceSigner = aliceWallet.signer;
 
-    it("counter: should deploy, then simulate transactions", async () => {
+    it("counter: should deploy, then simulate transactions", async function() {
+        this.timeout(50000);
+
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
@@ -81,7 +81,9 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         Logger.trace(JSON.stringify(await simulateTwo.simulate(localTestnet), null, 4));
     });
 
-    it("counter: should deploy, call and query contract", async () => {
+    it("counter: should deploy, call and query contract", async function() {
+        this.timeout(50000);
+
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
@@ -136,7 +138,9 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         assert.equal(3, queryResponse.firstResult().asNumber);
     });
 
-    it("erc20: should deploy, call and query contract", async () => {
+    it("erc20: should deploy, call and query contract", async function() {
+        this.timeout(50000);
+
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
@@ -213,7 +217,9 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         assert.equal(1500, queryResponse.firstResult().asNumber);
     });
 
-    it("lottery: should deploy, call and query contract", async () => {
+    it("lottery: should deploy, call and query contract", async function() {
+        this.timeout(50000);
+
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
 
