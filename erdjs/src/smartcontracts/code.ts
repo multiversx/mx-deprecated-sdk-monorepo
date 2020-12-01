@@ -21,8 +21,8 @@ export class Code {
     /**
      * Creates a Code object by loading the bytecode from a specified WASM file.
      */
-    static fromFile(file: PathLike) {
-        let buffer: Buffer = fs.readFileSync(file);
+    static async fromFile(file: PathLike) {
+        let buffer: Buffer = await fs.promises.readFile(file);
         return Code.fromBuffer(buffer);
     }
 

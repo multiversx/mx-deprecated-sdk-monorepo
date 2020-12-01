@@ -32,7 +32,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: Code.fromFile("./src/testdata/counter.wasm"),
+            code: await Code.fromFile("./src/testdata/counter.wasm"),
             gasLimit: new GasLimit(3000000)
         });
 
@@ -93,7 +93,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: Code.fromFile("./src/testdata/counter.wasm"),
+            code: await Code.fromFile("./src/testdata/counter.wasm"),
             gasLimit: new GasLimit(3000000)
         });
 
@@ -150,7 +150,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: Code.fromFile("./src/testdata/erc20.wasm"),
+            code: await Code.fromFile("./src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
             initArguments: [Argument.fromNumber(10000)]
         });
@@ -229,7 +229,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: Code.fromFile("./src/testdata/lottery-egld.wasm"),
+            code: await Code.fromFile("./src/testdata/lottery-egld.wasm"),
             gasLimit: new GasLimit(100000000),
             initArguments: []
         });
