@@ -1,10 +1,12 @@
 import { guardValueIsSet } from "../../utils";
 import { TypesRegistry } from "./typesRegistry";
 
-export abstract class Type {
+export class Type {
+    static One = new Type("Type");
+
     readonly name: string;
 
-    constructor(name: string) {
+    protected constructor(name: string) {
         guardValueIsSet("name", name);
 
         this.name = name;
@@ -22,9 +24,18 @@ export abstract class Type {
     valueOf() {
         return this.name;
     }
+
+    /**
+     * Inspired from: https://docs.microsoft.com/en-us/dotnet/api/system.type.isassignablefrom
+     */
+    isAssignableFrom(type: Type): boolean {
+        return type instanceof this.constructor;
+    }
 }
 
-export abstract class PrimitiveType extends Type {
+export class PrimitiveType extends Type {
+    static One = new PrimitiveType("PrimitiveType");
+
     protected constructor(name: string) {
         super(name);
     }

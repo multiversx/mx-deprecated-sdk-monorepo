@@ -1,7 +1,7 @@
 import { NumericalType, NumericalValue } from "../typesystem";
 import { isMsbZero, isMsbOne, bigIntToBuffer, bufferToBigInt, cloneBuffer, flipBufferBitsInPlace, prependByteToBuffer } from "./utils";
 
-export class NumericalBinaryCoded {
+export class NumericalBinaryCodec {
     /**
      * Reads and decodes a NumericalValue from a given buffer, 
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
@@ -41,8 +41,8 @@ export class NumericalBinaryCoded {
             return new NumericalValue(BigInt(0), type);
         }
 
-        let isNotNegative = !type.withSign || isMsbZero(payload);
-        if (isNotNegative) {
+        let isPositive = !type.withSign || isMsbZero(payload);
+        if (isPositive) {
             let value = bufferToBigInt(payload);
             return new NumericalValue(value, type);
         }

@@ -2,20 +2,20 @@ import { PrimitiveType, PrimitiveValue, onPrimitiveTypeSelect, NumericalType, on
 import { AddressBinaryCodec } from "./address";
 import { BooleanBinaryCodec } from "./boolean";
 import { BinaryCodec } from "./binary";
-import { NumericalBinaryCoded } from "./numerical";
+import { NumericalBinaryCodec } from "./numerical";
 
 export class PrimitiveBinaryCodec {
     private readonly parentCodec: BinaryCodec;
 
     private readonly booleanCodec: BooleanBinaryCodec;
-    private readonly numericalCodec: NumericalBinaryCoded;
+    private readonly numericalCodec: NumericalBinaryCodec;
     private readonly addressCoded: AddressBinaryCodec;
 
     constructor(parentCodec: BinaryCodec) {
         this.parentCodec = parentCodec;
 
         this.booleanCodec = new BooleanBinaryCodec();
-        this.numericalCodec = new NumericalBinaryCoded();
+        this.numericalCodec = new NumericalBinaryCodec();
         this.addressCoded = new AddressBinaryCodec();
     }
 

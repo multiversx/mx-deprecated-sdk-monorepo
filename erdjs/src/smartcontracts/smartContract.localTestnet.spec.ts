@@ -148,7 +148,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         let transactionDeploy = contract.deploy({
             code: Code.fromFile("./src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
-            initArguments: [Argument.number(10000)]
+            initArguments: [Argument.fromNumber(10000)]
         });
 
         // The deploy transaction should be signed, so that the address of the contract
@@ -161,13 +161,13 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(5000000),
-            args: [Argument.pubkey(wallets.bob.address), Argument.number(1000)]
+            args: [Argument.fromPubkey(wallets.bob.address), Argument.fromNumber(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(5000000),
-            args: [Argument.pubkey(wallets.carol.address), Argument.number(1500)]
+            args: [Argument.fromPubkey(wallets.carol.address), Argument.fromNumber(1500)]
         });
 
         // Apply nonces and sign the remaining transactions
@@ -196,19 +196,19 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.pubkey(wallets.alice.address)]
+            args: [Argument.fromPubkey(wallets.alice.address)]
         });
         assert.equal(7500, queryResponse.firstResult().asNumber);
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.pubkey(wallets.bob.address)]
+            args: [Argument.fromPubkey(wallets.bob.address)]
         });
         assert.equal(1000, queryResponse.firstResult().asNumber);
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.pubkey(wallets.carol.address)]
+            args: [Argument.fromPubkey(wallets.carol.address)]
         });
         assert.equal(1500, queryResponse.firstResult().asNumber);
     });
@@ -239,13 +239,13 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
             func: new ContractFunction("start"),
             gasLimit: new GasLimit(50000000),
             args: [
-                Argument.utf8("foobar"), 
-                Argument.bigInt(Balance.eGLD(1).valueOf()),
-                Argument.missingOptional(),
-                Argument.missingOptional(),
-                Argument.providedOptional(new U32Value(1)),
-                Argument.missingOptional(),
-                Argument.missingOptional()
+                Argument.fromUTF8("foobar"), 
+                Argument.fromBigInt(Balance.eGLD(1).valueOf()),
+                Argument.fromMissingOptional(),
+                Argument.fromMissingOptional(),
+                Argument.fromProvidedOptional(new U32Value(1)),
+                Argument.fromMissingOptional(),
+                Argument.fromMissingOptional()
             ]
         });
 
@@ -267,7 +267,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         let queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("lotteryExists"),
             args: [
-                Argument.utf8("foobar")
+                Argument.fromUTF8("foobar")
             ]
         });
         assert.equal(queryResponse.firstResult().asBool, true);
@@ -275,7 +275,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("lotteryExists"),
             args: [
-                Argument.utf8("missingLottery")
+                Argument.fromUTF8("missingLottery")
             ]
         });
         assert.equal(queryResponse.firstResult().asBool, false);
