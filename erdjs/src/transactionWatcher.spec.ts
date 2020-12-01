@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { assert } from "chai";
 import { TransactionWatcher } from "./transactionWatcher";
 import { TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";

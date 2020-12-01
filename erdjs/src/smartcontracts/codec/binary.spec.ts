@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
 import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, TypesRegistry, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";

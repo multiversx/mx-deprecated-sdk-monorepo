@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { Address } from "./address";
 import { SimpleSigner } from "./simpleSigner";
 import { Nonce } from "./nonce";
