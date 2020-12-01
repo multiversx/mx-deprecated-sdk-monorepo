@@ -7,7 +7,7 @@
 export function isMsbOne(buffer: Buffer, byteIndex: number = 0): boolean {
     let byte = buffer[byteIndex];
     let bit = byte >> 7;
-    let isSet = bit % 2 == 1;
+    let isSet = bit == 1;
     return isSet;
 }
 
