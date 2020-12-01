@@ -3,21 +3,15 @@
 <head>
     <meta charset="utf-8">
     <title>Run erdjs Tests in the Browser</title>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
 </head>
 
 <body>
-    <div id="mocha"></div>
-
-    <script src="../node_modules/mocha/mocha.js"></script>
-
-    <script>mocha.setup('bdd')</script>
-    <script src="../out-browser/erdjs-tests.js"></script>
-    <script>
-        mocha.checkLeaks();
-        mocha.globals(['jQuery']);
-        mocha.run();
-    </script>
+    <ul>
+        <li><a href="./tests.html">Unit tests</a></li>
+        <li><a href="./tests-devnet.html">Integration tests - devnet</a></li>
+        <li><a href="./tests-testnet.html">Integration tests - testnet</a></li>
+        <li><a href="./tests-mainnet.html">Integration tests - mainnet</a></li>
+    </ul>
 </body>
 
 </html>

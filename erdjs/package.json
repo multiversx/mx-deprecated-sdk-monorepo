@@ -18,6 +18,10 @@
     "compile": "tsc -p tsconfig.json",
     "compile-proto": "npx pbjs -t static-module -w commonjs -o src/proto/compiled.js src/proto/transaction.proto && npx pbts -o src/proto/compiled.d.ts src/proto/compiled.js",
     "compile-browser-tests": "tsc -p tsconfig.tests.json && browserify $(find out-tests -type f -name '*.js' ! -name '*.net.spec.*') --require buffer/:buffer -o out-browser/erdjs-tests.js --standalone erdjs-tests",
+    "compile-browser-tests-devnet": "tsc -p tsconfig.tests.json && browserify $(find out-tests -type f -name '*.js' ! -name '*.spec.*') $(find out-tests -type f -name '*.dev.net.spec.js') --require buffer/:buffer -o out-browser/erdjs-tests-devnet.js --standalone erdjs-tests",
+    "compile-browser-tests-testnet": "tsc -p tsconfig.tests.json && browserify $(find out-tests -type f -name '*.js' ! -name '*.spec.*') $(find out-tests -type f -name '*.test.net.spec.js') --require buffer/:buffer -o out-browser/erdjs-tests-testnet.js --standalone erdjs-tests",
+    "compile-browser-tests-mainnet": "tsc -p tsconfig.tests.json && browserify $(find out-tests -type f -name '*.js' ! -name '*.spec.*') $(find out-tests -type f -name '*.main.net.spec.js') --require buffer/:buffer -o out-browser/erdjs-tests-mainnet.js --standalone erdjs-tests",
+    "compile-browser-tests-all": "npm run compile-browser-tests && npm run compile-browser-tests-devnet && npm run compile-browser-tests-testnet && npm run compile-browser-tests-mainnet",
     "pretest": "npm run compile",
     "prepublish": "npm run compile && npm run compile-browser && npm run compile-browser-min"
   },
