@@ -27,6 +27,7 @@
         "out",
         "out-tests",
         "out-browser",
+        "out-browser-tests",
         "**/*.spec.ts",
         "src/examples"
     ],
