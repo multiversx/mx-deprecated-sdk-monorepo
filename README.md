@@ -13,7 +13,7 @@ This is a monorepo containing the following:
 | erdtestjs |    TypeScript SDK   |  TBD | TypeDoc (TBD) | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdtestjs)
 | erdwalletjs-cli | NodeJS CLI | TBD | N / A | [CHANGELOG](erdwalletjs-cli/CHANGELOG.md) | [CLI](erdwalletjs-cli/README.md)  | [npm](https://www.npmjs.com/package/@elrondnetwork/erdwalletjs-cli)
 
-For developing Smart Contracts, [our tutorials](https://docs.elrond.com/developers/dev-tutorials), plus [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide) - which is a frontend for erdpy - should be a good start. 
+For developing Smart Contracts, [our tutorials](https://docs.elrond.com/docs/developers/tutorials/crowdfunding-p1), plus [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide) - which is a frontend for erdpy - should be a good start. 
 
 
 ## Developers

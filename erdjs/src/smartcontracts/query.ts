@@ -38,7 +38,7 @@ export class Query {
             "ScAddress": this.address.bech32(),
             "FuncName": this.func.toString(),
             "Args": this.args.map(arg => arg.valueOf()),
-            "CallValue": this.value.raw()
+            "CallValue": this.value.toString()
         };
 
         if (!this.caller.isEmpty()) {
