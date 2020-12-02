@@ -10,6 +10,8 @@ import { describeOnlyIf, getLocalTestnetProvider } from "../testutils/utils";
 import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
+import { Balance } from "../balance";
+import { OptionalValue, U32Value } from "./typesystem";
 
 describeOnlyIf("localTestnet")("test on local testnet", function () {
     this.timeout(50000);
@@ -27,7 +29,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);
 
-        // Counter: deploy
+        // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
             code: Code.fromFile("./src/testdata/counter.wasm"),
@@ -39,7 +41,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         alice.incrementNonce();
 
-        // Counter: Increment
+        // ++
         let transactionIncrement = contract.call({
             func: new ContractFunction("increment"),
             gasLimit: new GasLimit(3000000)
@@ -86,7 +88,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         await NetworkConfig.getDefault().sync(localTestnet);
         await alice.sync(localTestnet);
 
-        // Counter: deploy
+        // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
             code: Code.fromFile("./src/testdata/counter.wasm"),
@@ -98,7 +100,6 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         alice.incrementNonce();
 
-        // Counter: Increment
         // ++
         let transactionIncrementFirst = contract.call({
             func: new ContractFunction("increment"),
@@ -147,7 +148,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         let transactionDeploy = contract.deploy({
             code: Code.fromFile("./src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
-            initArguments: [Argument.number(10000)]
+            initArguments: [Argument.fromNumber(10000)]
         });
 
         // The deploy transaction should be signed, so that the address of the contract
@@ -160,13 +161,13 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(5000000),
-            args: [Argument.pubkey(wallets.bob.address), Argument.number(1000)]
+            args: [Argument.fromPubkey(wallets.bob.address), Argument.fromNumber(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(5000000),
-            args: [Argument.pubkey(wallets.carol.address), Argument.number(1500)]
+            args: [Argument.fromPubkey(wallets.carol.address), Argument.fromNumber(1500)]
         });
 
         // Apply nonces and sign the remaining transactions
@@ -195,20 +196,88 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.pubkey(wallets.alice.address)]
+            args: [Argument.fromPubkey(wallets.alice.address)]
         });
         assert.equal(7500, queryResponse.firstResult().asNumber);
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.pubkey(wallets.bob.address)]
+            args: [Argument.fromPubkey(wallets.bob.address)]
         });
         assert.equal(1000, queryResponse.firstResult().asNumber);
 
         queryResponse = await contract.runQuery(localTestnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.pubkey(wallets.carol.address)]
+            args: [Argument.fromPubkey(wallets.carol.address)]
         });
         assert.equal(1500, queryResponse.firstResult().asNumber);
+    });
+
+    it("lottery: should deploy, call and query contract", async () => {
+        TransactionWatcher.DefaultPollingInterval = 5000;
+        TransactionWatcher.DefaultTimeout = 50000;
+
+        await NetworkConfig.getDefault().sync(localTestnet);
+        await alice.sync(localTestnet);
+
+        // Deploy
+        let contract = new SmartContract({});
+        let transactionDeploy = contract.deploy({
+            code: Code.fromFile("./src/testdata/lottery-egld.wasm"),
+            gasLimit: new GasLimit(100000000),
+            initArguments: []
+        });
+
+        // The deploy transaction should be signed, so that the address of the contract
+        // (required for the subsequent transactions) is computed.
+        transactionDeploy.setNonce(alice.nonce);
+        await aliceSigner.sign(transactionDeploy);
+        alice.incrementNonce();
+
+        // Start
+        let transactionStart = contract.call({
+            func: new ContractFunction("start"),
+            gasLimit: new GasLimit(50000000),
+            args: [
+                Argument.fromUTF8("foobar"), 
+                Argument.fromBigInt(Balance.eGLD(1).value),
+                Argument.fromMissingOptional(),
+                Argument.fromMissingOptional(),
+                Argument.fromProvidedOptional(new U32Value(1)),
+                Argument.fromMissingOptional(),
+                Argument.fromMissingOptional()
+            ]
+        });
+
+        // Apply nonces and sign the remaining transactions
+        transactionStart.setNonce(alice.nonce);
+
+        await aliceSigner.sign(transactionStart);
+
+        // Broadcast & execute
+        await transactionDeploy.send(localTestnet);
+        await transactionStart.send(localTestnet);
+        // await transactionMintCarol.send(localTestnet);
+
+        await transactionDeploy.awaitExecuted(localTestnet);
+        await transactionStart.awaitExecuted(localTestnet);
+        // await transactionMintCarol.awaitExecuted(localTestnet);
+
+        // Query state, do some assertions
+        let queryResponse = await contract.runQuery(localTestnet, {
+            func: new ContractFunction("lotteryExists"),
+            args: [
+                Argument.fromUTF8("foobar")
+            ]
+        });
+        assert.equal(queryResponse.firstResult().asBool, true);
+
+        queryResponse = await contract.runQuery(localTestnet, {
+            func: new ContractFunction("lotteryExists"),
+            args: [
+                Argument.fromUTF8("missingLottery")
+            ]
+        });
+        assert.equal(queryResponse.firstResult().asBool, false);
     });
 });

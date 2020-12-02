@@ -1,27 +1,29 @@
 import { Buffer } from "buffer";
-import  * as errors from "../errors";
 import { Address } from "../address";
+import { BinaryCodec } from "./codec";
+import { OptionalValue, TypedValue } from "./typesystem";
 
 /**
  * The Argument abstraction allows one to prepare arguments for Smart Contract calls (and deployments).
  */
 export class Argument {
     /**
-     * The actual value of the argument (as a hex-encoded string).
+     * For the moment, this is the only codec used.
      */
-    public readonly value: string = "";
+    private static codec = new BinaryCodec();
+
+    /**
+     * The actual value of the argument, to be passed to the Protocol (as a hex-encoded string).
+     */
+    private readonly hexEncoded: string = "";
 
     /**
      * Creates an Argument object from the actual value (hex-encoded).
      * 
-     * @param argumentValue The actual value of the argument
+     * @param hexEncoded The actual value of the argument
      */
-    private constructor(argumentValue: string) {
-        if (argumentValue.length == 0) {
-            throw new errors.ErrInvalidArgument("argumentValue");
-        }
-
-        this.value = Argument.ensureEvenLength(argumentValue);
+    private constructor(hexEncoded: string) {
+        this.hexEncoded = Argument.ensureEvenLength(hexEncoded);
     }
 
     private static ensureEvenLength(argument: string): string {
@@ -31,7 +33,7 @@ export class Argument {
     /**
      * Creates an Argument object given a buffer (a sequence of bytes).
      */
-    static bytes(buffer: Buffer): Argument {
+    static fromBytes(buffer: Buffer): Argument {
         let hex = buffer.toString("hex");
         return new Argument(hex);
     }
@@ -39,14 +41,14 @@ export class Argument {
     /**
      * Creates an Argument object from a number.
      */
-    static number(value: number): Argument {
-        return Argument.bigInt(BigInt(value));
+    static fromNumber(value: number): Argument {
+        return Argument.fromBigInt(BigInt(value));
     }
 
     /**
      * Creates an Argument object from a big integer.
      */
-    static bigInt(value: BigInt): Argument {
+    static fromBigInt(value: BigInt): Argument {
         let hex = value.toString(16);
         return new Argument(hex);
     }
@@ -54,14 +56,14 @@ export class Argument {
     /**
      * Creates an Argument object from an already-encoded hex string.
      */
-    static hex(value: string): Argument {
+    static fromHex(value: string): Argument {
         return new Argument(value);
     }
 
     /**
      * Creates an Argument object from a utf-8 string.
      */
-    static utf8(value: string): Argument {
+    static fromUTF8(value: string): Argument {
         let buffer = Buffer.from(value, "utf-8");
         let hex = buffer.toString("hex");
         return new Argument(hex);
@@ -70,8 +72,32 @@ export class Argument {
     /**
      * Creates an Argument object, as the pubkey of an {@link Address}.
      */
-    static pubkey(value: Address): Argument {
+    static fromPubkey(value: Address): Argument {
         return new Argument(value.hex());
+    }
+
+    /**
+     * Creates an Argument object, as a missing optional argument.
+     */
+    static fromMissingOptional(): Argument {
+        return Argument.fromTypedValue(new OptionalValue());
+    }
+
+    /**
+     * Creates an Argument object, as a provided optional argument.
+     */
+    static fromProvidedOptional(typedValue: TypedValue): Argument {
+        return Argument.fromTypedValue(new OptionalValue(typedValue));
+    }
+
+    static fromTypedValue(typedValue: TypedValue): Argument {
+        let buffer = Argument.codec.encodeTopLevel(typedValue);
+        let hexEncoded = buffer.toString("hex");
+        return new Argument(hexEncoded);
+    }
+
+    valueOf(): string {
+        return this.hexEncoded;
     }
 }
 
@@ -95,7 +121,7 @@ export function appendArguments(to: string, args: Argument[]): string {
     }
 
     args.forEach(arg => {
-        to += "@" + arg.value;
+        to += "@" + arg.valueOf();
     });
 
     return to;

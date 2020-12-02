@@ -78,13 +78,13 @@ describe("test contract", () => {
 
         let callTransactionOne = contract.call({
             func: new ContractFunction("helloEarth"),
-            args: [Argument.number(5), Argument.hex("0123")],
+            args: [Argument.fromNumber(5), Argument.fromHex("0123")],
             gasLimit: new GasLimit(150000)
         });
 
         let callTransactionTwo = contract.call({
             func: new ContractFunction("helloMars"),
-            args: [Argument.number(5), Argument.hex("0123")],
+            args: [Argument.fromNumber(5), Argument.fromHex("0123")],
             gasLimit: new GasLimit(1500000)
         });
 

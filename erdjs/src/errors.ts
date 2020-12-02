@@ -61,16 +61,25 @@ export class Err extends Error {
  * Signals invalid arguments for a function, for an operation.
  */
 export class ErrInvalidArgument extends Err {
-    public constructor(name: string, value?: any, inner?: Error) {
-        super(ErrInvalidArgument.getMessage(name, value), inner);
+    public constructor(name: string, value?: any, reason: string = "not specified", inner?: Error) {
+        super(ErrInvalidArgument.getMessage(name, value, reason), inner);
     }
 
-    static getMessage(name: string, value?: any): string {
+    static getMessage(name: string, value?: any, reason?: string): string {
         if (value) {
-            return `Invalid argument "${name}": ${value}`;
+            return `Invalid argument "${name}": ${value}. Reason: ${reason}`;
         }
 
         return `Invalid argument "${name}"`;
+    }
+}
+
+/**
+ * Signals an unsupported operation.
+ */
+export class ErrUnsupportedOperation extends Err {
+    public constructor(operation: string, reason: string = "not specified") {
+        super(`Operation "${operation}" not supported. Reason: ${reason}`);
     }
 }
 
@@ -89,6 +98,15 @@ export class ErrBadType extends Err {
 export class ErrMissingValue extends Err {
     public constructor(name: string) {
         super(`"${name} is required, but missing.`);
+    }
+}
+
+/**
+ * Signals that an invariant failed.
+ */
+export class ErrInvariantFailed extends Err {
+    public constructor(message: string) {
+        super(`"Invariant failed: ${message}`);
     }
 }
 
@@ -322,6 +340,51 @@ export class ErrMock extends Err {
  * Signals an error thrown when setting up a test.
  */
 export class ErrTest extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals a generic serialization error.
+ */
+export class ErrSerialization extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals a generic type error.
+ */
+export class ErrTypingSystem extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals a generic structure typing error.
+ */
+export class ErrStructureTyping extends Err {
+    public constructor(reason: string) {
+        super(`Incorrect structure typing: ${reason}`);
+    }
+}
+
+/**
+ * Signals an unknown type.
+ */
+export class ErrUnknownType extends ErrTypingSystem {
+    public constructor(typeName: string) {
+        super(`Unknown type: ${typeName}`);
+    }
+}
+
+/**
+ * Signals a generic codec (encode / decode) error.
+ */
+export class ErrCodec extends Err {
     public constructor(message: string) {
         super(message);
     }

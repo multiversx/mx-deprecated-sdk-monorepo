@@ -23,3 +23,12 @@ export function guardValueIsSet(name: string, value?: any | null | undefined) {
         throw new errors.ErrMissingValue(name);
     }
 }
+
+export function guardSameLength(a: any[], b: any[]) {
+    a = a || [];
+    b = b || [];
+
+    if (a.length != b.length) {
+        throw new errors.ErrInvariantFailed("arrays do not have the same length");
+    }
+}

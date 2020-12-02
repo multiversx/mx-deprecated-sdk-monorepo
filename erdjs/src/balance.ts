@@ -11,7 +11,7 @@ const DENOMINATION = 18;
  */
 const OneEGLDString = "1000000000000000000";
 
-BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 4 })
+BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 1 });
 
 /**
  * Balance, as an immutable object.
@@ -78,5 +78,9 @@ export class Balance {
             value: this.raw(),
             formatted: this.formatted()
         };
+    }
+
+    valueOf(): bigint {
+        return this.value;
     }
 }
