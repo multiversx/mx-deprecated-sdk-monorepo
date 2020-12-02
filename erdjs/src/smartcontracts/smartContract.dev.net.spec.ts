@@ -6,7 +6,7 @@ import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
-import { getDevnetProvider } from "../testutils";
+import { getDevnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
@@ -32,7 +32,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: await Code.fromFile("./src/testdata/counter.wasm"),
+            code: await loadContractCode("src/testdata/counter.wasm"),
             gasLimit: new GasLimit(3000000)
         });
 
@@ -93,7 +93,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: await Code.fromFile("./src/testdata/counter.wasm"),
+            code: await loadContractCode("src/testdata/counter.wasm"),
             gasLimit: new GasLimit(3000000)
         });
 
@@ -150,7 +150,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: await Code.fromFile("./src/testdata/erc20.wasm"),
+            code: await loadContractCode("src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
             initArguments: [Argument.fromNumber(10000)]
         });
@@ -229,7 +229,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: await Code.fromFile("./src/testdata/lottery-egld.wasm"),
+            code: await loadContractCode("src/testdata/lottery-egld.wasm"),
             gasLimit: new GasLimit(100000000),
             initArguments: []
         });
