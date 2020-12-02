@@ -162,13 +162,31 @@ npm run compile-browser-min
 
 ### Running the tests
 
-In order to run the tests, do as follows:
+#### On NodeJS
+
+In order to run the tests **on NodeJS**, do as follows:
 
 ```
-npm run test
-npm run test-devnet
-npm run test-testnet
-npm run test-mainnet
+npm run tests-unit
+npm run tests-devnet
+npm run tests-testnet
+npm run tests-mainnet
 ```
+
+#### In the browser
+
+Make sure you have the package `http-server` installed globally.
+
+```
+npm install --global http-server
+```
+
+In order to run the tests **in the browser**, do as follows:
+
+```
+npm run tests-browser
+```
+
+#### Notes
 
 For the `devnet` tests, make sure you have a *devnet* running locally. A local *devnet* can be started from the Elrond IDE or from [erdpy](https://docs.elrond.com/developers/setup-a-local-testnet-erdpy).

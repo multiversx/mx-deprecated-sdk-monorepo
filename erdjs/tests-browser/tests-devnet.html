@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8">
     <title>Run erdjs Tests in the Browser</title>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+    <link rel="stylesheet" href="mocha/mocha.css">
 </head>
 
 <body>
     <div id="mocha"></div>
 
-    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="mocha/mocha.js"></script>
 
     <script>mocha.setup('bdd')</script>
-    <script src="../out-browser/erdjs-tests-devnet.js"></script>
+    <script src="out-browser/erdjs-tests-devnet.js"></script>
     <script>
         mocha.checkLeaks();
         mocha.globals(['jQuery']);
