@@ -37,7 +37,7 @@ export class Query {
         let request: any = {
             "ScAddress": this.address.bech32(),
             "FuncName": this.func.toString(),
-            "Args": this.args.map(arg => arg.value),
+            "Args": this.args.map(arg => arg.valueOf()),
             "CallValue": this.value.raw()
         };
 
@@ -107,11 +107,13 @@ export class QueryResponse {
     }
 }
 
+// TODO: use types & codecs
 export class ContractReturnData {
     asBuffer: Buffer;
     asBase64: any;
     asHex: string;
     asNumber: number;
+    asBool: boolean;
     asBigInt: BigInt;
     asString: string;
 
@@ -120,6 +122,7 @@ export class ContractReturnData {
         this.asBuffer = Buffer.from(asBase64, "base64");
         this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
+        this.asBool = this.asNumber != 0;
         this.asBigInt = BigInt(`0x${this.asHex || "00"}`);
         this.asString = this.asBuffer.toString();
     }

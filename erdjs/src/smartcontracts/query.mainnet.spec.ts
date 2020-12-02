@@ -61,7 +61,7 @@ describeOnlyIf("mainnet")("test queries on mainnet", function () {
         // Then do a successful query:
         let response = await delegationContract.runQuery(provider, {
             func: new ContractFunction("getClaimableRewards"),
-            args: [Argument.pubkey(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"))]
+            args: [Argument.fromPubkey(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"))]
         });
 
         assert.isTrue(response.isSuccess());

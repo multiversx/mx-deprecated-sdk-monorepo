@@ -12,18 +12,18 @@ Features:
 
 The most comprehensive usage examples are captured within the unit and the integration tests. Specifically, in the `*.spec.ts` files of the source code. For example:
 
- - [transaction.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/transaction.localTestnet.spec.ts)
- - [address.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/address.spec.ts)
- - [transactionPayloadBuilders.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/transactionPayloadBuilders.spec.ts)
- - [smartContract.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/smartContract.spec.ts)
- - [smartContract.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/smartContract.localTestnet.spec.ts)
- - [query.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/query.spec.ts)
- - [query.mainnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/erdjs/src/smartcontracts/query.mainnet.spec.ts)
+ - [transaction.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/transaction.localTestnet.spec.ts)
+ - [address.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/address.spec.ts)
+ - [transactionPayloadBuilders.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/transactionPayloadBuilders.spec.ts)
+ - [smartContract.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.spec.ts)
+ - [smartContract.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.localTestnet.spec.ts)
+ - [query.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.spec.ts)
+ - [query.mainnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.mainnet.spec.ts)
 
 Additional examples (please note that they are slighly _out-of-date_ though) can be found here:
 
- - [Basic Example](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/docs/erdjs/examples/basic)
- - [Backend Dispatcher](https://github.com/ElrondNetwork/elrond-sdk/tree/erdjs-development/docs/erdjs/examples/backend-dispatcher)
+ - [Basic Example](https://github.com/ElrondNetwork/elrond-sdk/tree/development/docs/erdjs/examples/basic)
+ - [Backend Dispatcher](https://github.com/ElrondNetwork/elrond-sdk/tree/development/docs/erdjs/examples/backend-dispatcher)
 
 ### Synchronizing network parameters
 
