@@ -57,17 +57,20 @@ export class Balance {
     }
 
     /**
-     * Returns the raw representation of the balance object, that is, its big-integer form (as a string).
+     * Returns the string representation of the value (as eGLD currency).
      */
-    raw(): string {
-        return this.value.toString();
-    }
-
-    formatted(): string {
-        let padded = this.raw().padStart(DENOMINATION, "0");
+    toCurrencyString(): string {
+        let padded = this.toString().padStart(DENOMINATION, "0");
         let decimals = padded.slice(-DENOMINATION);
         let integer = padded.slice(0, padded.length - DENOMINATION);
         return `${integer}.${decimals} eGLD`;
+    }
+
+    /**
+     * Returns the string representation of the value (its big-integer form).
+     */
+    toString(): string {
+        return this.value.toString();
     }
 
     /**
@@ -75,8 +78,8 @@ export class Balance {
      */
     toJSON(): object {
         return {
-            value: this.raw(),
-            formatted: this.formatted()
+            asString: this.toString(),
+            asCurrencyString: this.toCurrencyString()
         };
     }
 

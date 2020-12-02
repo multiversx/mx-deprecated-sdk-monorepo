@@ -79,7 +79,7 @@ export class Account {
         return {
             address: this.address.bech32(),
             nonce: this.nonce.valueOf(),
-            balance: this.balance.raw()
+            balance: this.balance.toString()
         };
     }
 }

@@ -146,7 +146,7 @@ export class Transaction implements ISignable {
     toPlainObject(sender?: Address): any {
         let result: any = {
             nonce: this.nonce.valueOf(),
-            value: this.value.raw(),
+            value: this.value.toString(),
             receiver: this.receiver.bech32(),
             sender: sender ? sender.bech32() : this.sender.bech32(),
             gasPrice: this.gasPrice.valueOf(),
