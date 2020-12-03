@@ -3,8 +3,10 @@ package erdgo
 import "errors"
 
 var (
-	errInvalidPubkey  error = errors.New("invalid pubkey")
-	errInvalidAddress error = errors.New("invalid address")
-	errInvalidPemFile error = errors.New("invalid .PEM file")
-	errInvalidBalance error = errors.New("invalid balance")
+	errInvalidPubkey  = errors.New("invalid pubkey")
+	errInvalidAddress = errors.New("invalid address")
+	errInvalidPemFile = errors.New("invalid .PEM file")
+	errInvalidBalance = errors.New("invalid balance")
+	errWrongPassword  = errors.New("wrong password")
+	errWrongAccount   = errors.New("different account recovered")
 )
