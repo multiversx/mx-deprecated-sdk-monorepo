@@ -9,7 +9,7 @@ export class GasPrice {
     /**
      * The actual numeric value.
      */
-    public readonly value: number;
+    private readonly value: number;
 
     /**
      * Creates a GasPrice object given a value.
@@ -31,6 +31,10 @@ export class GasPrice {
         let value = NetworkConfig.getDefault().MinGasPrice.value;
         return new GasPrice(value);
     }
+
+    valueOf(): number {
+        return this.value;
+    }
 }
 
 /**
@@ -40,7 +44,7 @@ export class GasLimit {
     /**
      * The actual numeric value.
      */
-    public readonly value: number;
+    private readonly value: number;
 
     /**
      * Creates a GasLimit object given a value.
@@ -75,6 +79,10 @@ export class GasLimit {
         let value = NetworkConfig.getDefault().MinGasLimit.value;
         return new GasLimit(value);
     }
+
+    valueOf(): number {
+        return this.value;
+    }
 }
 
 
@@ -82,7 +90,7 @@ export class ChainID {
     /**
      * The actual value, as a string.
      */
-    public readonly value: string;
+    private readonly value: string;
 
     /**
      * Creates a ChainID object given a value.
@@ -94,13 +102,17 @@ export class ChainID {
 
         this.value = value;
     }
+
+    valueOf(): string {
+        return this.value;
+    }
 }
 
 export class TransactionVersion {
     /**
      * The actual numeric value.
      */
-    public readonly value: number;
+    private readonly value: number;
 
     /**
      * Creates a TransactionVersion object given a value.
@@ -113,5 +125,9 @@ export class TransactionVersion {
         }
 
         this.value = value;
+    }
+
+    valueOf(): number {
+        return this.value;
     }
 }
