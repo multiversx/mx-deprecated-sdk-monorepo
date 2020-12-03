@@ -32,3 +32,11 @@ export function guardSameLength(a: any[], b: any[]) {
         throw new errors.ErrInvariantFailed("arrays do not have the same length");
     }
 }
+
+export function guardLength(withLength: {length?: number}, expectedLength: number) {
+    let actualLength = withLength.length || 0;
+    
+    if (actualLength != expectedLength) {
+        throw new errors.ErrInvariantFailed(`wrong length, expected: ${expectedLength}, actual: ${actualLength}`);
+    }
+}

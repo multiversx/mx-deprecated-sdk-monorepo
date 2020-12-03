@@ -389,3 +389,22 @@ export class ErrCodec extends Err {
         super(message);
     }
 }
+
+/**
+ * Signals a generic wallet error.
+ */
+export class ErrWallet extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}
+
+/**
+ * Signals a wrong mnemonic format.
+ */
+export class ErrWrongMnemonic extends ErrWallet {
+    public constructor() {
+        super("Wrong mnemonic format");
+    }
+}
+
