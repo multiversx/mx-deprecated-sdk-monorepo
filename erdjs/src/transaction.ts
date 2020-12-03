@@ -10,9 +10,11 @@ import { TransactionPayload } from "./transactionPayload";
 import * as errors from "./errors";
 import { TypedEvent } from "./events";
 import { TransactionWatcher } from "./transactionWatcher";
-const createKeccakHash = require("keccak");
+import { ProtoSerializer } from "./proto";
+const createTransactionHasher = require("blake2b");
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
+const TRANSACTION_HASH_LENGTH = 32;
 
 /**
  * An abstraction for creating, signing and broadcasting Elrond transactions.
@@ -143,15 +145,15 @@ export class Transaction implements ISignable {
      */
     toPlainObject(sender?: Address): any {
         let result: any = {
-            nonce: this.nonce.value,
-            value: this.value.raw(),
+            nonce: this.nonce.valueOf(),
+            value: this.value.toString(),
             receiver: this.receiver.bech32(),
             sender: sender ? sender.bech32() : this.sender.bech32(),
-            gasPrice: this.gasPrice.value,
-            gasLimit: this.gasLimit.value,
+            gasPrice: this.gasPrice.valueOf(),
+            gasLimit: this.gasLimit.valueOf(),
             data: this.data.isEmpty() ? undefined : this.data.encoded(),
-            chainID: this.chainID.value,
-            version: this.version.value,
+            chainID: this.chainID.valueOf(),
+            version: this.version.valueOf(),
             signature: this.signature.isEmpty() ? undefined : this.signature.hex()
         };
 
@@ -290,16 +292,19 @@ export class TransactionHash {
         return this.hash;
     }
 
+    valueOf(): string {
+        return this.hash;
+    }
+
     /**
      * Computes the hash of a transaction.
      * Not yet implemented.
      */
     static compute(transaction: Transaction): TransactionHash {
-        // TODO: Fix this, to use the actual algorithm, not a dummy one.
-        let dummyData = `this!is!not!the!real!hash!${JSON.stringify(transaction)}`;
-        let buffer = Buffer.from(dummyData);
-        let hash = createKeccakHash("keccak256").update(buffer).digest();
-        return new TransactionHash(hash.toString("hex"));
+        let serializer = new ProtoSerializer();
+        let buffer = serializer.serializeTransaction(transaction);
+        let hash = createTransactionHasher(TRANSACTION_HASH_LENGTH).update(buffer).digest("hex");
+        return new TransactionHash(hash);
     }
 }
 
@@ -400,7 +405,7 @@ export class TransactionOnNetwork {
         result.sender = Address.fromBech32(payload["sender"]);
         result.receiver = Address.fromBech32(payload["receiver"]);
         result.gasPrice = new GasPrice(payload["gasPrice"]);
-        result.gasLimit = new GasPrice(payload["gasLimit"]);
+        result.gasLimit = new GasLimit(payload["gasLimit"]);
         result.data = TransactionPayload.fromEncoded(payload["data"]);
         result.status = new TransactionStatus(payload["status"]);
 

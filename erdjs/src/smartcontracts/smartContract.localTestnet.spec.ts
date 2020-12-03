@@ -6,7 +6,7 @@ import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
-import { describeOnlyIf, getLocalTestnetProvider } from "../testutils/utils";
+import { describeOnlyIf, getLocalTestnetProvider } from "../testutils";
 import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
@@ -240,7 +240,7 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
             gasLimit: new GasLimit(50000000),
             args: [
                 Argument.fromUTF8("foobar"), 
-                Argument.fromBigInt(Balance.eGLD(1).value),
+                Argument.fromBigInt(Balance.eGLD(1).valueOf()),
                 Argument.fromMissingOptional(),
                 Argument.fromMissingOptional(),
                 Argument.fromProvidedOptional(new U32Value(1)),
@@ -257,11 +257,9 @@ describeOnlyIf("localTestnet")("test on local testnet", function () {
         // Broadcast & execute
         await transactionDeploy.send(localTestnet);
         await transactionStart.send(localTestnet);
-        // await transactionMintCarol.send(localTestnet);
 
         await transactionDeploy.awaitExecuted(localTestnet);
         await transactionStart.awaitExecuted(localTestnet);
-        // await transactionMintCarol.awaitExecuted(localTestnet);
 
         // Query state, do some assertions
         let queryResponse = await contract.runQuery(localTestnet, {

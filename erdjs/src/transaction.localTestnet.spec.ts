@@ -4,8 +4,8 @@ import { Account } from "./account";
 import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
-import { TestWallets } from "./testutils/wallets";
-import { describeOnlyIf, getLocalTestnetProvider } from "./testutils/utils";
+import { TestWallets } from "./testutils";
+import { describeOnlyIf, getLocalTestnetProvider } from "./testutils";
 import { Logger } from "./logger";
 import { assert } from "chai";
 
@@ -54,7 +54,7 @@ describeOnlyIf("localTestnet")("test transaction", function () {
         await bob.sync(localTestnet);
         let newBalanceOfBob = bob.balance;
 
-        assert.equal(Balance.eGLD(85).value, newBalanceOfBob.value - initialBalanceOfBob.value);
+        assert.equal(Balance.eGLD(85).valueOf(), newBalanceOfBob.valueOf() - initialBalanceOfBob.valueOf());
     });
 
     it("should simulate transactions", async () => {

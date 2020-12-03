@@ -218,7 +218,7 @@ export class SmartContract implements ISmartContract {
         let ownerPubkey = owner.pubkey();
         let shardSelector = ownerPubkey.slice(30);
         let ownerNonceBytes = Buffer.alloc(8);
-        ownerNonceBytes.writeBigUInt64LE(BigInt(nonce.value));
+        ownerNonceBytes.writeBigUInt64LE(BigInt(nonce.valueOf()));
         let bytesToHash = Buffer.concat([ownerPubkey, ownerNonceBytes]);
         let hash = createKeccakHash("keccak256").update(bytesToHash).digest();
         let vmTypeBytes = Buffer.from(ArwenVirtualMachine, "hex");
