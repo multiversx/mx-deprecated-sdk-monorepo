@@ -76,14 +76,14 @@ async def run(args, env=None, cwd: str = None, delay: int = 0):
 
     pid = process.pid
 
-    print(f"Started process [{pid}]", args)
+    print(f"Started process [{pid}]", args, flush=True)
     await asyncio.wait([
         _read_stream(process.stdout, pid),
         _read_stream(process.stderr, pid)
     ])
 
     return_code = await process.wait()
-    print(f"Proces [{pid}] stopped. Return code: {return_code}.")
+    print(f"Proces [{pid}] stopped. Return code: {return_code}.", flush=True)
 
 
 async def _read_stream(stream, pid):
@@ -122,4 +122,4 @@ def _is_interesting_logline(logline):
 
 
 def _dump_interesting_log_line(pid: str, logline: str) -> str:
-    print(f"[PID={pid}]", logline)
+    print(f"[PID={pid}]", logline, flush=True)
