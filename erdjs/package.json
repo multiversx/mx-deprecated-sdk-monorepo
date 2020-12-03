@@ -41,6 +41,7 @@
     "keccak": "^3.0.1",
     "platform": "^1.3.6",
     "protobufjs": "^6.10.2",
+    "scryptsy": "^2.1.0",
     "tweetnacl": "^1.0.3"
   },
   "devDependencies": {
