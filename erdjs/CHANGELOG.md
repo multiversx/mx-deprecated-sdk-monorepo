@@ -4,6 +4,23 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.3] - 03.12.2020
+
+Pull requests:
+ - [New type system (with generics), codecs (elrond-wasm alike) and ABI prototype.](https://github.com/ElrondNetwork/elrond-sdk/pull/87)
+ - [Compute TX hash off-line](https://github.com/ElrondNetwork/elrond-sdk/pull/93)
+
+In more detail:
+ - New typing system to better match elrond-wasm's typing system (our standard typing system for smart contracts). Generics (simple or nested) included.
+ - ABI prototype (functions, structures).
+ - Codec utilities
+ - Optional arguments supported as well.
+ - Compute TX hash in an off-line fashion (not relying on the Node / Proxy).
+
+Breaking changes:
+ - Members of `Argument` class have been renamed.
+ - Members of `Balance` class have been renamed.
+
 ## [1.1.2] - 17.11.2020
  - Removed useless check and add the current Ledger selection as sender.
 
