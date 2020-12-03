@@ -1,13 +1,15 @@
 import * as errors from "../errors";
+import * as tweetnacl from "tweetnacl";
 import { guardLength } from "../utils";
+import {PublicKey} from "./publicKey";
 
 export class PrivateKey {
     private readonly buffer: Buffer;
-
-    constructor(value: Buffer) {
-        guardLength(value, 32);
+    
+    constructor(buffer: Buffer) {
+        guardLength(buffer, 32);
         
-        this.buffer = value;
+        this.buffer = buffer;
     }
 
     static fromString(value: string): PrivateKey {
@@ -27,6 +29,14 @@ export class PrivateKey {
     toPEM() {
     }
 
+    toPublicKey(): PublicKey {
+        // TODO: Question for review: @ccorcoveanu, @AdoAdoAdo, here we use "fromSeed" (instead of fromSecretKey, which wouldn't work on 32-byte private keys).
+        // TODO: Question for review: is this all right?
+        let keyPair = tweetnacl.sign.keyPair.fromSeed(this.buffer);
+        let buffer = Buffer.from(keyPair.publicKey);
+        return new PublicKey(buffer);
+    }
+
     toString(): string {
         return this.buffer.toString("hex");
     }
@@ -35,4 +45,3 @@ export class PrivateKey {
         return this.buffer;
     }
 }
-
