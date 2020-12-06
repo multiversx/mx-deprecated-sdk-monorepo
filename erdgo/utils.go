@@ -41,10 +41,16 @@ func SignTransaction(tx *Transaction, privateKey []byte) error {
 }
 
 // SignTransactionHash signs a transaction with the provided private key
+// Also known as "version 2" transactions, their signatures are computed upon the sha256 hash
+// of the marshalized transaction instead of the plain marshalized transaction
 func SignTransactionHash(tx *Transaction, privateKey []byte) error {
 	tx.Signature = ""
-	tx.Version = versionForTxHashSigning
-	tx.Options = optionsForTxHashSigning
+	if tx.Version != versionForTxHashSigning {
+		return errTxVersionMismatch
+	}
+	if tx.Options != optionsForTxHashSigning {
+		return errTxOptionsMismatch
+	}
 	txSingleSigner := &singlesig.Ed25519Signer{}
 	suite := ed25519.NewEd25519()
 	keyGen := signing.NewKeyGenerator(suite)
