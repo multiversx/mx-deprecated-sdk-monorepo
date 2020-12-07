@@ -4,13 +4,13 @@ import { ContractCallPayloadBuilder, ContractDeployPayloadBuilder, ContractUpgra
  * The "data" field of a {@link Transaction}, as an immutable object.
  */
 export class TransactionPayload {
-    private data: string;
+    private readonly data: Buffer;
 
     /**
-     * Creates a TransactionPayload from a raw utf-8 string.
+     * Creates a TransactionPayload from a utf-8 string or from a buffer.
      */
-    constructor(data?: string) {
-        this.data = data || "";
+    constructor(data?: string | Buffer) {
+        this.data = Buffer.from(data || []);
     }
 
     /**
@@ -36,13 +36,13 @@ export class TransactionPayload {
      * Returns the base-64 representation of the data.
      */
     encoded(): string {
-        return Buffer.from(this.data).toString("base64");
+        return this.data.toString("base64");
     }
 
     /**
      * Returns the data as a utf-8 string.
      */
-    decoded(): string {
+    valueOf(): Buffer {
         return this.data;
     }
 

@@ -38,7 +38,7 @@ export class Query {
             "ScAddress": this.address.bech32(),
             "FuncName": this.func.toString(),
             "Args": this.args.map(arg => arg.valueOf()),
-            "CallValue": this.value.raw()
+            "CallValue": this.value.toString()
         };
 
         if (!this.caller.isEmpty()) {
@@ -102,7 +102,7 @@ export class QueryResponse {
             returnData: this.returnData,
             returnCode: this.returnCode,
             returnMessage: this.returnMessage,
-            gasUsed: this.gasUsed.value
+            gasUsed: this.gasUsed.valueOf()
         };
     }
 }

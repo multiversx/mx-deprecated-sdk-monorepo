@@ -78,8 +78,8 @@ export class Account {
     toJSON(): any {
         return {
             address: this.address.bech32(),
-            nonce: this.nonce.value,
-            balance: this.balance.raw()
+            nonce: this.nonce.valueOf(),
+            balance: this.balance.toString()
         };
     }
 }
