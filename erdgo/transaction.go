@@ -21,6 +21,7 @@ type Transaction struct {
 	Signature string `json:"signature,omitempty"`
 	ChainID   string `json:"chainID"`
 	Version   uint32 `json:"version"`
+	Options   uint32 `json:"options,omitempty"`
 }
 
 // TransactionStatus holds a transaction's status response from the network
