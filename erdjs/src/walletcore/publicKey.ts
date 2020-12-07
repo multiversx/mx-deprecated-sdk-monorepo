@@ -17,4 +17,8 @@ export class PublicKey {
     toAddress(): Address {
         return new Address(this.buffer);
     }
+
+    valueOf(): Buffer {
+        return this.buffer;
+    }
 }
