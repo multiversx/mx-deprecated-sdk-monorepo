@@ -122,6 +122,13 @@ export class EncryptedKey {
 
     // TODO: load() (static), then decrypt(password)...
 
+    /**
+     * Will take about:
+     *  - 80-90 ms in Node.js, on a i3-8100 CPU @ 3.60GHz
+     *  - 350-360 ms in browser (Firefox), on a i3-8100 CPU @ 3.60GHz
+     * 
+     * TODO: Question for review: @ccorcoveanu, @AdoAdoAdo, is this all right?
+     */
     private static generateDerivedKey(password: Buffer, salt: Buffer, kdfparams: ScryptKeyDerivationParams): Buffer {
         // Question for review: @ccorcoveanu, why not this implementation?
         // https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback
