@@ -26,6 +26,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@babel/runtime": "^7.11.2",
+    "@elrondnetwork/bls-wasm": "^0.3.3",
     "@elrondnetwork/elrond-core-js": "^1.26.2",
     "@elrondnetwork/hw-app-elrond": "^0.1.17",
     "@ledgerhq/hw-transport-u2f": "^5.28.0",
