@@ -16,7 +16,7 @@ describe("test smart contract interactor", function () {
         let signer = wallets.alice.signer;
         let interactor = new SmartContractInteractor(contract, abi, gasEstimator, signer);
 
-        interactor.query().getUltimateAnswer();
+        interactor.prepare().getUltimateAnswer();
     });
 
     it("should interact with 'counter': prepare", async function () {
