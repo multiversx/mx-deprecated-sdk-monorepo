@@ -1,0 +1,42 @@
+{
+    "functions": [
+        {
+            "name": "increment",
+            "input": [],
+            "output": [
+                {
+                    "description": "the current value",
+                    "type": [
+                        "I64"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "decrement",
+            "input": [],
+            "output": [
+                {
+                    "description": "the current value",
+                    "type": [
+                        "I64"
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "get",
+            "input": [],
+            "output": [
+                {
+                    "description": "the current value",
+                    "type": [
+                        "I64"
+                    ]
+                }
+            ],
+            "isPure": true
+        }
+    ],
+    "structures": []
+}

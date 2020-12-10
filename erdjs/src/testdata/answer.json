@@ -1,0 +1,17 @@
+{
+    "functions": [
+        {
+            "name": "getUltimateAnswer",
+            "input": [],
+            "output": [
+                {
+                    "description": "the ultimate answer",
+                    "type": [
+                        "I64"
+                    ]
+                }
+            ]
+        }
+    ],
+    "structures": []
+}
