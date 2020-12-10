@@ -46,3 +46,6 @@ export interface ISmartContract {
 //     approve(spender: string, value: bigint): Promise<SmartContractCall>;
 //     allowance(owner: string, spender: string): Promise<bigint>;
 // }
+
+export interface IGasEstimator {
+}

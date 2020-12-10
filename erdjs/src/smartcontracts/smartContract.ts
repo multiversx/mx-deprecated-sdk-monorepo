@@ -3,7 +3,6 @@ import { Address } from "../address";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
 import { TransactionPayload } from "../transactionPayload";
-import { AbiRegistry } from "./typesystem/abiRegistry";
 import { Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
@@ -21,7 +20,6 @@ const createKeccakHash = require("keccak");
 export class SmartContract implements ISmartContract {
     private owner: Address = new Address();
     private address: Address = new Address();
-    private abi: AbiRegistry = new AbiRegistry();
     private code: Code = Code.nothing();
     private codeMetadata: CodeMetadata = new CodeMetadata();
     private readonly trackOfTransactions: Transaction[] = [];
@@ -59,20 +57,6 @@ export class SmartContract implements ISmartContract {
     getOwner(): Address {
         this.owner.assertNotEmpty();
         return this.owner;
-    }
-
-    /**
-     * ABIs aren't currently supported by `erdjs`. They will be supported in a future version.
-     */
-    setAbi(abi: AbiRegistry) {
-        this.abi = abi;
-    }
-
-    /**
-     * ABIs aren't currently supported by `erdjs`. They will be supported in a future version.
-     */
-    getAbi(): AbiRegistry {
-        return this.abi;
     }
 
     /**
