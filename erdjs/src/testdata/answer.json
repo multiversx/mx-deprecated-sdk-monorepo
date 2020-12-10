@@ -1,4 +1,5 @@
 {
+    "name": "answer",
     "functions": [
         {
             "name": "getUltimateAnswer",

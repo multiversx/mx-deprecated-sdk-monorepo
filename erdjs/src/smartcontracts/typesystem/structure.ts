@@ -119,7 +119,7 @@ export class StructureDefinition {
     }
 
     static fromJSON(json: { name: string, fields: any[] }): StructureDefinition {
-        let fields = json.fields.map(field => StructureFieldDefinition.fromJSON(field));
+        let fields = (json.fields || []).map(field => StructureFieldDefinition.fromJSON(field));
         return new StructureDefinition(json.name, fields);
     }
 }

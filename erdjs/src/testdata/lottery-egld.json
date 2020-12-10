@@ -1,4 +1,5 @@
 {
+    "name": "lottery-egld",
     "functions": [
         {
             "name": "start",

@@ -1,5 +1,5 @@
 import { guardValueIsSet } from "../../utils";
-import { FunctionDefinition } from "./function";
+import { Endpoint } from "./endpoint";
 import { StructureDefinition } from "./structure";
 
 /**
@@ -11,23 +11,23 @@ import { StructureDefinition } from "./structure";
  */
 export class Namespace {
     readonly namespace: string;
-    readonly functions: FunctionDefinition[] = [];
+    readonly endpoints: Endpoint[] = [];
     readonly structures: StructureDefinition[] = [];
 
-    constructor(namespace: string, functions: FunctionDefinition[], structures: StructureDefinition[]) {
+    constructor(namespace: string, endpoints: Endpoint[], structures: StructureDefinition[]) {
         this.namespace = namespace;
-        this.functions = functions;
+        this.endpoints = endpoints;
         this.structures = structures;
     }
 
-    static fromJSON(json: { namespace: string, functions: any[], structures: any[] }): Namespace {
-        let functions = json.functions.map(item => FunctionDefinition.fromJSON(item));
-        let structures = json.structures.map(item => StructureDefinition.fromJSON(item));
-        return new Namespace(json.namespace, functions, structures);
+    static fromJSON(json: { namespace: string, endpoints: any[], structures: any[] }): Namespace {
+        let endpoints = (json.endpoints || []).map(item => Endpoint.fromJSON(item));
+        let structures = (json.structures || []).map(item => StructureDefinition.fromJSON(item));
+        return new Namespace(json.namespace, endpoints, structures);
     }
 
-    findFunction(functionName: string): FunctionDefinition {
-        let result = this.functions.find(e => e.name == functionName);
+    findEndpoint(name: string): Endpoint {
+        let result = this.endpoints.find(e => e.name == name);
         guardValueIsSet("result", result);
         return result!;
     }

@@ -1,4 +1,5 @@
 {
+    "name": "counter",
     "functions": [
         {
             "name": "increment",
