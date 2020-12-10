@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.4] - 10.12.2020
+ - Add some utility functions for ABI (needed for some interaction examples among SC templates).
+
 ## [1.1.3] - 03.12.2020
 
 Pull requests:
