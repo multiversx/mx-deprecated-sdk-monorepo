@@ -1,3 +1,4 @@
+import { guardValueIsSet } from "../../utils";
 import { FunctionDefinition } from "./function";
 import { StructureDefinition } from "./structure";
 
@@ -23,5 +24,11 @@ export class Namespace {
         let functions = json.functions.map(item => FunctionDefinition.fromJSON(item));
         let structures = json.structures.map(item => StructureDefinition.fromJSON(item));
         return new Namespace(json.namespace, functions, structures);
+    }
+
+    findFunction(functionName: string): FunctionDefinition {
+        let result = this.functions.find(e => e.name == functionName);
+        guardValueIsSet("result", result);
+        return result!;
     }
 }
