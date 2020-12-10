@@ -93,6 +93,10 @@ export class QueryResponse {
         return first;
     }
 
+    buffers(): Buffer[] {
+        return this.returnData.map(data => data.asBuffer);
+    }
+
     /**
      * Converts the object to a pretty, plain JavaScript object.
      */
