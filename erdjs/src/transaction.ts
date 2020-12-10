@@ -21,6 +21,7 @@ const TRANSACTION_HASH_LENGTH = 32;
  */
 export class Transaction implements ISignable {
     onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
+    onSent: TypedEvent<{ transaction: Transaction }>;
 
     /**
      * The nonce of the transaction (the account sequence number of the sender).
@@ -99,6 +100,7 @@ export class Transaction implements ISignable {
         Object.assign(this, init);
 
         this.onSigned = new TypedEvent();
+        this.onSent = new TypedEvent();
 
         guardType("nonce", Nonce, this.nonce);
         guardType("gasLimit", GasLimit, this.gasLimit);
@@ -186,6 +188,8 @@ export class Transaction implements ISignable {
      */
     async send(provider: IProvider): Promise<TransactionHash> {
         this.hash = await provider.sendTransaction(this);
+
+        this.onSent.emit({ transaction: this });
         return this.hash;
     }
 

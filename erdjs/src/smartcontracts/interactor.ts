@@ -2,10 +2,11 @@ import { Address } from "../address";
 import { Balance } from "../balance";
 import { IProvider, ISigner } from "../interface";
 import { GasLimit } from "../networkParams";
+import { NonceTracker } from "../nonce";
 import { Transaction, TransactionHash } from "../transaction";
 import { SmartContractAbi } from "./abi";
 import { ContractFunction } from "./function";
-import { IGasEstimator, IInteractorRunner as IInteractionRunner } from "./interface";
+import { IGasEstimator, IInteractionRunner } from "./interface";
 import { Query, QueryResponse } from "./query";
 import { SmartContract } from "./smartContract";
 
@@ -68,6 +69,10 @@ export class SmartContractInteractor {
     }
 }
 
+/**
+ * Interactions are mutable (the interaction runner mutates their content: transaction, query).
+ * But they aren't really reusable, therfore their mutability should not cause erroneous usage (generally speaking).
+ */
 export class PreparedInteraction {
     readonly runner: IInteractionRunner;
     readonly transaction: Transaction;
@@ -94,6 +99,7 @@ export class PreparedInteraction {
     withValue(value: Balance): PreparedInteraction {
         this.transaction.value = value;
         this.query.value = value;
+
         return this;
     }
 }
@@ -101,39 +107,67 @@ export class PreparedInteraction {
 export class DefaultInteractionRunner implements IInteractionRunner {
     private readonly signer: ISigner;
     private readonly provider: IProvider;
+    private readonly nonceTracker: NonceTracker;
 
     constructor(signer: ISigner, provider: IProvider) {
         this.signer = signer;
         this.provider = provider;
+        this.nonceTracker = new NonceTracker(signer.getAddress(), provider);
     }
 
-    async runBroadcast(_interaction: PreparedInteraction): Promise<TransactionHash> {
-        // TODO manages nonces as well.
-        // transaction.onSigned.on(this.onTransactionSigned.bind(this));
-        throw new Error("not implemented")
+    /**
+     * Sets a correct (best-effort) nonce, signs the transaction, then broadcasts it.
+     * Notifies the nonce tracker afterwards.
+     */
+    async runBroadcast(interaction: PreparedInteraction, awaitExecution: boolean = true): Promise<TransactionHash> {
+        let nonce = await this.nonceTracker.getNonce();
+        interaction.transaction.setNonce(nonce);
+
+        await this.signer.sign(interaction.transaction);
+        let hash = await interaction.transaction.send(this.provider);
+        this.nonceTracker.onTransactionBroadcastedWithSuccess();
+
+        if (awaitExecution) {
+            await interaction.transaction.awaitExecuted(this.provider);
+            // TODO: Also return status perhaps?
+            // TODO: Also return SCRs?
+        }
+
+        return hash;
     }
 
-    private onTransactionSigned() {
-        // TODO: increment copy of nonce
+    async runQuery(interaction: PreparedInteraction, caller?: Address): Promise<QueryResponse> {
+        interaction.query.caller = caller || this.signer.getAddress();
+        let response = await this.provider.queryContract(interaction.query);
+        return response;
     }
 
-    async runQuery(_interaction: PreparedInteraction): Promise<QueryResponse> {
-        // should also set caller here. Maybe receive as param (to override)?
-        throw new Error("not implemented")
-    }
-
+    /**
+     * Sets a correct (best-effort) nonce, signs the transaction, then dispatches it for simulation.
+     * Does not increment nonce afterwards.
+     */
     async runSimulate(interaction: PreparedInteraction): Promise<any> {
+        let nonce = await this.nonceTracker.getNonce();
+        interaction.transaction.setNonce(nonce);
 
-        // must have good nonce ...
-        await interaction.transaction.simulate(this.provider);
-
-        // simulateOne.setNonce(alice.nonce);
-        // simulateTwo.setNonce(alice.nonce);
-
-        // await aliceSigner.sign(simulateOne);
+        await this.signer.sign(interaction.transaction);
+        let simulationResult = await interaction.transaction.simulate(this.provider);
+        return simulationResult;
     }
 }
 
 export class WebInteractionRunner implements IInteractionRunner {
-    
+    // TODO: Use WalletProvider. No ProxyProvider.
+
+    runBroadcast(_interaction: PreparedInteraction): Promise<TransactionHash> {
+        throw new Error("Method not implemented.");
+    }
+
+    runQuery(_interaction: PreparedInteraction): Promise<QueryResponse> {
+        throw new Error("Method not implemented.");
+    }
+
+    runSimulate(_interaction: PreparedInteraction): Promise<any> {
+        throw new Error("Method not implemented.");
+    }
 }
