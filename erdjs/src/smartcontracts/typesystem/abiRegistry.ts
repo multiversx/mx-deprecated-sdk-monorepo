@@ -15,24 +15,24 @@ const DefaultNamespace = "default";
 export class AbiRegistry {
     readonly namespaces: Namespace[] = [];
 
-    async extendFromFile(file: string): Promise<void> {
+    async extendFromFile(file: string): Promise<AbiRegistry> {
         let jsonContent: string = await fs.promises.readFile(file, { encoding: "utf8" });
         let json = JSON.parse(jsonContent);
         
-        AbiRegistry.isNamespaced(file) ? this.extendNamespaced(json) : this.extend(json);
+        return AbiRegistry.isNamespaced(file) ? this.extendNamespaced(json) : this.extend(json);
     }
 
     private static isNamespaced(urlOrFile: string): boolean {
         return urlOrFile.endsWith(NamespacedExtension);
     }
 
-    async extendFromUrl(url: string): Promise<void> {
+    async extendFromUrl(url: string): Promise<AbiRegistry> {
         let response: AxiosResponse<ArrayBuffer> = await axios.get(url);
         let json = response.data;
-        AbiRegistry.isNamespaced(url) ? this.extendNamespaced(json) : this.extend(json);
+        return AbiRegistry.isNamespaced(url) ? this.extendNamespaced(json) : this.extend(json);
     }
 
-    extend(json: any) {
+    extend(json: any): AbiRegistry {
         let defaultNamespace = this.getDefaultNamespace();
         let endpoint = Endpoint.fromJSON(json);
         let structures = (<any[]>(json.structures || [])).map(item => StructureDefinition.fromJSON(item));
@@ -44,9 +44,11 @@ export class AbiRegistry {
 
             new StructureType(definition);
         }
+
+        return this;
     }
 
-    extendNamespaced(json: any) {
+    extendNamespaced(json: any): AbiRegistry {
         for (let item of json || []) {
             let namespace = Namespace.fromJSON(item);
             this.namespaces.push(namespace);
@@ -55,6 +57,8 @@ export class AbiRegistry {
                 new StructureType(definition);
             }
         }
+
+        return this;
     }
 
     getDefaultNamespace(): Namespace {
@@ -68,9 +72,13 @@ export class AbiRegistry {
         return defaultNamespace;
     }
 
-    findNamespace(namespace: string): Namespace {
-        let result = this.namespaces.find(e => e.namespace == namespace);
+    findNamespace(name: string): Namespace {
+        let result = this.namespaces.find(e => e.namespace == name);
         guardValueIsSet("result", result);
         return result!;
+    }
+
+    findNamespaces(names: string[]): Namespace[] {
+        return names.map(name => this.findNamespace(name));
     }
 }

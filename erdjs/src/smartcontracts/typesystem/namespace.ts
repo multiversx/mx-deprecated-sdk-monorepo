@@ -31,4 +31,8 @@ export class Namespace {
         guardValueIsSet("result", result);
         return result!;
     }
+
+    findEndpoints(names: string[]): Endpoint[] {
+        return names.map(name => this.findEndpoint(name));
+    }
 }
