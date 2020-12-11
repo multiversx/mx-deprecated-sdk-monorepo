@@ -2,6 +2,7 @@ import { Address } from "../../address";
 import { Balance } from "../../balance";
 import { GasLimit } from "../../networkParams";
 import { SmartContractAbi } from "../abi";
+import { Argument } from "../argument";
 import { ContractFunction } from "../function";
 import { Query } from "../query";
 import { SmartContract } from "../smartContract";
@@ -28,8 +29,8 @@ export class SmartContractInteractor {
         for (const definition of this.abi.getAllFunctions()) {
             let functionName = definition.name;
 
-            this.preparators[functionName] = function () {
-                self.doPrepare(functionName, [...arguments]);
+            this.preparators[functionName] = function (args: Argument[]) {
+                self.doPrepare(functionName, args || []);
             };
         }
     }
@@ -38,14 +39,14 @@ export class SmartContractInteractor {
         return this.preparators;
     }
 
-    private doPrepare(functionName: string, _args: any[]): PreparedInteraction {
+    private doPrepare(functionName: string, args: Argument[]): PreparedInteraction {
         let contractFunction = new ContractFunction(functionName);
 
         let transaction = this.contract.call({
             func: contractFunction,
             // GasLimit will be set using "PreparedInteraction.withGasLimit()".
             gasLimit: GasLimit.min(),
-            args: [],
+            args: args,
             // Value will be set using "PreparedInteraction.withValue()".
             value: Balance.Zero()
         });
@@ -53,7 +54,7 @@ export class SmartContractInteractor {
         let query = new Query({
             address: this.contract.getAddress(),
             func: contractFunction,
-            args: [],
+            args: args,
             // Value will be set using "PreparedInteraction.withValue()".
             value: Balance.Zero(),
             // Caller will be set by the InteractionRunner.
