@@ -6,21 +6,19 @@ import { NonceTracker } from "../nonce";
 import { Transaction, TransactionHash } from "../transaction";
 import { SmartContractAbi } from "./abi";
 import { ContractFunction } from "./function";
-import { IGasEstimator, IInteractionRunner } from "./interface";
+import { IInteractionRunner } from "./interface";
 import { Query, QueryResponse } from "./query";
 import { SmartContract } from "./smartContract";
 
 export class SmartContractInteractor {
     private readonly contract: SmartContract;
     private readonly abi: SmartContractAbi;
-    private readonly gasEstimator: IGasEstimator;
     private readonly runner: IInteractionRunner;
     private preparators: any = {};
 
-    constructor(contract: SmartContract, abi: SmartContractAbi, gasEstimator: IGasEstimator, runner: IInteractionRunner) {
+    constructor(contract: SmartContract, abi: SmartContractAbi, runner: IInteractionRunner) {
         this.contract = contract;
         this.abi = abi;
-        this.gasEstimator = gasEstimator;
         this.runner = runner;
 
         this.setupPreparators();
@@ -99,6 +97,12 @@ export class PreparedInteraction {
     withValue(value: Balance): PreparedInteraction {
         this.transaction.value = value;
         this.query.value = value;
+
+        return this;
+    }
+
+    withGasLimit(gasLimit: GasLimit): PreparedInteraction {
+        this.transaction.gasLimit = gasLimit;
 
         return this;
     }

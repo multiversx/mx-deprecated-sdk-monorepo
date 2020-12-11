@@ -1,8 +1,7 @@
-import { SmartContractInteractor } from "./interactor";
+import { DefaultInteractionRunner, SmartContractInteractor } from "./interactor";
 import { SmartContract } from "./smartContract";
 import { AbiRegistry } from "./typesystem";
-import { GasEstimator } from "./gasEstimator";
-import { TestWallets } from "../testutils";
+import { MockProvider, TestWallets } from "../testutils";
 import { SmartContractAbi } from "./abi";
 
 describe("test smart contract interactor", function () {
@@ -12,9 +11,10 @@ describe("test smart contract interactor", function () {
         let contract = new SmartContract({});
         let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/answer.json");
         let abi = new SmartContractAbi(abiRegistry, ["default"], ["answer"]);
-        let gasEstimator = new GasEstimator();
         let signer = wallets.alice.signer;
-        let interactor = new SmartContractInteractor(contract, abi, gasEstimator, signer);
+        let provider = new MockProvider();
+        let runner = new DefaultInteractionRunner(signer, provider);
+        let interactor = new SmartContractInteractor(contract, abi, runner);
 
         interactor.prepare().getUltimateAnswer();
     });

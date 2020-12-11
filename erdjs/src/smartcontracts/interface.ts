@@ -49,9 +49,6 @@ export interface ISmartContract {
 //     allowance(owner: string, spender: string): Promise<bigint>;
 // }
 
-export interface IGasEstimator {
-}
-
 export interface IInteractionRunner {
     runBroadcast(interaction: PreparedInteraction): Promise<TransactionHash>;
     runQuery(interaction: PreparedInteraction): Promise<QueryResponse>;
