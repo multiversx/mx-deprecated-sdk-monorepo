@@ -4,18 +4,30 @@ export class FunctionDefinition {
     readonly name: string;
     readonly input: FunctionParameterDefinition[] = [];
     readonly output: FunctionParameterDefinition[] = [];
+    readonly modifiers: FunctionModifiers;
 
-    constructor(name: string, input: FunctionParameterDefinition[], output: FunctionParameterDefinition[]) {
+    constructor(name: string, input: FunctionParameterDefinition[], output: FunctionParameterDefinition[], modifiers: FunctionModifiers) {
         this.name = name;
         this.input = input || [];
         this.output = output || [];
+        this.modifiers = modifiers;
     }
 
-    static fromJSON(json: { name: string, input: any[], output: [] }): FunctionDefinition {
+    static fromJSON(json: { name: string, isPure: boolean, isPayable: boolean, input: any[], output: [] }): FunctionDefinition {
         let input = json.input.map(param => FunctionParameterDefinition.fromJSON(param));
         let output = json.output.map(param => FunctionParameterDefinition.fromJSON(param));
-        return new FunctionDefinition(json.name, input, output);
+        
+        let modifiers = new FunctionModifiers();
+        modifiers.isPure = json.isPure;
+        modifiers.isPayable = json.isPayable;
+
+        return new FunctionDefinition(json.name, input, output, modifiers);
     }
+}
+
+export class FunctionModifiers {
+    isPure: boolean = false;
+    isPayable: boolean = false;
 }
 
 export class FunctionParameterDefinition {

@@ -1,4 +1,5 @@
 import { SmartContractInteractor } from "./interactor";
+import { StrictChecker as StrictInteractionChecker } from "./strictChecker"
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
 import { AbiRegistry } from "../typesystem";
@@ -13,10 +14,11 @@ describe("test smart contract interactor", function () {
         let contract = new SmartContract({ address: new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3") });
         let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/answer.json");
         let abi = new SmartContractAbi(abiRegistry, ["default"], ["answer"]);
+        let checker = new StrictInteractionChecker(abi);
         let signer = wallets.alice.signer;
         let provider = new MockProvider();
         let runner = new DefaultInteractionRunner(signer, provider);
-        let interactor = new SmartContractInteractor(contract, abi, runner);
+        let interactor = new SmartContractInteractor(contract, abi, checker, runner);
 
         interactor.prepare().getUltimateAnswer();
     });

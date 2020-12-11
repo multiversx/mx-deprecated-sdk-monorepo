@@ -7,3 +7,7 @@ export interface IInteractionRunner {
     runQuery(interaction: PreparedInteraction): Promise<QueryResponse>;
     runSimulate(interaction: PreparedInteraction): Promise<any>;
 }
+
+export interface IInteractionChecker {
+    checkInteraction(interaction: PreparedInteraction): void;
+}

@@ -6,18 +6,20 @@ import { Argument } from "../argument";
 import { ContractFunction } from "../function";
 import { Query } from "../query";
 import { SmartContract } from "../smartContract";
-import { IInteractionRunner } from "./interface";
+import { IInteractionChecker, IInteractionRunner } from "./interface";
 import { PreparedInteraction } from "./preparedInteraction";
 
 export class SmartContractInteractor {
     private readonly contract: SmartContract;
     private readonly abi: SmartContractAbi;
+    private readonly checker: IInteractionChecker;
     private readonly runner: IInteractionRunner;
     private preparators: any = {};
 
-    constructor(contract: SmartContract, abi: SmartContractAbi, runner: IInteractionRunner) {
+    constructor(contract: SmartContract, abi: SmartContractAbi, checker: IInteractionChecker, runner: IInteractionRunner) {
         this.contract = contract;
         this.abi = abi;
+        this.checker = checker;
         this.runner = runner;
 
         this.setupPreparators();
@@ -40,10 +42,10 @@ export class SmartContractInteractor {
     }
 
     private doPrepare(functionName: string, args: Argument[]): PreparedInteraction {
-        let contractFunction = new ContractFunction(functionName);
+        let func = new ContractFunction(functionName);
 
         let transaction = this.contract.call({
-            func: contractFunction,
+            func: func,
             // GasLimit will be set using "PreparedInteraction.withGasLimit()".
             gasLimit: GasLimit.min(),
             args: args,
@@ -53,7 +55,7 @@ export class SmartContractInteractor {
 
         let query = new Query({
             address: this.contract.getAddress(),
-            func: contractFunction,
+            func: func,
             args: args,
             // Value will be set using "PreparedInteraction.withValue()".
             value: Balance.Zero(),
@@ -61,6 +63,7 @@ export class SmartContractInteractor {
             caller: new Address()
         });
 
-        return new PreparedInteraction(this.runner, transaction, query);
+        let interaction = new PreparedInteraction(func, this.checker, this.runner, transaction, query);
+        return interaction;
     }
 }
