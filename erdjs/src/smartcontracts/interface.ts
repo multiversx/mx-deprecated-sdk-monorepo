@@ -1,13 +1,11 @@
 import { Address } from "../address";
 import { Balance } from "../balance";
 import { GasLimit } from "../networkParams";
-import { Transaction, TransactionHash } from "../transaction";
+import { Transaction } from "../transaction";
 import { Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
-import { PreparedInteraction } from "./interactor";
-import { QueryResponse } from "./query";
 
 /**
  * ISmartContract defines a general interface for operating with {@link SmartContract} objects.
@@ -49,8 +47,3 @@ export interface ISmartContract {
 //     allowance(owner: string, spender: string): Promise<bigint>;
 // }
 
-export interface IInteractionRunner {
-    runBroadcast(interaction: PreparedInteraction): Promise<TransactionHash>;
-    runQuery(interaction: PreparedInteraction): Promise<QueryResponse>;
-    runSimulate(interaction: PreparedInteraction): Promise<any>;
-}
