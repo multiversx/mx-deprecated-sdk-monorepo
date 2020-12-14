@@ -1,14 +1,16 @@
 import { Address } from "../../address";
-import { TransactionHash } from "../../transaction";
-import { QueryResponse } from "../query";
-import { PreparedInteraction } from "./preparedInteraction";
+import { Transaction, TransactionHash, TransactionOnNetwork } from "../../transaction";
+import { Query, QueryResponse } from "../query";
+import { Interaction } from "./interaction";
 
 export interface IInteractionRunner {
-    runBroadcast(interaction: PreparedInteraction): Promise<TransactionHash>;
-    runQuery(interaction: PreparedInteraction, caller?: Address): Promise<QueryResponse>;
-    runSimulate(interaction: PreparedInteraction): Promise<any>;
+    checkInteraction(interaction: Interaction): void;
+    broadcast(transaction: Transaction): Promise<TransactionHash>;
+    broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork>;
+    query(query: Query, caller?: Address): Promise<QueryResponse>;
+    simulate(transaction: Transaction): Promise<any>;
 }
 
 export interface IInteractionChecker {
-    checkInteraction(interaction: PreparedInteraction): void;
+    checkInteraction(interaction: Interaction): void;
 }

@@ -1,8 +1,8 @@
 import * as errors from "../../errors";
 import { SmartContractAbi } from "../abi";
 import { EndpointDefinition } from "../typesystem";
+import { Interaction } from "./interaction";
 import { IInteractionChecker } from "./interface";
-import { PreparedInteraction } from "./preparedInteraction";
 
 export class StrictChecker implements IInteractionChecker {
     private readonly abi: SmartContractAbi;
@@ -11,16 +11,16 @@ export class StrictChecker implements IInteractionChecker {
         this.abi = abi;
     }
 
-    checkInteraction(interaction: PreparedInteraction): void {
-        let name = interaction.func.name;
+    checkInteraction(interaction: Interaction): void {
+        let name = interaction.getFunction().name;
         let definition = this.abi.findEndpoint(name);
 
         this.checkPayable(interaction, definition);
         this.checkArguments(interaction, definition);
     }
 
-    private checkPayable(interaction: PreparedInteraction, definition: EndpointDefinition) {
-        let hasValue = interaction.transaction.value.isSet();
+    private checkPayable(interaction: Interaction, definition: EndpointDefinition) {
+        let hasValue = interaction.getValue().isSet();
         let isPayableInEGLD = definition.modifiers.isPayableInEGLD();
 
         if (hasValue && !isPayableInEGLD) {
@@ -28,9 +28,9 @@ export class StrictChecker implements IInteractionChecker {
         }
     }
 
-    private checkArguments(interaction: PreparedInteraction, definition: EndpointDefinition) {
+    private checkArguments(interaction: Interaction, definition: EndpointDefinition) {
         let numFormalArguments = definition.input.length;
-        let numActualArguments = interaction.query.args;
+        let numActualArguments = interaction.getArguments();
 
         for (const parameterDefinition of definition.input) {
             let typeDescriptor = parameterDefinition.getTypeDescriptor();

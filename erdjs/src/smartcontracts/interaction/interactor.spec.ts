@@ -17,8 +17,8 @@ describe("test smart contract interactor", function () {
         let checker = new StrictInteractionChecker(abi);
         let signer = wallets.alice.signer;
         let provider = new MockProvider();
-        let runner = new DefaultInteractionRunner(signer, provider);
-        let interactor = new SmartContractInteractor(contract, abi, checker, runner);
+        let runner = new DefaultInteractionRunner(checker, signer, provider);
+        let interactor = new SmartContractInteractor(contract, abi, runner);
 
         interactor.prepare().getUltimateAnswer();
     });
