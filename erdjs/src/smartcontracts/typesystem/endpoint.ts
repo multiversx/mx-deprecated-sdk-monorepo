@@ -13,21 +13,53 @@ export class EndpointDefinition {
         this.modifiers = modifiers;
     }
 
-    static fromJSON(json: { name: string, isPure: boolean, isPayable: boolean, input: any[], output: [] }): EndpointDefinition {
+    static fromJSON(json: {
+        name: string,
+        storageModifier: string,
+        payableInTokens: string[],
+        input: any[],
+        output: []
+    }): EndpointDefinition {
         let input = json.input.map(param => EndpointParameterDefinition.fromJSON(param));
         let output = json.output.map(param => EndpointParameterDefinition.fromJSON(param));
-        
-        let modifiers = new EndpointModifiers();
-        modifiers.isPure = json.isPure;
-        modifiers.isPayable = json.isPayable;
+        let modifiers = new EndpointModifiers(json.storageModifier, json.payableInTokens);
 
         return new EndpointDefinition(json.name, input, output, modifiers);
     }
 }
 
 export class EndpointModifiers {
-    isPure: boolean = false;
-    isPayable: boolean = false;
+    readonly storageModifier: string;
+    readonly payableInTokens: string[];
+
+    constructor(storageModifier: string, payableInTokens: string[]) {
+        this.storageModifier = storageModifier || "";
+        this.payableInTokens = payableInTokens || [];
+    }
+
+    isPayableInEGLD(): boolean {
+        return this.isPayableInToken("eGLD");
+    }
+
+    isPayableInToken(token: string) {
+        if (this.payableInTokens.includes(token)) {
+            return true;
+        }
+
+        if (this.payableInTokens.includes(`!${token}`)) {
+            return false;
+        }
+
+        if (this.payableInTokens.includes("*")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    isReadonly() {
+        return this.storageModifier == "readonly";
+    }
 }
 
 export class EndpointParameterDefinition {

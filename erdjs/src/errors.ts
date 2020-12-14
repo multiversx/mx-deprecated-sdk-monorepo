@@ -408,3 +408,11 @@ export class ErrWrongMnemonic extends ErrWallet {
     }
 }
 
+/**
+ * Signals a generic contract interaction error.
+ */
+export class ErrContractInteraction extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
+}

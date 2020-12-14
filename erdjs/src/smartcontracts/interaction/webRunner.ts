@@ -1,3 +1,4 @@
+import { Address } from "../../address";
 import { TransactionHash } from "../../transaction";
 import { QueryResponse } from "../query";
 import { IInteractionRunner } from "./interface";
@@ -10,7 +11,7 @@ export class WebInteractionRunner implements IInteractionRunner {
         throw new Error("Method not implemented.");
     }
 
-    runQuery(_interaction: PreparedInteraction): Promise<QueryResponse> {
+    runQuery(_interaction: PreparedInteraction, _caller?: Address): Promise<QueryResponse> {
         throw new Error("Method not implemented.");
     }
 

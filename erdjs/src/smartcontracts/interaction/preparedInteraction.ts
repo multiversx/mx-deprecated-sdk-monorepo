@@ -4,6 +4,7 @@ import { Transaction, TransactionHash } from "../../transaction";
 import { IInteractionChecker, IInteractionRunner } from "./interface";
 import { Query, QueryResponse } from "../query";
 import { ContractFunction } from "../function";
+import { Address } from "../../address";
 
 /**
  * Interactions are mutable (the interaction runner mutates their content: transaction, query).
@@ -36,8 +37,8 @@ export class PreparedInteraction {
         return this.runner.runBroadcast(this);
     }
 
-    async runQuery(): Promise<QueryResponse> {
-        return this.runner.runQuery(this);
+    async runQuery(caller?: Address): Promise<QueryResponse> {
+        return this.runner.runQuery(this, caller);
     }
 
     async runSimulate(): Promise<any> {

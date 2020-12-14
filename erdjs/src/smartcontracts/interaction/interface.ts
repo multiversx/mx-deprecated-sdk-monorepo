@@ -1,10 +1,11 @@
+import { Address } from "../../address";
 import { TransactionHash } from "../../transaction";
 import { QueryResponse } from "../query";
 import { PreparedInteraction } from "./preparedInteraction";
 
 export interface IInteractionRunner {
     runBroadcast(interaction: PreparedInteraction): Promise<TransactionHash>;
-    runQuery(interaction: PreparedInteraction): Promise<QueryResponse>;
+    runQuery(interaction: PreparedInteraction, caller?: Address): Promise<QueryResponse>;
     runSimulate(interaction: PreparedInteraction): Promise<any>;
 }
 

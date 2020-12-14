@@ -56,6 +56,14 @@ export class Balance {
         return new Balance(BigInt(0));
     }
 
+    isZero(): boolean {
+        return this.value == BigInt(0);
+    }
+
+    isSet(): boolean {
+        return !this.isZero();
+    }
+
     /**
      * Returns the string representation of the value (as eGLD currency).
      */
