@@ -11,6 +11,6 @@ export class StrictChecker implements IInteractionChecker {
 
     checkInteraction(interaction: PreparedInteraction): void {
         let functionName = interaction.func.name;
-        let functionDefinition = this.abi.findFunction(functionName);
+        let functionDefinition = this.abi.findEndpoint(functionName);
     }
 }

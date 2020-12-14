@@ -4,7 +4,7 @@
         "interfaces": [
             {
                 "name": "f",
-                "functions": [
+                "endpoints": [
                     {
                         "name": "do_f",
                         "input": [],
@@ -21,7 +21,7 @@
             },
             {
                 "name": "o",
-                "functions": [
+                "endpoints": [
                     {
                         "name": "do_fo",
                         "input": [],
@@ -38,7 +38,7 @@
             },
             {
                 "name": "o",
-                "functions": [
+                "endpoints": [
                     {
                         "name": "do_foo",
                         "input": [],
@@ -81,7 +81,7 @@
         "interfaces": [
             {
                 "name": "bar",
-                "functions": [
+                "endpoints": [
                     {
                         "name": "do_b",
                         "input": [],

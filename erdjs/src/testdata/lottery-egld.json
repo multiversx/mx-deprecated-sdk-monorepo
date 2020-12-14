@@ -1,6 +1,6 @@
 {
     "name": "lottery-egld",
-    "functions": [
+    "endpoints": [
         {
             "name": "start",
             "input": [

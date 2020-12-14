@@ -9,19 +9,19 @@ describe("test abi registry", () => {
         assert.lengthOf(registry.namespaces, 1);
         assert.lengthOf(registry.getDefaultNamespace().interfaces, 1);
         assert.lengthOf(registry.getDefaultNamespace().structures, 0);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("answer").functions, 1);
+        assert.lengthOf(registry.getDefaultNamespace().findInterface("answer").endpoints, 1);
 
         await registry.extendFromFile("src/testdata/counter.json");
         assert.lengthOf(registry.namespaces, 1);
         assert.lengthOf(registry.getDefaultNamespace().interfaces, 2);
         assert.lengthOf(registry.getDefaultNamespace().structures, 0);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("counter").functions, 3);
+        assert.lengthOf(registry.getDefaultNamespace().findInterface("counter").endpoints, 3);
 
         await registry.extendFromFile("src/testdata/lottery-egld.json");
         assert.lengthOf(registry.namespaces, 1);
         assert.lengthOf(registry.getDefaultNamespace().interfaces, 3);
         assert.lengthOf(registry.getDefaultNamespace().structures, 1);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("lottery-egld").functions, 2);
+        assert.lengthOf(registry.getDefaultNamespace().findInterface("lottery-egld").endpoints, 2);
 
         await registry.extendFromFile("src/testdata/foobar.namespaced.json");
         assert.lengthOf(registry.namespaces, 3);

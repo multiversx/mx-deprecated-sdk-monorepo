@@ -1,6 +1,6 @@
 {
     "name": "counter",
-    "functions": [
+    "endpoints": [
         {
             "name": "increment",
             "input": [],

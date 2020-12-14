@@ -28,7 +28,7 @@ export class SmartContractInteractor {
     private setupPreparators() {
         let self = this;
 
-        for (const definition of this.abi.getAllFunctions()) {
+        for (const definition of this.abi.getAllEndpoints()) {
             let functionName = definition.name;
 
             this.preparators[functionName] = function (args: Argument[]) {

@@ -1,5 +1,5 @@
 import { guardValueIsSet } from "../utils";
-import { AbiRegistry, FunctionDefinition, Namespace } from "./typesystem";
+import { AbiRegistry, EndpointDefinition, Namespace } from "./typesystem";
 import { ContractInterface } from "./typesystem/contractInterface";
 
 export class SmartContractAbi {
@@ -14,18 +14,18 @@ export class SmartContractAbi {
         }
     }
 
-    getAllFunctions(): FunctionDefinition[] {
-        let functions = [];
+    getAllEndpoints(): EndpointDefinition[] {
+        let endpoints = [];
         
         for (const iface of this.implements) {
-            functions.push(...iface.functions);
+            endpoints.push(...iface.endpoints);
         }
 
-        return functions;
+        return endpoints;
     }
 
-    findFunction(name: string): FunctionDefinition {
-        let result = this.getAllFunctions().find(item => item.name == name);
+    findEndpoint(name: string): EndpointDefinition {
+        let result = this.getAllEndpoints().find(item => item.name == name);
         guardValueIsSet("result", result);
         return result!;
     }

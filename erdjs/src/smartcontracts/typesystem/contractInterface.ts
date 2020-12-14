@@ -1,25 +1,25 @@
 import { guardValueIsSet } from "../../utils";
-import { FunctionDefinition } from "./function";
+import { EndpointDefinition } from "./endpoint";
 
 /**
  * An Interace represents a (sub)set of endpoints (with their signatures included) defined by a contract.
  */
 export class ContractInterface {
     readonly name: string;
-    readonly functions: FunctionDefinition[] = [];
+    readonly endpoints: EndpointDefinition[] = [];
 
-    constructor(name: string, functions: FunctionDefinition[]) {
+    constructor(name: string, endpoints: EndpointDefinition[]) {
         this.name = name;
-        this.functions = functions;
+        this.endpoints = endpoints;
     }
 
-    static fromJSON(json: { name: string, functions: any[] }): ContractInterface {
-        let functions = json.functions.map(item => FunctionDefinition.fromJSON(item));
-        return new ContractInterface(json.name, functions);
+    static fromJSON(json: { name: string, endpoints: any[] }): ContractInterface {
+        let endpoints = json.endpoints.map(item => EndpointDefinition.fromJSON(item));
+        return new ContractInterface(json.name, endpoints);
     }
 
-    findFunction(functionName: string): FunctionDefinition {
-        let result = this.functions.find(e => e.name == functionName);
+    findEndpoint(name: string): EndpointDefinition {
+        let result = this.endpoints.find(e => e.name == name);
         guardValueIsSet("result", result);
         return result!;
     }

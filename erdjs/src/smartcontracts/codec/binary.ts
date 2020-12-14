@@ -1,5 +1,5 @@
 import * as errors from "../../errors";
-import { FunctionDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
+import { EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
 import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
 import { PrimitiveBinaryCodec } from "./primitive";
@@ -21,13 +21,12 @@ export class BinaryCodec {
         this.structureCodec = new  StructureBinaryCodec(this);
     }
 
-    decodeFunctionOutput(outputItems: Buffer[], definition: FunctionDefinition): TypedValue[] {
+    decodeOutput(outputItems: Buffer[], definition: EndpointDefinition): TypedValue[] {
         guardSameLength(outputItems, definition.output);
 
         let result: TypedValue[] = [];
 
         // For output parameters, top-level decoding is normally used.
-        // TODO: Question for review - is this assumption correct?
         for (let i = 0; i < outputItems.length; i++) {
             let buffer = outputItems[i];
             let parameterDefinition = definition.output[i];
