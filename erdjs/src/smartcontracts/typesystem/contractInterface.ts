@@ -2,9 +2,9 @@ import { guardValueIsSet } from "../../utils";
 import { FunctionDefinition } from "./function";
 
 /**
- * An Endpoint (or Trait, or Interface) represents a (sub)set of functions (with their signatures included) defined by a contract.
+ * An Interace represents a (sub)set of endpoints (with their signatures included) defined by a contract.
  */
-export class Endpoint {
+export class ContractInterface {
     readonly name: string;
     readonly functions: FunctionDefinition[] = [];
 
@@ -13,9 +13,9 @@ export class Endpoint {
         this.functions = functions;
     }
 
-    static fromJSON(json: { name: string, functions: any[] }): Endpoint {
+    static fromJSON(json: { name: string, functions: any[] }): ContractInterface {
         let functions = json.functions.map(item => FunctionDefinition.fromJSON(item));
-        return new Endpoint(json.name, functions);
+        return new ContractInterface(json.name, functions);
     }
 
     findFunction(functionName: string): FunctionDefinition {

@@ -1,7 +1,7 @@
 [
     {
         "namespace": "foo",
-        "endpoints": [
+        "interfaces": [
             {
                 "name": "f",
                 "functions": [
@@ -78,7 +78,7 @@
     },
     {
         "namespace": "bar",
-        "endpoints": [
+        "interfaces": [
             {
                 "name": "bar",
                 "functions": [

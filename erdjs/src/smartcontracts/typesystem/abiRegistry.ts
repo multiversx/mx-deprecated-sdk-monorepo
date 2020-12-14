@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from "axios";
 import { guardValueIsSet } from "../../utils";
 import { Namespace } from "./namespace";
 import { StructureDefinition, StructureType } from "./structure";
-import { Endpoint } from "./endpoint";
+import { ContractInterface } from "./contractInterface";
 
 const NamespacedExtension = ".namespaced.json";
 const DefaultNamespace = "default";
@@ -34,10 +34,10 @@ export class AbiRegistry {
 
     extend(json: any): AbiRegistry {
         let defaultNamespace = this.getDefaultNamespace();
-        let endpoint = Endpoint.fromJSON(json);
+        let iface = ContractInterface.fromJSON(json);
         let structures = (<any[]>(json.structures || [])).map(item => StructureDefinition.fromJSON(item));
         
-        defaultNamespace.endpoints.push(endpoint);
+        defaultNamespace.interfaces.push(iface);
 
         for (const definition of structures) {
             defaultNamespace.structures.push(definition);

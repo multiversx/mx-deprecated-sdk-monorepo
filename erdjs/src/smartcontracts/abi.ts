@@ -1,24 +1,24 @@
 import { guardValueIsSet } from "../utils";
 import { AbiRegistry, FunctionDefinition, Namespace } from "./typesystem";
-import { Endpoint } from "./typesystem/endpoint";
+import { ContractInterface } from "./typesystem/contractInterface";
 
 export class SmartContractAbi {
     private readonly uses: Namespace[] = [];
-    private readonly implements: Endpoint[] = [];
+    private readonly implements: ContractInterface[] = [];
 
-    constructor(registry: AbiRegistry, usesNamespaces: string[], implementsEndpoints: string[]) {
+    constructor(registry: AbiRegistry, usesNamespaces: string[], implementsInterfaces: string[]) {
         this.uses = registry.findNamespaces(usesNamespaces);
 
         for (const namespace of this.uses) {
-            this.implements.push(...namespace.findEndpoints(implementsEndpoints));
+            this.implements.push(...namespace.findInterfaces(implementsInterfaces));
         }
     }
 
     getAllFunctions(): FunctionDefinition[] {
         let functions = [];
         
-        for (const endpoint of this.implements) {
-            functions.push(...endpoint.functions);
+        for (const iface of this.implements) {
+            functions.push(...iface.functions);
         }
 
         return functions;

@@ -1,5 +1,5 @@
 import { guardValueIsSet } from "../../utils";
-import { Endpoint } from "./endpoint";
+import { ContractInterface } from "./contractInterface";
 import { StructureDefinition } from "./structure";
 
 /**
@@ -11,28 +11,28 @@ import { StructureDefinition } from "./structure";
  */
 export class Namespace {
     readonly namespace: string;
-    readonly endpoints: Endpoint[] = [];
+    readonly interfaces: ContractInterface[] = [];
     readonly structures: StructureDefinition[] = [];
 
-    constructor(namespace: string, endpoints: Endpoint[], structures: StructureDefinition[]) {
+    constructor(namespace: string, interfaces: ContractInterface[], structures: StructureDefinition[]) {
         this.namespace = namespace;
-        this.endpoints = endpoints;
+        this.interfaces = interfaces;
         this.structures = structures;
     }
 
-    static fromJSON(json: { namespace: string, endpoints: any[], structures: any[] }): Namespace {
-        let endpoints = (json.endpoints || []).map(item => Endpoint.fromJSON(item));
+    static fromJSON(json: { namespace: string, interfaces: any[], structures: any[] }): Namespace {
+        let interfaces = (json.interfaces || []).map(item => ContractInterface.fromJSON(item));
         let structures = (json.structures || []).map(item => StructureDefinition.fromJSON(item));
-        return new Namespace(json.namespace, endpoints, structures);
+        return new Namespace(json.namespace, interfaces, structures);
     }
 
-    findEndpoint(name: string): Endpoint {
-        let result = this.endpoints.find(e => e.name == name);
+    findInterface(name: string): ContractInterface {
+        let result = this.interfaces.find(e => e.name == name);
         guardValueIsSet("result", result);
         return result!;
     }
 
-    findEndpoints(names: string[]): Endpoint[] {
-        return names.map(name => this.findEndpoint(name));
+    findInterfaces(names: string[]): ContractInterface[] {
+        return names.map(name => this.findInterface(name));
     }
 }
