@@ -14,10 +14,10 @@ import { IInteractionRunner } from "./interface";
  */
 
 export class Interaction {
-    readonly contract: SmartContract;
-    readonly func: ContractFunction;
-    readonly args: Argument[];
-    readonly runner: IInteractionRunner;
+    private readonly contract: SmartContract;
+    private readonly func: ContractFunction;
+    private readonly args: Argument[];
+    private readonly runner: IInteractionRunner;
 
     private value: Balance = Balance.Zero();
     private gasLimit: GasLimit = GasLimit.min();
@@ -57,6 +57,10 @@ export class Interaction {
             // Caller will be set by the InteractionRunner.
             caller: new Address()
         });
+    }
+
+    getContract(): SmartContract {
+        return this.contract;
     }
 
     getFunction(): ContractFunction {

@@ -20,6 +20,7 @@ export class MockProvider implements IProvider {
 
     private readonly accounts: Map<string, AccountOnNetwork>;
     private readonly transactions: Map<string, TransactionOnNetwork>;
+    private readonly queryResponders: QueryResponder[] = [];
 
     constructor() {
         this.accounts = new Map<string, AccountOnNetwork>();
@@ -48,10 +49,14 @@ export class MockProvider implements IProvider {
         this.transactions.set(hash.toString(), item);
     }
 
+    mockQueryResponse(matches: (query: Query) => boolean, response: QueryResponse) {
+        this.queryResponders.push(new QueryResponder(matches, response));
+    }
+
     async mockTransactionTimeline(transactionOrHash: Transaction | TransactionHash, timelinePoints: any[]): Promise<void> {
         let hash = transactionOrHash instanceof TransactionHash ? transactionOrHash : transactionOrHash.hash;
         let timeline = new AsyncTimer(`mock timeline of ${hash}`);
-        
+
         await timeline.start(0);
 
         for (const point of timelinePoints) {
@@ -112,8 +117,13 @@ export class MockProvider implements IProvider {
         return new NetworkConfig();
     }
 
+    async queryContract(query: Query): Promise<QueryResponse> {
+        for (const responder of this.queryResponders) {
+            if (responder.matches(query)) {
+                return responder.response;
+            }
+        }
 
-    async queryContract(_query: Query): Promise<QueryResponse> {
         return new QueryResponse();
     }
 }
@@ -123,5 +133,15 @@ export class Wait {
 
     constructor(milliseconds: number) {
         this.milliseconds = milliseconds;
+    }
+}
+
+class QueryResponder {
+    readonly matches: (query: Query) => boolean;
+    readonly response: QueryResponse;
+
+    constructor(matches: (query: Query) => boolean, response: QueryResponse) {
+        this.matches = matches || (_ => true);
+        this.response = response || new QueryResponse();
     }
 }

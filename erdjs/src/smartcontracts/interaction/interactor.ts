@@ -26,7 +26,7 @@ export class SmartContractInteractor {
             let functionName = definition.name;
 
             this.preparators[functionName] = function (args: Argument[]) {
-                self.doPrepare(functionName, args || []);
+                return self.doPrepare(functionName, args || []);
             };
         }
     }
