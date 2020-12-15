@@ -4,7 +4,8 @@ import { IInteractionChecker, IInteractionRunner } from "./interface";
 import { Interaction } from "./interaction";
 import { Transaction, TransactionHash, TransactionOnNetwork } from "../../transaction";
 import { Address } from "../../address";
-import { Query, QueryResponse } from "../query";
+import { Query } from "../query";
+import { QueryResponse } from "../queryResponse";
 
 export class DefaultInteractionRunner implements IInteractionRunner {
     private readonly checker: IInteractionChecker;
@@ -32,7 +33,7 @@ export class DefaultInteractionRunner implements IInteractionRunner {
     async broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork> {
         await this.broadcast(transaction);
         await transaction.awaitExecuted(this.provider);
-        
+
         return await transaction.getAsOnNetwork(this.provider);
     }
 

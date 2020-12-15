@@ -5,7 +5,8 @@ import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import * as errors from "./errors";
 import { AccountOnNetwork } from "./account";
-import { Query, QueryResponse } from "./smartcontracts/query";
+import { Query } from "./smartcontracts/query";
+import { QueryResponse } from "./smartcontracts/queryResponse";
 import { Logger } from "./logger";
 const JSONbig = require("json-bigint");
 

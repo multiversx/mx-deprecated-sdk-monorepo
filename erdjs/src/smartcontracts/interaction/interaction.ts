@@ -1,7 +1,8 @@
 import { Balance } from "../../balance";
 import { GasLimit } from "../../networkParams";
 import { Transaction, TransactionHash, TransactionOnNetwork } from "../../transaction";
-import { Query, QueryResponse } from "../query";
+import { Query } from "../query";
+import { QueryResponse } from "../queryResponse";
 import { ContractFunction } from "../function";
 import { Address } from "../../address";
 import { SmartContract } from "../smartContract";

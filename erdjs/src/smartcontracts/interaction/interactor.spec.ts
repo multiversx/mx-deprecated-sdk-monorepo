@@ -10,7 +10,7 @@ import { assert } from "chai";
 import { Interaction } from "./interaction";
 import { GasLimit } from "../../networkParams";
 import { ContractFunction } from "../function";
-import { QueryResponse } from "../query";
+import { QueryResponse } from "../queryResponse";
 
 describe("test smart contract interactor", function () {
     let wallets = new TestWallets();
@@ -49,7 +49,7 @@ describe("test smart contract interactor", function () {
         assert.equal(transaction.hash.toString(), "be876a69a990b820d8992f566924222cecce9c180999d20d1d211a0f42165b9d");
 
         // Execute, and wait for execution
-        let transactionOnNetwork = await interaction.broadcastAwaitExecution();
+        // let transactionOnNetwork = await interaction.broadcastAwaitExecution();
     });
 
     it("should interact with 'counter': prepare", async function () {

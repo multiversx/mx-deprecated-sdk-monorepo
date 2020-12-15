@@ -1,6 +1,7 @@
 import { Address } from "../../address";
 import { Transaction, TransactionHash, TransactionOnNetwork } from "../../transaction";
-import { Query, QueryResponse } from "../query";
+import { Query } from "../query";
+import { QueryResponse } from "../queryResponse";
 import { Interaction } from "./interaction";
 import { IInteractionRunner } from "./interface";
 

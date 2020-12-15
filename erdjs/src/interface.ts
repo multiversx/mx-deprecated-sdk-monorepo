@@ -3,7 +3,8 @@ import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
 import { AccountOnNetwork } from "./account";
-import { Query, QueryResponse } from "./smartcontracts/query";
+import { Query } from "./smartcontracts/query";
+import { QueryResponse } from "./smartcontracts/queryResponse";
 
 
 /**

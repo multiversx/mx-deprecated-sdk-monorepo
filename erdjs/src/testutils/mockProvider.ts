@@ -8,7 +8,8 @@ import { AsyncTimer } from "../asyncTimer";
 import { AccountOnNetwork } from "../account";
 import { Balance } from "../balance";
 import * as errors from "../errors";
-import { Query, QueryResponse } from "../smartcontracts/query";
+import { Query } from "../smartcontracts/query";
+import { QueryResponse } from "../smartcontracts/queryResponse";
 
 /**
  * A mock {@link IProvider}, used for tests only.
