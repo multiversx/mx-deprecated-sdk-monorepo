@@ -22,6 +22,8 @@ const TRANSACTION_HASH_LENGTH = 32;
 export class Transaction implements ISignable {
     readonly onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
     readonly onSent: TypedEvent<{ transaction: Transaction }>;
+    readonly onStatusUpdated: TypedEvent<{ transaction: Transaction }>;
+    readonly onStatusChanged: TypedEvent<{ transaction: Transaction }>;
 
     /**
      * The nonce of the transaction (the account sequence number of the sender).
@@ -78,7 +80,17 @@ export class Transaction implements ISignable {
      */
     private hash: TransactionHash;
 
+    /**
+     * A (cached) representation of the transaction, as fetched from the API.
+     */
     private asOnNetwork: TransactionOnNetwork = new TransactionOnNetwork();
+
+    /**
+     * The last known status of the transaction, as fetched from the API.
+     * 
+     * This only gets updated if {@link Transaction.awaitPending}, {@link Transaction.awaitExecuted} are called.
+     */
+    private status: TransactionStatus;
 
     /**
      * Creates a new Transaction object.
@@ -98,9 +110,12 @@ export class Transaction implements ISignable {
 
         this.signature = Signature.empty();
         this.hash = TransactionHash.empty();
+        this.status = TransactionStatus.createUnknown();
 
         this.onSigned = new TypedEvent();
         this.onSent = new TypedEvent();
+        this.onStatusUpdated = new TypedEvent();
+        this.onStatusChanged = new TypedEvent();
 
         // We apply runtime type checks for these fields, since they are the most commonly misused when calling the Transaction constructor
         // in JavaScript (which lacks type safety).
@@ -180,6 +195,11 @@ export class Transaction implements ISignable {
         return this.version;
     }
 
+    doAfterPropertySetter() {
+        this.signature = Signature.empty();
+        this.hash = TransactionHash.empty();
+    }
+
     getSignature(): Signature {
         guardNotEmpty(this.signature, "signature");
         return this.signature;
@@ -190,9 +210,8 @@ export class Transaction implements ISignable {
         return this.hash;
     }
 
-    doAfterPropertySetter() {
-        this.signature = Signature.empty();
-        this.hash = TransactionHash.empty();
+    getStatus(): TransactionStatus {
+        return this.status;
     }
 
     /**
@@ -338,7 +357,7 @@ export class Transaction implements ISignable {
      */
     async awaitPending(provider: IProvider): Promise<void> {
         let watcher = new TransactionWatcher(this.hash, provider);
-        await watcher.awaitPending();
+        await watcher.awaitPending(this.notifyStatusUpdate.bind(this));
     }
 
     /**
@@ -347,7 +366,18 @@ export class Transaction implements ISignable {
      */
     async awaitExecuted(provider: IProvider): Promise<void> {
         let watcher = new TransactionWatcher(this.hash, provider);
-        await watcher.awaitExecuted();
+        await watcher.awaitExecuted(this.notifyStatusUpdate.bind(this));
+    }
+
+    private notifyStatusUpdate(newStatus: TransactionStatus) {
+        let sameStatus = this.status.equals(newStatus);
+
+        this.onStatusUpdated.emit({ transaction: this });
+
+        if (!sameStatus) {
+            this.status = newStatus;
+            this.onStatusChanged.emit({ transaction: this });
+        }
     }
 }
 
@@ -460,6 +490,18 @@ export class TransactionStatus {
 
     toString(): string {
         return this.status;
+    }
+
+    valueOf(): string {
+        return this.status;
+    }
+
+    equals(other: TransactionStatus) {
+        if (!other) {
+            return false;
+        }
+
+        return this.status == other.status;
     }
 }
 

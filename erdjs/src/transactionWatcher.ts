@@ -1,8 +1,11 @@
 import { IProvider } from "./interface";
 import { AsyncTimer } from "./asyncTimer";
 import { TransactionHash, TransactionStatus } from "./transaction";
-import  * as errors from "./errors";
+import * as errors from "./errors";
 import { Logger } from "./logger";
+
+export type PredicateIsAwaitedStatus = (status: TransactionStatus) => boolean;
+export type ActionOnStatusReceived = (status: TransactionStatus) => void;
 
 /**
  * TransactionWatcher allows one to continuously watch (monitor), by means of polling, the status of a given transaction.
@@ -38,22 +41,25 @@ export class TransactionWatcher {
     /**
      * Waits until the transaction reaches the "pending" status.
      */
-    public async awaitPending(): Promise<void> {
-        await this.awaitStatus(status => status.isPending());
+    public async awaitPending(onStatusReceived?: ActionOnStatusReceived): Promise<void> {
+        await this.awaitStatus(status => status.isPending(), onStatusReceived);
     }
 
     /**
       * Waits until the transaction reaches the "executed" status.
       */
-    public async awaitExecuted(): Promise<void> {
-        await this.awaitStatus(status => status.isExecuted());
+    public async awaitExecuted(onStatusReceived?: ActionOnStatusReceived): Promise<void> {
+        await this.awaitStatus(status => status.isExecuted(), onStatusReceived);
     }
 
     /**
      * Waits until the predicate over the transaction status evaluates to "true".
      * @param isAwaitedStatus A predicate over the status
      */
-    public async awaitStatus(isAwaitedStatus: (status: TransactionStatus) => boolean): Promise<void> {
+    public async awaitStatus(
+        isAwaitedStatus: PredicateIsAwaitedStatus,
+        onStatusReceived?: ActionOnStatusReceived,
+    ): Promise<void> {
         let periodicTimer = new AsyncTimer("watcher:periodic");
         let timeoutTimer = new AsyncTimer("watcher:timeout");
 
@@ -68,6 +74,10 @@ export class TransactionWatcher {
         while (!stop) {
             try {
                 currentStatus = await this.provider.getTransactionStatus(this.hash);
+                
+                if (onStatusReceived) {
+                    onStatusReceived(currentStatus);
+                }
 
                 if (isAwaitedStatus(currentStatus) || stop) {
                     break;
@@ -75,7 +85,7 @@ export class TransactionWatcher {
             } catch (error) {
                 Logger.trace("cannot (yet) get status");
             }
-            
+
             await periodicTimer.start(this.pollingInterval);
         }
 
