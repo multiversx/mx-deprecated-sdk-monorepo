@@ -67,8 +67,13 @@ export class ProxyProvider implements IProvider {
     /**
      * Fetches the state of a {@link Transaction}.
      */
-    async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
-        let response = await this.doGet(`transaction/${txHash.toString()}`);
+    async getTransaction(txHash: TransactionHash, hintSender?: Address, includeOutcome?: boolean): Promise<TransactionOnNetwork> {
+        let url = this.buildUrlWithQueryParameters(`transaction/${txHash}`, {
+            "withSender" : hintSender ? hintSender.bech32() : "",
+            "withResults": includeOutcome ? "true" : ""
+        });
+
+        let response = await this.doGet(url);
         let payload = response.transaction;
         return TransactionOnNetwork.fromHttpResponse(payload);
     }
@@ -125,6 +130,18 @@ export class ProxyProvider implements IProvider {
             let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
             throw new errors.ErrProxyProviderPost(resourceUrl, originalErrorMessage, error);
         }
+    }
+
+    private buildUrlWithQueryParameters(endpoint: string, params: Record<string, string>): string {
+        let searchParams = new URLSearchParams();
+    
+        for (let [key, value] of Object.entries(params)) {
+            if (value) {
+                searchParams.append(key, value);
+            }
+        }
+    
+        return `${endpoint}/${params.toString()}`;
     }
 }
 

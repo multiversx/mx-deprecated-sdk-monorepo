@@ -315,7 +315,8 @@ export class Transaction implements ISignable {
             throw new errors.ErrTransactionHashUnknown();
         }
 
-        let response = await provider.getTransaction(this.hash);
+        let includeOutcome = this.receiver.isContractAddress();
+        let response = await provider.getTransaction(this.hash, this.sender, includeOutcome);
 
         if (cacheLocally) {
             this.asOnNetwork = response;

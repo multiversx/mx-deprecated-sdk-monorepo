@@ -39,7 +39,7 @@ export interface IProvider {
     /**
      * Fetches the state of a {@link Transaction}.
      */
-    getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
+    getTransaction(txHash: TransactionHash, hintSender?: Address, includeOutcome?: boolean): Promise<TransactionOnNetwork>;
 
     /**
      * Queries the status of a {@link Transaction}.

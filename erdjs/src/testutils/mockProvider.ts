@@ -105,7 +105,7 @@ export class MockProvider implements IProvider {
         return {};
     }
 
-    async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
+    async getTransaction(txHash: TransactionHash, _hintSender?: Address, _includeOutcome?: boolean): Promise<TransactionOnNetwork> {
         let transaction = this.transactions.get(txHash.toString());
         if (transaction) {
             return transaction;
