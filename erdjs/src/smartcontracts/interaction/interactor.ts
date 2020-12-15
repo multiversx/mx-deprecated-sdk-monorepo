@@ -1,4 +1,3 @@
-import { SmartContractAbi } from "../abi";
 import { Argument } from "../argument";
 import { ContractFunction } from "../function";
 import { SmartContract } from "../smartContract";
@@ -7,13 +6,11 @@ import { IInteractionRunner } from "./interface";
 
 export class SmartContractInteractor {
     private readonly contract: SmartContract;
-    private readonly abi: SmartContractAbi;
     private readonly runner: IInteractionRunner;
     private preparators: any = {};
 
-    constructor(contract: SmartContract, abi: SmartContractAbi, runner: IInteractionRunner) {
+    constructor(contract: SmartContract, runner: IInteractionRunner) {
         this.contract = contract;
-        this.abi = abi;
         this.runner = runner;
 
         this.setupPreparators();
@@ -21,8 +18,9 @@ export class SmartContractInteractor {
 
     private setupPreparators() {
         let self = this;
+        let abi = this.contract.getAbi();
 
-        for (const definition of this.abi.getAllEndpoints()) {
+        for (const definition of abi.getAllEndpoints()) {
             let functionName = definition.name;
 
             this.preparators[functionName] = function (args: Argument[]) {

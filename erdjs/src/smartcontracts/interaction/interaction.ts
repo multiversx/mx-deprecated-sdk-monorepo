@@ -7,6 +7,7 @@ import { Address } from "../../address";
 import { SmartContract } from "../smartContract";
 import { Argument } from "../argument";
 import { IInteractionRunner } from "./interface";
+import { EndpointDefinition } from "../typesystem";
 
 /**
  * Interactions are mutable (the interaction runner mutates their content: transaction, query).
@@ -83,7 +84,7 @@ export class Interaction {
         this.runner.checkInteraction(this);
     }
 
-    async broadcast(): Promise<TransactionHash> {
+    async broadcast(): Promise<Transaction> {
         return await this.runner.broadcast(this.asTransaction);
     }
 
@@ -92,7 +93,10 @@ export class Interaction {
     }
 
     async query(caller?: Address): Promise<QueryResponse> {
-        return await this.runner.query(this.asQuery, caller);
+        let response = await this.runner.query(this.asQuery, caller);
+        let endpoint = this.getEndpointDefinition();
+        response.setEndpointDefinition(endpoint);
+        return response;
     }
 
     async simulate(): Promise<any> {
@@ -118,6 +122,14 @@ export class Interaction {
         this.check();
 
         return this;
+    }
+
+    getEndpointDefinition(): EndpointDefinition {
+        let abi = this.getContract().getAbi();
+        let name = this.getFunction().toString();
+        let endpoint = abi.findEndpoint(name);
+
+        return endpoint;
     }
 }
 

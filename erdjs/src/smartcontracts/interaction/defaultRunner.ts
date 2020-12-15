@@ -19,45 +19,39 @@ export class DefaultInteractionRunner implements IInteractionRunner {
         this.nonceTracker = new NonceTracker(signer.getAddress(), provider);
     }
 
-    async broadcast(transaction: Transaction): Promise<TransactionHash> {
-        await this.assignNonce(transaction);
-        await this.sign(transaction);
-        return await this.doBroadcast(transaction);
+    async broadcast(transaction: Transaction): Promise<Transaction> {
+        let nonce = await this.nonceTracker.getNonce();
+        transaction.setNonce(nonce);
+        await this.signer.sign(transaction);
+        await transaction.send(this.provider);
+        this.nonceTracker.onTransactionBroadcastedWithSuccess();
+
+        return transaction;
     }
 
     async broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork> {
         await this.broadcast(transaction);
         await transaction.awaitExecuted(this.provider);
+        
         return await transaction.getAsOnNetwork(this.provider);
     }
 
     async query(query: Query, caller?: Address): Promise<QueryResponse> {
         query.caller = caller || this.signer.getAddress();
-        return await this.provider.queryContract(query);
+        let response = await this.provider.queryContract(query);
+
+        return response;
     }
 
     async simulate(transaction: Transaction): Promise<any> {
-        await this.assignNonce(transaction);
-        await this.sign(transaction);
+        let nonce = await this.nonceTracker.getNonce();
+        transaction.setNonce(nonce);
+        await this.signer.sign(transaction);
+
         return await transaction.simulate(this.provider);
     }
 
     checkInteraction(interaction: Interaction) {
         this.checker.checkInteraction(interaction);
-    }
-
-    private async assignNonce(transaction: Transaction) {
-        let nonce = await this.nonceTracker.getNonce();
-        transaction.setNonce(nonce);
-    }
-
-    private async sign(transaction: Transaction) {
-        await this.signer.sign(transaction);
-    }
-
-    private async doBroadcast(transaction: Transaction): Promise<TransactionHash> {
-        let hash = await transaction.send(this.provider);
-        this.nonceTracker.onTransactionBroadcastedWithSuccess();
-        return hash;
     }
 }

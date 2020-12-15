@@ -1,19 +1,11 @@
 import * as errors from "../../errors";
-import { SmartContractAbi } from "../abi";
 import { EndpointDefinition } from "../typesystem";
 import { Interaction } from "./interaction";
 import { IInteractionChecker } from "./interface";
 
 export class StrictChecker implements IInteractionChecker {
-    private readonly abi: SmartContractAbi;
-
-    constructor(abi: SmartContractAbi) {
-        this.abi = abi;
-    }
-
     checkInteraction(interaction: Interaction): void {
-        let name = interaction.getFunction().name;
-        let definition = this.abi.findEndpoint(name);
+        let definition = interaction.getEndpointDefinition();
 
         this.checkPayable(interaction, definition);
         this.checkArguments(interaction, definition);

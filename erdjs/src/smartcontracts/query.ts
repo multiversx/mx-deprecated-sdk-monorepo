@@ -51,27 +51,41 @@ export class Query {
     }
 }
 
+// TODO: extract to separate file!
 export class QueryResponse {
-    returnData: string[] =  [];
-    returnCode: string = "";
-    returnMessage: string = "";
-    gasUsed: GasLimit = GasLimit.min();
+    /**
+     * If available, will provide a typed outcome (with typed values).
+     */
+    private endpointDefinition?: EndpointDefinition;
+
+    returnData: string[];
+    returnCode: string;
+    returnMessage: string;
+    gasUsed: GasLimit;
+
+    constructor(init?: Partial<QueryResponse>) {
+        this.returnData = init?.returnData || [];
+        this.returnCode = init?.returnCode || "";
+        this.returnMessage = init?.returnMessage || "";
+        this.gasUsed = init?.gasUsed || GasLimit.min();
+    }
 
     /**
      * Constructs a QueryResponse object from a HTTP response (as returned by the provider).
      */
     static fromHttpResponse(payload: any): QueryResponse {
-        let result = new QueryResponse();
-
-        result.returnData = <string[]>payload["returnData"] || payload["ReturnData"] || [];
-        result.returnCode = payload["returnCode"] || (payload["ReturnCode"]).toString() || "";
-        result.returnMessage = payload["returnMessage"] || payload["ReturnMessage"] || "";
-
+        let returnData = <string[]>payload["returnData"] || payload["ReturnData"];
+        let returnCode = payload["returnCode"] || payload["ReturnCode"];
+        let returnMessage = payload["returnMessage"] || payload["ReturnMessage"];
         let gasRemaining = BigInt(payload["gasRemaining"] || payload["GasRemaining"] || 0);
-        let gasUsed = MaxUint64 - gasRemaining;
-        result.gasUsed = new GasLimit(Number(gasUsed));
+        let gasUsed = new GasLimit(Number(MaxUint64 - gasRemaining));
 
-        return result;
+        return new QueryResponse({
+            returnData: returnData,
+            returnCode: returnCode,
+            returnMessage: returnMessage,
+            gasUsed: gasUsed
+        });
     }
 
     assertSuccess() {
@@ -87,8 +101,12 @@ export class QueryResponse {
         return ok;
     }
 
-    outcome(endpointDefinition?: EndpointDefinition): Outcome {
-        return Outcome.fromQueryResponse(this.returnData, endpointDefinition);
+    setEndpointDefinition(endpointDefinition: EndpointDefinition) {
+        this.endpointDefinition = endpointDefinition;
+    }
+
+    outcome(): Outcome {
+        return Outcome.fromQueryResponse(this.returnData, this.endpointDefinition);
     }
 
     /**

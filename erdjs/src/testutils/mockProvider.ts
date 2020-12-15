@@ -49,8 +49,13 @@ export class MockProvider implements IProvider {
         this.transactions.set(hash.toString(), item);
     }
 
-    mockQueryResponse(matches: (query: Query) => boolean, response: QueryResponse) {
-        this.queryResponders.push(new QueryResponder(matches, response));
+    mockQueryResponseOnFunction(functionName: string, response: QueryResponse) {
+        let predicate = (query: Query) => query.func.name == functionName;
+        this.queryResponders.push(new QueryResponder(predicate, response));
+    }
+
+    mockQueryResponse(predicate: (query: Query) => boolean, response: QueryResponse) {
+        this.queryResponders.push(new QueryResponder(predicate, response));
     }
 
     async mockTransactionTimeline(transactionOrHash: Transaction | TransactionHash, timelinePoints: any[]): Promise<void> {

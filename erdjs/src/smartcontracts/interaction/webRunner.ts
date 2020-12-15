@@ -9,7 +9,7 @@ export class WebInteractionRunner implements IInteractionRunner {
         throw new Error("Method not implemented.");
     }
 
-    broadcast(_transaction: Transaction): Promise<TransactionHash> {
+    broadcast(_transaction: Transaction): Promise<Transaction> {
         throw new Error("Method not implemented.");
     }
 

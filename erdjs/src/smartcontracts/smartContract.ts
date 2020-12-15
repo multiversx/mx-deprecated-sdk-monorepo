@@ -12,6 +12,8 @@ import { Nonce } from "../nonce";
 import { ContractFunction } from "./function";
 import { Query, QueryResponse } from "./query";
 import { IProvider } from "../interface";
+import { SmartContractAbi } from "./abi";
+import { guardValueIsSet } from "../utils";
 const createKeccakHash = require("keccak");
 
 /**
@@ -22,15 +24,15 @@ export class SmartContract implements ISmartContract {
     private address: Address = new Address();
     private code: Code = Code.nothing();
     private codeMetadata: CodeMetadata = new CodeMetadata();
+    private abi?: SmartContractAbi;
     private readonly trackOfTransactions: Transaction[] = [];
 
     /**
      * Create a SmartContract object by providing its address on the Network.
      */
-    constructor({ address }: { address?: Address }) {
-        if (address) {
-            this.address = address;
-        }
+    constructor({ address, abi }: { address?: Address, abi?: SmartContractAbi }) {
+        this.address = address || new Address();
+        this.abi = abi;
     }
 
     /**
@@ -71,6 +73,15 @@ export class SmartContract implements ISmartContract {
      */
     getCodeMetadata(): CodeMetadata {
         return this.codeMetadata;
+    }
+
+    setAbi(abi: SmartContractAbi) {
+        this.abi = abi;
+    }
+
+    getAbi(): SmartContractAbi {
+        guardValueIsSet("abi", this.abi);
+        return this.abi!;
     }
 
     /**

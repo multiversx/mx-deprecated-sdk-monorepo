@@ -5,7 +5,7 @@ import { Interaction } from "./interaction";
 
 export interface IInteractionRunner {
     checkInteraction(interaction: Interaction): void;
-    broadcast(transaction: Transaction): Promise<TransactionHash>;
+    broadcast(transaction: Transaction): Promise<Transaction>;
     broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork>;
     query(query: Query, caller?: Address): Promise<QueryResponse>;
     simulate(transaction: Transaction): Promise<any>;
