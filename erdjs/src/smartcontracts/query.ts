@@ -5,6 +5,8 @@ import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { GasLimit } from "../networkParams";
 import * as errors from "../errors";
+import { EndpointDefinition, TypedValue } from "./typesystem";
+import { Outcome } from "./outcome";
 
 const MaxUint64 = BigInt("18446744073709551615");
 
@@ -50,9 +52,7 @@ export class Query {
 }
 
 export class QueryResponse {
-    private vmOutput: any;
-
-    returnData: ContractReturnData[] = [];
+    returnData: string[] =  [];
     returnCode: string = "";
     returnMessage: string = "";
     gasUsed: GasLimit = GasLimit.min();
@@ -63,8 +63,7 @@ export class QueryResponse {
     static fromHttpResponse(payload: any): QueryResponse {
         let result = new QueryResponse();
 
-        result.vmOutput = payload;
-        result.returnData = ContractReturnData.fromArray(payload["returnData"] || payload["ReturnData"] || []);
+        result.returnData = <string[]>payload["returnData"] || payload["ReturnData"] || [];
         result.returnCode = payload["returnCode"] || (payload["ReturnCode"]).toString() || "";
         result.returnMessage = payload["returnMessage"] || payload["ReturnMessage"] || "";
 
@@ -88,13 +87,8 @@ export class QueryResponse {
         return ok;
     }
 
-    firstResult(): ContractReturnData {
-        let first = this.returnData[0];
-        return first;
-    }
-
-    buffers(): Buffer[] {
-        return this.returnData.map(data => data.asBuffer);
+    outcome(endpointDefinition?: EndpointDefinition): Outcome {
+        return Outcome.fromQueryResponse(this.returnData, endpointDefinition);
     }
 
     /**
@@ -108,31 +102,5 @@ export class QueryResponse {
             returnMessage: this.returnMessage,
             gasUsed: this.gasUsed.valueOf()
         };
-    }
-}
-
-// TODO: use types & codecs
-export class ContractReturnData {
-    asBuffer: Buffer;
-    asBase64: any;
-    asHex: string;
-    asNumber: number;
-    asBool: boolean;
-    asBigInt: BigInt;
-    asString: string;
-
-    constructor(asBase64: any) {
-        this.asBase64 = asBase64;
-        this.asBuffer = Buffer.from(asBase64, "base64");
-        this.asHex = this.asBuffer.toString("hex");
-        this.asNumber = parseInt(this.asHex, 16) || 0;
-        this.asBool = this.asNumber != 0;
-        this.asBigInt = BigInt(`0x${this.asHex || "00"}`);
-        this.asString = this.asBuffer.toString();
-    }
-
-    static fromArray(raw: any[]): ContractReturnData[] {
-        let result = raw.map(item => new ContractReturnData(item));
-        return result;
     }
 }

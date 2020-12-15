@@ -1,4 +1,3 @@
-import { Code } from "./code";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
 import { TransactionWatcher } from "../transactionWatcher";
@@ -11,7 +10,7 @@ import { Logger } from "../logger";
 import { Argument } from "./argument";
 import { assert } from "chai";
 import { Balance } from "../balance";
-import { OptionalValue, U32Value } from "./typesystem";
+import { U32Value } from "./typesystem";
 
 describe("test on devnet (local)", function () {
     let devnet = getDevnetProvider();
@@ -135,7 +134,7 @@ describe("test on devnet (local)", function () {
 
         // Check counter
         let queryResponse = await contract.runQuery(devnet, { func: new ContractFunction("get") });
-        assert.equal(3, queryResponse.firstResult().asNumber);
+        assert.equal(3, queryResponse.outcome().firstItem().number());
     });
 
     it("erc20: should deploy, call and query contract", async function() {
@@ -196,25 +195,25 @@ describe("test on devnet (local)", function () {
         let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("totalSupply")
         });
-        assert.equal(10000, queryResponse.firstResult().asNumber);
+        assert.equal(10000, queryResponse.outcome().firstItem().number());
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.alice.address)]
         });
-        assert.equal(7500, queryResponse.firstResult().asNumber);
+        assert.equal(7500, queryResponse.outcome().firstItem().number());
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.bob.address)]
         });
-        assert.equal(1000, queryResponse.firstResult().asNumber);
+        assert.equal(1000, queryResponse.outcome().firstItem().number());
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.carol.address)]
         });
-        assert.equal(1500, queryResponse.firstResult().asNumber);
+        assert.equal(1500, queryResponse.outcome().firstItem().number());
     });
 
     it("lottery: should deploy, call and query contract", async function() {
@@ -274,7 +273,7 @@ describe("test on devnet (local)", function () {
                 Argument.fromUTF8("foobar")
             ]
         });
-        assert.equal(queryResponse.firstResult().asBool, true);
+        assert.equal(queryResponse.outcome().firstItem().bool(), true);
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("lotteryExists"),
@@ -282,6 +281,6 @@ describe("test on devnet (local)", function () {
                 Argument.fromUTF8("missingLottery")
             ]
         });
-        assert.equal(queryResponse.firstResult().asBool, false);
+        assert.equal(queryResponse.outcome().firstItem().bool(), false);
     });
 });
