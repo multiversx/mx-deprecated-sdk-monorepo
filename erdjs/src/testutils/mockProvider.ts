@@ -61,7 +61,7 @@ export class MockProvider implements IProvider {
 
     async mockTransactionTimeline(transaction: Transaction, timelinePoints: any[]): Promise<void> {
         await transaction.awaitHashed();
-        return this.mockTransactionTimelineByHash(transaction.hash, timelinePoints);
+        return this.mockTransactionTimelineByHash(transaction.getHash(), timelinePoints);
     }
 
     async mockTransactionTimelineByHash(hash: TransactionHash, timelinePoints: any[]): Promise<void> {
@@ -90,15 +90,15 @@ export class MockProvider implements IProvider {
     }
 
     async sendTransaction(transaction: Transaction): Promise<TransactionHash> {
-        this.mockPutTransaction(transaction.hash, new TransactionOnNetwork({
-            nonce: transaction.nonce,
-            sender: transaction.sender,
-            receiver: transaction.receiver,
-            data: transaction.data,
+        this.mockPutTransaction(transaction.getHash(), new TransactionOnNetwork({
+            nonce: transaction.getNonce(),
+            sender: transaction.getSender(),
+            receiver: transaction.getReceiver(),
+            data: transaction.getData(),
             status: new TransactionStatus("pending")
         }));
 
-        return transaction.hash;
+        return transaction.getHash();
     }
 
     async simulateTransaction(_transaction: Transaction): Promise<any> {

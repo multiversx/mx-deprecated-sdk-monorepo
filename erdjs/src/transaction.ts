@@ -5,7 +5,7 @@ import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams
 import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
 import { Signature } from "./signature";
-import { guardType } from "./utils";
+import { guardEmpty, guardNotEmpty, guardType } from "./utils";
 import { TransactionPayload } from "./transactionPayload";
 import * as errors from "./errors";
 import { TypedEvent } from "./events";
@@ -20,91 +20,97 @@ const TRANSACTION_HASH_LENGTH = 32;
  * An abstraction for creating, signing and broadcasting Elrond transactions.
  */
 export class Transaction implements ISignable {
-    onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
-    onSent: TypedEvent<{ transaction: Transaction }>;
+    readonly onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
+    readonly onSent: TypedEvent<{ transaction: Transaction }>;
 
     /**
      * The nonce of the transaction (the account sequence number of the sender).
      */
-    nonce: Nonce;
+    private nonce: Nonce;
 
     /**
      * The value to transfer.
      */
-    value: Balance;
+    private value: Balance;
 
     /**
      * The address of the sender.
      */
-    sender: Address;
+    private sender: Address;
 
     /**
      * The address of the receiver.
      */
-    receiver: Address;
+    private readonly receiver: Address;
 
     /**
      * The gas price to be used.
      */
-    gasPrice: GasPrice;
+    private gasPrice: GasPrice;
 
     /**
      * The maximum amount of gas to be consumed when processing the transaction.
      */
-    gasLimit: GasLimit;
+    private gasLimit: GasLimit;
 
     /**
      * The payload of the transaction.
      */
-    data: TransactionPayload;
+    private readonly data: TransactionPayload;
 
     /**
      * The chain ID of the Network (e.g. "1" for Mainnet).
      */
-    chainID: ChainID;
+    private readonly chainID: ChainID;
 
     /**
      * The version, required by the Network in order to correctly interpret the contents of the transaction.
      */
-    version: TransactionVersion;
+    private readonly version: TransactionVersion;
 
     /**
      * The signature.
      */
-    signature: Signature;
+    private signature: Signature;
 
     /**
      * The transaction hash, also used as a transaction identifier.
      */
-    hash: TransactionHash;
+    private hash: TransactionHash;
 
-    private queryResponse: TransactionOnNetwork = new TransactionOnNetwork();
+    private asOnNetwork: TransactionOnNetwork = new TransactionOnNetwork();
 
     /**
      * Creates a new Transaction object.
      */
-    public constructor(init?: Partial<Transaction>) {
-        this.nonce = new Nonce(0);
-        this.value = Balance.Zero();
+    public constructor(
+        { nonce, value, receiver, gasPrice, gasLimit, data, chainID }:
+            { nonce?: Nonce, value?: Balance, receiver: Address, gasPrice?: GasPrice, gasLimit?: GasLimit, data?: TransactionPayload, chainID?: ChainID }) {
+        this.nonce = nonce || new Nonce(0);
+        this.value = value || Balance.Zero();
         this.sender = Address.Zero();
-        this.receiver = Address.Zero();
-        this.gasPrice = NetworkConfig.getDefault().MinGasPrice;
-        this.gasLimit = NetworkConfig.getDefault().MinGasLimit;
-        this.data = new TransactionPayload();
-        this.chainID = NetworkConfig.getDefault().ChainID;
+        this.receiver = receiver;
+        this.gasPrice = gasPrice || NetworkConfig.getDefault().MinGasPrice;
+        this.gasLimit = gasLimit || NetworkConfig.getDefault().MinGasLimit;
+        this.data = data || new TransactionPayload();
+        this.chainID = chainID || NetworkConfig.getDefault().ChainID;
         this.version = TRANSACTION_VERSION;
 
-        this.signature = new Signature();
-        this.hash = new TransactionHash("");
-
-        Object.assign(this, init);
+        this.signature = Signature.empty();
+        this.hash = TransactionHash.empty();
 
         this.onSigned = new TypedEvent();
         this.onSent = new TypedEvent();
 
+        // We apply runtime type checks for these fields, since they are the most commonly misused when calling the Transaction constructor
+        // in JavaScript (which lacks type safety).
         guardType("nonce", Nonce, this.nonce);
         guardType("gasLimit", GasLimit, this.gasLimit);
         guardType("gasPrice", GasPrice, this.gasPrice);
+    }
+
+    getNonce(): Nonce {
+        return this.nonce;
     }
 
     /**
@@ -124,6 +130,69 @@ export class Transaction implements ISignable {
      */
     setNonce(nonce: Nonce) {
         this.nonce = nonce;
+        this.doAfterPropertySetter();
+    }
+
+    getValue(): Balance {
+        return this.value;
+    }
+
+    setValue(value: Balance) {
+        this.value = value;
+        this.doAfterPropertySetter();
+    }
+
+    getSender(): Address {
+        return this.sender;
+    }
+
+    getReceiver(): Address {
+        return this.receiver;
+    }
+
+    getGasPrice(): GasPrice {
+        return this.gasPrice;
+    }
+
+    setGasPrice(gasPrice: GasPrice) {
+        this.gasPrice = gasPrice;
+        this.doAfterPropertySetter();
+    }
+
+    getGasLimit(): GasLimit {
+        return this.gasLimit;
+    }
+
+    setGasLimit(gasLimit: GasLimit) {
+        this.gasLimit = gasLimit;
+        this.doAfterPropertySetter();
+    }
+
+    getData(): TransactionPayload {
+        return this.data;
+    }
+
+    getChainID(): ChainID {
+        return this.chainID;
+    }
+
+    getVersion(): TransactionVersion {
+        return this.version;
+    }
+
+    getSignature(): Signature {
+        guardNotEmpty(this.signature, "signature");
+        return this.signature;
+    }
+
+    getHash(): TransactionHash {
+        guardNotEmpty(this.hash, "hash");
+        return this.hash;
+    }
+
+    doAfterPropertySetter() {
+        this.signature = Signature.empty();
+        this.hash = TransactionHash.empty();
     }
 
     /**
@@ -169,6 +238,9 @@ export class Transaction implements ISignable {
      * @param signedBy The address of the signer.
      */
     applySignature(signature: Signature, signedBy: Address) {
+        guardEmpty(this.signature, "signature");
+        guardEmpty(this.hash, "hash");
+
         this.signature = signature;
         this.sender = signedBy;
 
@@ -227,7 +299,7 @@ export class Transaction implements ISignable {
         let response = await provider.getTransaction(this.hash);
 
         if (cacheLocally) {
-            this.queryResponse = response;
+            this.asOnNetwork = response;
         }
 
         return response;
@@ -237,14 +309,24 @@ export class Transaction implements ISignable {
      * Returns the cached representation of the transaction, as previously fetched using {@link Transaction.getAsOnNetwork}.
      */
     getAsOnNetworkCached(): TransactionOnNetwork {
-        return this.queryResponse;
+        return this.asOnNetwork;
+    }
+
+    async awaitSigned(): Promise<void> {
+        if (!this.signature.isEmpty()) {
+            return;
+        }
+
+        return new Promise<void>((resolve, _reject) => {
+            this.onSigned.on(() => resolve());
+        });
     }
 
     async awaitHashed(): Promise<void> {
         if (!this.hash.isEmpty()) {
             return;
         }
-        
+
         return new Promise<void>((resolve, _reject) => {
             this.onSigned.on(() => resolve());
         });
@@ -285,6 +367,10 @@ export class TransactionHash {
      */
     constructor(hash: string) {
         this.hash = hash;
+    }
+
+    static empty(): TransactionHash {
+        return new TransactionHash("");
     }
 
     /**

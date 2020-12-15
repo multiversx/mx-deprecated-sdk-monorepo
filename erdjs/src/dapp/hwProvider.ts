@@ -78,10 +78,8 @@ export class HWProvider implements IDappProvider {
         }
 
         const address = await this.getCurrentAddress();
-        transaction.sender = new Address(address);
-
         const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)));
-        transaction.signature = new Signature(sig);
+        transaction.applySignature(new Signature(sig), new Address(address));
 
         await transaction.send(this.provider);
 

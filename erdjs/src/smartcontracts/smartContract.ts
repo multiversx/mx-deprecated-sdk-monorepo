@@ -117,7 +117,7 @@ export class SmartContract implements ISmartContract {
 
     private onDeploySigned({ transaction, signedBy }: { transaction: Transaction, signedBy: Address }) {
         this.owner = signedBy;
-        let nonce = transaction.nonce;
+        let nonce = transaction.getNonce();
         let address = SmartContract.computeAddress(this.owner, nonce);
         this.setAddress(address);
 

@@ -1,12 +1,5 @@
 import * as errors from "./errors";
 
-export const HASH_LENGTH = 32;
-export const ADDRESS_LENGTH = 32;
-export const SEED_STRING_LENGTH = 64;
-
-export const CODE_HASH_LENGTH = HASH_LENGTH;
-export const VMTYPES = ["0500"];
-
 export function guardType(name: string, type: any, value?: any, allowUndefined: boolean = true) {
     if (allowUndefined && value === undefined) {
         return;
@@ -33,10 +26,30 @@ export function guardSameLength(a: any[], b: any[]) {
     }
 }
 
-export function guardLength(withLength: {length?: number}, expectedLength: number) {
+export function guardLength(withLength: { length?: number }, expectedLength: number) {
     let actualLength = withLength.length || 0;
-    
+
     if (actualLength != expectedLength) {
         throw new errors.ErrInvariantFailed(`wrong length, expected: ${expectedLength}, actual: ${actualLength}`);
     }
+}
+
+export function guardNotEmpty(value: { isEmpty?: () => boolean, length?: number }, what: string) {
+    if (isEmpty(value)) {
+        throw new errors.ErrInvariantFailed(`${what} is empty`);
+    }
+}
+
+export function guardEmpty(value: { isEmpty?: () => boolean, length?: number }, what: string) {
+    if (!isEmpty(value)) {
+        throw new errors.ErrInvariantFailed(`${what} is not empty`);
+    }
+}
+
+export function isEmpty(value: { isEmpty?: () => boolean, length?: number }): boolean {
+    if (value.isEmpty) {
+        return value.isEmpty();
+    }
+
+    return value.length === 0;
 }

@@ -5,7 +5,7 @@ import { QueryResponse } from "../queryResponse";
 import { Interaction } from "./interaction";
 import { IInteractionRunner } from "./interface";
 
-export class WebInteractionRunner implements IInteractionRunner {
+export class RelayingInteractionRunner implements IInteractionRunner {
     checkInteraction(_interaction: Interaction): void {
         throw new Error("Method not implemented.");
     }

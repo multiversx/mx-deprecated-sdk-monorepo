@@ -9,6 +9,7 @@ import { SmartContract } from "../smartContract";
 import { Argument } from "../argument";
 import { IInteractionRunner } from "./interface";
 import { EndpointDefinition } from "../typesystem";
+import { Nonce } from "../../nonce";
 
 /**
  * Interactions are mutable (the interaction runner mutates their content: transaction, query).
@@ -114,7 +115,7 @@ export class Interaction {
 
     withValue(value: Balance): Interaction {
         this.value = value;
-        this.asTransaction.value = value;
+        this.asTransaction.setValue(value);
         this.asQuery.value = value;
 
         // Reason: catch errors related to calling "non-payable" functions with some value provided.
@@ -125,11 +126,16 @@ export class Interaction {
 
     withGasLimit(gasLimit: GasLimit): Interaction {
         this.gasLimit = gasLimit;
-        this.asTransaction.gasLimit = gasLimit;
+        this.asTransaction.setGasLimit(gasLimit);
 
         // Reason: catch gas estimation errors - if the checker implementation is smart enough and aware of gas estimations.
         this.check();
 
+        return this;
+    }
+
+    withNonce(nonce: Nonce): Interaction {
+        this.asTransaction.setNonce(nonce);
         return this;
     }
 
