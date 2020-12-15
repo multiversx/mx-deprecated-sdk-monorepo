@@ -172,8 +172,8 @@ export class Transaction implements ISignable {
         this.signature = signature;
         this.sender = signedBy;
 
-        this.onSigned.emit({ transaction: this, signedBy: signedBy });
         this.hash = TransactionHash.compute(this);
+        this.onSigned.emit({ transaction: this, signedBy: signedBy });
     }
 
     /**
@@ -240,12 +240,14 @@ export class Transaction implements ISignable {
         return this.queryResponse;
     }
 
-    /**
-     * Not implemented. 
-     * Use {@link Transaction.getAsOnNetwork} instead.
-     */
-    queryStatus(): any {
-        return {};
+    async awaitHashed(): Promise<void> {
+        if (!this.hash.isEmpty()) {
+            return;
+        }
+        
+        return new Promise<void>((resolve, _reject) => {
+            this.onSigned.on(() => resolve());
+        });
     }
 
     /**

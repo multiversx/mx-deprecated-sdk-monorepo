@@ -17,7 +17,7 @@ describe("test transactionWatcher", () => {
         }));
 
         await Promise.all([
-            provider.mockTransactionTimeline(hash, [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed")]),
+            provider.mockTransactionTimelineByHash(hash, [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed")]),
             watcher.awaitExecuted(),
         ]);
 

@@ -59,8 +59,12 @@ export class MockProvider implements IProvider {
         this.queryResponders.push(new QueryResponder(predicate, response));
     }
 
-    async mockTransactionTimeline(transactionOrHash: Transaction | TransactionHash, timelinePoints: any[]): Promise<void> {
-        let hash = transactionOrHash instanceof TransactionHash ? transactionOrHash : transactionOrHash.hash;
+    async mockTransactionTimeline(transaction: Transaction, timelinePoints: any[]): Promise<void> {
+        await transaction.awaitHashed();
+        return this.mockTransactionTimelineByHash(transaction.hash, timelinePoints);
+    }
+
+    async mockTransactionTimelineByHash(hash: TransactionHash, timelinePoints: any[]): Promise<void> {
         let timeline = new AsyncTimer(`mock timeline of ${hash}`);
 
         await timeline.start(0);

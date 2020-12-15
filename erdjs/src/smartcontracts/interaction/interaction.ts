@@ -81,6 +81,14 @@ export class Interaction {
         return this.gasLimit;
     }
 
+    getTransaction(): Transaction {
+        return this.asTransaction;
+    }
+
+    getQuery(): Query {
+        return this.asQuery;
+    }
+
     private check() {
         this.runner.checkInteraction(this);
     }

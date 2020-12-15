@@ -1,6 +1,7 @@
 import { PathLike } from "fs";
 import { ProxyProvider } from "../proxyProvider";
 import { Code } from "../smartcontracts/code";
+import { TransactionWatcher } from "../transactionWatcher";
 
 export function getDevnetProvider(): ProxyProvider {
     return new ProxyProvider("http://localhost:7950", 5000);
@@ -24,4 +25,9 @@ export async function loadContractCode(path: PathLike): Promise<Code> {
 
 function isBrowser() {
     return typeof window !== "undefined";
+}
+
+export function setupUnitTestWatcherTimeouts() {
+    TransactionWatcher.DefaultPollingInterval = 42;
+    TransactionWatcher.DefaultTimeout = 42 * 42;
 }
