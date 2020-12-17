@@ -272,7 +272,7 @@ export class Transaction implements ISignable {
      * Broadcasts a transaction to the Network, via a {@link IProvider}.
      * 
      * ```
-     * let provider = new ProxyProvider("https://api.elrond.com");
+     * let provider = new ProxyProvider("https://gateway.elrond.com");
      * // ... Prepare, sign the transaction, then:
      * await tx.send(provider);
      * await tx.awaitExecuted(provider);
@@ -381,6 +381,11 @@ export class Transaction implements ISignable {
             this.onStatusChanged.emit({ transaction: this });
         }
     }
+
+    async awaitNotarized(provider: IProvider): Promise<void> {
+        let watcher = new TransactionWatcher(this.hash, provider);
+        await watcher.awaitNotarized();
+}
 }
 
 /**

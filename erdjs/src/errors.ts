@@ -290,6 +290,15 @@ export class ErrAsyncTimerAborted extends Err {
 }
 
 /**
+ * Signals a timout for a {@link TransactioWatcher}.
+ */
+export class ErrTransactionWatcherTimeout extends Err {
+    public constructor() {
+        super(`TransactionWatcher has timed out`);
+    }
+}
+
+/**
  * Signals an issue related to waiting for a specific {@link TransactionStatus}.
  */
 export class ErrExpectedTransactionStatusNotReached extends Err {
