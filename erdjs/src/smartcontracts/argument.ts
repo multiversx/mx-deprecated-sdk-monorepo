@@ -9,6 +9,85 @@ import { EndpointDefinition, OptionalValue, TypedValue } from "./typesystem";
 const Codec = new BinaryCodec();
 
 /**
+ * Arguments is an abstraction that encapsulates contract input data and contract return data from queries and SCRs.
+ */
+export class Arguments {
+    private readonly isTyped: boolean;
+    private readonly args: Argument[];
+
+    constructor(args: Argument[], isTyped: boolean = false) {
+        this.args = args;
+        this.isTyped = isTyped;
+    }
+
+    static fromBuffers(buffers: Buffer[], endpointDefinition?: EndpointDefinition): Arguments {
+        let isTyped = endpointDefinition ? true : false;
+        let typedValues = isTyped ? Codec.decodeOutput(buffers, endpointDefinition!) : [];
+        let args = buffers.map((buffer, index) => new Argument(buffer, typedValues[index]));
+
+        return new Arguments(args);
+    }
+
+    static fromQueryResponse(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
+        return Arguments.fromArrayBase64(items, endpointDefinition);
+    }
+
+    static fromArrayBase64(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
+        items = items || [];
+        let buffers = items.map(item => Buffer.from(item, "base64"));
+        return Arguments.fromBuffers(buffers, endpointDefinition);
+    }
+
+    static fromArrayHex(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
+        items = items || [];
+        let buffers = items.map(item => Buffer.from(item, "hex"));
+        return Arguments.fromBuffers(buffers, endpointDefinition);
+    }
+
+    items(): ReadonlyArray<Argument> {
+        return this.args;
+    }
+
+    firstItem(): Argument {
+        return this.items()[0];
+    }
+
+    valuesTyped(): ReadonlyArray<TypedValue> {
+        guardValueIsSet("isTyped", this.isTyped);
+        let values = this.items().map(item => item.typedValue());
+        return values;
+    }
+
+    valueTyped(): TypedValue {
+        return this.valuesTyped()[0];
+    }
+
+    /**
+     * Appends Argument objects to a given string. 
+     * The resulted string is to be used for preparing Smart Contract calls (or deployments).
+     * In general, this function should not be used directly. 
+     * It is used by {@link TransactionPayload} builders (such as {@link ContractCallPayloadBuilder}), under the hood.
+     * 
+     * ```
+     * let args = new Arguments([Argument.pubkey(alice), Argument.number(42)]);
+     * let data = args.appendToString("transferToken");
+     * let payload = new TransactionPayload(data);
+     * ```
+     */
+    appendToString(to: string): string {
+        if (this.args.length == 0) {
+            return to;
+        }
+    
+        this.args.forEach(arg => {
+            to += "@" + arg.hex();
+        });
+    
+        return to;
+    }
+}
+
+/**
  * The Argument abstraction (immutable) allows one to prepare arguments for Smart Contract calls (and deployments),
  * and to parse output arguments (from Smart Contract results or Query responses).
  * 
@@ -158,84 +237,5 @@ export class Argument {
 
     valueOf(): Buffer {
         return this.asBuffer;
-    }
-}
-
-/**
- * Arguments is an abstraction that encapsulates contract input data and contract return data from queries and SCRs.
- */
-export class Arguments {
-    private readonly isTyped: boolean;
-    private readonly args: Argument[];
-
-    constructor(args: Argument[], isTyped: boolean = false) {
-        this.args = args;
-        this.isTyped = isTyped;
-    }
-
-    static fromBuffers(buffers: Buffer[], endpointDefinition?: EndpointDefinition): Arguments {
-        let isTyped = endpointDefinition ? true : false;
-        let typedValues = isTyped ? Codec.decodeOutput(buffers, endpointDefinition!) : [];
-        let args = buffers.map((buffer, index) => new Argument(buffer, typedValues[index]));
-
-        return new Arguments(args);
-    }
-
-    static fromQueryResponse(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
-        return Arguments.fromArrayBase64(items, endpointDefinition);
-    }
-
-    static fromArrayBase64(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
-        items = items || [];
-        let buffers = items.map(item => Buffer.from(item, "base64"));
-        return Arguments.fromBuffers(buffers, endpointDefinition);
-    }
-
-    static fromArrayHex(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
-        items = items || [];
-        let buffers = items.map(item => Buffer.from(item, "hex"));
-        return Arguments.fromBuffers(buffers, endpointDefinition);
-    }
-
-    items(): ReadonlyArray<Argument> {
-        return this.args;
-    }
-
-    firstItem(): Argument {
-        return this.items()[0];
-    }
-
-    valuesTyped(): ReadonlyArray<TypedValue> {
-        guardValueIsSet("isTyped", this.isTyped);
-        let values = this.items().map(item => item.typedValue());
-        return values;
-    }
-
-    valueTyped(): TypedValue {
-        return this.valuesTyped()[0];
-    }
-
-    /**
-     * Appends Argument objects to a given string. 
-     * The resulted string is to be used for preparing Smart Contract calls (or deployments).
-     * In general, this function should not be used directly. 
-     * It is used by {@link TransactionPayload} builders (such as {@link ContractCallPayloadBuilder}), under the hood.
-     * 
-     * ```
-     * let args = new Arguments([Argument.pubkey(alice), Argument.number(42)]);
-     * let data = args.appendToString("transferToken");
-     * let payload = new TransactionPayload(data);
-     * ```
-     */
-    appendToString(to: string): string {
-        if (this.args.length == 0) {
-            return to;
-        }
-    
-        this.args.forEach(arg => {
-            to += "@" + arg.hex();
-        });
-    
-        return to;
     }
 }
