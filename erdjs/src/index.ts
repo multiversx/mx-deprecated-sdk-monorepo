@@ -14,12 +14,7 @@ export * from "./simpleSigner";
 export * from "./backendSigner";
 export * from "./nullSigner";
 
-export * from "./smartcontracts/smartContract";
-export * from "./smartcontracts/interface";
-export * from "./smartcontracts/code";
-export * from "./smartcontracts/codeMetadata";
-export * from "./smartcontracts/arguments";
-export * from "./smartcontracts/function";
+export * from "./smartcontracts";
 
 export * from "./dapp/constants";
 export * from "./dapp/interface";

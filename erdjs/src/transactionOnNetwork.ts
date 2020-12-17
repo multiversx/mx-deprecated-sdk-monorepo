@@ -6,6 +6,7 @@ import { Signature } from "./signature";
 import { TransactionPayload } from "./transactionPayload";
 import { Hash } from "./hash";
 import { TransactionHash, TransactionStatus } from "./transaction";
+import { guardNotEmpty, guardValueIsSet } from "./utils";
 
 /**
  * A plain view of a transaction, as queried from the Network.
@@ -68,8 +69,8 @@ export class TransactionOnNetwork {
         transactionOnNetwork.hyperblockNonce = new Nonce(response.hyperblockNonce || 0);
         transactionOnNetwork.hyperblockHash = new Hash(response.hyperblockHash);
 
-        transactionOnNetwork.receipt = Receipt.fromHttpResponse(response.receipt);
-        transactionOnNetwork.smartContractResults = response.smartContractResults || [];
+        transactionOnNetwork.receipt = Receipt.fromHttpResponse(response.receipt || {});
+        transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || []);
 
         return transactionOnNetwork;
     }
@@ -110,7 +111,8 @@ export class Receipt {
 }
 
 export class SmartContractResults {
-    items: SmartContractResultItem[] = [];
+    private items: SmartContractResultItem[] = [];
+    private original?: TransactionOnNetwork;
 
     static fromHttpResponse(response: {
         smartContractResults: any
@@ -120,15 +122,33 @@ export class SmartContractResults {
         return results;
     }
 
-    getImmediateResult() {
-        // throw if ambiguity
-        // new ImmediateSmartContractResult() - subclass
-        // has VM return code.
+    attachOriginalTransaction(originalTransaction: TransactionOnNetwork) {
+        this.original = originalTransaction;
     }
 
-    getResultingCalls() {
-        // throw if ambiguity
-        // new ResultingCall() - subclass
+    getImmediateResult(): ImmediateResult {
+        let withNextNonce = this.findWithNextNonce();
+        return new ImmediateResult(withNextNonce);
+    }
+
+    private findWithNextNonce(): SmartContractResultItem {
+        guardValueIsSet("original", this.original);
+        guardNotEmpty(this.items, "items");
+
+        let originalNonce = this.original!.nonce;
+        let nextNonce = originalNonce.increment();
+        let withNextNonce = this.items.find(item => item.nonce.equals(nextNonce));
+        guardValueIsSet("withNextNonce", withNextNonce);
+
+        return withNextNonce!;
+    }
+
+    getResultingCalls(): ResultingCall[] {
+        let withNextNonce = this.findWithNextNonce();
+        let otherItems = this.items.filter(item => item != withNextNonce);
+        let resultingCalls = otherItems.map(item => new ResultingCall(item));
+
+        return resultingCalls;
     }
 }
 
@@ -138,7 +158,7 @@ export class SmartContractResultItem {
     value: Balance = Balance.Zero();
     receiver: Address = new Address();
     sender: Address = new Address();
-    dataParts: Buffer[] = [];
+    dataTokens: Buffer[] = [];
     previousHash: Hash = Hash.empty();
     originalHash: Hash = Hash.empty();
     gasLimit: GasLimit = new GasLimit(0);
@@ -165,7 +185,7 @@ export class SmartContractResultItem {
         item.value = Balance.fromString(response.value);
         item.receiver = new Address(response.receiver);
         item.sender = new Address(response.sender);
-        //item.dataParts = ""
+        item.dataTokens = response.data.split("@").map(item => Buffer.from(item, "hex"));
         item.previousHash = new TransactionHash(response.prevTxHash);
         item.originalHash = new TransactionHash(response.originalTxHash);
         item.gasLimit = new GasLimit(response.gasLimit);
@@ -174,13 +194,18 @@ export class SmartContractResultItem {
 
         return item;
     }
+}
 
-    /**
-     * If available, will provide a typed outcome (with typed values).
-     */
-    //private endpointDefinition?: EndpointDefinition;
+export class ImmediateResult extends SmartContractResultItem {
+    constructor(init?: Partial<ImmediateResult>) {
+        super();
+        Object.assign(this, init);
+    }
+}
 
-    // setEndpointDefinition(endpointDefinition: EndpointDefinition) {
-    //     //this.endpointDefinition = endpointDefinition;
-    // }
+export class ResultingCall extends SmartContractResultItem {
+    constructor(init?: Partial<ResultingCall>) {
+        super();
+        Object.assign(this, init);
+    }
 }

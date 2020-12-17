@@ -93,15 +93,6 @@ export class ErrBadType extends Err {
 }
 
 /**
- * Signals a missing required value.
- */
-export class ErrMissingValue extends Err {
-    public constructor(name: string) {
-        super(`"${name} is required, but missing.`);
-    }
-}
-
-/**
  * Signals that an invariant failed.
  */
 export class ErrInvariantFailed extends Err {

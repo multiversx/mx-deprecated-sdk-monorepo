@@ -46,6 +46,6 @@ describe("test smart contract queries", () => {
         assert.throw(() => new Query({
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
             func: undefined
-        }), errors.ErrMissingValue);
+        }), errors.ErrInvariantFailed);
     });
 });

@@ -46,7 +46,7 @@ export class Balance {
      * Creates a balance object from a string (with denomination included).
      */
     static fromString(value: string): Balance {
-        return new Balance(BigInt(value));
+        return new Balance(BigInt(value || "0"));
     }
 
     /**
