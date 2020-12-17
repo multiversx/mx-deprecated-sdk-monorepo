@@ -72,7 +72,7 @@ export class ProxyProvider implements IProvider {
             "withSender" : hintSender ? hintSender.bech32() : "",
             "withResults": includeOutcome ? "true" : ""
         });
-
+        
         let response = await this.doGet(url);
         let payload = response.transaction;
         return TransactionOnNetwork.fromHttpResponse(payload);
@@ -141,7 +141,7 @@ export class ProxyProvider implements IProvider {
             }
         }
     
-        return `${endpoint}/${params.toString()}`;
+        return `${endpoint}?${searchParams.toString()}`;
     }
 }
 
