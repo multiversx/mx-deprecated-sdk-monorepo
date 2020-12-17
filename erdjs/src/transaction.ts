@@ -11,6 +11,7 @@ import * as errors from "./errors";
 import { TypedEvent } from "./events";
 import { TransactionWatcher } from "./transactionWatcher";
 import { ProtoSerializer } from "./proto";
+import { Hash } from "./hash";
 const createTransactionHasher = require("blake2b");
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
@@ -385,38 +386,9 @@ export class Transaction implements ISignable {
 /**
  * An abstraction for handling and computing transaction hashes.
  */
-export class TransactionHash {
-    /**
-     * The hash, as a hex-encoded string.
-     */
-    readonly hash: string;
-
-    /**
-     * Creates a new TransactionHash object.
-     * 
-     * @param hash The hash, as a hex-encoded string.
-     */
+export class TransactionHash extends Hash {
     constructor(hash: string) {
-        this.hash = hash;
-    }
-
-    static empty(): TransactionHash {
-        return new TransactionHash("");
-    }
-
-    /**
-     * Returns whether the hash is empty (not computed).
-     */
-    isEmpty(): boolean {
-        return !this.hash;
-    }
-
-    toString(): string {
-        return this.hash;
-    }
-
-    valueOf(): string {
-        return this.hash;
+        super(hash);
     }
 
     /**
