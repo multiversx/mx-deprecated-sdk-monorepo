@@ -1,7 +1,8 @@
 import { IProvider, ISigner } from "../../interface";
 import { IInteractionChecker, IInteractionRunner } from "./interface";
 import { Interaction } from "./interaction";
-import { Transaction, TransactionOnNetwork } from "../../transaction";
+import { Transaction } from "../../transaction";
+import { TransactionOnNetwork } from "../../transactionOnNetwork";
 import { Address } from "../../address";
 import { Query } from "../query";
 import { QueryResponse } from "../queryResponse";

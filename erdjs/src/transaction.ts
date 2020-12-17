@@ -12,6 +12,7 @@ import { TypedEvent } from "./events";
 import { TransactionWatcher } from "./transactionWatcher";
 import { ProtoSerializer } from "./proto";
 import { Hash } from "./hash";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 const createTransactionHasher = require("blake2b");
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
@@ -316,7 +317,13 @@ export class Transaction implements ISignable {
             throw new errors.ErrTransactionHashUnknown();
         }
 
-        let includeOutcome = this.receiver.isContractAddress();
+        // For Smart Contract transactions, wait for their full execution & notarization before returning.
+        let isSmartContractTransaction = this.receiver.isContractAddress();
+        if (isSmartContractTransaction) {
+            await this.awaitNotarized(provider);
+        }
+
+        let includeOutcome = isSmartContractTransaction;
         let response = await provider.getTransaction(this.hash, this.sender, includeOutcome);
 
         if (cacheLocally) {
@@ -385,7 +392,7 @@ export class Transaction implements ISignable {
     async awaitNotarized(provider: IProvider): Promise<void> {
         let watcher = new TransactionWatcher(this.hash, provider);
         await watcher.awaitNotarized();
-}
+    }
 }
 
 /**
@@ -480,58 +487,5 @@ export class TransactionStatus {
         }
 
         return this.status == other.status;
-    }
-}
-
-/**
- * A plain view of a transaction, as queried from the Network.
- */
-export class TransactionOnNetwork {
-    type: TransactionOnNetworkType = new TransactionOnNetworkType();
-    nonce?: Nonce;
-    round?: number;
-    epoch?: number;
-    value?: Balance;
-    receiver?: Address;
-    sender?: Address;
-    gasPrice?: GasPrice;
-    gasLimit?: GasLimit;
-    data?: TransactionPayload;
-    signature?: Signature;
-    status: TransactionStatus;
-
-    constructor(init?: Partial<TransactionOnNetwork>) {
-        Object.assign(this, init);
-
-        this.status = TransactionStatus.createUnknown();
-    }
-
-    static fromHttpResponse(payload: any): TransactionOnNetwork {
-        let result = new TransactionOnNetwork();
-
-        result.type = new TransactionOnNetworkType(payload["type"]);
-        result.nonce = new Nonce(payload["nonce"] || 0);
-        result.round = payload["round"];
-        result.epoch = payload["epoch"];
-        result.value = Balance.fromString(payload["value"]);
-        result.sender = Address.fromBech32(payload["sender"]);
-        result.receiver = Address.fromBech32(payload["receiver"]);
-        result.gasPrice = new GasPrice(payload["gasPrice"]);
-        result.gasLimit = new GasLimit(payload["gasLimit"]);
-        result.data = TransactionPayload.fromEncoded(payload["data"]);
-        result.status = new TransactionStatus(payload["status"]);
-
-        return result;
-    }
-}
-
-/**
- * Not yet implemented.
- */
-export class TransactionOnNetworkType {
-    readonly value: string;
-
-    constructor(value?: string) {
-        this.value = value || "unknown";
     }
 }

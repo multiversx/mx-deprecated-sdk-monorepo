@@ -1,5 +1,6 @@
 import { Address } from "../../address";
-import { Transaction, TransactionHash, TransactionOnNetwork } from "../../transaction";
+import { Transaction, TransactionHash } from "../../transaction";
+import { TransactionOnNetwork } from "../../transactionOnNetwork";
 import { Query } from "../query";
 import { QueryResponse } from "../queryResponse";
 import { Interaction } from "./interaction";

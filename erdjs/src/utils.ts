@@ -1,5 +1,13 @@
 import * as errors from "./errors";
 
+// TODO: Create a class called "Guard". Add the following as member functions.
+
+export function guardTrue(value: boolean, what: string) {
+    if (!value) {
+        throw new errors.ErrInvariantFailed(`${what} isn't true`);
+    }
+}
+
 export function guardType(name: string, type: any, value?: any, allowUndefined: boolean = true) {
     if (allowUndefined && value === undefined) {
         return;

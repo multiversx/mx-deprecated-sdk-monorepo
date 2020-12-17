@@ -1,4 +1,5 @@
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
+import { Transaction, TransactionHash, TransactionStatus } from "./transaction";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";

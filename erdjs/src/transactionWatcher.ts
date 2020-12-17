@@ -1,6 +1,7 @@
 import { IProvider } from "./interface";
 import { AsyncTimer } from "./asyncTimer";
-import { TransactionHash, TransactionOnNetwork, TransactionOnNetworkType, TransactionStatus } from "./transaction";
+import { TransactionHash, TransactionStatus } from "./transaction";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 import * as errors from "./errors";
 import { Logger } from "./logger";
 

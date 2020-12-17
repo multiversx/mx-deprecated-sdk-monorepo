@@ -1,6 +1,7 @@
 import axios from "axios";
 import { IProvider } from "./interface";
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
+import { Transaction, TransactionHash, TransactionStatus } from "./transaction";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import * as errors from "./errors";
