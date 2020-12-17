@@ -35,7 +35,7 @@ export class Query {
         let request: any = {
             "ScAddress": this.address.bech32(),
             "FuncName": this.func.toString(),
-            "Args": this.args.map(arg => arg.valueOf()),
+            "Args": this.args.map(arg => arg.toString()),
             "CallValue": this.value.toString()
         };
 
@@ -46,5 +46,3 @@ export class Query {
         return request;
     }
 }
-
-

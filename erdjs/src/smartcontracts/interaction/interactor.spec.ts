@@ -39,8 +39,8 @@ describe("test smart contract interactor", function () {
 
         // Query
         let queryResponse = await interaction.query();
-        assert.lengthOf(queryResponse.outcome().values(), 1);
-        assert.equal(queryResponse.outcome().firstValue().valueOf(), BigInt(42));
+        assert.lengthOf(queryResponse.outputArguments().valuesTyped(), 1);
+        assert.equal(queryResponse.outputArguments().valueTyped().valueOf(), BigInt(42));
 
         // Execute, do not wait for execution
         let transaction = await interaction.withNonce(new Nonce(0)).broadcast();

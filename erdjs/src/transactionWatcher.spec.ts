@@ -1,8 +1,9 @@
 import { assert } from "chai";
 import { TransactionWatcher } from "./transactionWatcher";
-import { TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
+import { TransactionHash, TransactionStatus } from "./transaction";
 import { MockProvider, Wait } from "./testutils";
 import { Nonce } from "./nonce";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 
 
 describe("test transactionWatcher", () => {

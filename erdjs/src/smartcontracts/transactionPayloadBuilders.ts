@@ -2,7 +2,7 @@
 import { TransactionPayload } from "../transactionPayload";
 import { guardValueIsSet } from "../utils";
 
-import { appendArguments, Argument } from "./argument";
+import { Argument, Arguments } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
@@ -58,7 +58,8 @@ export class ContractDeployPayloadBuilder {
         let code = this.code!.toString();
         let codeMetadata = this.codeMetadata.toString();
         let data = `${code}@${ArwenVirtualMachine}@${codeMetadata}`;
-        data = appendArguments(data, this.arguments);
+        let args = new Arguments(this.arguments);
+        data = args.appendToString(data);
 
         return new TransactionPayload(data);
     }
@@ -113,7 +114,8 @@ export class ContractUpgradePayloadBuilder {
         let code = this.code!.toString();
         let codeMetadata = this.codeMetadata.toString();
         let data = `upgradeContract@${code}@${codeMetadata}`;
-        data = appendArguments(data, this.arguments);
+        let args = new Arguments(this.arguments);
+        data = args.appendToString(data);
 
         return new TransactionPayload(data);
     }
@@ -157,7 +159,8 @@ export class ContractCallPayloadBuilder {
         guardValueIsSet("calledFunction", this.contractFunction);
 
         let data = this.contractFunction!.name;
-        data = appendArguments(data, this.arguments);
+        let args = new Arguments(this.arguments);
+        data = args.appendToString(data);
 
         return new TransactionPayload(data);
     }

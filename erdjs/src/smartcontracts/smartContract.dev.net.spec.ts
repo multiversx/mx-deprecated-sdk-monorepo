@@ -20,7 +20,7 @@ describe("test on devnet (local)", function () {
     let aliceSigner = aliceWallet.signer;
 
     it("counter: should deploy, then simulate transactions", async function() {
-        this.timeout(50000);
+        this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -134,11 +134,11 @@ describe("test on devnet (local)", function () {
 
         // Check counter
         let queryResponse = await contract.runQuery(devnet, { func: new ContractFunction("get") });
-        assert.equal(3, queryResponse.outcome().firstItem().number());
+        assert.equal(3, queryResponse.outputArguments().firstItem().number());
     });
 
     it("erc20: should deploy, call and query contract", async function() {
-        this.timeout(50000);
+        this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -195,29 +195,29 @@ describe("test on devnet (local)", function () {
         let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("totalSupply")
         });
-        assert.equal(10000, queryResponse.outcome().firstItem().number());
+        assert.equal(10000, queryResponse.outputArguments().firstItem().number());
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.alice.address)]
         });
-        assert.equal(7500, queryResponse.outcome().firstItem().number());
+        assert.equal(7500, queryResponse.outputArguments().firstItem().number());
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.bob.address)]
         });
-        assert.equal(1000, queryResponse.outcome().firstItem().number());
+        assert.equal(1000, queryResponse.outputArguments().firstItem().number());
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [Argument.fromPubkey(wallets.carol.address)]
         });
-        assert.equal(1500, queryResponse.outcome().firstItem().number());
+        assert.equal(1500, queryResponse.outputArguments().firstItem().number());
     });
 
     it("lottery: should deploy, call and query contract", async function() {
-        this.timeout(50000);
+        this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -273,7 +273,7 @@ describe("test on devnet (local)", function () {
                 Argument.fromUTF8("foobar")
             ]
         });
-        assert.equal(queryResponse.outcome().firstItem().bool(), true);
+        assert.equal(queryResponse.outputArguments().firstItem().bool(), true);
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("lotteryExists"),
@@ -281,6 +281,6 @@ describe("test on devnet (local)", function () {
                 Argument.fromUTF8("missingLottery")
             ]
         });
-        assert.equal(queryResponse.outcome().firstItem().bool(), false);
+        assert.equal(queryResponse.outputArguments().firstItem().bool(), false);
     });
 });

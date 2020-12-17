@@ -1,7 +1,7 @@
 import { GasLimit } from "../networkParams";
 import * as errors from "../errors";
 import { EndpointDefinition } from "./typesystem";
-import { Outcome } from "./outcome";
+import { Arguments } from "./argument";
 import { MaxUint64 } from "./query";
 
 export class QueryResponse {
@@ -57,8 +57,8 @@ export class QueryResponse {
         this.endpointDefinition = endpointDefinition;
     }
 
-    outcome(): Outcome {
-        return Outcome.fromQueryResponse(this.returnData, this.endpointDefinition);
+    outputArguments(): Arguments {
+        return Arguments.fromQueryResponse(this.returnData, this.endpointDefinition);
     }
 
     /**
