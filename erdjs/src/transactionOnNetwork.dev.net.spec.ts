@@ -53,9 +53,14 @@ describe.only("fetch transactions from devnet", function () {
         await transactionIncrement.awaitExecuted(devnet);
 
         await transactionDeploy.getAsOnNetwork(devnet);
-        console.log(transactionDeploy.getAsOnNetworkCached());
-
         await transactionIncrement.getAsOnNetwork(devnet);
-        console.log(transactionIncrement.getAsOnNetworkCached());
+
+        let deployImmediateResult = transactionDeploy.getAsOnNetworkCached().smartContractResults.getImmediateResult();
+        let deployResultingCalls = transactionDeploy.getAsOnNetworkCached().smartContractResults.getResultingCalls();
+
+        assert.lengthOf(deployImmediateResult.dataTokens, 1);
+        // There is some refund
+        assert.isTrue(deployImmediateResult.value.valueOf() > 0);
+        assert.lengthOf(deployResultingCalls, 0);
     });
 });

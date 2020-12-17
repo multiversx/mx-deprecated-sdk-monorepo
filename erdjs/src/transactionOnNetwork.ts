@@ -50,7 +50,7 @@ export class TransactionOnNetwork {
         hyperblockNonce: number,
         hyperblockHash: string,
         receipt: any,
-        smartContractResults: any
+        smartContractResults: any[]
     }): TransactionOnNetwork {
         let transactionOnNetwork = new TransactionOnNetwork();
 
@@ -71,6 +71,7 @@ export class TransactionOnNetwork {
 
         transactionOnNetwork.receipt = Receipt.fromHttpResponse(response.receipt || {});
         transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || []);
+        transactionOnNetwork.smartContractResults.attachOriginalTransaction(transactionOnNetwork);
 
         return transactionOnNetwork;
     }
@@ -114,11 +115,9 @@ export class SmartContractResults {
     private items: SmartContractResultItem[] = [];
     private original?: TransactionOnNetwork;
 
-    static fromHttpResponse(response: {
-        smartContractResults: any
-    }): SmartContractResults {
+    static fromHttpResponse(smartContractResults: any[]): SmartContractResults {
         let results = new SmartContractResults();
-        results.items = (response.smartContractResults || []).map((item: any) => SmartContractResultItem.fromHttpResponse(item));
+        results.items = (smartContractResults || []).map((item: any) => SmartContractResultItem.fromHttpResponse(item));
         return results;
     }
 
@@ -185,7 +184,7 @@ export class SmartContractResultItem {
         item.value = Balance.fromString(response.value);
         item.receiver = new Address(response.receiver);
         item.sender = new Address(response.sender);
-        item.dataTokens = response.data.split("@").map(item => Buffer.from(item, "hex"));
+        item.dataTokens = response.data.split("@").map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
         item.previousHash = new TransactionHash(response.prevTxHash);
         item.originalHash = new TransactionHash(response.originalTxHash);
         item.gasLimit = new GasLimit(response.gasLimit);
