@@ -1,7 +1,7 @@
 import { assert } from "chai";
 import { Address } from "../address";
 import { TransactionPayload } from "../transactionPayload";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { ContractFunction } from "./function";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";

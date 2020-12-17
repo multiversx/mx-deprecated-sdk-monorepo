@@ -1,5 +1,5 @@
 import { ContractFunction } from "./function";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { Balance } from "../balance";
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";

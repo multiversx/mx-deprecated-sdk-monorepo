@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { Address } from "../address";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { ContractFunction } from "./function";
 import { Query } from "./query";
 import { Balance } from "../balance";

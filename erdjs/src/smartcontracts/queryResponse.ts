@@ -1,7 +1,7 @@
 import { GasLimit } from "../networkParams";
 import * as errors from "../errors";
 import { EndpointDefinition } from "./typesystem";
-import { Arguments } from "./argument";
+import { Arguments } from "./arguments";
 import { MaxUint64 } from "./query";
 
 export class QueryResponse {

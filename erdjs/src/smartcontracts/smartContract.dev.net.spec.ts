@@ -7,7 +7,7 @@ import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
 import { getDevnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { assert } from "chai";
 import { Balance } from "../balance";
 import { U32Value } from "./typesystem";
@@ -81,7 +81,7 @@ describe("test on devnet (local)", function () {
     });
 
     it("counter: should deploy, call and query contract", async function() {
-        this.timeout(50000);
+        this.timeout(80000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;

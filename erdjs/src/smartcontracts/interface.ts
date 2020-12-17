@@ -2,7 +2,7 @@ import { Address } from "../address";
 import { Balance } from "../balance";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";

@@ -6,7 +6,6 @@ import { Signature } from "./signature";
 import { TransactionPayload } from "./transactionPayload";
 import { Hash } from "./hash";
 import { TransactionHash, TransactionStatus } from "./transaction";
-import { hash } from "tweetnacl";
 
 /**
  * A plain view of a transaction, as queried from the Network.

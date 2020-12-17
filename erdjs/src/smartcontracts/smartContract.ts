@@ -3,7 +3,7 @@ import { Address } from "../address";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
 import { TransactionPayload } from "../transactionPayload";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ISmartContract as ISmartContract } from "./interface";

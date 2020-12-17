@@ -6,7 +6,7 @@ import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
 import { MockProvider, setupUnitTestWatcherTimeouts, Wait } from "../testutils";
 import { TransactionStatus } from "../transaction";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { TestWallets } from "../testutils";

@@ -1,4 +1,4 @@
-import { Argument } from "../argument";
+import { Argument } from "../arguments";
 import { ContractFunction } from "../function";
 import { SmartContract } from "../smartContract";
 import { Interaction } from "./interaction";

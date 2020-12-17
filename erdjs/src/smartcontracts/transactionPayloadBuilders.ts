@@ -2,7 +2,7 @@
 import { TransactionPayload } from "../transactionPayload";
 import { guardValueIsSet } from "../utils";
 
-import { Argument, Arguments } from "./argument";
+import { Argument, Arguments } from "./arguments";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";

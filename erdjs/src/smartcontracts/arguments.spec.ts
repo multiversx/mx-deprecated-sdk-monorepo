@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 import { BigUIntValue, OptionalValue, U8Value, Vector } from "./typesystem";
 
 describe("test arguments", () => {

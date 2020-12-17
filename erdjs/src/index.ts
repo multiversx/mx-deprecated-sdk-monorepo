@@ -18,7 +18,7 @@ export * from "./smartcontracts/smartContract";
 export * from "./smartcontracts/interface";
 export * from "./smartcontracts/code";
 export * from "./smartcontracts/codeMetadata";
-export * from "./smartcontracts/argument";
+export * from "./smartcontracts/arguments";
 export * from "./smartcontracts/function";
 
 export * from "./dapp/constants";

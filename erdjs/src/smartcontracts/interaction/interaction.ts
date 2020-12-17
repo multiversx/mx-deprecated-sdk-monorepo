@@ -7,7 +7,7 @@ import { QueryResponse } from "../queryResponse";
 import { ContractFunction } from "../function";
 import { Address } from "../../address";
 import { SmartContract } from "../smartContract";
-import { Argument } from "../argument";
+import { Argument } from "../arguments";
 import { IInteractionRunner } from "./interface";
 import { EndpointDefinition } from "../typesystem";
 import { Nonce } from "../../nonce";
