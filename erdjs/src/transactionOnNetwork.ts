@@ -7,6 +7,7 @@ import { TransactionPayload } from "./transactionPayload";
 import { Hash } from "./hash";
 import { TransactionHash, TransactionStatus } from "./transaction";
 import { guardNotEmpty, guardValueIsSet } from "./utils";
+import { Arguments, EndpointDefinition, ReturnCode } from "./smartcontracts";
 
 /**
  * A plain view of a transaction, as queried from the Network.
@@ -196,9 +197,29 @@ export class SmartContractResultItem {
 }
 
 export class ImmediateResult extends SmartContractResultItem {
+    /**
+     * If available, will provide typed output arguments (with typed values).
+     */
+    private endpointDefinition?: EndpointDefinition;
+
     constructor(init?: Partial<ImmediateResult>) {
         super();
         Object.assign(this, init);
+    }
+
+    getReturnCode(): ReturnCode {
+        let returnCodeToken = this.dataTokens[0];
+        return ReturnCode.fromBuffer(returnCodeToken);
+}
+
+    outputArguments(): Arguments {
+        let argsToken = this.dataTokens.slice(1);
+        let args = Arguments.fromBuffers(argsToken, this.endpointDefinition);
+        return args;
+    }
+
+    setEndpointDefinition(endpointDefinition: EndpointDefinition) {
+        this.endpointDefinition = endpointDefinition;
     }
 }
 
