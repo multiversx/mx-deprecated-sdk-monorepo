@@ -66,7 +66,7 @@ export class SmartContractResultItem {
     value: Balance = Balance.Zero();
     receiver: Address = new Address();
     sender: Address = new Address();
-    dataTokens: Buffer[] = [];
+    data: string = "";
     previousHash: Hash = Hash.empty();
     originalHash: Hash = Hash.empty();
     gasLimit: GasLimit = new GasLimit(0);
@@ -93,7 +93,7 @@ export class SmartContractResultItem {
         item.value = Balance.fromString(response.value);
         item.receiver = new Address(response.receiver);
         item.sender = new Address(response.sender);
-        item.dataTokens = response.data.split("@").map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
+        item.data = response.data || "";
         item.previousHash = new TransactionHash(response.prevTxHash);
         item.originalHash = new TransactionHash(response.originalTxHash);
         item.gasLimit = new GasLimit(response.gasLimit);
@@ -101,6 +101,10 @@ export class SmartContractResultItem {
         item.callType = response.callType;
 
         return item;
+    }
+
+    getDataTokens(): Buffer[] {
+        return this.data.split("@").map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
     }
 }
 
@@ -116,12 +120,12 @@ export class ImmediateResult extends SmartContractResultItem {
     }
 
     getReturnCode(): ReturnCode {
-        let returnCodeToken = this.dataTokens[0];
+        let returnCodeToken = this.getDataTokens()[0];
         return ReturnCode.fromBuffer(returnCodeToken);
     }
 
     outputArguments(): Arguments {
-        let argsToken = this.dataTokens.slice(1);
+        let argsToken = this.getDataTokens().slice(1);
         let args = Arguments.fromBuffers(argsToken, this.endpointDefinition);
         return args;
     }

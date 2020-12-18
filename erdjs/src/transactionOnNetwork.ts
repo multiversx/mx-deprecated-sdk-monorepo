@@ -28,8 +28,8 @@ export class TransactionOnNetwork {
     hyperblockNonce: Nonce = new Nonce(0);
     hyperblockHash: Hash = Hash.empty();
 
-    receipt: Receipt = new Receipt();
-    smartContractResults: SmartContractResults = SmartContractResults.empty();
+    private receipt: Receipt = new Receipt();
+    private smartContractResults: SmartContractResults = SmartContractResults.empty();
 
     constructor(init?: Partial<TransactionOnNetwork>) {
         Object.assign(this, init);
@@ -73,6 +73,14 @@ export class TransactionOnNetwork {
         transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || [], transactionOnNetwork.nonce);
 
         return transactionOnNetwork;
+    }
+
+    getReceipt(): Receipt {
+        return this.receipt;
+    }
+
+    getSmartContractResults(): SmartContractResults {
+        return this.smartContractResults;
     }
 }
 

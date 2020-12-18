@@ -10,6 +10,7 @@ export class ReturnCode {
     static CallStackOverFlow = new ReturnCode("call stack overflow");
     static ContractInvalid = new ReturnCode("contract invalid");
     static ExecutionFailed = new ReturnCode("execution failed");
+    static Unknown = new ReturnCode("unknown");
 
     private readonly text: string;
 

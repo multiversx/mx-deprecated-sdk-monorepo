@@ -3,6 +3,7 @@ import * as errors from "../errors";
 import { EndpointDefinition } from "./typesystem";
 import { Arguments } from "./arguments";
 import { MaxUint64 } from "./query";
+import { ReturnCode } from "./returnCode";
 
 export class QueryResponse {
     /**
@@ -11,13 +12,13 @@ export class QueryResponse {
     private endpointDefinition?: EndpointDefinition;
 
     returnData: string[];
-    returnCode: string;
+    returnCode: ReturnCode;
     returnMessage: string;
     gasUsed: GasLimit;
 
     constructor(init?: Partial<QueryResponse>) {
         this.returnData = init?.returnData || [];
-        this.returnCode = init?.returnCode || "";
+        this.returnCode = init?.returnCode || ReturnCode.Unknown;
         this.returnMessage = init?.returnMessage || "";
         this.gasUsed = init?.gasUsed || GasLimit.min();
     }
@@ -34,7 +35,7 @@ export class QueryResponse {
 
         return new QueryResponse({
             returnData: returnData,
-            returnCode: returnCode,
+            returnCode: new ReturnCode(returnCode),
             returnMessage: returnMessage,
             gasUsed: gasUsed
         });
@@ -49,8 +50,7 @@ export class QueryResponse {
     }
 
     isSuccess(): boolean {
-        let ok = this.returnCode == "ok" || this.returnCode == "0";
-        return ok;
+        return this.returnCode.equals(ReturnCode.Ok);
     }
 
     setEndpointDefinition(endpointDefinition: EndpointDefinition) {

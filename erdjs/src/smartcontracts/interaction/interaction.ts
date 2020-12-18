@@ -7,10 +7,12 @@ import { QueryResponse } from "../queryResponse";
 import { ContractFunction } from "../function";
 import { Address } from "../../address";
 import { SmartContract } from "../smartContract";
-import { Argument } from "../arguments";
+import { Argument, Arguments } from "../arguments";
 import { IInteractionRunner } from "./interface";
-import { EndpointDefinition } from "../typesystem";
+import { EndpointDefinition, TypedValue } from "../typesystem";
 import { Nonce } from "../../nonce";
+import { ImmediateResult, SmartContractResults } from "../smartContractResults";
+import { ReturnCode } from "../returnCode";
 
 /**
  * Interactions are mutable (the interaction runner mutates their content: transaction, query).
@@ -99,18 +101,70 @@ export class Interaction {
         return await this.runner.broadcast(this.asTransaction);
     }
 
-    async broadcastAwaitExecution(): Promise<TransactionOnNetwork> {
+    /**
+     * Broadcasts the transaction and awaits for its execution.
+     * The outcome is structured such that it allows quick access to each level of detail.
+     */
+    async broadcastAwaitExecution(): Promise<
+        {
+            asOnNetwork: TransactionOnNetwork,
+            smartContractResults: SmartContractResults,
+            immediateResult: ImmediateResult,
+            outputArguments: Arguments,
+            values: TypedValue[],
+            firstValue: TypedValue,
+            returnCode: ReturnCode
+        }> {
         let asOnNetwork = await this.runner.broadcastAwaitExecution(this.asTransaction);
         let endpoint = this.getEndpointDefinition();
-        asOnNetwork.smartContractResults.getImmediate().setEndpointDefinition(endpoint);
-        return asOnNetwork;
+        let smartContractResults = asOnNetwork.getSmartContractResults();
+        let immediateResult = smartContractResults.getImmediate();
+
+        immediateResult.setEndpointDefinition(endpoint);
+
+        let outputArguments = immediateResult.outputArguments();
+        let values = outputArguments.valuesTyped();
+        let firstOutputArgument = outputArguments.firstValueTyped();
+        let returnCode = immediateResult.getReturnCode();
+
+        return {
+            asOnNetwork: asOnNetwork,
+            smartContractResults: smartContractResults,
+            immediateResult: immediateResult,
+            outputArguments: outputArguments,
+            values: values,
+            firstValue: firstOutputArgument,
+            returnCode: returnCode
+        };
     }
 
-    async query(caller?: Address): Promise<QueryResponse> {
+    /**
+     * Runs a query against the Smart Contract.
+     * The outcome is structured such that it allows quick access to each level of detail.
+     */
+    async query(caller?: Address): Promise<{
+        response: QueryResponse,
+        outputArguments: Arguments,
+        firstValue: TypedValue,
+        values: TypedValue[],
+        returnCode: ReturnCode
+    }> {
         let response = await this.runner.query(this.asQuery, caller);
         let endpoint = this.getEndpointDefinition();
         response.setEndpointDefinition(endpoint);
-        return response;
+
+        let outputArguments = response.outputArguments();
+        let values = outputArguments.valuesTyped();
+        let firstOutputArgument = outputArguments.firstValueTyped();
+        let returnCode = response.returnCode;
+
+        return {
+            response: response,
+            outputArguments: outputArguments,
+            values: values,
+            firstValue: firstOutputArgument,
+            returnCode: returnCode
+        };
     }
 
     async simulate(): Promise<any> {

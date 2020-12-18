@@ -52,13 +52,13 @@ export class Arguments {
         return this.items()[0];
     }
 
-    valuesTyped(): ReadonlyArray<TypedValue> {
+    valuesTyped(): TypedValue[] {
         guardValueIsSet("isTyped", this.isTyped);
         let values = this.items().map(item => item.typedValue());
         return values;
     }
 
-    valueTyped(): TypedValue {
+    firstValueTyped(): TypedValue {
         return this.valuesTyped()[0];
     }
 

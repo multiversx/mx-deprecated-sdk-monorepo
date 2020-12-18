@@ -6,7 +6,7 @@ import { ContractFunction, SmartContract } from ".";
 import { GasLimit } from "../networkParams";
 import { assert } from "chai";
 
-describe.only("fetch transactions from devnet", function () {
+describe("fetch transactions from devnet", function () {
     let devnet = getDevnetProvider();
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
@@ -57,10 +57,27 @@ describe.only("fetch transactions from devnet", function () {
 
         let deployImmediateResult = transactionDeploy.getAsOnNetworkCached().smartContractResults.getImmediate();
         let deployResultingCalls = transactionDeploy.getAsOnNetworkCached().smartContractResults.getResultingCalls();
+        let incrementImmediateResult = transactionIncrement.getAsOnNetworkCached().smartContractResults.getImmediate();
+        let incrementResultingCalls = transactionIncrement.getAsOnNetworkCached().smartContractResults.getResultingCalls();
 
-        assert.lengthOf(deployImmediateResult.dataTokens, 1);
+        assert.lengthOf(deployImmediateResult.getDataTokens(), 1);
         // There is some refund
         assert.isTrue(deployImmediateResult.value.valueOf() > 0);
         assert.lengthOf(deployResultingCalls, 0);
+
+        assert.lengthOf(incrementImmediateResult.outputArguments().items(), 1);
+        // There is some refund
+        assert.isTrue(incrementImmediateResult.value.valueOf() > 0);
+        assert.lengthOf(incrementResultingCalls, 0);
+    });
+
+    it("ESDT", async function () {
+        this.timeout(60000);
+
+        TransactionWatcher.DefaultPollingInterval = 5000;
+        TransactionWatcher.DefaultTimeout = 50000;
+
+        await NetworkConfig.getDefault().sync(devnet);
+        await alice.sync(devnet);
     });
 });

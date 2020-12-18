@@ -11,6 +11,7 @@ import { Balance } from "../balance";
 import * as errors from "../errors";
 import { Query } from "../smartcontracts/query";
 import { QueryResponse } from "../smartcontracts/queryResponse";
+import { Hash } from "../hash";
 
 /**
  * A mock {@link IProvider}, used for tests only.
@@ -74,6 +75,15 @@ export class MockProvider implements IProvider {
             if (point instanceof TransactionStatus) {
                 this.mockUpdateTransaction(hash, transaction => {
                     transaction.status = point;
+                });
+            } else if (point instanceof MarkNotarized) {
+                this.mockUpdateTransaction(hash, transaction => {
+                    transaction.hyperblockNonce = new Nonce(42);
+                    transaction.hyperblockHash = new Hash("a".repeat(32));
+                });
+            } else if (point instanceof AddImmediateResult) {
+                this.mockUpdateTransaction(hash, transaction => {
+                    transaction.getSmartContractResults().getImmediate().data = point.data;
                 });
             } else if (point instanceof Wait) {
                 await timeline.start(point.milliseconds);
@@ -144,6 +154,17 @@ export class Wait {
 
     constructor(milliseconds: number) {
         this.milliseconds = milliseconds;
+    }
+}
+
+export class MarkNotarized {
+}
+
+export class AddImmediateResult {
+    readonly data: string;
+
+    constructor(data: string) {
+        this.data = data;
     }
 }
 
