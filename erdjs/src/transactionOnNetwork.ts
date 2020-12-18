@@ -29,7 +29,7 @@ export class TransactionOnNetwork {
     hyperblockHash: Hash = Hash.empty();
 
     receipt: Receipt = new Receipt();
-    smartContractResults: SmartContractResults = new SmartContractResults();
+    smartContractResults: SmartContractResults = SmartContractResults.empty();
 
     constructor(init?: Partial<TransactionOnNetwork>) {
         Object.assign(this, init);
@@ -70,8 +70,7 @@ export class TransactionOnNetwork {
         transactionOnNetwork.hyperblockHash = new Hash(response.hyperblockHash);
 
         transactionOnNetwork.receipt = Receipt.fromHttpResponse(response.receipt || {});
-        transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || []);
-        transactionOnNetwork.smartContractResults.attachOriginalTransaction(transactionOnNetwork);
+        transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || [], transactionOnNetwork.nonce);
 
         return transactionOnNetwork;
     }

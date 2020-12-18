@@ -27,6 +27,7 @@ export class DefaultInteractionRunner implements IInteractionRunner {
     async broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork> {
         await this.broadcast(transaction);
         await transaction.awaitExecuted(this.provider);
+        // This will wait until the transaction is notarized, as well (so that SCRs are returned by the API).
         return await transaction.getAsOnNetwork(this.provider);
     }
 

@@ -5,46 +5,58 @@ import { GasLimit, GasPrice } from "../networkParams";
 import { Nonce } from "../nonce";
 import { Arguments, EndpointDefinition, ReturnCode } from ".";
 import { TransactionHash } from "../transaction";
-import { TransactionOnNetwork } from "../transactionOnNetwork";
-import { guardNotEmpty, guardValueIsSet } from "../utils";
 
 export class SmartContractResults {
-    private items: SmartContractResultItem[] = [];
-    private original?: TransactionOnNetwork;
+    private readonly items: SmartContractResultItem[] = [];
+    private readonly originalTransactionNonce: Nonce;
+    private readonly immediate: ImmediateResult = new ImmediateResult();
+    private readonly resultingCalls: ResultingCall[] = [];
 
-    static fromHttpResponse(smartContractResults: any[]): SmartContractResults {
-        let results = new SmartContractResults();
-        results.items = (smartContractResults || []).map((item: any) => SmartContractResultItem.fromHttpResponse(item));
-        return results;
+    constructor(items: SmartContractResultItem[], originalTransactionNonce: Nonce) {
+        this.items = items;
+        this.originalTransactionNonce = originalTransactionNonce;
+
+        if (this.items.length > 0) {
+            this.immediate = this.findImmediateResult();
+            this.resultingCalls = this.findResultingCalls();
+        }
     }
 
-    attachOriginalTransaction(originalTransaction: TransactionOnNetwork) {
-        this.original = originalTransaction;
+    static empty(): SmartContractResults {
+        return new SmartContractResults([], new Nonce(0));
     }
 
-    getImmediateResult(): ImmediateResult {
+    static fromHttpResponse(smartContractResults: any[], originalTransactionNonce: Nonce): SmartContractResults {
+        let items = (smartContractResults || []).map((item: any) => SmartContractResultItem.fromHttpResponse(item));
+        return new SmartContractResults(items, originalTransactionNonce);
+    }
+
+    private findImmediateResult(): ImmediateResult {
         let withNextNonce = this.findWithNextNonce();
         return new ImmediateResult(withNextNonce);
     }
 
     private findWithNextNonce(): SmartContractResultItem {
-        guardValueIsSet("original", this.original);
-        guardNotEmpty(this.items, "items");
-
-        let originalNonce = this.original!.nonce;
-        let nextNonce = originalNonce.increment();
+        let nextNonce = this.originalTransactionNonce.increment();
         let withNextNonce = this.items.find(item => item.nonce.equals(nextNonce));
-        guardValueIsSet("withNextNonce", withNextNonce);
 
         return withNextNonce!;
     }
 
-    getResultingCalls(): ResultingCall[] {
+    private findResultingCalls(): ResultingCall[] {
         let withNextNonce = this.findWithNextNonce();
         let otherItems = this.items.filter(item => item != withNextNonce);
         let resultingCalls = otherItems.map(item => new ResultingCall(item));
 
         return resultingCalls;
+    }
+
+    getImmediate(): ImmediateResult {
+        return this.immediate;
+    }
+
+    getResultingCalls(): ResultingCall[] {
+        return this.resultingCalls;
     }
 }
 

@@ -1,9 +1,9 @@
-import { Account } from "./account";
-import { NetworkConfig } from "./networkConfig";
-import { getDevnetProvider, loadContractCode, TestWallets } from "./testutils";
-import { TransactionWatcher } from "./transactionWatcher";
-import { ContractFunction, SmartContract } from "./smartcontracts";
-import { GasLimit } from "./networkParams";
+import { Account } from "../account";
+import { NetworkConfig } from "../networkConfig";
+import { getDevnetProvider, loadContractCode, TestWallets } from "../testutils";
+import { TransactionWatcher } from "../transactionWatcher";
+import { ContractFunction, SmartContract } from ".";
+import { GasLimit } from "../networkParams";
 import { assert } from "chai";
 
 describe.only("fetch transactions from devnet", function () {
@@ -55,7 +55,7 @@ describe.only("fetch transactions from devnet", function () {
         await transactionDeploy.getAsOnNetwork(devnet);
         await transactionIncrement.getAsOnNetwork(devnet);
 
-        let deployImmediateResult = transactionDeploy.getAsOnNetworkCached().smartContractResults.getImmediateResult();
+        let deployImmediateResult = transactionDeploy.getAsOnNetworkCached().smartContractResults.getImmediate();
         let deployResultingCalls = transactionDeploy.getAsOnNetworkCached().smartContractResults.getResultingCalls();
 
         assert.lengthOf(deployImmediateResult.dataTokens, 1);

@@ -100,7 +100,10 @@ export class Interaction {
     }
 
     async broadcastAwaitExecution(): Promise<TransactionOnNetwork> {
-        return await this.runner.broadcastAwaitExecution(this.asTransaction);
+        let asOnNetwork = await this.runner.broadcastAwaitExecution(this.asTransaction);
+        let endpoint = this.getEndpointDefinition();
+        asOnNetwork.smartContractResults.getImmediate().setEndpointDefinition(endpoint);
+        return asOnNetwork;
     }
 
     async query(caller?: Address): Promise<QueryResponse> {
