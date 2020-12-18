@@ -6,7 +6,7 @@ import { MaxUint64 } from "./query";
 
 export class QueryResponse {
     /**
-     * If available, will provide a typed outcome (with typed values).
+     * If available, will provide typed output arguments (with typed values).
      */
     private endpointDefinition?: EndpointDefinition;
 
