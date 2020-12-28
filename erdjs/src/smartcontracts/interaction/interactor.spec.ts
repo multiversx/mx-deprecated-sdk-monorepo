@@ -100,21 +100,25 @@ describe.only("test smart contract interactor", function () {
 
         assert.equal(valueAfterIncrement.valueOf(), BigInt(8));
 
-        // // Decrement three times (simulate three parallel broadcasts). Wait for execution of the latter. Return fake 5.
-        // let [, { firstValue: valueAfterDecrement }] = await Promise.all([
-        //     provider.mockTransactionTimeline(
-        //         decrementInteraction.getTransaction(), // nu merge, vreau la ultima. dar oricum...
-        //         [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed"), new Wait(40), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]
-        //     ),
-        //     async function() {
-        //         await decrementInteraction.withNonce(new Nonce(15)).broadcastAwaitExecution();
-        //         await decrementInteraction.withNonce(new Nonce(16)).broadcastAwaitExecution();
-        //         return await decrementInteraction.withNonce(new Nonce(17)).broadcastAwaitExecution();
-        //     }()
-        // ]);
+        // Decrement three times (simulate three parallel broadcasts). Wait for execution of the latter (third transaction). Return fake "5".
+        await decrementInteraction.withNonce(new Nonce(15)).broadcast();
+        await decrementInteraction.withNonce(new Nonce(16)).broadcast();
+        
+        let [, { firstValue: valueAfterDecrement }] = await Promise.all([
+            provider.mockTransactionTimeline(
+                decrementInteraction.getTransaction(),
+                [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed"), new Wait(40), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]
+            ),
+            async function() {
+                return await decrementInteraction.withNonce(new Nonce(17)).broadcastAwaitExecution();
+            }()
+        ]);
+
+        assert.equal(valueAfterDecrement.valueOf(), BigInt(5));
     });
 
     it("should interact with 'lottery-egld'", async function () {
-
+        // TODO: will throw if bad params at start()
+        // TODO: will call get lottery info and unwrap the structure.
     });
 });
