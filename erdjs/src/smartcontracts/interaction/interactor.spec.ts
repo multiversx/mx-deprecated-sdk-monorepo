@@ -61,7 +61,7 @@ describe.only("test smart contract interactor", function () {
         let [, { values: executionValues, firstValue: executionAnswer, returnCode: executionCode }] = await Promise.all([
             provider.mockTransactionTimeline(
                 interaction.getTransaction(),
-                [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed"), new Wait(40), new AddImmediateResult("@6f6b@2b"), new MarkNotarized()]
+                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@2b"), new MarkNotarized()]
             ),
             await interaction.withNonce(new Nonce(2)).broadcastAwaitExecution()
         ]);
@@ -95,7 +95,7 @@ describe.only("test smart contract interactor", function () {
         let [, { firstValue: valueAfterIncrement }] = await Promise.all([
             provider.mockTransactionTimeline(
                 incrementInteraction.getTransaction(),
-                [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed"), new Wait(40), new AddImmediateResult("@6f6b@08"), new MarkNotarized()]
+                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@08"), new MarkNotarized()]
             ),
             await incrementInteraction.withNonce(new Nonce(14)).broadcastAwaitExecution()
         ]);
@@ -109,7 +109,7 @@ describe.only("test smart contract interactor", function () {
         let [, { firstValue: valueAfterDecrement }] = await Promise.all([
             provider.mockTransactionTimeline(
                 decrementInteraction.getTransaction(),
-                [new Wait(40), new TransactionStatus("pending"), new Wait(40), new TransactionStatus("executed"), new Wait(40), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]
+                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]
             ),
             async function () {
                 return await decrementInteraction.withNonce(new Nonce(17)).broadcastAwaitExecution();
@@ -119,7 +119,7 @@ describe.only("test smart contract interactor", function () {
         assert.equal(valueAfterDecrement.valueOf(), BigInt(5));
     });
 
-    it.only("should interact with 'lottery-egld'", async function () {
+    it("should interact with 'lottery-egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
         let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/lottery-egld.json");
