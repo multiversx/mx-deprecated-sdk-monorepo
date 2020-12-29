@@ -2,7 +2,7 @@ import { SmartContractInteractor } from "./interactor";
 import { StrictChecker as StrictInteractionChecker } from "./strictChecker"
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
-import { AbiRegistry, TypedValue, U32Value } from "../typesystem";
+import { AbiRegistry, U32Value } from "../typesystem";
 import { AddImmediateResult, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets, Wait } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
@@ -17,7 +17,7 @@ import { ReturnCode } from "../returnCode";
 import { Argument } from "../arguments";
 import { Balance } from "../../balance";
 
-describe.only("test smart contract interactor", function () {
+describe("test smart contract interactor", function () {
     let wallets = new TestWallets();
     let dummyAddress = new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
     let checker = new StrictInteractionChecker();
@@ -195,7 +195,5 @@ describe.only("test smart contract interactor", function () {
             current_ticket_number: BigInt(0),
             prize_pool: BigInt("0")
         });
-
-        // TODO: will throw if bad params at start()
     });
 });

@@ -1,7 +1,9 @@
 import * as errors from "../../errors";
+import { Logger } from "../../logger";
 import { guardValueIsSet } from "../../utils";
 import { Type } from "./types";
 
+// TODO: Refactor, so that type registry isn't global / singleton anymore.
 export class TypesRegistry {
     private static typesByName: Map<string, Type> = new Map<string, Type>();
 
@@ -10,7 +12,7 @@ export class TypesRegistry {
         guardValueIsSet("type.name", type.name);
 
         if (TypesRegistry.typesByName.has(type.name)) {
-            throw new errors.ErrTypingSystem(`Type already registered: ${type.name}`);
+            Logger.debug(`Type already registered: ${type.name}. Will be overridden.`);
         }
 
         TypesRegistry.typesByName.set(type.name, type);

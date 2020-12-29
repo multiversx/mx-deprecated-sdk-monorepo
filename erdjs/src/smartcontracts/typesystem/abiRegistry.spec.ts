@@ -21,7 +21,7 @@ describe("test abi registry", () => {
         assert.lengthOf(registry.namespaces, 1);
         assert.lengthOf(registry.getDefaultNamespace().interfaces, 3);
         assert.lengthOf(registry.getDefaultNamespace().structures, 1);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("lottery-egld").endpoints, 2);
+        assert.lengthOf(registry.getDefaultNamespace().findInterface("lottery-egld").endpoints, 3);
 
         await registry.extendFromFile("src/testdata/foobar.namespaced.json");
         assert.lengthOf(registry.namespaces, 3);
