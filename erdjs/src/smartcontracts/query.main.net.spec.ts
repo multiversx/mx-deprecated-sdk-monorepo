@@ -4,7 +4,7 @@ import { ContractFunction } from "./function";
 import { getMainnetProvider } from "../testutils";
 import { SmartContract } from "./smartContract";
 import * as errors from "../errors";
-import { Argument } from "./argument";
+import { Argument } from "./arguments";
 
 describe("test queries on mainnet", function () {
     let provider = getMainnetProvider();

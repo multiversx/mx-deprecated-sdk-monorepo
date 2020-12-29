@@ -21,11 +21,22 @@ export class StrictChecker implements IInteractionChecker {
     }
 
     private checkArguments(interaction: Interaction, definition: EndpointDefinition) {
-        let numFormalArguments = definition.input.length;
-        let numActualArguments = interaction.getArguments();
+        let formalArguments = definition.input;
+        let actualArguments = interaction.getArguments();
+        let numFormalArguments = formalArguments.length;
+        let numActualArguments = actualArguments.length;
 
-        for (const parameterDefinition of definition.input) {
-            let typeDescriptor = parameterDefinition.getTypeDescriptor();
+        if (numFormalArguments != numActualArguments) {
+            throw new errors.ErrContractInteraction(`bad arguments, expected: ${numFormalArguments}, got: ${numActualArguments}`);
+        }
+
+        for (let i = 0; i < numFormalArguments; i++) {
+            let typeDescriptor = formalArguments[i].getTypeDescriptor();
+            let arg = actualArguments[i];
+
+            if (!arg.isTyped()) {
+                throw new errors.ErrContractInteraction(`untyped argument: "${arg}" at index ${i}`);
+            }
         }
     }
 }

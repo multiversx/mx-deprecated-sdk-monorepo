@@ -242,7 +242,7 @@ describe("test on devnet (local)", function () {
         // Start
         let transactionStart = contract.call({
             func: new ContractFunction("start"),
-            gasLimit: new GasLimit(50000000),
+            gasLimit: new GasLimit(5000000),
             args: [
                 Argument.fromUTF8("foobar"), 
                 Argument.fromBigInt(Balance.eGLD(1).valueOf()),

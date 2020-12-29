@@ -1,7 +1,7 @@
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
-import { EndpointDefinition, OptionalValue, TypedValue } from "./typesystem";
+import { AddressValue, BigUIntValue, EndpointDefinition, OptionalValue, TypedValue, U8Value, Vector } from "./typesystem";
 
 /**
  * For the moment, this is the only codec used.
@@ -12,12 +12,10 @@ const Codec = new BinaryCodec();
  * Arguments is an abstraction that encapsulates contract input data and contract return data from queries and SCRs.
  */
 export class Arguments {
-    private readonly isTyped: boolean;
     private readonly args: Argument[];
 
-    constructor(args: Argument[], isTyped: boolean = false) {
+    constructor(args: Argument[]) {
         this.args = args;
-        this.isTyped = isTyped;
     }
 
     static fromBuffers(buffers: Buffer[], endpointDefinition?: EndpointDefinition): Arguments {
@@ -53,7 +51,6 @@ export class Arguments {
     }
 
     valuesTyped(): TypedValue[] {
-        guardValueIsSet("isTyped", this.isTyped);
         let values = this.items().map(item => item.typedValue());
         return values;
     }
@@ -132,9 +129,8 @@ export class Argument {
     /**
      * Creates an Argument object from a big integer.
      */
-    static fromBigInt(value: BigInt): Argument {
-        let hex = value.toString(16);
-        return Argument.fromHex(hex);
+    static fromBigInt(value: bigint): Argument {
+        return Argument.fromTypedValue(new BigUIntValue(value));
     }
 
     /**
@@ -151,14 +147,15 @@ export class Argument {
      */
     static fromUTF8(value: string): Argument {
         let buffer = Buffer.from(value, "utf-8");
-        return new Argument(buffer);
+        let typedBytes = [...buffer].map(byte => new U8Value(byte));
+        return Argument.fromTypedValue(new Vector(typedBytes));
     }
 
     /**
      * Creates an Argument object, as the pubkey of an {@link Address}.
      */
     static fromPubkey(value: Address): Argument {
-        return new Argument(value.pubkey());
+        return Argument.fromTypedValue(new AddressValue(value));
     }
 
     /**
@@ -177,7 +174,11 @@ export class Argument {
 
     static fromTypedValue(typedValue: TypedValue): Argument {
         let buffer = Codec.encodeTopLevel(typedValue);
-        return new Argument(buffer);
+        return new Argument(buffer, typedValue);
+    }
+
+    isTyped(): boolean {
+        return this.asTypedValue ? true : false;
     }
 
     /**
