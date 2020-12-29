@@ -77,6 +77,27 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "lotteryExists",
+            "isPure": true,
+            "input": [
+                {
+                    "description": "lottery name",
+                    "type": [
+                        "Vector",
+                        "U8"
+                    ]
+                }
+            ],
+            "output": [
+                {
+                    "description": "whether it exists",
+                    "type": [
+                        "Boolean"
+                    ]
+                }
+            ]
         }
     ],
     "structures": [

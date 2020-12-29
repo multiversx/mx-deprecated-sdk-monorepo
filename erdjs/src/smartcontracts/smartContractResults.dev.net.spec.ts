@@ -55,10 +55,10 @@ describe("fetch transactions from devnet", function () {
         await transactionDeploy.getAsOnNetwork(devnet);
         await transactionIncrement.getAsOnNetwork(devnet);
 
-        let deployImmediateResult = transactionDeploy.getAsOnNetworkCached().smartContractResults.getImmediate();
-        let deployResultingCalls = transactionDeploy.getAsOnNetworkCached().smartContractResults.getResultingCalls();
-        let incrementImmediateResult = transactionIncrement.getAsOnNetworkCached().smartContractResults.getImmediate();
-        let incrementResultingCalls = transactionIncrement.getAsOnNetworkCached().smartContractResults.getResultingCalls();
+        let deployImmediateResult = transactionDeploy.getAsOnNetworkCached().getSmartContractResults().getImmediate();
+        let deployResultingCalls = transactionDeploy.getAsOnNetworkCached().getSmartContractResults().getResultingCalls();
+        let incrementImmediateResult = transactionIncrement.getAsOnNetworkCached().getSmartContractResults().getImmediate();
+        let incrementResultingCalls = transactionIncrement.getAsOnNetworkCached().getSmartContractResults().getResultingCalls();
 
         assert.lengthOf(deployImmediateResult.getDataTokens(), 1);
         // There is some refund
