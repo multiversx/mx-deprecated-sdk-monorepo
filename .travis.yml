@@ -3,103 +3,18 @@ arch:
 
 matrix:
   include:
-    - language: python
-      os: linux
-      dist: bionic
-      before_install:
-        - nvm install node
-        - node --version
-        - python3 --version
-        - npm install -g browserify
-      install:
-        - pip3 install -r requirements.txt
-        - npm --prefix ./erdjs install
-        - npm --prefix ./erdtestjs install
-      before_script:
-      script:
-        - cd ${TRAVIS_BUILD_DIR}/erdpy/tests
-        # source ./test_cli_testnet.sh && runStart
-        - source ./tests.sh && runShortTests
-        - source ./test_cli_wallet.sh && testAll
-        - source ./test_cli_contracts.sh && testAll
-        - source ./test_cli_validators.sh && testAll
-        - source ./test_cli_tx.sh && testAll
-        - source ./test_cli_config.sh && testAll
-        - source ./test_cli_network.sh && testAll
-        - source ./test_cli_cost.sh && testAll
-
-        #- make test-short
-        #- make test-cli
-        #- SANDBOX=./sandbox make test-cli-external-contracts
-        #- python3 -m erdpy.cli install arwentools
-        #- npm --prefix ./erdjs test
-        #- npm --prefix ./erdtestjs test
 
     - language: generic
       os: osx
       osx_image: xcode11.3
       before_install:
-        #- nvm install node
-        #- node --version
         - python3 --version
-        #- npm install -g browserify
       install:
         - pip3 install -r requirements.txt
-        #- npm --prefix ./erdjs install
-        #- npm --prefix ./erdtestjs install
       before_script:
       script:
         - cd ${TRAVIS_BUILD_DIR}/erdpy/tests
-        #- source ./tests.sh && runShortTests
+        - erdpy config set dependencies.elrond_proxy_go.tag fix-node-ref
         - source ./test_cli_testnet.sh && testStart
 
-        # - make test-short
-        # - make test-cli
-        # - SANDBOX=./sandbox make test-cli-external-contracts
-        # - python3 -m erdpy.cli install ARWENTOOLS
-        # - #npm --prefix ./erdjs test
-        # - npm --prefix ./erdtestjs test
 
-    # Testing erdpy-up on Ubuntu 20.04
-    - language: generic
-      os: linux
-      dist: focal
-      before_install:
-        - python3 --version
-      install:
-        - sudo apt-get update
-        - sudo apt-get install python3.8-venv
-        - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
-        - python3 erdpy-up.py
-      script:
-        - ~/elrondsdk/erdpy --version
-
-    # Testing erdpy-up on Ubuntu 18.04
-    - language: generic
-      os: linux
-      dist: bionic
-      before_install:
-        - python3 --version
-      install:
-        - sudo apt-get update
-        - sudo apt-get install python3.6-venv
-        - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
-        - python3 erdpy-up.py
-        - ls ~/elrondsdk/erdpy-venv/bin
-      script:
-        - ~/elrondsdk/erdpy --version
-
-    # Testing erdpy-up on MacOS
-    - language: generic
-      os: osx
-      osx_image: xcode11.4
-      before_install:
-        - brew info python@3.8
-        - brew unlink python
-        - brew link --force python@3.8
-        - python3 --version
-      install:
-        - wget -O erdpy-up.py https://raw.githubusercontent.com/ElrondNetwork/elrond-sdk/development/erdpy-up.py
-        - python3 erdpy-up.py <<< "2"
-      script:
-        - ~/elrondsdk/erdpy --version
