@@ -60,6 +60,8 @@ export class WalletProvider implements IDappProvider {
         }
 
         return new Promise((resolve, reject) => {
+            console.log("postMessage", DAPP_MESSAGE_IS_CONNECTED);
+
             contentWindow.postMessage({
                 type: DAPP_MESSAGE_IS_CONNECTED,
             }, this.walletUrl);
@@ -67,6 +69,8 @@ export class WalletProvider implements IDappProvider {
             const timeout = setTimeout(_ => reject('window not responding'), 5000);
 
             const isConnected = (ev: IDappMessageEvent) => {
+                console.log("event", "isConnected", ev);
+
                 if (!this.isValidWalletSource(ev.origin)) {
                     return;
                 }
@@ -100,12 +104,16 @@ export class WalletProvider implements IDappProvider {
         }
 
         return new Promise<string>((resolve, reject) => {
+            console.log("postMessage", DAPP_MESSAGE_CONNECT_URL);
+
             contentWindow.postMessage({
                 type: DAPP_MESSAGE_CONNECT_URL,
             }, this.walletUrl);
 
             const timeout = setTimeout(_ => reject('connect url not responding'), 5000);
             const connectUrl = (ev: IDappMessageEvent) => {
+                console.log("event", "connectUrl", ev);
+
                 if (!this.isValidWalletSource(ev.origin)) {
                     return;
                 }
@@ -143,6 +151,8 @@ export class WalletProvider implements IDappProvider {
         }
 
         return new Promise((resolve, reject) => {
+            console.log("postMessage", DAPP_MESSAGE_GET_ADDRESS);
+
             contentWindow.postMessage({
                 type: DAPP_MESSAGE_GET_ADDRESS,
             }, this.walletUrl);
@@ -150,6 +160,8 @@ export class WalletProvider implements IDappProvider {
             const timeout = setTimeout(_ => reject('window not responding'), 5000);
 
             const getAddress = (ev: IDappMessageEvent) => {
+                console.log("event", "getAddress", ev);
+
                 if (!this.isValidWalletSource(ev.origin)) {
                     return;
                 }
@@ -184,15 +196,19 @@ export class WalletProvider implements IDappProvider {
         }
 
         return new Promise<Transaction>((resolve, reject) => {
+            console.log("postMessage", DAPP_MESSAGE_SEND_TRANSACTION_URL, transaction.toPlainObject());
+
             contentWindow.postMessage({
                 type: DAPP_MESSAGE_SEND_TRANSACTION_URL,
                 data: {
-                    transaction
+                    transaction: transaction.toPlainObject()
                 }
             }, this.walletUrl);
 
             const timeout = setTimeout(_ => reject('send transaction url not responding'), 5000);
             const sendTransactionUrl = (ev: IDappMessageEvent) => {
+                console.log("event", "sendTransactionUrl", ev);
+
                 if (!this.isValidWalletSource(ev.origin)) {
                     return;
                 }
@@ -213,8 +229,8 @@ export class WalletProvider implements IDappProvider {
             };
 
             window.addEventListener('message', sendTransactionUrl);
-        }).then((sendTransactionUrl: any) => {
-            window.location.href = `${this.baseWalletUrl()}${sendTransactionUrl}?callbackUrl=${window.location.href}`;
+        }).then((url: any) => {
+            window.location.href = `${this.baseWalletUrl()}${url}?callbackUrl=${window.location.href}`;
             return transaction;
         });
     }
@@ -223,6 +239,8 @@ export class WalletProvider implements IDappProvider {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(_ => reject(false), DAPP_DEFAULT_TIMEOUT);
             const setConnected = (ev: IDappMessageEvent) => {
+                console.log("event", "setConnected", ev);
+
                 if (!this.mainFrame) {
                     return;
                 }
