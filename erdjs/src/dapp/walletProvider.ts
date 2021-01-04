@@ -196,12 +196,19 @@ export class WalletProvider implements IDappProvider {
         }
 
         return new Promise<Transaction>((resolve, reject) => {
-            console.log("postMessage", DAPP_MESSAGE_SEND_TRANSACTION_URL, transaction.toPlainObject());
+            let plainTransaction = transaction.toPlainObject();
+
+            // We adjust the fields, in order to make them compatible with what the wallet expected
+            plainTransaction["data"] = transaction.data.valueOf().toString();
+            plainTransaction["value"] = transaction.value.toDenominated();
+            plainTransaction["gasPrice"] = transaction.gasPrice.toDenominated();
+            
+            console.log("postMessage", DAPP_MESSAGE_SEND_TRANSACTION_URL, plainTransaction);
 
             contentWindow.postMessage({
                 type: DAPP_MESSAGE_SEND_TRANSACTION_URL,
                 data: {
-                    transaction: transaction.toPlainObject()
+                    transaction: plainTransaction
                 }
             }, this.walletUrl);
 
