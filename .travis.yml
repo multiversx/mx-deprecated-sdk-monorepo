@@ -14,7 +14,6 @@ matrix:
       before_script:
       script:
         - cd ${TRAVIS_BUILD_DIR}/erdpy/tests
-        - erdpy config set dependencies.elrond_proxy_go.tag fix-node-ref
         - source ./test_cli_testnet.sh && testStart
 
 
