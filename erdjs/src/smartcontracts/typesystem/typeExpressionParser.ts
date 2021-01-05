@@ -2,99 +2,79 @@ import * as errors from "../../errors";
 import { BetterType } from "./types";
 
 export class TypeExpressionParser {
-    private static readonly symbols: string[] = [ "<", ">", ",", "(", ")" ];
-    private static readonly tokenizerSeparator = "|";
+    parse(expression: string): BetterType {
+        let root = this.doParse(expression);
+        let rootKeys = Object.keys(root);
 
-    private state: State;
+        if (rootKeys.length != 1) {
+            // TODO: Handle tuples, in a future PR.
+            throw new errors.ErrTypingSystem(`bad type expression: ${expression}`);
+        }
 
-    constructor() {
-        this.state = new WaitTypeNameState();
+        let name = rootKeys[0];
+        let type = this.nodeToType(name, root[name]);
+        return type;
     }
 
-    parse(expression: string): BetterType {
-        let tokens = this.tokenize(expression);
+    private doParse(expression: string): any {
+        let jsoned = this.getJsonedString(expression);
 
-        for (const token of tokens) {
-            let isSymbol = TypeExpressionParser.symbols.includes(token);
+        try {
+            return JSON.parse(jsoned);
+        } catch (error) {
+            throw new errors.ErrTypingSystem(`cannot parse type expression: ${expression}`);
+        }
+    }
 
-            if (isSymbol) {
-                // on symbol...
+    /**
+     * Converts a raw type expression to a JSON, parsing-friendly format.
+     * This is a workaround, so that the parser implementation is simpler (thus we actually rely on the JSON parser).
+     * 
+     * @param expression a string such as:
+     * 
+     * ```
+     *  - Option<List<Address>>
+     *  - VarArgs<MultiArg2<bytes, Address>>
+     *  - MultiResultVec<MultiResult2<Address, u64>
+     * ```
+     * TODO: Handle tuples, in a future PR.
+     */
+    private getJsonedString(expression: string) {
+        let jsoned = "";
+
+        for (var i = 0; i < expression.length; i++) {
+            let char = expression.charAt(i);
+            let previousChar = expression.charAt(i - 1);
+
+            if (char == "<") {
+                jsoned += ": {";
+            } else if (char == ">") {
+                if (previousChar != ">") {
+                    jsoned += ": {} }";
+                } else {
+                    jsoned += "}";
+                }
+            } else if (char == ",") {
+                jsoned += ": {},";
             } else {
-                // on word...
+                jsoned += char;
             }
         }
 
-        return new BetterType("", []);
-    }
+        let symbolsRegex = /(:|\{|\}|,|\s)/;
+        let tokens = jsoned.split(symbolsRegex).filter(token => token);
+        jsoned = tokens.map(token => symbolsRegex.test(token) ? token : `"${token}"`).join("");
 
-    tokenize(expression: string): string[] {
-        let separator = TypeExpressionParser.tokenizerSeparator;
-
-        if (expression.includes(separator)) {
-            throw new errors.ErrTypingSystem(`type expression should not contain: ${separator}`);
+        if (tokens.length == 1) {
+            // Workaround for simple, non-generic types.
+            return `{${jsoned}: {}}`;
         }
 
-        for (const symbol of TypeExpressionParser.symbols) {
-            expression = expression.split(symbol).join(separator);
-        }
-
-        let tokens = expression.split(separator);
-        return tokens;
-    }
-}
-
-class Node {
-    private name: string;
-    private parent?: Node;
-    private children: Node[];
-
-    constructor(parent?: Node) {
-        this.name = "";
-        this.parent = parent;
-        this.children = [];
+        return `{${jsoned}}`;
     }
 
-    getParent(): Node {
-        if (!this.parent) {
-            throw new errors.ErrTypingSystem(`this is root node`);
-        }
-
-        return this.parent;
+    private nodeToType(name: string, node: any): BetterType {
+        let typeParameters = Object.keys(node).map(key => this.nodeToType(key, node[key]));
+        return new BetterType(name, typeParameters);
     }
-
-    setName(name: string) {
-        if (!name) {
-            throw new errors.ErrTypingSystem(`empty node name`);
-        }
-        if (this.name) {
-            throw new errors.ErrTypingSystem(`node name already set: ${this.name}`);
-        }
-    }
-
-    addChild(): Node {
-        let child = new Node(this);
-        this.children.push(child);
-        return child;
-    }
-}
-
-abstract class State {
-    onWord(_word: string, _focusedNode: Node, _parser: TypeExpressionParser) {
-        throw new errors.ErrTypingSystem(`bad action`);
-    }
-
-    onSymbolLessThan(_focusedNode: Node, _parser: TypeExpressionParser) {
-        throw new errors.ErrTypingSystem(`bad action`);
-    }
-
-    onSymbolGreaterThan(_focusedNode: Node, _parser: TypeExpressionParser) {
-        throw new errors.ErrTypingSystem(`bad action`);
-    }
-
-    onSymbolComma(_focusedNode: Node, _parser: TypeExpressionParser) {
-        throw new errors.ErrTypingSystem(`bad action`);
-    }
-}
-
-class WaitTypeNameState extends State {
 }

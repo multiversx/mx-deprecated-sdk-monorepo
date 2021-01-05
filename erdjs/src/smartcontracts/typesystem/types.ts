@@ -62,6 +62,16 @@ export class BetterType {
     isAssignableFrom(type: Type): boolean {
         return type instanceof this.constructor;
     }
+
+    /**
+     * Converts the account to a pretty, plain JavaScript object.
+     */
+    toJSON(): any {
+        return {
+            name: this.name,
+            typeParameters: this.typeParameters.map(item => item.toJSON())
+        };
+    }
 }
 
 export class PrimitiveType extends Type {
