@@ -1,6 +1,6 @@
 import * as errors from "../../errors";
 import { Type } from "./types";
-import { TypesRegistry } from "./typesRegistry";
+import { OldTypesRegistry } from "./typesRegistry";
 
 /**
  * Handles nested generic types.
@@ -17,7 +17,7 @@ export class TypeDescriptor {
         let types: Type[] = [];
 
         for (const typeName of scopedTypeNames) {
-            let type = TypesRegistry.resolveType(typeName);
+            let type = OldTypesRegistry.Default.resolveType(typeName);
             types.push(type);
         }
 

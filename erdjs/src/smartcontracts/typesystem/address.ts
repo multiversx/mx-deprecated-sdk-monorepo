@@ -3,9 +3,7 @@ import { Address } from "../../address";
 import { Type, PrimitiveType, PrimitiveValue } from "./types";
 
 export class AddressType extends PrimitiveType {
-    static One = new AddressType();
-
-    private constructor() {
+    constructor() {
         super("Address");
     }
 }
@@ -35,6 +33,7 @@ export class AddressValue extends PrimitiveValue {
     }
 
     getType(): Type {
-        return AddressType.One;
+        // TODO: return from this.type; (abstract base class should have this field).
+        return new AddressType();
     }
 }

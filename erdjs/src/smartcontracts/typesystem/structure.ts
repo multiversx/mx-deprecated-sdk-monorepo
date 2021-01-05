@@ -1,6 +1,7 @@
 import * as errors from "../../errors";
 import { TypeDescriptor } from "./typeDescriptor";
 import { Type, TypedValue } from "./types";
+import { OldTypesRegistry } from "./typesRegistry";
 
 export class StructureType extends Type {
     readonly definition: StructureDefinition;
@@ -8,6 +9,8 @@ export class StructureType extends Type {
     constructor(definition: StructureDefinition) {
         super(definition.name);
         this.definition = definition;
+
+        OldTypesRegistry.Default.registerType(this);
     }
 }
 

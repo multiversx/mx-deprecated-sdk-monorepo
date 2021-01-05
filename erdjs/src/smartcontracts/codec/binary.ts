@@ -43,7 +43,7 @@ export class BinaryCodec {
         this.constraints.checkBufferLength(buffer);
 
         let type = typeDescriptor.getOutmostType();
-        // Open types (generics) will require the scoped type descriptor as well.
+        // Generics will require the scoped type descriptor as well.
         let scoped = typeDescriptor.scopeInto();
 
         let typedValue = onTypeSelect<TypedValue>(type, {

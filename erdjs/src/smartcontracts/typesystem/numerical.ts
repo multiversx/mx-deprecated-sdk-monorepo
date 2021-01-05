@@ -1,9 +1,8 @@
 import * as errors from "../../errors";
+import { guardType } from "../../utils";
 import { PrimitiveType, PrimitiveValue, Type } from "./types";
 
 export class NumericalType extends PrimitiveType {
-    static One = new NumericalType("NumericalType", 0, false);
-
     readonly sizeInBytes: number;
     readonly withSign: boolean;
 
@@ -23,81 +22,61 @@ export class NumericalType extends PrimitiveType {
 }
 
 export class U8Type extends NumericalType {
-    static One = new U8Type();
-
-    private constructor() {
+    constructor() {
         super("U8", 1, false);
     }
 }
 
 export class I8Type extends NumericalType {
-    static One = new I8Type();
-
-    private constructor() {
+    constructor() {
         super("I8", 1, true);
     }
 }
 
 export class U16Type extends NumericalType {
-    static One = new U16Type();
-
-    private constructor() {
+    constructor() {
         super("U16", 2, false);
     }
 }
 
 export class I16Type extends NumericalType {
-    static One = new I16Type();
-
-    private constructor() {
+    constructor() {
         super("I16", 2, true);
     }
 }
 
 export class U32Type extends NumericalType {
-    static One = new U32Type();
-
-    private constructor() {
+    constructor() {
         super("U32", 4, false);
     }
 }
 
 export class I32Type extends NumericalType {
-    static One = new I32Type();
-
-    private constructor() {
+    constructor() {
         super("I32", 4, true);
     }
 }
 
 export class U64Type extends NumericalType {
-    static One = new U64Type();
-
-    private constructor() {
+    constructor() {
         super("U64", 8, false);
     }
 }
 
 export class I64Type extends NumericalType {
-    static One = new I64Type();
-
-    private constructor() {
+    constructor() {
         super("I64", 8, true);
     }
 }
 
 export class BigUIntType extends NumericalType {
-    static One = new BigUIntType();
-
-    private constructor() {
+    constructor() {
         super("BigUInt", 0, false);
     }
 }
 
 export class BigIntType extends NumericalType {
-    static One = new BigIntType();
-
-    private constructor() {
+    constructor() {
         super("BigInt", 0, true);
     }
 }
@@ -106,14 +85,15 @@ export class BigIntType extends NumericalType {
  * A numerical value fed to or fetched from a Smart Contract contract, as a strongly-typed, immutable abstraction.
  */
 export class NumericalValue extends PrimitiveValue {
-    readonly type: PrimitiveType;
+    readonly type: PrimitiveType; // TODO: from base class
     readonly value: bigint;
     readonly sizeInBytes: number | undefined;
     readonly withSign: boolean;
 
     constructor(value: bigint, type: NumericalType) {
         super();
-
+        guardType("type", NumericalType, type, false);
+        
         this.value = value;
         this.type = type;
         this.sizeInBytes = type.sizeInBytes;
@@ -147,60 +127,60 @@ export class NumericalValue extends PrimitiveValue {
 
 export class U8Value extends NumericalValue {
     constructor(value: number | bigint) {
-        super(BigInt(value), U8Type.One);
+        super(BigInt(value), new U8Type());
     }
 }
 
 export class I8Value extends NumericalValue {
     constructor(value: number | bigint) {
-        super(BigInt(value), I8Type.One);
+        super(BigInt(value), new I8Type());
     }
 }
 
 export class U16Value extends NumericalValue {
     constructor(value: number | bigint) {
-        super(BigInt(value), U16Type.One);
+        super(BigInt(value), new U16Type());
     }
 }
 
 export class I16Value extends NumericalValue {
     constructor(value: number | bigint) {
-        super(BigInt(value), I16Type.One);
+        super(BigInt(value), new I16Type());
     }
 }
 
 export class U32Value extends NumericalValue {
     constructor(value: number | bigint) {
-        super(BigInt(value), U32Type.One);
+        super(BigInt(value), new U32Type());
     }
 }
 
 export class I32Value extends NumericalValue {
     constructor(value: number | bigint) {
-        super(BigInt(value), I32Type.One);
+        super(BigInt(value), new I32Type());
     }
 }
 
 export class U64Value extends NumericalValue {
     constructor(value: bigint) {
-        super(value, U64Type.One);
+        super(value, new U64Type());
     }
 }
 
 export class I64Value extends NumericalValue {
     constructor(value: bigint) {
-        super(value, I64Type.One);
+        super(value, new I64Type());
     }
 }
 
 export class BigUIntValue extends NumericalValue {
     constructor(value: bigint) {
-        super(value, BigUIntType.One);
+        super(value, new BigUIntType());
     }
 }
 
 export class BigIntValue extends NumericalValue {
     constructor(value: bigint) {
-        super(value, BigIntType.One);
+        super(value, new BigIntType());
     }
 }

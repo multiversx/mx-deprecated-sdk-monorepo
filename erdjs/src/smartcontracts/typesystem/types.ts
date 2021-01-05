@@ -1,16 +1,12 @@
 import { guardValueIsSet } from "../../utils";
-import { TypesRegistry } from "./typesRegistry";
 
 export class Type {
-    static One = new Type("Type");
-
     readonly name: string;
 
-    protected constructor(name: string) {
+    constructor(name: string) {
         guardValueIsSet("name", name);
 
         this.name = name;
-        TypesRegistry.registerType(this);
     }
 
     toString() {
@@ -33,6 +29,10 @@ export class Type {
     }
 }
 
+/**
+ * An abstraction that represents a Type. Handles both generic and non-generic types.
+ * Once instantiated as a Type, a generic type is "closed" (as opposed to "open").
+ */
 export class BetterType {
     private readonly name: string;
     private readonly typeParameters: BetterType[];
@@ -42,6 +42,10 @@ export class BetterType {
 
         this.name = name;
         this.typeParameters = typeParameters || [];
+    }
+
+    getTypeParameters(): BetterType[] {
+        return this.typeParameters;
     }
 
     toString() {
@@ -75,9 +79,7 @@ export class BetterType {
 }
 
 export class PrimitiveType extends Type {
-    static One = new PrimitiveType("PrimitiveType");
-
-    protected constructor(name: string) {
+    constructor(name: string) {
         super(name);
     }
 }

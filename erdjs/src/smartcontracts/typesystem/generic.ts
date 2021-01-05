@@ -2,17 +2,13 @@ import { guardValueIsSet } from "../../utils";
 import { isTyped, Type, TypedValue } from "./types";
 
 export class OptionalType extends Type {
-    static One = new OptionalType();
-
-    private constructor() {
+    constructor() {
         super("Optional");
     }
 }
 
 export class VectorType extends Type {
-    static One = new VectorType();
-
-    private constructor() {
+    constructor() {
         super("Vector");
     }
 }
@@ -43,7 +39,8 @@ export class OptionalValue extends TypedValue {
     }
 
     getType(): Type {
-        return OptionalType.One;
+        // TODO: this.type;
+        return new OptionalType();
     }
 }
 
@@ -86,6 +83,7 @@ export class Vector extends TypedValue {
     }
 
     getType(): Type {
-        return VectorType.One;
+        // TODO this.type;
+        return new VectorType();
     }
 }

@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
-import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, TypesRegistry, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
+import { AddressType, AddressValue, BigIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, OldTypesRegistry, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, U16Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMsbOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
@@ -14,7 +14,7 @@ describe("test binary codec (basic)", () => {
 
         function check(asBoolean: boolean, nested: number[], topLevel: number[]) {
             let value = new BooleanValue(asBoolean);
-            let typeDescriptor = new TypeDescriptor([BooleanType.One]);
+            let typeDescriptor = new TypeDescriptor([new BooleanType()]);
 
             assert.deepEqual(codec.encodeNested(value), Buffer.from(nested));
             assert.deepEqual(codec.encodeTopLevel(value), Buffer.from(topLevel));
@@ -34,34 +34,34 @@ describe("test binary codec (basic)", () => {
 
         // Small int
 
-        check(BigInt(42), U8Type.One, [0x2A], [0x2A]);
-        check(BigInt(42), U16Type.One, [0x00, 0x2A], [0x2A]);
-        check(BigInt(42), U64Type.One, [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A], [0x2A]);
-        check(BigInt(-10), I8Type.One, [0xF6], [0xF6]);
-        check(BigInt(-10), I16Type.One, [0xFF, 0xF6], [0xF6]);
+        check(BigInt(42), new U8Type(), [0x2A], [0x2A]);
+        check(BigInt(42), new U16Type(), [0x00, 0x2A], [0x2A]);
+        check(BigInt(42), new U64Type(), [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A], [0x2A]);
+        check(BigInt(-10), new I8Type(), [0xF6], [0xF6]);
+        check(BigInt(-10), new I16Type(), [0xFF, 0xF6], [0xF6]);
 
         // BigInt
 
-        check(BigInt(0), BigIntType.One, [0, 0, 0, 0], []);
-        check(BigInt(1), BigIntType.One, [0, 0, 0, 1, 0x01], [0x01]);
-        check(BigInt(-1), BigIntType.One, [0, 0, 0, 1, 0xFF], [0xFF]);
-        check(BigInt(-2), BigIntType.One, [0, 0, 0, 1, 0xFE], [0xFE]);
-        check(BigInt(127), BigIntType.One, [0, 0, 0, 1, 0x7F], [0x7F]);
-        check(BigInt(128), BigIntType.One, [0, 0, 0, 2, 0x00, 0x80], [0x00, 0x80]);
-        check(BigInt(255), BigIntType.One, [0, 0, 0, 2, 0x00, 0xFF], [0x00, 0xFF]);
-        check(BigInt(256), BigIntType.One, [0, 0, 0, 2, 0x01, 0x00], [0x01, 0x00]);
-        check(BigInt(-255), BigIntType.One, [0, 0, 0, 2, 0xFF, 0x01], [0xFF, 0x01]);
-        check(BigInt(-257), BigIntType.One, [0, 0, 0, 2, 0xFE, 0xFF], [0xFE, 0xFF]);
+        check(BigInt(0), new BigIntType(), [0, 0, 0, 0], []);
+        check(BigInt(1), new BigIntType(), [0, 0, 0, 1, 0x01], [0x01]);
+        check(BigInt(-1), new BigIntType(), [0, 0, 0, 1, 0xFF], [0xFF]);
+        check(BigInt(-2), new BigIntType(), [0, 0, 0, 1, 0xFE], [0xFE]);
+        check(BigInt(127), new BigIntType(), [0, 0, 0, 1, 0x7F], [0x7F]);
+        check(BigInt(128), new BigIntType(), [0, 0, 0, 2, 0x00, 0x80], [0x00, 0x80]);
+        check(BigInt(255), new BigIntType(), [0, 0, 0, 2, 0x00, 0xFF], [0x00, 0xFF]);
+        check(BigInt(256), new BigIntType(), [0, 0, 0, 2, 0x01, 0x00], [0x01, 0x00]);
+        check(BigInt(-255), new BigIntType(), [0, 0, 0, 2, 0xFF, 0x01], [0xFF, 0x01]);
+        check(BigInt(-257), new BigIntType(), [0, 0, 0, 2, 0xFE, 0xFF], [0xFE, 0xFF]);
 
         // Zero, fixed-size
 
-        (<NumericalType[]>TypesRegistry.findTypes(type => type instanceof NumericalType && type.hasFixedSize())).forEach(type => {
+        (<NumericalType[]>OldTypesRegistry.Default.findTypes(type => type instanceof NumericalType && type.hasFixedSize())).forEach(type => {
             check(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
         });
 
         // Zero, arbitrary-size (big)
 
-        (<NumericalType[]>TypesRegistry.findTypes(type => type instanceof NumericalType && type.hasArbitrarySize())).forEach(type => {
+        (<NumericalType[]>OldTypesRegistry.Default.findTypes(type => type instanceof NumericalType && type.hasArbitrarySize())).forEach(type => {
             check(BigInt(0), type, [0, 0, 0, 0], []);
         });
 
@@ -97,7 +97,7 @@ describe("test binary codec (advanced)", () => {
         assert.equal(bufferNested.length, 4 + vector.getLength() * 32);
         assert.equal(bufferTopLevel.length, vector.getLength() * 32);
 
-        let [decodedNested, decodedNestedLength] = codec.decodeNested<Vector>(bufferNested, new TypeDescriptor([VectorType.One, AddressType.One]));
+        let [decodedNested, decodedNestedLength] = codec.decodeNested<Vector>(bufferNested, new TypeDescriptor([new VectorType(), new AddressType()]));
         let decodedTopLevel = codec.decodeTopLevel<Vector>(bufferTopLevel, TypeDescriptor.createFromTypeNames(["Vector", "Address"]));
         assert.equal(decodedNestedLength, bufferNested.length);
         assert.equal(decodedNested.getLength(), 3);
