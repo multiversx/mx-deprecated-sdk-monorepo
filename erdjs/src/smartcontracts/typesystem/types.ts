@@ -33,6 +33,37 @@ export class Type {
     }
 }
 
+export class BetterType {
+    private readonly name: string;
+    private readonly typeParameters: BetterType[];
+
+    public constructor(name: string, typeParameters: BetterType[] = []) {
+        guardValueIsSet("name", name);
+
+        this.name = name;
+        this.typeParameters = typeParameters || [];
+    }
+
+    toString() {
+        return this.name;
+    }
+
+    equals(type: Type): boolean {
+        return this.name == type.name;
+    }
+
+    valueOf() {
+        return this.name;
+    }
+
+    /**
+     * Inspired from: https://docs.microsoft.com/en-us/dotnet/api/system.type.isassignablefrom
+     */
+    isAssignableFrom(type: Type): boolean {
+        return type instanceof this.constructor;
+    }
+}
+
 export class PrimitiveType extends Type {
     static One = new PrimitiveType("PrimitiveType");
 
