@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@elrondnetwork/erdjs": "^1.0.3-beta.3",
+    "@elrondnetwork/erdjs": "^1.1.5",
     "commander": "^6.1.0"
   }
 }
