@@ -29,7 +29,7 @@
     "@ledgerhq/hw-transport-u2f": "^5.28.0",
     "@ledgerhq/hw-transport-webusb": "^5.28.0",
     "abort-controller": "^3.0.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bech32": "^1.1.4",
     "bignumber.js": "^9.0.0",
     "blake2b": "^2.1.3",
