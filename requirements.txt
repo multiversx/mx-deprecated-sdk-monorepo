@@ -4,5 +4,6 @@ requests~=2.24.0
 pynacl
 pycryptodomex
 cryptography>=3.2
+prettytable
 
 setuptools
