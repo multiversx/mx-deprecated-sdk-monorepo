@@ -30,7 +30,7 @@ export class ValidatorKey {
 
     sign(message: Buffer): Buffer {
         let signatureObject = this.secretKey.sign(message);
-        let signature = signatureObject.serialize();
+        let signature = Buffer.from(signatureObject.serialize());
         return signature;
     }
 
