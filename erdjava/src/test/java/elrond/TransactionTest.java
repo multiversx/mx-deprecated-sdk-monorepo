@@ -10,7 +10,7 @@ public class TransactionTest {
     public void shouldSerialize() throws Exception {
         Transaction transaction = new Transaction();
 
-        // Without data (memo) field
+        // Without data field
         transaction.setNonce(0);
         transaction.setValue(new BigInteger("42"));
         transaction.setSender(Address.fromBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"));
@@ -22,7 +22,7 @@ public class TransactionTest {
         String expected = "{'nonce':0,'value':'42','receiver':'erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r','sender':'erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz','gasPrice':1000000000,'gasLimit':50000,'chainID':'1','version':1}".replace('\'', '"');
         assertEquals(expected, transaction.serialize());
 
-        // With data (memo) field
+        // With data field
         transaction.setData("foobar");
         expected = "{'nonce':0,'value':'42','receiver':'erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r','sender':'erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz','gasPrice':1000000000,'gasLimit':50000,'data':'Zm9vYmFy','chainID':'1','version':1}".replace('\'', '"');
         assertEquals(expected, transaction.serialize());
@@ -33,7 +33,7 @@ public class TransactionTest {
         String alicePrivateKey = "1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf";
         Wallet wallet = new Wallet(alicePrivateKey);
 
-        // With data (memo) field
+        // With data field
         Transaction transaction = new Transaction();
         transaction.setNonce(7);
         transaction.setValue(new BigInteger("10000000000000000000"));
@@ -50,7 +50,7 @@ public class TransactionTest {
         assertEquals(expectedSignature, transaction.getSignature());
         assertEquals(expectedJson, transaction.serialize());
 
-        // Without data (memo) field
+        // Without data field
         transaction = new Transaction();
         transaction.setNonce(8);
         transaction.setValue(new BigInteger("10000000000000000000"));
