@@ -1,6 +1,7 @@
 import { Address } from "../address";
 import { ISigner } from "../interface";
-import { SimpleSigner } from "../simpleSigner";
+import { UserSecretKey } from "../walletcore";
+import { UserSigner } from "../walletcore/userSigner";
 
 export class TestWallets {
     mnemonic: string;
@@ -113,10 +114,10 @@ export class TestWallet {
     readonly keyFileObject: any;
     readonly pemFileText: any;
 
-    constructor(address: Address, privateKey: string, keyFileObject: any, pemFileText: any) {
+    constructor(address: Address, secretKeyHex: string, keyFileObject: any, pemFileText: any) {
         this.address = address;
-        this.secretKeyHex = privateKey;
-        this.signer = new SimpleSigner(privateKey);
+        this.secretKeyHex = secretKeyHex;
+        this.signer = new UserSigner(UserSecretKey.fromString(secretKeyHex));
         this.keyFileObject = keyFileObject;
         this.pemFileText = pemFileText;
     }

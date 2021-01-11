@@ -2,7 +2,7 @@ import * as errors from "../errors";
 import nacl from "tweetnacl";
 import { UserPublicKey, UserSecretKey } from "./userKeys";
 const crypto = require("crypto");
-const uuid = require("uuid/v4");
+import { v4 as uuidv4 } from "uuid";
 const scryptsy = require("scryptsy");
 
 // In a future PR, improve versioning infrastructure for key-file objects in erdjs.
@@ -104,7 +104,7 @@ export class UserWallet {
         return {
             version: Version,
             id: this.randomness.id,
-            address: this.publicKey.toString(),
+            address: this.publicKey.hex(),
             bech32: this.publicKey.toAddress().toString(),
             crypto: {
                 ciphertext: this.ciphertext.toString("hex"),
@@ -151,6 +151,6 @@ export class Randomness {
     constructor(init?: Partial<Randomness>) {
         this.salt = init?.salt || Buffer.from(nacl.randomBytes(32));
         this.iv = init?.iv || Buffer.from(nacl.randomBytes(16));
-        this.id = init?.id || uuid({ random: crypto.randomBytes(16) });
+        this.id = init?.id || uuidv4({ random: crypto.randomBytes(16) });
     }
 }
