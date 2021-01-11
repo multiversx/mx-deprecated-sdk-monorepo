@@ -1,57 +1,24 @@
-import { PrivateKey } from "./privateKey";
 import * as errors from "../errors";
 import nacl from "tweetnacl";
-import { PublicKey } from "./publicKey";
+import { UserPublicKey, UserPrivateKey } from "./userKeys";
 const crypto = require("crypto");
 const uuid = require("uuid/v4");
 const scryptsy = require("scryptsy");
 
+// In a future PR, improve versioning infrastructure for key-file objects in erdjs.
 const Version = 4;
 const CipherAlgorithm = "aes-128-ctr";
 const DigestAlgorithm = "sha256";
 const KeyDerivationFunction = "scrypt";
 
-class ScryptKeyDerivationParams {
-    /**
-     * numIterations
-     */
-    n = 4096;
-
-    /**
-     * memFactor
-     */
-    r = 8;
-
-    /**
-     * pFactor
-     */
-    p = 1;
-
-    dklen = 32;
-}
-
-export class Randomness {
-    salt: Buffer;
-    iv: Buffer;
-    id: string;
-
-    constructor(init?: Partial<Randomness>) {
-        this.salt = init?.salt || Buffer.from(nacl.randomBytes(32));
-        this.iv = init?.iv || Buffer.from(nacl.randomBytes(16));
-        this.id = init?.id || uuid({ random: crypto.randomBytes(16) });
-    }
-}
-
-export class EncryptedKey {
-    private readonly publicKey: PublicKey;
+export class UserWallet {
+    private readonly publicKey: UserPublicKey;
     private readonly randomness: Randomness;
     private readonly ciphertext: Buffer;
     private readonly mac: Buffer;
     private readonly kdfparams: ScryptKeyDerivationParams;
 
     /**
-     * WIP! This PR is not ready for review yet!
-     * 
      * Copied from: https://github.com/ElrondNetwork/elrond-core-js/blob/v1.28.0/src/account.js#L76
      * Notes: adjustements (code refactoring, no change in logic), in terms of: 
      *  - typing (since this is the TypeScript version)
@@ -59,12 +26,12 @@ export class EncryptedKey {
      *  - references to crypto functions
      *  - references to object members
      * 
-     * Given a password, it will generate the contents for a file containing the current initialised account's private
-     * key, passed through a password-based key derivation function (kdf).
+     * Given a password, generates the contents for a file containing the account's private key,
+     * passed through a password-based key derivation function (kdf).
      */
-    constructor(privateKey: PrivateKey, password: string, randomness: Randomness = new Randomness()) {
+    constructor(privateKey: UserPrivateKey, password: string, randomness: Randomness = new Randomness()) {
         const kdParams = new ScryptKeyDerivationParams();
-        const derivedKey = EncryptedKey.generateDerivedKey(Buffer.from(password), randomness.salt, kdParams);
+        const derivedKey = UserWallet.generateDerivedKey(Buffer.from(password), randomness.salt, kdParams);
         const derivedKeyFirstHalf = derivedKey.slice(0, 16);
         const derivedKeySecondHalf = derivedKey.slice(16, 32);
         const cipher = crypto.createCipheriv(CipherAlgorithm, derivedKeyFirstHalf, randomness.iv);
@@ -81,8 +48,6 @@ export class EncryptedKey {
     }
 
     /**
-     * WIP! This PR is not ready for review yet!
-     * 
      * Copied from: https://github.com/ElrondNetwork/elrond-core-js/blob/v1.28.0/src/account.js#L42
      * Notes: adjustements (code refactoring, no change in logic), in terms of: 
      *  - typing (since this is the TypeScript version)
@@ -90,14 +55,14 @@ export class EncryptedKey {
      *  - references to crypto functions
      *  - references to object members
      * 
-     * From an encrypted keyfile, given the password, load the private key and the public key.
+     * From an encrypted keyfile, given the password, loads the private key and the public key.
      */
-    static load(keyFileObject: any, password: string): PrivateKey {
+    static load(keyFileObject: any, password: string): UserPrivateKey {
         const kdfparams = keyFileObject.crypto.kdfparams;
         const salt = Buffer.from(kdfparams.salt, "hex");
         const iv = Buffer.from(keyFileObject.crypto.cipherparams.iv, "hex");
         const ciphertext = Buffer.from(keyFileObject.crypto.ciphertext, "hex");
-        const derivedKey = EncryptedKey.generateDerivedKey(Buffer.from(password), salt, kdfparams);
+        const derivedKey = UserWallet.generateDerivedKey(Buffer.from(password), salt, kdfparams);
         const derivedKeyFirstHalf = derivedKey.slice(0, 16);
         const derivedKeySecondHalf = derivedKey.slice(16, 32);
         
@@ -117,17 +82,13 @@ export class EncryptedKey {
         }
 
         let seed = text.slice(0, 32);
-        return new PrivateKey(seed);
+        return new UserPrivateKey(seed);
     }
-
-    // TODO: load() (static), then decrypt(password)...
 
     /**
      * Will take about:
      *  - 80-90 ms in Node.js, on a i3-8100 CPU @ 3.60GHz
      *  - 350-360 ms in browser (Firefox), on a i3-8100 CPU @ 3.60GHz
-     * 
-     * TODO: Question for review: @ccorcoveanu, @AdoAdoAdo, is this all right?
      */
     private static generateDerivedKey(password: Buffer, salt: Buffer, kdfparams: ScryptKeyDerivationParams): Buffer {
         // Question for review: @ccorcoveanu, why not this implementation?
@@ -160,5 +121,36 @@ export class EncryptedKey {
                 mac: this.mac.toString("hex"),
             }
         };
+    }
+}
+
+class ScryptKeyDerivationParams {
+    /**
+     * numIterations
+     */
+    n = 4096;
+
+    /**
+     * memFactor
+     */
+    r = 8;
+
+    /**
+     * pFactor
+     */
+    p = 1;
+
+    dklen = 32;
+}
+
+export class Randomness {
+    salt: Buffer;
+    iv: Buffer;
+    id: string;
+
+    constructor(init?: Partial<Randomness>) {
+        this.salt = init?.salt || Buffer.from(nacl.randomBytes(32));
+        this.iv = init?.iv || Buffer.from(nacl.randomBytes(16));
+        this.id = init?.id || uuid({ random: crypto.randomBytes(16) });
     }
 }

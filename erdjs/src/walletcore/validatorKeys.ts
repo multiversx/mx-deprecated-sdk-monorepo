@@ -16,7 +16,7 @@ export class BLS {
     }
 }
 
-export class ValidatorKey {
+export class ValidatorPrivateKey {
     private readonly secretKey: any;
     private readonly publicKey: any;
 
@@ -26,6 +26,14 @@ export class ValidatorKey {
         this.secretKey = new bls.SecretKey();
         this.secretKey.setLittleEndian(Uint8Array.from(buffer));
         this.publicKey = this.secretKey.getPublicKey();
+    }
+
+    static fromPEM() {
+        // todo
+    }
+
+    toPEM() {
+        // todo
     }
 
     sign(message: Buffer): Buffer {
@@ -39,3 +47,6 @@ export class ValidatorKey {
     }
 }
 
+export class ValidatorPublicKey {
+    
+}
