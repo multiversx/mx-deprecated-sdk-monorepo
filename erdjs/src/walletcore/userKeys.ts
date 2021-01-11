@@ -1,6 +1,7 @@
 import * as tweetnacl from "tweetnacl";
 import { Address } from "../address";
 import { guardLength } from "../utils";
+import { parseUserKey } from "./pem";
 
 export const SEED_LENGTH = 32;
 
@@ -20,12 +21,8 @@ export class UserPrivateKey {
         return new UserPrivateKey(buffer);
     }
 
-    static fromPEM() {
-        // todo
-    }
-
-    toPEM() {
-        // todo
+    static fromPem(text: string, index: number = 0): UserPrivateKey {
+        return parseUserKey(text, index);
     }
 
     toPublicKey(): UserPublicKey {
@@ -36,7 +33,16 @@ export class UserPrivateKey {
         return new UserPublicKey(buffer);
     }
 
-    toString(): string {
+    sign(message: Buffer): Buffer {
+        let pair = tweetnacl.sign.keyPair.fromSeed(this.buffer);
+        let signingKey = pair.secretKey;
+        let signature = tweetnacl.sign(new Uint8Array(message), signingKey);
+        signature = signature.slice(0, signature.length - message.length);
+
+        return Buffer.from(signature);
+    }
+
+    hex(): string {
         return this.buffer.toString("hex");
     }
 
@@ -54,7 +60,7 @@ export class UserPublicKey {
         this.buffer = buffer;
     }
 
-    toString(): string {
+    hex(): string {
         return this.buffer.toString("hex");
     }
 

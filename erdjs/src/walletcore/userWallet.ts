@@ -57,7 +57,7 @@ export class UserWallet {
      * 
      * From an encrypted keyfile, given the password, loads the private key and the public key.
      */
-    static load(keyFileObject: any, password: string): UserPrivateKey {
+    static loadPrivateKey(keyFileObject: any, password: string): UserPrivateKey {
         const kdfparams = keyFileObject.crypto.kdfparams;
         const salt = Buffer.from(kdfparams.salt, "hex");
         const iv = Buffer.from(keyFileObject.crypto.cipherparams.iv, "hex");

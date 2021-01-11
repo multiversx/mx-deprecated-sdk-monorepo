@@ -1,4 +1,5 @@
 import { guardLength } from "../utils";
+import { parseValidatorKey } from "./pem";
 
 const bls = require('@elrondnetwork/bls-wasm');
 
@@ -28,12 +29,13 @@ export class ValidatorPrivateKey {
         this.publicKey = this.secretKey.getPublicKey();
     }
 
-    static fromPEM() {
-        // todo
+    static fromPem(text: string, index: number = 0) {
+        return parseValidatorKey(text, index);
     }
 
-    toPEM() {
-        // todo
+    toPublicKey(): ValidatorPublicKey {
+        let buffer = Buffer.from(this.publicKey.serialize());
+        return new ValidatorPublicKey(buffer);
     }
 
     sign(message: Buffer): Buffer {
@@ -42,11 +44,27 @@ export class ValidatorPrivateKey {
         return signature;
     }
 
-    toString(): string {
-        return Buffer.from(this.publicKey.serialize()).toString("hex");
+    hex(): string {
+        return this.valueOf().toString("hex");
+    }
+
+    valueOf(): Buffer {
+        return Buffer.from(this.secretKey.serialize());
     }
 }
 
 export class ValidatorPublicKey {
-    
+    private readonly buffer: Buffer;
+
+    constructor(buffer: Buffer) {
+        this.buffer = buffer;
+    }
+
+    hex(): string {
+        return this.buffer.toString("hex");
+    }
+
+    valueOf(): Buffer {
+        return this.buffer;
+    }
 }
