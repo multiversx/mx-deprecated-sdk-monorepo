@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import com.google.gson.GsonBuilder;
 import org.bouncycastle.util.encoders.Base64;
 
 import elrond.Exceptions.AddressException;
@@ -17,7 +18,7 @@ import elrond.Exceptions.ProxyRequestException;
 
 public class Transaction {
     public static final int VERSION = 1;
-    private static final Gson gson = new Gson();
+    private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
 
     private long nonce;
     private BigInteger value;
