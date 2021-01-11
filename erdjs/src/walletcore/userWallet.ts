@@ -1,6 +1,6 @@
 import * as errors from "../errors";
 import nacl from "tweetnacl";
-import { UserPublicKey, UserPrivateKey } from "./userKeys";
+import { UserPublicKey, UserSecretKey } from "./userKeys";
 const crypto = require("crypto");
 const uuid = require("uuid/v4");
 const scryptsy = require("scryptsy");
@@ -26,21 +26,21 @@ export class UserWallet {
      *  - references to crypto functions
      *  - references to object members
      * 
-     * Given a password, generates the contents for a file containing the account's private key,
+     * Given a password, generates the contents for a file containing the account's secret key,
      * passed through a password-based key derivation function (kdf).
      */
-    constructor(privateKey: UserPrivateKey, password: string, randomness: Randomness = new Randomness()) {
+    constructor(secretKey: UserSecretKey, password: string, randomness: Randomness = new Randomness()) {
         const kdParams = new ScryptKeyDerivationParams();
         const derivedKey = UserWallet.generateDerivedKey(Buffer.from(password), randomness.salt, kdParams);
         const derivedKeyFirstHalf = derivedKey.slice(0, 16);
         const derivedKeySecondHalf = derivedKey.slice(16, 32);
         const cipher = crypto.createCipheriv(CipherAlgorithm, derivedKeyFirstHalf, randomness.iv);
 
-        const text = Buffer.concat([privateKey.valueOf(), privateKey.toPublicKey().valueOf()]);
+        const text = Buffer.concat([secretKey.valueOf(), secretKey.toPublicKey().valueOf()]);
         const ciphertext = Buffer.concat([cipher.update(text), cipher.final()]);
         const mac = crypto.createHmac(DigestAlgorithm, derivedKeySecondHalf).update(ciphertext).digest();
 
-        this.publicKey = privateKey.toPublicKey();
+        this.publicKey = secretKey.toPublicKey();
         this.randomness = randomness;
         this.ciphertext = ciphertext;
         this.mac = mac;
@@ -55,9 +55,9 @@ export class UserWallet {
      *  - references to crypto functions
      *  - references to object members
      * 
-     * From an encrypted keyfile, given the password, loads the private key and the public key.
+     * From an encrypted keyfile, given the password, loads the secret key and the public key.
      */
-    static loadPrivateKey(keyFileObject: any, password: string): UserPrivateKey {
+    static decryptSecretKey(keyFileObject: any, password: string): UserSecretKey {
         const kdfparams = keyFileObject.crypto.kdfparams;
         const salt = Buffer.from(kdfparams.salt, "hex");
         const iv = Buffer.from(keyFileObject.crypto.cipherparams.iv, "hex");
@@ -82,7 +82,7 @@ export class UserWallet {
         }
 
         let seed = text.slice(0, 32);
-        return new UserPrivateKey(seed);
+        return new UserSecretKey(seed);
     }
 
     /**

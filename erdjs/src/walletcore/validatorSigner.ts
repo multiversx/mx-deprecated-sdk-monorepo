@@ -1,5 +1,5 @@
 import * as errors from "../errors";
-import { BLS, ValidatorPrivateKey } from "./validatorKeys";
+import { BLS, ValidatorSecretKey } from "./validatorKeys";
 
 /**
  * Validator signer (BLS signer)
@@ -12,8 +12,8 @@ export class ValidatorSigner {
         await BLS.initIfNecessary();
 
         try {
-            let privateKey = ValidatorPrivateKey.fromPem(pemText, pemIndex);
-            privateKey.sign(signable);
+            let secretKey = ValidatorSecretKey.fromPem(pemText, pemIndex);
+            secretKey.sign(signable);
         } catch (err) {
             throw new errors.ErrSignerCannotSign(err);
         }

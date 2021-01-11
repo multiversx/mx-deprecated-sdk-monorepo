@@ -5,7 +5,7 @@ import { parseUserKey } from "./pem";
 
 export const SEED_LENGTH = 32;
 
-export class UserPrivateKey {
+export class UserSecretKey {
     private readonly buffer: Buffer;
 
     constructor(buffer: Buffer) {
@@ -14,14 +14,14 @@ export class UserPrivateKey {
         this.buffer = buffer;
     }
 
-    static fromString(value: string): UserPrivateKey {
+    static fromString(value: string): UserSecretKey {
         guardLength(value, SEED_LENGTH * 2);
 
         let buffer = Buffer.from(value, "hex");
-        return new UserPrivateKey(buffer);
+        return new UserSecretKey(buffer);
     }
 
-    static fromPem(text: string, index: number = 0): UserPrivateKey {
+    static fromPem(text: string, index: number = 0): UserSecretKey {
         return parseUserKey(text, index);
     }
 

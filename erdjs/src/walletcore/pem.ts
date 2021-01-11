@@ -1,27 +1,27 @@
-import { UserPrivateKey } from "./userKeys";
-import { ValidatorPrivateKey } from "./validatorKeys";
+import { UserSecretKey } from "./userKeys";
+import { ValidatorSecretKey } from "./validatorKeys";
 
-export function parseUserKey(text: string, index: number = 0): UserPrivateKey {
+export function parseUserKey(text: string, index: number = 0): UserSecretKey {
     let keys = parseUserKeys(text);
     let key = keys[index];
     return key;
 }
 
-export function parseUserKeys(text: string): UserPrivateKey[] {
+export function parseUserKeys(text: string): UserSecretKey[] {
     let buffers = parse(text);
-    let keys = buffers.map(buffer => new UserPrivateKey(buffer.slice(0, 32)));
+    let keys = buffers.map(buffer => new UserSecretKey(buffer.slice(0, 32)));
     return keys;
 }
 
-export function parseValidatorKey(text: string, index: number = 0): ValidatorPrivateKey {
+export function parseValidatorKey(text: string, index: number = 0): ValidatorSecretKey {
     let keys = parseValidatorKeys(text);
     let key = keys[index];
     return key;
 }
 
-export function parseValidatorKeys(text: string): ValidatorPrivateKey[] {
+export function parseValidatorKeys(text: string): ValidatorSecretKey[] {
     let buffers = parse(text);
-    let keys = buffers.map(buffer => new ValidatorPrivateKey(buffer));
+    let keys = buffers.map(buffer => new ValidatorSecretKey(buffer));
     return keys;
 }
 

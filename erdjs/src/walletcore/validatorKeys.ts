@@ -17,7 +17,7 @@ export class BLS {
     }
 }
 
-export class ValidatorPrivateKey {
+export class ValidatorSecretKey {
     private readonly secretKey: any;
     private readonly publicKey: any;
 

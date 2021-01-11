@@ -1,7 +1,7 @@
 import * as errors from "../errors";
 import { assert } from "chai";
 import { TestWallets } from "../testutils";
-import { UserPrivateKey } from "./userKeys";
+import { UserSecretKey } from "./userKeys";
 import { Mnemonic } from "./mnemonic";
 import { UserWallet, Randomness } from "./userWallet";
 import { Address } from "../address";
@@ -28,39 +28,39 @@ describe("test user wallets", () => {
     it("should derive keys", () => {
         let mnemonic = Mnemonic.fromString(wallets.mnemonic);
 
-        assert.equal(mnemonic.deriveKey(0).hex(), alice.privateKey);
-        assert.equal(mnemonic.deriveKey(1).hex(), bob.privateKey);
-        assert.equal(mnemonic.deriveKey(2).hex(), carol.privateKey);
+        assert.equal(mnemonic.deriveKey(0).hex(), alice.secretKeyHex);
+        assert.equal(mnemonic.deriveKey(1).hex(), bob.secretKeyHex);
+        assert.equal(mnemonic.deriveKey(2).hex(), carol.secretKeyHex);
     });
 
-    it("should create private key", () => {
-        let keyHex = wallets.alice.privateKey;
-        let fromBuffer = new UserPrivateKey(Buffer.from(keyHex, "hex"));
-        let fromHex = UserPrivateKey.fromString(keyHex);
+    it("should create secret key", () => {
+        let keyHex = wallets.alice.secretKeyHex;
+        let fromBuffer = new UserSecretKey(Buffer.from(keyHex, "hex"));
+        let fromHex = UserSecretKey.fromString(keyHex);
 
         assert.equal(fromBuffer.hex(), keyHex);
         assert.equal(fromHex.hex(), keyHex);
     });
 
     it("should compute public key (and address)", () => {
-        let privateKey: UserPrivateKey;
+        let secretKey: UserSecretKey;
 
-        privateKey = new UserPrivateKey(Buffer.from(alice.privateKey, "hex"));
-        assert.equal(privateKey.toPublicKey().hex(), alice.address.hex());
-        assert.isTrue(privateKey.toPublicKey().toAddress().equals(alice.address));
+        secretKey = new UserSecretKey(Buffer.from(alice.secretKeyHex, "hex"));
+        assert.equal(secretKey.toPublicKey().hex(), alice.address.hex());
+        assert.isTrue(secretKey.toPublicKey().toAddress().equals(alice.address));
 
-        privateKey = new UserPrivateKey(Buffer.from(bob.privateKey, "hex"));
-        assert.equal(privateKey.toPublicKey().hex(), bob.address.hex());
-        assert.isTrue(privateKey.toPublicKey().toAddress().equals(bob.address));
+        secretKey = new UserSecretKey(Buffer.from(bob.secretKeyHex, "hex"));
+        assert.equal(secretKey.toPublicKey().hex(), bob.address.hex());
+        assert.isTrue(secretKey.toPublicKey().toAddress().equals(bob.address));
 
-        privateKey = new UserPrivateKey(Buffer.from(carol.privateKey, "hex"));
-        assert.equal(privateKey.toPublicKey().hex(), carol.address.hex());
-        assert.isTrue(privateKey.toPublicKey().toAddress().equals(carol.address));
+        secretKey = new UserSecretKey(Buffer.from(carol.secretKeyHex, "hex"));
+        assert.equal(secretKey.toPublicKey().hex(), carol.address.hex());
+        assert.isTrue(secretKey.toPublicKey().toAddress().equals(carol.address));
     });
 
     it("should throw error when invalid input", () => {
-        assert.throw(() => new UserPrivateKey(Buffer.alloc(42)), errors.ErrInvariantFailed);
-        assert.throw(() => UserPrivateKey.fromString("foobar"), errors.ErrInvariantFailed);
+        assert.throw(() => new UserSecretKey(Buffer.alloc(42)), errors.ErrInvariantFailed);
+        assert.throw(() => UserSecretKey.fromString("foobar"), errors.ErrInvariantFailed);
     });
 
     it("should handle PEM files", () => {
@@ -70,14 +70,14 @@ describe("test user wallets", () => {
     it("should create and load encrypted files", function () {
         this.timeout(10000);
 
-        let alicePrivateKey = UserPrivateKey.fromString(alice.privateKey);
-        let bobPrivateKey = UserPrivateKey.fromString(bob.privateKey);
-        let carolPrivateKey = UserPrivateKey.fromString(carol.privateKey);
+        let aliceSecretKey = UserSecretKey.fromString(alice.secretKeyHex);
+        let bobSecretKey = UserSecretKey.fromString(bob.secretKeyHex);
+        let carolSecretKey = UserSecretKey.fromString(carol.secretKeyHex);
 
         console.time("encrypt");
-        let aliceKeyFile = new UserWallet(alicePrivateKey, password);
-        let bobKeyFile = new UserWallet(bobPrivateKey, password);
-        let carolKeyFile = new UserWallet(carolPrivateKey, password);
+        let aliceKeyFile = new UserWallet(aliceSecretKey, password);
+        let bobKeyFile = new UserWallet(bobSecretKey, password);
+        let carolKeyFile = new UserWallet(carolSecretKey, password);
         console.timeEnd("encrypt");
 
         assert.equal(aliceKeyFile.toJSON().bech32, alice.address.bech32());
@@ -85,26 +85,26 @@ describe("test user wallets", () => {
         assert.equal(carolKeyFile.toJSON().bech32, carol.address.bech32());
 
         console.time("decrypt");
-        assert.deepEqual(UserWallet.loadPrivateKey(aliceKeyFile.toJSON(), password), alicePrivateKey);
-        assert.deepEqual(UserWallet.loadPrivateKey(bobKeyFile.toJSON(), password), bobPrivateKey);
-        assert.deepEqual(UserWallet.loadPrivateKey(carolKeyFile.toJSON(), password), carolPrivateKey);
+        assert.deepEqual(UserWallet.decryptSecretKey(aliceKeyFile.toJSON(), password), aliceSecretKey);
+        assert.deepEqual(UserWallet.decryptSecretKey(bobKeyFile.toJSON(), password), bobSecretKey);
+        assert.deepEqual(UserWallet.decryptSecretKey(carolKeyFile.toJSON(), password), carolSecretKey);
         console.timeEnd("decrypt");
 
         // With provided randomness, in order to reproduce our development wallets
 
-        aliceKeyFile = new UserWallet(alicePrivateKey, password, new Randomness({
+        aliceKeyFile = new UserWallet(aliceSecretKey, password, new Randomness({
             id: alice.keyFileObject.id,
             iv: Buffer.from(alice.keyFileObject.crypto.cipherparams.iv, "hex"),
             salt: Buffer.from(alice.keyFileObject.crypto.kdfparams.salt, "hex")
         }));
 
-        bobKeyFile = new UserWallet(bobPrivateKey, password, new Randomness({
+        bobKeyFile = new UserWallet(bobSecretKey, password, new Randomness({
             id: bob.keyFileObject.id,
             iv: Buffer.from(bob.keyFileObject.crypto.cipherparams.iv, "hex"),
             salt: Buffer.from(bob.keyFileObject.crypto.kdfparams.salt, "hex")
         }));
 
-        carolKeyFile = new UserWallet(carolPrivateKey, password, new Randomness({
+        carolKeyFile = new UserWallet(carolSecretKey, password, new Randomness({
             id: carol.keyFileObject.id,
             iv: Buffer.from(carol.keyFileObject.crypto.cipherparams.iv, "hex"),
             salt: Buffer.from(carol.keyFileObject.crypto.kdfparams.salt, "hex")
@@ -116,10 +116,9 @@ describe("test user wallets", () => {
     });
 
     it("should sign", async () => {
-        let signer = new UserSigner(UserPrivateKey.fromString("1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf"));
+        let signer = new UserSigner(UserSecretKey.fromString("1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf"));
         let sender = new Address("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz");
         let receiver = new Address("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r");
-
 
         let transaction = new Transaction({
             nonce: new Nonce(0),

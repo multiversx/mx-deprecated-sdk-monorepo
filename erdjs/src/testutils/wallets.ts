@@ -108,14 +108,14 @@ NDg3ZGNkMjZjODRiNTAxN2EzOWUzMWEzNjcwODg5YmE=
 
 export class TestWallet {
     readonly address: Address;
-    readonly privateKey: string;
+    readonly secretKeyHex: string;
     readonly signer: ISigner;
     readonly keyFileObject: any;
     readonly pemFileText: any;
 
     constructor(address: Address, privateKey: string, keyFileObject: any, pemFileText: any) {
         this.address = address;
-        this.privateKey = privateKey;
+        this.secretKeyHex = privateKey;
         this.signer = new SimpleSigner(privateKey);
         this.keyFileObject = keyFileObject;
         this.pemFileText = pemFileText;

@@ -1,6 +1,6 @@
 import * as errors from "../errors";
 import { generateMnemonic, validateMnemonic, mnemonicToSeedSync } from "bip39";
-import { UserPrivateKey } from "./userKeys";
+import { UserSecretKey } from "./userKeys";
 import { derivePath } from "ed25519-hd-key";
 
 const MNEMONIC_STRENGTH = 256;
@@ -34,12 +34,12 @@ export class Mnemonic {
     }
 
     // TODO: Question for review: @ccorcoveanu, accountIndex or addressIndex?
-    deriveKey(index: number = 0, password: string = ""): UserPrivateKey {
+    deriveKey(index: number = 0, password: string = ""): UserSecretKey {
         let seed = mnemonicToSeedSync(this.text, password);
         let derivationPath = `${BIP44_DERIVATION_PREFIX}/${index}'`;
         let derivationResult = derivePath(derivationPath, seed.toString("hex"));
         let key = derivationResult.key;
-        return new UserPrivateKey(key);
+        return new UserSecretKey(key);
     }
 
     getWords(): string[] {
