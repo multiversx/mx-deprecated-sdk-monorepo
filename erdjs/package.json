@@ -22,7 +22,7 @@
     "compile-proto": "npx pbjs -t static-module -w commonjs -o src/proto/compiled.js src/proto/transaction.proto && npx pbts -o src/proto/compiled.d.ts src/proto/compiled.js",
     "browser-tests": "make clean && make browser-tests && http-server --port=9876 -o browser-tests/index.html",
     "pretest": "npm run compile",
-    "prepare": "npm run compile && npm run compile-browser && npm run compile-browser-min && compile-browser-nowallet && compile-browser-nowallet-min"
+    "prepare": "npm run compile && npm run compile-browser && npm run compile-browser-min && npm run compile-browser-nowallet && npm run compile-browser-nowallet-min"
   },
   "author": "ElrondNetwork",
   "license": "GPL-3.0-or-later",
