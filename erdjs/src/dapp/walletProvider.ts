@@ -237,7 +237,7 @@ export class WalletProvider implements IDappProvider {
 
             window.addEventListener('message', sendTransactionUrl);
         }).then((url: any) => {
-            window.location.href = `${this.baseWalletUrl()}${url}?callbackUrl=${window.location.href}`;
+            window.location.href = `${this.baseWalletUrl()}${url}&callbackUrl=${window.location.href}`;
             return transaction;
         });
     }
