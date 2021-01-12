@@ -10,8 +10,7 @@ export * from "./networkConfig";
 export * from "./networkParams";
 export * as valid from "./utils";
 export * from "./proxyProvider";
-export * from "./simpleSigner";
-export * from "./backendSigner";
+export * from "./walletcore";
 export * from "./nullSigner";
 
 export * from "./smartcontracts";
