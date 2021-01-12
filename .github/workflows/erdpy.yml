@@ -32,6 +32,7 @@ jobs:
         pip3 install pytest
     - name: Run unit tests
       run: |
+        export PYTHONPATH=.
         python3 -m unittest discover -s erdpy/tests
         pytest ./erdpy/tests/test_testnet.py -s
     - name: Run CLI tests
