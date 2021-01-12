@@ -15,6 +15,10 @@ export class BetterType {
         this.typeParameters = typeParameters || [];
     }
 
+    getName(): string {
+        return this.name;
+    }
+
     getTypeParameters(): BetterType[] {
         return this.typeParameters;
     }

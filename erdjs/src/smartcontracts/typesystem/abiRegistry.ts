@@ -1,84 +1,57 @@
 import * as fs from "fs";
 import axios, { AxiosResponse } from "axios";
 import { guardValueIsSet } from "../../utils";
-import { Namespace } from "./namespace";
 import { StructureDefinition, StructureType } from "./structure";
 import { ContractInterface } from "./contractInterface";
 
-const NamespacedExtension = ".namespaced.json";
-const DefaultNamespace = "default";
-
-/**
- * Contract ABIs aren't yet fully implemented. This is just a prototype.
- * A future release of `erdjs` will handle ABIs properly.
- */
 export class AbiRegistry {
-    readonly namespaces: Namespace[] = [];
+    readonly interfaces: ContractInterface[] = [];
+    readonly structures: StructureType[] = [];
 
     async extendFromFile(file: string): Promise<AbiRegistry> {
         let jsonContent: string = await fs.promises.readFile(file, { encoding: "utf8" });
         let json = JSON.parse(jsonContent);
         
-        return AbiRegistry.isNamespaced(file) ? this.extendNamespaced(json) : this.extend(json);
-    }
-
-    private static isNamespaced(urlOrFile: string): boolean {
-        return urlOrFile.endsWith(NamespacedExtension);
+        return this.extend(json);
     }
 
     async extendFromUrl(url: string): Promise<AbiRegistry> {
-        let response: AxiosResponse<ArrayBuffer> = await axios.get(url);
+        let response: AxiosResponse = await axios.get(url);
         let json = response.data;
-        return AbiRegistry.isNamespaced(url) ? this.extendNamespaced(json) : this.extend(json);
+        return this.extend(json);
     }
 
-    extend(json: any): AbiRegistry {
-        let defaultNamespace = this.getDefaultNamespace();
+    extend(json: { name: string, endpoints: any[], structures: any[] }): AbiRegistry {
+        // The "endpoints" collection is interpreted by "ContractInterface".
         let iface = ContractInterface.fromJSON(json);
-        let structures = (<any[]>(json.structures || [])).map(item => StructureDefinition.fromJSON(item));
-        
-        defaultNamespace.interfaces.push(iface);
+        this.interfaces.push(iface);
 
-        for (const definition of structures) {
-            defaultNamespace.structures.push(definition);
-
-            new StructureType(definition);
+        for (const item of json.structures) {
+            let structureDefinition = StructureDefinition.fromJSON(item);
+            let structureType = new StructureType(structureDefinition);
+            this.structures.push(structureType);
         }
 
         return this;
     }
 
-    extendNamespaced(json: any): AbiRegistry {
-        for (let item of json || []) {
-            let namespace = Namespace.fromJSON(item);
-            this.namespaces.push(namespace);
-
-            for (const definition of namespace.structures) {
-                new StructureType(definition);
-            }
-        }
-
-        return this;
-    }
-
-    getDefaultNamespace(): Namespace {
-        let defaultNamespace = this.namespaces.find(e => e.namespace == DefaultNamespace);
-
-        if (!defaultNamespace) {
-            defaultNamespace = new Namespace(DefaultNamespace, [], []);
-            this.namespaces.push(defaultNamespace);
-        }
-
-        return defaultNamespace;
-    }
-
-    findNamespace(name: string): Namespace {
-        let result = this.namespaces.find(e => e.namespace == name);
+    findInterface(name: string): ContractInterface {
+        let result = this.interfaces.find(e => e.name == name);
         guardValueIsSet("result", result);
         return result!;
     }
 
-    findNamespaces(names: string[]): Namespace[] {
-        return names.map(name => this.findNamespace(name));
+    findInterfaces(names: string[]): ContractInterface[] {
+        return names.map(name => this.findInterface(name));
     }
+    
+    findStructure(name: string): StructureType {
+        let result = this.structures.find(e => e.getName() == name);
+        guardValueIsSet("result", result);
+        return result!;
+    }
+
+    findStructures(names: string[]): StructureType[] {
+        return names.map(name => this.findStructure(name));
+    }  
 }

@@ -6,30 +6,26 @@ describe("test abi registry", () => {
         let registry = new AbiRegistry();
 
         await registry.extendFromFile("src/testdata/answer.json");
-        assert.lengthOf(registry.namespaces, 1);
-        assert.lengthOf(registry.getDefaultNamespace().interfaces, 1);
-        assert.lengthOf(registry.getDefaultNamespace().structures, 0);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("answer").endpoints, 1);
+        assert.lengthOf(registry.interfaces, 1);
+        assert.lengthOf(registry.structures, 0);
+        assert.lengthOf(registry.findInterface("answer").endpoints, 1);
 
         await registry.extendFromFile("src/testdata/counter.json");
-        assert.lengthOf(registry.namespaces, 1);
-        assert.lengthOf(registry.getDefaultNamespace().interfaces, 2);
-        assert.lengthOf(registry.getDefaultNamespace().structures, 0);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("counter").endpoints, 3);
+        assert.lengthOf(registry.interfaces, 2);
+        assert.lengthOf(registry.structures, 0);
+        assert.lengthOf(registry.findInterface("counter").endpoints, 3);
 
         await registry.extendFromFile("src/testdata/lottery-egld.json");
-        assert.lengthOf(registry.namespaces, 1);
-        assert.lengthOf(registry.getDefaultNamespace().interfaces, 3);
-        assert.lengthOf(registry.getDefaultNamespace().structures, 1);
-        assert.lengthOf(registry.getDefaultNamespace().findInterface("lottery-egld").endpoints, 3);
+        assert.lengthOf(registry.interfaces, 3);
+        assert.lengthOf(registry.structures, 1);
+        assert.lengthOf(registry.findInterface("lottery-egld").endpoints, 3);
 
         await registry.extendFromFile("src/testdata/foobar.namespaced.json");
-        assert.lengthOf(registry.namespaces, 3);
-        assert.lengthOf(registry.getDefaultNamespace().interfaces, 3);
-        assert.lengthOf(registry.getDefaultNamespace().structures, 1);
-        assert.lengthOf(registry.findNamespace("foo").interfaces, 3);
-        assert.lengthOf(registry.findNamespace("foo").structures, 1);
-        assert.lengthOf(registry.findNamespace("bar").interfaces, 1);
-        assert.lengthOf(registry.findNamespace("bar").structures, 1);
+        assert.lengthOf(registry.interfaces, 3);
+        assert.lengthOf(registry.structures, 1);
+        assert.lengthOf(registry.interfaces, 3);
+        assert.lengthOf(registry.structures, 1);
+        assert.lengthOf(registry.interfaces, 1);
+        assert.lengthOf(registry.structures, 1);
     });
 });

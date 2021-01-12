@@ -4,7 +4,6 @@ export * from "./boolean";
 export * from "./endpoint";
 export * from "./generic";
 export * from "./matchers";
-export * from "./namespace";
 export * from "./numerical";
 export * from "./structure";
 export * from "./types";
