@@ -1,4 +1,5 @@
-import { TypeDescriptor } from "./typeDescriptor";
+import { TypeExpressionParser } from "./typeExpressionParser";
+import { BetterType } from "./types";
 
 export class EndpointDefinition {
     readonly name: string;
@@ -65,19 +66,16 @@ export class EndpointModifiers {
 export class EndpointParameterDefinition {
     readonly name: string;
     readonly description: string;
-    readonly scopedTypeNames: string[];
+    readonly type: BetterType;
 
-    constructor(name: string, description: string, type: string[]) {
+    constructor(name: string, description: string, type: BetterType) {
         this.name = name;
         this.description = description;
-        this.scopedTypeNames = type;
+        this.type = type;
     }
 
-    static fromJSON(json: { name: string, description: string, type: string[] }): EndpointParameterDefinition {
-        return new EndpointParameterDefinition(json.name, json.description, json.type);
-    }
-
-    getTypeDescriptor(): TypeDescriptor {
-        return TypeDescriptor.createFromTypeNames(this.scopedTypeNames);
+    static fromJSON(json: { name: string, description: string, type: string }): EndpointParameterDefinition {
+        let parsedType = new TypeExpressionParser().parse(json.type);
+        return new EndpointParameterDefinition(json.name, json.description, parsedType);
     }
 }

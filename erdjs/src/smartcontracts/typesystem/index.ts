@@ -7,6 +7,4 @@ export * from "./matchers";
 export * from "./namespace";
 export * from "./numerical";
 export * from "./structure";
-export * from "./typeDescriptor";
-export * from "./typesRegistry";
 export * from "./types";

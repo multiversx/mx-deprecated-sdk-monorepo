@@ -2,14 +2,14 @@ import { guardValueIsSet } from "../../utils";
 import { BetterType, isTyped, TypedValue } from "./types";
 
 export class OptionalType extends BetterType {
-    constructor() {
-        super("Optional");
+    constructor(typeParameter: BetterType) {
+        super("Optional", [typeParameter]);
     }
 }
 
 export class VectorType extends BetterType {
-    constructor() {
-        super("Vector");
+    constructor(typeParameter: BetterType) {
+        super("List", [typeParameter]);
     }
 }
 

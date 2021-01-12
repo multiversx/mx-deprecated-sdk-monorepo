@@ -1,4 +1,4 @@
-import { TypeDescriptor, TypedValue, Vector } from "../typesystem";
+import { BetterType, TypedValue, Vector } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
 export class VectorBinaryCodec {
@@ -12,7 +12,7 @@ export class VectorBinaryCodec {
      * Reads and decodes a Vector from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeNested(buffer: Buffer, typeDescriptor: TypeDescriptor): [Vector, number] {
+    decodeNested(buffer: Buffer, type: BetterType): [Vector, number] {
         let result: TypedValue[] = [];
         let numItems = buffer.readUInt32BE();
         this.parentCodec.constraints.checkVectorLength(numItems);
@@ -23,27 +23,27 @@ export class VectorBinaryCodec {
         buffer = originalBuffer.slice(offset);
 
         for (let i = 0; i < numItems; i++) {
-            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeDescriptor);
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, type);
             result.push(decoded);
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);
         }
 
-        return [new Vector(result), offset];
+        return [new Vector(type, result), offset];
     }
 
     /**
      * Reads and decodes a Vector from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeTopLevel(buffer: Buffer, typeDescriptor: TypeDescriptor): Vector {
+    decodeTopLevel(buffer: Buffer, type: BetterType): Vector {
         let result: TypedValue[] = [];
 
         let originalBuffer = buffer;
         let offset = 0;
 
         while (buffer.length > 0) {
-            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeDescriptor);
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, type);
             result.push(decoded);
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);
@@ -51,7 +51,7 @@ export class VectorBinaryCodec {
             this.parentCodec.constraints.checkVectorLength(result.length);
         }
 
-        return new Vector(result);
+        return new Vector(type, result);
     }
 
     encodeNested(vector: Vector): Buffer {

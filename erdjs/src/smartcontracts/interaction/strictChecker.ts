@@ -31,7 +31,7 @@ export class StrictChecker implements IInteractionChecker {
         }
 
         for (let i = 0; i < numFormalArguments; i++) {
-            let typeDescriptor = formalArguments[i].getTypeDescriptor();
+            let type = formalArguments[i].type;
             let arg = actualArguments[i];
 
             if (!arg.isTyped()) {

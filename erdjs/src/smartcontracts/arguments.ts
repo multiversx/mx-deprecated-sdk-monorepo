@@ -1,7 +1,7 @@
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
-import { AddressValue, BigUIntValue, EndpointDefinition, OptionalValue, TypedValue, U8Value, Vector } from "./typesystem";
+import { AddressValue, BigUIntValue, EndpointDefinition, OptionalType, OptionalValue, TypedValue, TypePlaceholder, U8Type, U8Value, Vector, VectorType } from "./typesystem";
 
 /**
  * For the moment, this is the only codec used.
@@ -148,7 +148,9 @@ export class Argument {
     static fromUTF8(value: string): Argument {
         let buffer = Buffer.from(value, "utf-8");
         let typedBytes = [...buffer].map(byte => new U8Value(byte));
-        return Argument.fromTypedValue(new Vector(typedBytes));
+        let type = new VectorType(new U8Type());
+
+        return Argument.fromTypedValue(new Vector(type, typedBytes));
     }
 
     /**
@@ -162,14 +164,16 @@ export class Argument {
      * Creates an Argument object, as a missing optional argument.
      */
     static fromMissingOptional(): Argument {
-        return Argument.fromTypedValue(new OptionalValue());
+        let type = new OptionalType(new TypePlaceholder());
+        return Argument.fromTypedValue(new OptionalValue(type));
     }
 
     /**
      * Creates an Argument object, as a provided optional argument.
      */
     static fromProvidedOptional(typedValue: TypedValue): Argument {
-        return Argument.fromTypedValue(new OptionalValue(typedValue));
+        let type = new OptionalType(typedValue.getType());
+        return Argument.fromTypedValue(new OptionalValue(type, typedValue));
     }
 
     static fromTypedValue(typedValue: TypedValue): Argument {

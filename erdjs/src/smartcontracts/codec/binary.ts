@@ -1,5 +1,5 @@
 import * as errors from "../../errors";
-import { EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
+import { BetterType, EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypedValue, U8Type } from "../typesystem";
 import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
 import { PrimitiveBinaryCodec } from "./primitive";
@@ -30,7 +30,7 @@ export class BinaryCodec {
         for (let i = 0; i < outputItems.length; i++) {
             let buffer = outputItems[i];
             let parameterDefinition = definition.output[i];
-            let typeDescriptor = parameterDefinition.getTypeDescriptor();
+            let typeDescriptor = parameterDefinition.type;
 
             let decoded = this.decodeTopLevel(buffer, typeDescriptor);
             result.push(decoded);
@@ -39,16 +39,12 @@ export class BinaryCodec {
         return result;
     }
 
-    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): TResult {
+    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: BetterType): TResult {
         this.constraints.checkBufferLength(buffer);
 
-        let type = typeDescriptor.getOutmostType();
-        // Generics will require the scoped type descriptor as well.
-        let scoped = typeDescriptor.scopeInto();
-
         let typedValue = onTypeSelect<TypedValue>(type, {
-            onOptional: () => this.optionalCodec.decodeTopLevel(buffer, scoped),
-            onVector: () => this.vectorCodec.decodeTopLevel(buffer, scoped),
+            onOptional: () => this.optionalCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
+            onVector: () => this.vectorCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
             onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructureType>type)
         });
@@ -56,16 +52,12 @@ export class BinaryCodec {
         return <TResult>typedValue;
     }
 
-    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): [TResult, number] {
+    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: BetterType): [TResult, number] {
         this.constraints.checkBufferLength(buffer);
 
-        let type = typeDescriptor.getOutmostType();
-        // Open types (generics) will require the scoped type descriptor as well.
-        let scoped = typeDescriptor.scopeInto();
-
         let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {
-            onOptional: () => this.optionalCodec.decodeNested(buffer, scoped),
-            onVector: () => this.vectorCodec.decodeNested(buffer, scoped),
+            onOptional: () => this.optionalCodec.decodeNested(buffer, type.getFirstTypeParameter()),
+            onVector: () => this.vectorCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
             onStructure: () => this.structureCodec.decodeNested(buffer, <StructureType>type)
         });

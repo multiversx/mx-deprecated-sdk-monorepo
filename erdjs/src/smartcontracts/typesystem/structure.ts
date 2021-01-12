@@ -1,16 +1,13 @@
 import * as errors from "../../errors";
-import { TypeDescriptor } from "./typeDescriptor";
-import { Type, TypedValue } from "./types";
-import { OldTypesRegistry } from "./typesRegistry";
+import { TypeExpressionParser } from "./typeExpressionParser";
+import { BetterType, TypedValue } from "./types";
 
-export class StructureType extends Type {
+export class StructureType extends BetterType {
     readonly definition: StructureDefinition;
 
     constructor(definition: StructureDefinition) {
         super(definition.name);
         this.definition = definition;
-
-        OldTypesRegistry.Default.registerType(this);
     }
 }
 
@@ -18,15 +15,13 @@ export class StructureType extends Type {
 // TODO: implement setField(), convenience method.
 // TODO: Hold fields in a map (by name), and use the order within "field definitions" to perform codec operations.
 export class Structure extends TypedValue {
-    private readonly type: StructureType;
     private readonly fields: StructureField[] = [];
 
     /**
      * Currently, one can only set fields at initialization time. Construction will be improved at a later time.
      */
     constructor(type: StructureType, fields: StructureField[]) {
-        super();
-        this.type = type;
+        super(type);
         this.fields = fields;
 
         this.checkTyping();
@@ -34,7 +29,8 @@ export class Structure extends TypedValue {
 
     private checkTyping() {
         let fields = this.fields;
-        let definitions = this.type.definition.fields;
+        let type = <StructureType>this.getType();
+        let definitions = type.definition.fields;
 
         if (fields.length != definitions.length) {
             throw new errors.ErrStructureTyping("fields length vs. field definitions length");
@@ -44,7 +40,7 @@ export class Structure extends TypedValue {
             let field = fields[i];
             let definition = definitions[i];
             let fieldType = field.value.getType();
-            let definitionType = definition.getTypeDescriptor().getOutmostType();
+            let definitionType = definition.type;
 
             if (!fieldType.equals(definitionType)) {
                 throw new errors.ErrStructureTyping(`check type of field "${definition.name}"`);
@@ -70,7 +66,7 @@ export class Structure extends TypedValue {
     }
 
     equals(other: Structure): boolean {
-        if (!this.type.equals(other.type)) {
+        if (!this.getType().equals(other.getType())) {
             return false;
         }
 
@@ -91,10 +87,6 @@ export class Structure extends TypedValue {
         }
 
         return true;
-    }
-
-    getType(): StructureType {
-        return this.type;
     }
 }
 
@@ -130,19 +122,16 @@ export class StructureDefinition {
 export class StructureFieldDefinition {
     readonly name: string;
     readonly description: string;
-    readonly scopedTypeNames: string[];
+    readonly type: BetterType;
 
-    constructor(name: string, description: string, type: string[]) {
+    constructor(name: string, description: string, type: BetterType) {
         this.name = name;
         this.description = description;
-        this.scopedTypeNames = type;
+        this.type = type;
     }
 
-    static fromJSON(json: { name: string, description: string, type: string[] }): StructureFieldDefinition {
-        return new StructureFieldDefinition(json.name, json.description, json.type);
-    }
-
-    getTypeDescriptor(): TypeDescriptor {
-        return TypeDescriptor.createFromTypeNames(this.scopedTypeNames);
+    static fromJSON(json: { name: string, description: string, type: string }): StructureFieldDefinition {
+        let parsedType = new TypeExpressionParser().parse(json.type);
+        return new StructureFieldDefinition(json.name, json.description, parsedType);
     }
 }

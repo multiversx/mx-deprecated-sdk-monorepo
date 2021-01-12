@@ -1,4 +1,4 @@
-import { guardValueIsSet } from "../../utils";
+import { guardTrue, guardValueIsSet } from "../../utils";
 
 /**
  * An abstraction that represents a Type. Handles both generic and non-generic types.
@@ -17,6 +17,11 @@ export class BetterType {
 
     getTypeParameters(): BetterType[] {
         return this.typeParameters;
+    }
+
+    getFirstTypeParameter(): BetterType {
+        guardTrue(this.typeParameters.length > 1, "type parameters");
+        return this.typeParameters[0];
     }
 
     toString() {
@@ -75,4 +80,10 @@ export abstract class PrimitiveValue extends TypedValue {
 
 export function isTyped(value: any) {
     return value instanceof TypedValue;
+}
+
+export class TypePlaceholder extends BetterType {
+    constructor() {
+        super("... ? ...");
+    }
 }

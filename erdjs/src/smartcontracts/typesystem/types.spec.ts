@@ -2,7 +2,7 @@ import * as errors from "../../errors";
 import { assert } from "chai";
 import { NumericalValue } from ".";
 import { U16Type, U32Type, U32Value } from "./numerical";
-import { PrimitiveType, Type } from "./types";
+import { PrimitiveType, BetterType } from "./types";
 import { BooleanType } from "./boolean";
 import { AddressType } from "./address";
 
@@ -13,10 +13,10 @@ describe("test types", () => {
     });
 
     it("should report type hierarchy", () => {
-        assert.isTrue((new Type("Type")).isAssignableFrom(new PrimitiveType("PrimitiveType")));
-        assert.isTrue((new Type("Type")).isAssignableFrom(new BooleanType()));
-        assert.isTrue((new Type("Type")).isAssignableFrom(new AddressType()));
-        assert.isTrue((new Type("Type")).isAssignableFrom(new U32Type()));
+        assert.isTrue((new BetterType("Type")).isAssignableFrom(new PrimitiveType("PrimitiveType")));
+        assert.isTrue((new BetterType("Type")).isAssignableFrom(new BooleanType()));
+        assert.isTrue((new BetterType("Type")).isAssignableFrom(new AddressType()));
+        assert.isTrue((new BetterType("Type")).isAssignableFrom(new U32Type()));
 
         assert.isTrue((new PrimitiveType("PrimitiveType")).isAssignableFrom(new BooleanType()));
         assert.isTrue((new PrimitiveType("PrimitiveType")).isAssignableFrom(new AddressType()));

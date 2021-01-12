@@ -38,13 +38,13 @@ export class NumericalBinaryCodec {
 
         let empty = buffer.length == 0;
         if (empty) {
-            return new NumericalValue(BigInt(0), type);
+            return new NumericalValue(type, BigInt(0));
         }
 
         let isPositive = !type.withSign || isMsbZero(payload);
         if (isPositive) {
             let value = bufferToBigInt(payload);
-            return new NumericalValue(value, type);
+            return new NumericalValue(type, value);
         }
 
         // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/twos2bigint.go
@@ -53,7 +53,7 @@ export class NumericalBinaryCodec {
         let negativeValue = value * BigInt(-1);
         let negativeValueMinusOne = negativeValue - BigInt(1);
 
-        return new NumericalValue(negativeValueMinusOne, type);
+        return new NumericalValue(type, negativeValueMinusOne);
     }
 
     /**

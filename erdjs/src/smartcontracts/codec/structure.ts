@@ -21,7 +21,7 @@ export class StructureBinaryCodec {
         let fields: StructureField[] = [];
 
         for (const fieldDefinition of fieldDefinitions) {
-            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, fieldDefinition.getTypeDescriptor());
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, fieldDefinition.type);
             let field = new StructureField(decoded, fieldDefinition.name);
             fields.push(field);
             offset += decodedLength;

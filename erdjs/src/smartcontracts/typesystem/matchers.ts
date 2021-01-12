@@ -4,9 +4,9 @@ import { BooleanType, BooleanValue } from "./boolean";
 import { OptionalType, OptionalValue, Vector, VectorType } from "./generic";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Structure, StructureType } from "./structure";
-import { PrimitiveType, PrimitiveValue, Type } from "./types";
+import { BetterType, PrimitiveType, PrimitiveValue } from "./types";
 
-export function onTypeSelect<TResult>(type: Type, selectors: {
+export function onTypeSelect<TResult>(type: BetterType, selectors: {
     onOptional: () => TResult,
     onVector: () => TResult,
     onPrimitive: () => TResult,
