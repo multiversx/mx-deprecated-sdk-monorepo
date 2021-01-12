@@ -38,4 +38,5 @@ jobs:
     - name: Run CLI tests
       run: |
         cd ./erdpy/tests
-        source ./test_cli_contracts.sh && testAll
+        source ./test_cli_contracts.sh && testAll || return 1
+        source ./test_cli_wallet.sh && testAll || return 1
