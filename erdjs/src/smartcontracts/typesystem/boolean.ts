@@ -1,8 +1,8 @@
-import { Type, PrimitiveType, PrimitiveValue } from "./types";
+import { PrimitiveType, PrimitiveValue } from "./types";
 
 export class BooleanType extends PrimitiveType {
     constructor() {
-        super("Boolean");
+        super("bool");
     }
 }
 
@@ -13,7 +13,7 @@ export class BooleanValue extends PrimitiveValue {
     private readonly value: boolean;
 
     constructor(value: boolean) {
-        super();
+        super(new BooleanType());
         this.value = value;
     }
 
@@ -36,10 +36,5 @@ export class BooleanValue extends PrimitiveValue {
 
     valueOf(): boolean {
         return this.value;
-    }
-
-    getType(): Type {
-        // TODO: return from this.type; (abstract base class should have this field).
-        return new BooleanType();
     }
 }

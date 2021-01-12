@@ -9,7 +9,7 @@ import { AddressType } from "./address";
 describe("test types", () => {
     it("for numeric values, should throw error when invalid input", () => {
         assert.throw(() => new U32Value(BigInt(-42)), errors.ErrInvalidArgument);
-        assert.throw(() => new NumericalValue(<any>Number(42), new U16Type()), errors.ErrInvalidArgument);
+        assert.throw(() => new NumericalValue(new U16Type(), <any>Number(42)), errors.ErrInvalidArgument);
     });
 
     it("should report type hierarchy", () => {

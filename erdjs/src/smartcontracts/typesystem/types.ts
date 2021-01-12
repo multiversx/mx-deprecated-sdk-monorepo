@@ -1,34 +1,5 @@
 import { guardValueIsSet } from "../../utils";
 
-export class Type {
-    readonly name: string;
-
-    constructor(name: string) {
-        guardValueIsSet("name", name);
-
-        this.name = name;
-    }
-
-    toString() {
-        return this.name;
-    }
-
-    equals(type: Type): boolean {
-        return this.name == type.name;
-    }
-
-    valueOf() {
-        return this.name;
-    }
-
-    /**
-     * Inspired from: https://docs.microsoft.com/en-us/dotnet/api/system.type.isassignablefrom
-     */
-    isAssignableFrom(type: Type): boolean {
-        return type instanceof this.constructor;
-    }
-}
-
 /**
  * An abstraction that represents a Type. Handles both generic and non-generic types.
  * Once instantiated as a Type, a generic type is "closed" (as opposed to "open").
@@ -63,7 +34,7 @@ export class BetterType {
     /**
      * Inspired from: https://docs.microsoft.com/en-us/dotnet/api/system.type.isassignablefrom
      */
-    isAssignableFrom(type: Type): boolean {
+    isAssignableFrom(type: BetterType): boolean {
         return type instanceof this.constructor;
     }
 
@@ -78,14 +49,23 @@ export class BetterType {
     }
 }
 
-export class PrimitiveType extends Type {
+export class PrimitiveType extends BetterType {
     constructor(name: string) {
         super(name);
     }
 }
 
 export abstract class TypedValue {
-    abstract getType(): Type;
+    private readonly type: BetterType;
+
+    constructor(type: BetterType) {
+        this.type = type;
+    }
+
+    getType(): BetterType {
+        return this.type;
+    }
+
     abstract equals(other: any): boolean;
     abstract valueOf(): any;
 }

@@ -1,13 +1,13 @@
 import { guardValueIsSet } from "../../utils";
-import { isTyped, Type, TypedValue } from "./types";
+import { BetterType, isTyped, TypedValue } from "./types";
 
-export class OptionalType extends Type {
+export class OptionalType extends BetterType {
     constructor() {
         super("Optional");
     }
 }
 
-export class VectorType extends Type {
+export class VectorType extends BetterType {
     constructor() {
         super("Vector");
     }
@@ -16,8 +16,12 @@ export class VectorType extends Type {
 export class OptionalValue extends TypedValue {
     private readonly value: TypedValue | null;
 
-    constructor(value: TypedValue | null = null) {
-        super();
+    constructor(type: BetterType, value: TypedValue | null = null) {
+        super(type);
+
+        // TODO: assert has one type parameter
+        // TODO: assert value is of type parameter
+
         this.value = value;
     }
 
@@ -37,19 +41,17 @@ export class OptionalValue extends TypedValue {
     equals(other: OptionalValue): boolean {
         return this.value?.equals(other.value) || false;
     }
-
-    getType(): Type {
-        // TODO: this.type;
-        return new OptionalType();
-    }
 }
 
-// TODO: make generic (in TypeScript's sense) or check homogenity.
 export class Vector extends TypedValue {
     private readonly items: TypedValue[];
 
-    constructor(items: TypedValue[]) {
-        super();
+    constructor(type: BetterType, items: TypedValue[]) {
+        super(type);
+
+        // TODO: assert has one type parameter
+        // TODO: assert items are of type parameter
+
         this.items = items;
     }
 
@@ -80,10 +82,5 @@ export class Vector extends TypedValue {
         }
 
         return true;
-    }
-
-    getType(): Type {
-        // TODO this.type;
-        return new VectorType();
     }
 }
