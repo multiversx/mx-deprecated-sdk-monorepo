@@ -44,6 +44,18 @@ public class Exceptions {
         }
     }
 
+    public static class CannotCreateBech32AddressException extends AddressException {
+        
+        /**
+         *
+         */
+        private static final long serialVersionUID = 1249335179408397539L;
+        
+        public CannotCreateBech32AddressException(Object input) {
+            super(String.format("Cannot create bech32 address from: %s", input.toString()));
+        }
+    }
+
     public static class BadAddressHrpException extends AddressException {
 
         /**
@@ -90,14 +102,6 @@ public class Exceptions {
          *
          */
         private static final long serialVersionUID = -2279315088416839103L;
-    }
-
-    public static class InvalidAddressChecksumException extends AddressException {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1194101021531173712L;
     }
 
     public static class CannotGenerateMnemonicException extends KnownException {

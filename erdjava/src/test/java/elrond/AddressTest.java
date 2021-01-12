@@ -3,7 +3,7 @@ package elrond;
 import org.junit.Test;
 
 import elrond.Exceptions.CannotCreateAddressException;
-import elrond.Exceptions.InvalidAddressChecksumException;
+import elrond.Exceptions.CannotCreateBech32AddressException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -35,7 +35,7 @@ public class AddressTest {
             Address.fromHex("FOOBAR");
         });
 
-        assertThrows(InvalidAddressChecksumException.class, () -> {
+        assertThrows(CannotCreateBech32AddressException.class, () -> {
             Address.fromBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldy");
         });
     }
