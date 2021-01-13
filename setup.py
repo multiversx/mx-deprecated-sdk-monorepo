@@ -18,7 +18,7 @@ setuptools.setup(
     include_package_data=True,
     setup_requires=["wheel"],
     install_requires=[
-        "toml==0.10.0", "bottle", "requests", "pynacl", "pycryptodomex", "cryptography>=3.2"
+        "toml>=0.10.2", "bottle", "requests", "pynacl", "pycryptodomex", "cryptography>=3.2"
     ],
     zip_safe=False,
     keywords=["Elrond"],
