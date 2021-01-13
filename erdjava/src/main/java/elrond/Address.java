@@ -26,7 +26,13 @@ public class Address {
     }
 
     public static Address fromBech32(String value) throws Exceptions.AddressException {
-        Bech32.Bech32Data bech32Data = Bech32.decode(value);
+        Bech32.Bech32Data bech32Data;
+        try {
+            bech32Data = Bech32.decode(value);
+        }
+        catch(Exception e) {
+            throw new Exceptions.CannotCreateBech32AddressException(value);
+        }
         if (!bech32Data.hrp.equals(HRP)) {
             throw new Exceptions.BadAddressHrpException();
         }
