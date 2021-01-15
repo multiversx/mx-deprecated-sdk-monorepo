@@ -19,7 +19,6 @@ matrix:
       script:
         - cd ${TRAVIS_BUILD_DIR}/erdpy/tests
         # source ./test_cli_testnet.sh && runStart
-        - source ./tests.sh && runShortTests
         - source ./test_cli_wallet.sh && testAll
         - source ./test_cli_contracts.sh && testAll
         - source ./test_cli_validators.sh && testAll
