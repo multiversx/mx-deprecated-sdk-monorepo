@@ -1,4 +1,3 @@
-import { describe, Test } from "mocha";
 import { assert } from "chai";
 import { ProtoSerializer } from "./serializer";
 import { Nonce } from "../nonce";
