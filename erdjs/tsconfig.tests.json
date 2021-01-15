@@ -2,7 +2,7 @@
     "compilerOptions": {
         "module": "CommonJS",
         "target": "ES2015",
-        "outDir": "out",
+        "outDir": "out-tests",
         "lib": [
             "ES2015",
             "DOM"
@@ -20,7 +20,7 @@
         "declaration": true
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
     ],
     "exclude": [
 		"node_modules",
@@ -28,12 +28,6 @@
         "out-tests",
         "out-browser",
         "out-browser-tests",
-        "**/*.spec.ts",
         "src/examples"
-    ],
-    "typedocOptions": {
-        "mode": "library",
-        "out": "../../elrond-sdk-docs/erdjs",
-        "excludePrivate": true
-    }
+    ]
 }

@@ -1,0 +1,58 @@
+<html>
+
+<head>
+    <base href="../" />
+    <meta charset="utf-8">
+    <title>Run erdjs Tests in the Browser</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/node_modules/mocha/mocha.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-sm-12">
+                <ul id="TestChoices" class="list-group">
+                    <li class="list-group-item">
+                        <button class="btn btn-link" onclick="runTests('/out-browser-tests/erdjs-tests-unit.js')">Unit
+                            tests</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-link"
+                            onclick="runTests('/out-browser-tests/erdjs-tests-devnet.js')">Integration tests -
+                            devnet</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-link"
+                            onclick="runTests('/out-browser-tests/erdjs-tests-testnet.js')">Integration tests -
+                            testnet</button>
+                    </li>
+                    <li class="list-group-item">
+                        <button class="btn btn-link"
+                            onclick="runTests('/out-browser-tests/erdjs-tests-mainnet.js')">Integration tests -
+                            mainnet</button>
+                    </li>
+                </ul>
+
+                <div id="mocha"></div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/node_modules/mocha/mocha.js"></script>
+
+    <script>mocha.setup('bdd')</script>
+    <script>
+        mocha.checkLeaks();
+        mocha.globals(['jQuery']);
+
+        function runTests(url) {
+            $.getScript(url, function () {
+                $("#TestChoices").remove();
+                mocha.run();
+            })
+        }
+    </script>
+</body>
+
+</html>
