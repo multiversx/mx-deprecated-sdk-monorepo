@@ -1,6 +1,5 @@
-import { describe } from "mocha";
 import { assert } from "chai";
-import {Balance} from "./balance";
+import { Balance } from "./balance";
 
 describe("test balance", () => {
     it("should have desired precision", () => {
