@@ -15,7 +15,7 @@ def main():
     logging.basicConfig(level=logging.DEBUG)
 
     parser = ArgumentParser()
-    parser.add_argument("--proxy", default="https://testnet-api.elrond.com")
+    parser.add_argument("--proxy", default="https://testnet-gateway.elrond.com")
     parser.add_argument("--keyfile", help="wallet JSON keyfile", required=True)
     parser.add_argument("--passfile", help="wallet password file", required=True)
     parser.add_argument("--reward-address", required=True, help="the reward address")

@@ -33,10 +33,9 @@ export class Mnemonic {
         }
     }
 
-    // TODO: Question for review: @ccorcoveanu, accountIndex or addressIndex?
-    deriveKey(index: number = 0, password: string = ""): UserSecretKey {
+    deriveKey(addressIndex: number = 0, password: string = ""): UserSecretKey {
         let seed = mnemonicToSeedSync(this.text, password);
-        let derivationPath = `${BIP44_DERIVATION_PREFIX}/${index}'`;
+        let derivationPath = `${BIP44_DERIVATION_PREFIX}/${addressIndex}'`;
         let derivationResult = derivePath(derivationPath, seed.toString("hex"));
         let key = derivationResult.key;
         return new UserSecretKey(key);
