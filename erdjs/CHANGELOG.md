@@ -4,6 +4,11 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [1.1.8] - 15.01.2021
+
+ - Publish erdjs via Github Actions #151.
+ - Minor fixes for dApps (wallet integration) #153.
+
 ## [1.1.7] - 15.01.2021
 
 - Bring core-js into erdjs (user wallets & signing, validator signing).
