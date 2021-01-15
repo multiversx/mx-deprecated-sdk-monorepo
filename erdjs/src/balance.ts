@@ -60,10 +60,15 @@ export class Balance {
      * Returns the string representation of the value (as eGLD currency).
      */
     toCurrencyString(): string {
+        let denominated = this.toDenominated();
+        return `${denominated} eGLD`;
+    }
+
+    toDenominated(): string {
         let padded = this.toString().padStart(DENOMINATION, "0");
         let decimals = padded.slice(-DENOMINATION);
-        let integer = padded.slice(0, padded.length - DENOMINATION);
-        return `${integer}.${decimals} eGLD`;
+        let integer = padded.slice(0, padded.length - DENOMINATION) || 0;
+        return `${integer}.${decimals}`;
     }
 
     /**
