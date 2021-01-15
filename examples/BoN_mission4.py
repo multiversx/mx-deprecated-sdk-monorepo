@@ -16,7 +16,7 @@ counter = 0
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("--proxy", default="https://testnet-api.elrond.com")
+    parser.add_argument("--proxy", default="https://testnet-gateway.elrond.com")
     parser.add_argument("--pem", required=True)
     parser.add_argument("--batch-size", type=int, default=50, help="how many transactions to send before recalling nonce")
     parser.add_argument("--sleep-before-recall", type=int, default=15, help="how many seconds to sleep before recalling nonce")
