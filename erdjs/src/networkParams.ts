@@ -1,6 +1,7 @@
 import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import * as errors from "./errors";
+import { Balance } from "./balance";
 
 /**
  * The gas price, as an immutable object.
@@ -22,6 +23,11 @@ export class GasPrice {
         }
 
         this.value = value;
+    }
+
+    toDenominated(): string {
+        let asBalance = new Balance(BigInt(this.value));
+        return asBalance.toDenominated();
     }
 
     /**
