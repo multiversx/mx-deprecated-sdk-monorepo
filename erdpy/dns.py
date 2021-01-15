@@ -1,9 +1,10 @@
 from typing import Any, List
+
 from Cryptodome.Hash import keccak
 
 from erdpy import cli_shared, utils
-from erdpy.contracts import SmartContract
 from erdpy.accounts import Account, Address
+from erdpy.contracts import SmartContract
 from erdpy.proxy.core import ElrondProxy
 from erdpy.transactions import do_prepare_transaction
 
