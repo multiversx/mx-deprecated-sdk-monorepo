@@ -1,5 +1,5 @@
 import { IProvider } from "./interface";
-import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
+import {GasPrice, GasLimit, TransactionVersion, ChainID, GasPriceModifier} from "./networkParams";
 
 /**
  * An object holding Network configuration parameters.
@@ -16,6 +16,11 @@ export class NetworkConfig {
      * The gas required by the Network to process a byte of the {@link TransactionPayload}.
      */
     public GasPerDataByte: number;
+
+    /**
+     *
+     */
+    public GasPriceModifier: GasPriceModifier;
 
     /**
      * The minimum gas limit required to be set when broadcasting a {@link Transaction}.
@@ -37,6 +42,7 @@ export class NetworkConfig {
         this.GasPerDataByte = 1500;
         this.MinGasLimit = new GasLimit(50000);
         this.MinGasPrice = new GasPrice(1000000000);
+        this.GasPriceModifier = new GasPriceModifier(1);
         this.MinTransactionVersion = new TransactionVersion(1);
     }
 
@@ -71,6 +77,7 @@ export class NetworkConfig {
         networkConfig.MinGasLimit = new GasLimit(payload["erd_min_gas_limit"]);
         networkConfig.MinGasPrice = new GasPrice(payload["erd_min_gas_price"]);
         networkConfig.MinTransactionVersion = new TransactionVersion(payload["erd_min_transaction_version"]);
+        networkConfig.GasPriceModifier = new GasPriceModifier(payload["erd_gas_price_modifier"]);
 
         return networkConfig;
     }
