@@ -4,8 +4,6 @@
 name: Publish erdpy
 
 on:
-  push:
-    branches: [ erdpy-release-v1.0.5 ]
   workflow_dispatch:
 
 jobs:
