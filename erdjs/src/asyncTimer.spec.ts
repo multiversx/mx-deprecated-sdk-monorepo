@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { assert } from "chai";
 import * as errors from "./errors";
 import { AsyncTimer } from "./asyncTimer";

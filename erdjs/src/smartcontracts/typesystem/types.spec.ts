@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import * as errors from "../../errors";
 import { assert } from "chai";
 import { NumericalValue } from ".";

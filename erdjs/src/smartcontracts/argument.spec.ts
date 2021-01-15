@@ -1,4 +1,3 @@
-import { describe } from "mocha";
 import { assert } from "chai";
 import { Argument } from "./argument";
 import { BigUIntValue, OptionalValue, U8Value, Vector } from "./typesystem";
