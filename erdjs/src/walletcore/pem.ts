@@ -3,26 +3,22 @@ import { ValidatorSecretKey } from "./validatorKeys";
 
 export function parseUserKey(text: string, index: number = 0): UserSecretKey {
     let keys = parseUserKeys(text);
-    let key = keys[index];
-    return key;
+    return keys[index];
 }
 
 export function parseUserKeys(text: string): UserSecretKey[] {
     let buffers = parse(text);
-    let keys = buffers.map(buffer => new UserSecretKey(buffer.slice(0, 32)));
-    return keys;
+    return buffers.map(buffer => new UserSecretKey(buffer.slice(0, 32)));
 }
 
 export function parseValidatorKey(text: string, index: number = 0): ValidatorSecretKey {
     let keys = parseValidatorKeys(text);
-    let key = keys[index];
-    return key;
+    return keys[index];
 }
 
 export function parseValidatorKeys(text: string): ValidatorSecretKey[] {
     let buffers = parse(text);
-    let keys = buffers.map(buffer => new ValidatorSecretKey(buffer));
-    return keys;
+    return buffers.map(buffer => new ValidatorSecretKey(buffer));
 }
 
 function parse(text: string): Buffer[] {

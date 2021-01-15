@@ -36,11 +36,11 @@ export class UserWallet {
         const derivedKeySecondHalf = derivedKey.slice(16, 32);
         const cipher = crypto.createCipheriv(CipherAlgorithm, derivedKeyFirstHalf, randomness.iv);
 
-        const text = Buffer.concat([secretKey.valueOf(), secretKey.toPublicKey().valueOf()]);
+        const text = Buffer.concat([secretKey.valueOf(), secretKey.generatePublicKey().valueOf()]);
         const ciphertext = Buffer.concat([cipher.update(text), cipher.final()]);
         const mac = crypto.createHmac(DigestAlgorithm, derivedKeySecondHalf).update(ciphertext).digest();
 
-        this.publicKey = secretKey.toPublicKey();
+        this.publicKey = secretKey.generatePublicKey();
         this.randomness = randomness;
         this.ciphertext = ciphertext;
         this.mac = mac;

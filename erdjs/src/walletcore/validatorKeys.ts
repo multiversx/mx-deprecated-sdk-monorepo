@@ -3,6 +3,9 @@ import { parseValidatorKey } from "./pem";
 
 const bls = require('@elrondnetwork/bls-wasm');
 
+const SECRETKEY_LENGTH = 32;
+const PUBKEY_LENGTH = 96;
+
 export class BLS {
     private static isInitialized: boolean = false;
 
@@ -22,7 +25,7 @@ export class ValidatorSecretKey {
     private readonly publicKey: any;
 
     constructor(buffer: Buffer) {
-        guardLength(buffer, 32);
+        guardLength(buffer, SECRETKEY_LENGTH);
 
         this.secretKey = new bls.SecretKey();
         this.secretKey.setLittleEndian(Uint8Array.from(buffer));
@@ -33,7 +36,7 @@ export class ValidatorSecretKey {
         return parseValidatorKey(text, index);
     }
 
-    toPublicKey(): ValidatorPublicKey {
+    generatePublicKey(): ValidatorPublicKey {
         let buffer = Buffer.from(this.publicKey.serialize());
         return new ValidatorPublicKey(buffer);
     }
@@ -57,6 +60,8 @@ export class ValidatorPublicKey {
     private readonly buffer: Buffer;
 
     constructor(buffer: Buffer) {
+        guardLength(buffer, PUBKEY_LENGTH);
+
         this.buffer = buffer;
     }
 
