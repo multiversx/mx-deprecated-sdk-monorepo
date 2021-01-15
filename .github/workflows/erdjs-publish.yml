@@ -4,8 +4,6 @@
 name: Publish erdjs
 
 on:
-  push:
-    branches: [ erdjs-publish ]
   workflow_dispatch:
 
 jobs:
