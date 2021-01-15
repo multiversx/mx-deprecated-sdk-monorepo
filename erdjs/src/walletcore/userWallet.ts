@@ -3,7 +3,7 @@ import nacl from "tweetnacl";
 import { UserPublicKey, UserSecretKey } from "./userKeys";
 const crypto = require("crypto");
 import { v4 as uuidv4 } from "uuid";
-const scryptsy = require("scryptsy");
+import scryptsy from "scryptsy";
 
 // In a future PR, improve versioning infrastructure for key-file objects in erdjs.
 const Version = 4;
