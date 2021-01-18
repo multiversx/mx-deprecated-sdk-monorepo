@@ -1,4 +1,4 @@
-package erdgo
+package data
 
 // Hyperblock holds a hyperblock's details
 type Hyperblock struct {
