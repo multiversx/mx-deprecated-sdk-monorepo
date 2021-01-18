@@ -117,4 +117,25 @@ describe("test transaction construction", async () => {
         let fee = transaction.computeFee(networkConfig);
         assert.equal(fee.toString(), "5050");
     });
+
+    it("computes correct fee with data field", () => {
+        let transaction = new Transaction({
+            nonce: new Nonce(92),
+            value: Balance.fromString("123456789000000000000000000000"),
+            receiver: wallets.bob.address,
+            sender: wallets.alice.address,
+            data: new TransactionPayload("testdata"),
+            gasPrice: new GasPrice(500),
+            gasLimit: new GasLimit(12010),
+            chainID: new ChainID("local-testnet"),
+            version: new TransactionVersion(1)
+        });
+
+        let networkConfig = new NetworkConfig();
+        networkConfig.MinGasLimit = new GasLimit(10);
+        networkConfig.GasPriceModifier = new GasPriceModifier(0.01);
+
+        let fee = transaction.computeFee(networkConfig);
+        assert.equal(fee.toString(), "6005000");
+    });
 });
