@@ -15,8 +15,7 @@ def patch(data: Any, testnet_config: TestnetConfiguration):
     data['GeneralSettings']['TransactionSignedWithTxHashEnableEpoch'] = 0
     data['GeneralSettings']['MetaProtectionEnableEpoch'] = 0
     data['GeneralSettings']['AheadOfTimeGasUsageEnableEpoch'] = 0
-
-    data["VirtualMachine"]["Querying"]["WarmInstanceEnabled"] = False
+    data['GeneralSettings']['GasPriceModifierEnableEpoch'] = 0
 
 
 def patch_api(data: Any, testnet_config: TestnetConfiguration):
@@ -30,3 +29,6 @@ def patch_system_smart_contracts(data: Any, testnet_config: TestnetConfiguration
     data['StakingSystemSCConfig']['DoubleKeyProtectionEnableEpoch'] = 0
     data['StakingSystemSCConfig']['ActivateBLSPubKeyMessageVerification'] = True
     data['ESDTSystemSCConfig']['EnabledEpoch'] = 0
+    data['GovernanceSystemSCConfig']['EnabledEpoch'] = 0
+    data['DelegationManagerSystemSCConfig']['EnabledEpoch'] = 0
+    data['DelegationSystemSCConfig']['EnabledEpoch'] = 0

@@ -63,6 +63,7 @@ async def do_start(args: Any):
     # Proxy
     to_run.append(run([
         "./proxy",
+        "--log-save"
     ], cwd=testnet_config.proxy_folder(), delay=PROXY_START_DELAY))
 
     await asyncio.gather(*to_run)
@@ -72,7 +73,7 @@ async def run(args, env=None, cwd: str = None, delay: int = 0):
     await asyncio.sleep(delay)
 
     process = await asyncio.create_subprocess_exec(*args, env=env, stdout=asyncio.subprocess.PIPE,
-                                                   stderr=asyncio.subprocess.PIPE, cwd=cwd)
+                                                   stderr=asyncio.subprocess.PIPE, cwd=cwd, limit=1024 * 512)
 
     pid = process.pid
 
@@ -106,6 +107,8 @@ def _patch_loglevel(loglevel: str) -> str:
         loglevel += ",arwen:TRACE"
     if "process/smartcontract:" not in loglevel:
         loglevel += ",process/smartcontract:TRACE"
+
+    loglevel += ",*:TRACE"
 
     return loglevel
 

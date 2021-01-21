@@ -1,0 +1,33 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ES2015",
+        "outDir": "out-tests",
+        "lib": [
+            "ES2015",
+            "DOM"
+        ],
+        "sourceMap": true,
+        "allowJs": true,
+        "strict": true,
+        "strictPropertyInitialization": true,
+        "strictNullChecks": true,
+        "skipLibCheck": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedParameters": true,
+        "esModuleInterop": true,
+        "declaration": true
+    },
+    "include": [
+        "src/**/*",
+    ],
+    "exclude": [
+		"node_modules",
+        "out",
+        "out-tests",
+        "out-browser",
+        "out-browser-tests",
+        "src/examples"
+    ]
+}
