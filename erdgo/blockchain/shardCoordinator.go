@@ -31,3 +31,8 @@ func (sc *shardCoordinator) ComputeShardId(address addressHandler) (uint32, erro
 
 	return sc.coordinator.ComputeId(address.AddressBytes()), nil
 }
+
+// IsInterfaceNil returns true if there is no value under the interface
+func (sc *shardCoordinator) IsInterfaceNil() bool {
+	return sc == nil
+}
