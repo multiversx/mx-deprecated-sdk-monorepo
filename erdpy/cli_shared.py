@@ -7,6 +7,7 @@ from typing import Any, List, Text
 from erdpy import config, errors, scope, utils
 from erdpy.accounts import Account
 from erdpy.proxy.core import ElrondProxy
+from erdpy.transactions import Transaction
 
 
 def wider_help_formatter(prog: Text):
@@ -54,6 +55,7 @@ def add_tx_args(sub: Any, with_nonce: bool = True, with_receiver: bool = True, w
 
     if with_receiver:
         sub.add_argument("--receiver", required=True, help="🖄 the address of the receiver")
+        sub.add_argument("--receiver-username", required=False, help="🖄 the username of the receiver")
 
     sub.add_argument("--gas-price", default=config.DEFAULT_GAS_PRICE, help="⛽ the gas price (default: %(default)d)")
     sub.add_argument("--gas-limit", required=not("--estimate-gas" in sys.argv), help="⛽ the gas limit")
@@ -74,6 +76,7 @@ def add_wallet_args(sub: Any):
     sub.add_argument("--pem-index", default=0, help="🔑 the index in the PEM file (default: %(default)s)")
     sub.add_argument("--keyfile", required=not (utils.is_arg_present("--pem", sys.argv)), help="🔑 a JSON keyfile, if PEM not provided")
     sub.add_argument("--passfile", required=not (utils.is_arg_present("--pem", sys.argv)), help="🔑 a file containing keyfile's password, if keyfile provided")
+    sub.add_argument("--sender-username", required=False, help="🖄 the username of the sender")
 
 
 def add_proxy_arg(sub: Any):
@@ -127,3 +130,11 @@ def check_broadcast_args(args: Any):
         raise errors.BadUsage("Cannot directly send a relayed transaction. Use 'erdpy tx new --relay' first, then 'erdpy tx send --data-file'")
     if args.send and args.simulate:
         raise errors.BadUsage("Cannot both 'simulate' and 'send' a transaction")
+
+
+def send_or_simulate(tx: Transaction, args: Any):
+    if args.send:
+        tx.send(ElrondProxy(args.proxy))
+    elif args.simulate:
+        response = tx.simulate(ElrondProxy(args.proxy))
+        utils.dump_out_json(response)

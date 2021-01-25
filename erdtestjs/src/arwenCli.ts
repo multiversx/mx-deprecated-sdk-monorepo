@@ -21,9 +21,9 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--code=${request.code.toString()}`,
                 `--code-path=${request.codePath}`,
                 `--code-metadata=${request.codeMetadata.toString()}`,
-                `--value=${request.value.raw()}`,
-                `--gas-limit=${request.gasLimit.value}`,
-                `--gas-price=${request.gasPrice.value}`
+                `--value=${request.value.valueOf()}`,
+                `--gas-limit=${request.gasLimit.valueOf()}`,
+                `--gas-price=${request.gasPrice.valueOf()}`
             ]
         };
 
@@ -50,9 +50,9 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--code=${request.code.toString()}`,
                 `--code-path=${request.codePath}`,
                 `--code-metadata=${request.codeMetadata.toString()}`,
-                `--value=${request.value.raw()}`,
-                `--gas-limit=${request.gasLimit.value}`,
-                `--gas-price=${request.gasPrice.value}`
+                `--value=${request.value.valueOf()}`,
+                `--gas-limit=${request.gasLimit.valueOf()}`,
+                `--gas-price=${request.gasPrice.valueOf()}`
             ]
         };
 
@@ -78,9 +78,9 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--contract=${request.contractAddress.hex()}`,
                 `--impersonated=${request.impersonated.hex()}`,
                 `--function=${request.function.name}`,
-                `--value=${request.value.raw()}`,
-                `--gas-limit=${request.gasLimit.value}`,
-                `--gas-price=${request.gasPrice.value}`
+                `--value=${request.value.valueOf()}`,
+                `--gas-limit=${request.gasLimit.valueOf()}`,
+                `--gas-price=${request.gasPrice.valueOf()}`
             ]
         };
 
@@ -106,7 +106,7 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--contract=${request.contractAddress.hex()}`,
                 `--impersonated=${request.impersonated.hex()}`,
                 `--function=${request.function.name}`,
-                `--gas-limit=${request.gasLimit.value}`,
+                `--gas-limit=${request.gasLimit.valueOf()}`,
             ]
         };
 
@@ -130,8 +130,8 @@ export class ArwenCLI implements ArwenDebugProvider {
                 `--world=${request.world}`,
                 `--outcome=${outcomeKey}`,
                 `--address=${request.address.hex()}`,
-                `--balance=${request.balance.raw()}`,
-                `--nonce=${request.nonce.value}`
+                `--balance=${request.balance.valueOf()}`,
+                `--nonce=${request.nonce.valueOf()}`
             ]
         };
 

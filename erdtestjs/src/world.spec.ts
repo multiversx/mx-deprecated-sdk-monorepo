@@ -12,8 +12,8 @@ describe("test world", () => {
     it("should create account", async () => {
         let world = new World("foo");
         let result = await world.createAccount({ address: alice, nonce: new Nonce(42) });
-        assert.equal(result.account.nonce.value, 42);
-        assert.equal(result.account.balance.raw(), "0");
+        assert.equal(result.account.nonce.valueOf(), 42);
+        assert.equal(result.account.balance.valueOf(), BigInt(0));
         assert.equal(result.account.address.bech32(), aliceBech32);
     });
 

@@ -1,6 +1,7 @@
 import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import * as errors from "./errors";
+import { Balance } from "./balance";
 
 /**
  * The gas price, as an immutable object.
@@ -22,6 +23,11 @@ export class GasPrice {
         }
 
         this.value = value;
+    }
+
+    toDenominated(): string {
+        let asBalance = new Balance(BigInt(this.value));
+        return asBalance.toDenominated();
     }
 
     /**
@@ -122,6 +128,30 @@ export class TransactionVersion {
         
         if (value < 1) {
             throw new errors.ErrTransactionVersionInvalid(value);
+        }
+
+        this.value = value;
+    }
+
+    valueOf(): number {
+        return this.value;
+    }
+}
+
+export class GasPriceModifier {
+    /**
+     * The actual numeric value.
+     */
+    private readonly value: number;
+
+    /**
+     * Creates a GasPriceModifier object given a value.
+     */
+    constructor(value: number) {
+        value = Number(value);
+
+        if (value <= 0 || value > 1) {
+            throw new errors.ErrGasPriceModifierInvalid(value);
         }
 
         this.value = value;
