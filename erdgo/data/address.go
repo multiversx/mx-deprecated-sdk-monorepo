@@ -1,10 +1,6 @@
 package data
 
-import "github.com/ElrondNetwork/elrond-go/core/pubkeyConverter"
-
-const addressLen = 32
-
-var addrPkConv, _ = pubkeyConverter.NewBech32PubkeyConverter(addressLen)
+import "github.com/ElrondNetwork/elrond-sdk/erdgo/core"
 
 type address struct {
 	bytes []byte
@@ -22,7 +18,7 @@ func NewAddressFromBytes(bytes []byte) *address {
 
 // NewAddressFromBech32String returns a new address from provided bech32 string
 func NewAddressFromBech32String(bech32 string) (*address, error) {
-	buff, err := addrPkConv.Decode(bech32)
+	buff, err := core.AddressPublicKeyConverter.Decode(bech32)
 	if err != nil {
 		return nil, err
 	}
@@ -34,7 +30,7 @@ func NewAddressFromBech32String(bech32 string) (*address, error) {
 
 // AddressAsBech32String returns the address as a bech32 string
 func (a *address) AddressAsBech32String() string {
-	return addrPkConv.Encode(a.bytes)
+	return core.AddressPublicKeyConverter.Encode(a.bytes)
 }
 
 // AddressBytes returns the raw address' bytes
@@ -44,7 +40,7 @@ func (a *address) AddressBytes() []byte {
 
 // IsValid returns true if the contained address is valid
 func (a *address) IsValid() bool {
-	return len(a.bytes) == addressLen
+	return len(a.bytes) == core.AddressLen
 }
 
 // IsInterfaceNil returns true if there is no value under the interface
