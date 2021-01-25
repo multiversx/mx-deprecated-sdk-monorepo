@@ -6,10 +6,12 @@ import (
 	"time"
 
 	"github.com/ElrondNetwork/elrond-sdk/erdgo"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/blockchain"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
 )
 
 func main() {
-	ep := erdgo.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079")
 
 	// Load a wallet .PEM file
 	privateKey, err := erdgo.LoadPrivateKeyFromPemFile("../../tests/alice.pem")
@@ -18,11 +20,18 @@ func main() {
 		return
 	}
 	// Generate address from private key
-	address, err := erdgo.GetAddressFromPrivateKey(privateKey)
+	addressString, err := erdgo.GetAddressFromPrivateKey(privateKey)
 	if err != nil {
 		fmt.Printf("Error generating address: %s\n\r", err)
 		return
 	}
+
+	address, err := data.NewAddressFromBech32String(addressString)
+	if err != nil {
+		fmt.Printf("Error retrieving account info: %s\n\r", err)
+		return
+	}
+
 	// Get account info
 	account, err := ep.GetAccount(address)
 	if err != nil {
@@ -37,14 +46,14 @@ func main() {
 	}
 
 	// Create a transaction
-	tx := &erdgo.Transaction{
+	tx := &data.Transaction{
 		ChainID:  networkConfig.ChainID,
 		Version:  networkConfig.MinTransactionVersion,
 		GasLimit: networkConfig.MinGasLimit,
 		GasPrice: networkConfig.MinGasPrice,
 		Nonce:    account.Nonce,
-		SndAddr:  address,
-		RcvAddr:  address,
+		SndAddr:  address.AddressAsBech32String(),
+		RcvAddr:  address.AddressAsBech32String(),
 		Value:    "0",
 	}
 	// Sign the transaction
@@ -68,10 +77,10 @@ func main() {
 		fmt.Printf("Error retrieving transaction info: %s\n\r", err)
 		return
 	}
-	data, err := json.MarshalIndent(txInfo, "", "    ")
+	buff, err := json.MarshalIndent(txInfo, "", "    ")
 	if err != nil {
 		fmt.Printf("Error marshalizing tx info: %s\n\r", err)
 		return
 	}
-	fmt.Println(string(data))
+	fmt.Println(string(buff))
 }
