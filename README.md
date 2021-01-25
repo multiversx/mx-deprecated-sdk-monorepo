@@ -6,7 +6,7 @@ This is a monorepo containing the following:
 
 | Component   |      Type      |  Documentation | API | Changelog | CLI | Distribution
 |----------|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/tools/erdpy) | Sphinx (TBD) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) | [erdpy-up](https://docs.elrond.com/tools/erdpy/installing-erdpy#install-using-erdpy-up) and [PyPi](https://pypi.org/project/erdpy/#history)
+| erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/sdk-and-tools/erdpy/erdpy/) | Sphinx (TBD) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) | [erdpy-up](https://docs.elrond.com/sdk-and-tools/erdpy/installing-erdpy/) and [PyPi](https://pypi.org/project/erdpy/#history)
 | erdgo | Go SDK | [pkg.go.dev](https://pkg.go.dev/github.com/ElrondNetwork/elrond-sdk/erdgo) | N / A | [CHANGELOG](erdgo/CHANGELOG.md) | N / A  | `go.mod` (Github)
 | erdjava | Java SDK | [JavaDoc](https://elrondnetwork.github.io/elrond-sdk-docs/erdjava) | N / A | [CHANGELOG](erdjava/CHANGELOG.md) | [CLI](erdjava/README.md)  | Source code (Github)
 | erdjs |    TypeScript SDK   | TBD | [TypeDoc](https://elrondnetwork.github.io/elrond-sdk/erdjs/api/index.html) | [CHANGELOG](erdjs/CHANGELOG.md) | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdjs)
