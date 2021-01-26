@@ -1,4 +1,4 @@
-package erdgo
+package data
 
 // SendTransactionResponse holds the response received from the network when broadcasting a transaction
 type SendTransactionResponse struct {
