@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 
-	"github.com/ElrondNetwork/elrond-sdk/erdgo"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/blockchain"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
 )
 
 func main() {
-	ep := erdgo.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079")
 
 	// Retrieving network configuration parameters
 	networkConfig, err := ep.GetNetworkConfig()
@@ -16,7 +17,12 @@ func main() {
 		return
 	}
 
-	address := "erd18yddfyzyskajjteyj90ueackpcsp9set2ma8vp54cj4zh54hjussukc6mu"
+	address, err := data.NewAddressFromBech32String("erd18yddfyzyskajjteyj90ueackpcsp9set2ma8vp54cj4zh54hjussukc6mu")
+	if err != nil {
+		fmt.Printf("Error retrieving account info: %s\n\r", err)
+		return
+	}
+
 	// Retrieve account info from the network (balance, nonce)
 	accountInfo, err := ep.GetAccount(address)
 	if err != nil {
