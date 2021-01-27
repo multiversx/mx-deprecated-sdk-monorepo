@@ -1,6 +1,6 @@
+import { guardValueIsSet } from "../../utils";
 import { Namespace } from "./namespace";
 import { StructureType } from "./structure";
-import { TypesRegistry } from "./typesRegistry";
 
 /**
  * Contract ABIs aren't yet fully implemented. This is just a prototype.
@@ -20,11 +20,14 @@ export class AbiRegistry {
     private registerStructures() {
         for (const namespace of this.namespaces) {
             for (const definition of namespace.structures) {
-                let type = new StructureType(definition);
-
-                // TODO: Refactor this (currently, a call to AbiRegistry.extend() mutates the global TypesRegistry).
-                TypesRegistry.registerType(type);
+                new StructureType(definition);
             }
         }
+    }
+
+    findNamespace(namespace: string): Namespace {
+        let result = this.namespaces.find(e => e.namespace == namespace);
+        guardValueIsSet("result", result);
+        return result!;
     }
 }

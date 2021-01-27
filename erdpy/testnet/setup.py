@@ -215,7 +215,6 @@ def patch_source_code(testnet_config: TestnetConfiguration):
 
     file = path.join(folder, "core/constants.go")
     content = utils.read_file(file)
-    content = content.replace("const MaxNumShards = 256", "const MaxNumShards = 4")
     utils.write_file(file, content)
 
     file = path.join(folder, "cmd/node/main.go")
@@ -263,6 +262,8 @@ def build_binaries(testnet_config: TestnetConfiguration):
             shutil.copy(libwasmer_path, destination)
 
     shutil.copy(proxy_folder / "proxy", testnet_config.proxy_folder())
+    if workstation.get_platform() == "osx":
+        shutil.copy(libwasmer_path, testnet_config.proxy_folder())
 
 
 def _get_arwen_version(testnet_config: TestnetConfiguration):

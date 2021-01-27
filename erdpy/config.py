@@ -20,6 +20,8 @@ class MetaChainSystemSCsCost:
     CHANGE_REWARD_ADDRESS = 5000000
     CHANGE_VALIDATOR_KEYS = 5000000
     UNJAIL = 5000000
+    DELEGATION_MANAGER_OPS = 50000000
+    DELEGATION_OPS = 1000000
 
 
 def get_proxy() -> str:
@@ -67,10 +69,10 @@ def _guard_valid_name(name: str):
 
 def get_defaults() -> Dict[str, Any]:
     return {
-        "proxy": "https://testnet-api.elrond.com",
+        "proxy": "https://testnet-gateway.elrond.com",
         "chainID": "T",
         "txVersion": "1",
-        "dependencies.arwentools.tag": "v0.4.1",
+        "dependencies.arwentools.tag": "v1.0.7-3-g7b66c38",
         "dependencies.arwentools.urlTemplate.linux": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_linux_amd64.tar.gz",
         "dependencies.arwentools.urlTemplate.osx": "https://ide.elrond.com/travis-builds/ARWEN_{TAG}_darwin_amd64.tar.gz",
         "dependencies.llvm.tag": "v9-19feb",
@@ -93,7 +95,7 @@ def get_defaults() -> Dict[str, Any]:
         "dependencies.mcl_signer.tag": "v1.0.0",
         "dependencies.mcl_signer.urlTemplate.linux": "https://github.com/ElrondNetwork/elrond-sdk-go-tools/releases/download/{TAG}/mcl_signer_{TAG}_ubuntu-latest.tar.gz",
         "dependencies.mcl_signer.urlTemplate.osx": "https://github.com/ElrondNetwork/elrond-sdk-go-tools/releases/download/{TAG}/mcl_signer_{TAG}_macos-latest.tar.gz",
-        "dependencies.elrond_wasm_rs.tag": "v0.7.2.1",
+        "dependencies.elrond_wasm_rs.tag": "v0.10.2",
     }
 
 
