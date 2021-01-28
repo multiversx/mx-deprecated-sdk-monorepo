@@ -27,4 +27,5 @@ jobs:
         python3 erdpy-up.py
     - name: Smoke test
       run: |
+        source /home/runner/.profile
         erdpy --version
