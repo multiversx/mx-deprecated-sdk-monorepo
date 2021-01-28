@@ -1,4 +1,4 @@
-name: Install erdpy using erdpy-up
+name: Install erdpy using erdpy-up (Ubuntu)
 
 on:
   push:
