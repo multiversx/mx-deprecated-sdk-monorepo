@@ -8,6 +8,7 @@ import (
 	"github.com/ElrondNetwork/elrond-go/crypto/signing/ed25519"
 	"github.com/ElrondNetwork/elrond-go/crypto/signing/ed25519/singlesig"
 	"github.com/ElrondNetwork/elrond-go/hashing/keccak"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
 )
 
 const (
@@ -18,7 +19,7 @@ const (
 var hasherForTxHashSigning = keccak.Keccak{}
 
 // SignTransaction signs a transaction with the provided private key
-func SignTransaction(tx *Transaction, privateKey []byte) error {
+func SignTransaction(tx *data.Transaction, privateKey []byte) error {
 	tx.Signature = ""
 	txSingleSigner := &singlesig.Ed25519Signer{}
 	suite := ed25519.NewEd25519()
@@ -43,7 +44,7 @@ func SignTransaction(tx *Transaction, privateKey []byte) error {
 // SignTransactionHash signs a transaction with the provided private key
 // Also known as "version 2" transactions, their signatures are computed upon the sha256 hash
 // of the marshalized transaction instead of the plain marshalized transaction
-func SignTransactionHash(tx *Transaction, privateKey []byte) error {
+func SignTransactionHash(tx *data.Transaction, privateKey []byte) error {
 	tx.Signature = ""
 	if tx.Version != versionForTxHashSigning {
 		return errTxVersionMismatch

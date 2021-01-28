@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/ElrondNetwork/elrond-sdk/erdgo"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/blockchain"
 )
 
 func main() {
-	ep := erdgo.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079")
 
 	// Get latest hyperblock (metachain) nonce
 	nonce, err := ep.GetLatestHyperblockNonce()
