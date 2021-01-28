@@ -26,4 +26,5 @@ jobs:
           python3 erdpy-up.py <<< "2"
       - name: Smoke test
         run: |
-          ~/elrondsdk/erdpy --version
+          source /Users/runner/.bash_profile
+          erdpy --version
