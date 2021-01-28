@@ -3,41 +3,30 @@
     "endpoints": [
         {
             "name": "increment",
-            "input": [],
-            "output": [
+            "inputs": [],
+            "outputs": [
                 {
-                    "description": "the current value",
-                    "type": [
-                        "I64"
-                    ]
+                    "type": "i64"
                 }
             ]
         },
         {
             "name": "decrement",
-            "input": [],
-            "output": [
+            "inputs": [],
+            "outputs": [
                 {
-                    "description": "the current value",
-                    "type": [
-                        "I64"
-                    ]
+                    "type": "i64"
                 }
             ]
         },
         {
             "name": "get",
-            "input": [],
-            "output": [
+            "inputs": [],
+            "outputs": [
                 {
-                    "description": "the current value",
-                    "type": [
-                        "I64"
-                    ]
+                    "type": "i64"
                 }
-            ],
-            "isPure": true
+            ]
         }
-    ],
-    "structures": []
+    ]
 }

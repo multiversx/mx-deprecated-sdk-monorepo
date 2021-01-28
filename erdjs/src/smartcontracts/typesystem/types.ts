@@ -32,7 +32,7 @@ export class BetterType {
         return this.name;
     }
 
-    equals(type: Type): boolean {
+    equals(type: BetterType): boolean {
         return this.name == type.name;
     }
 

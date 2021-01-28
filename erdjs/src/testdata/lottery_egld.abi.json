@@ -1,0 +1,185 @@
+{
+    "name": "Lottery",
+    "endpoints": [
+        {
+            "name": "init",
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "start",
+            "inputs": [
+                {
+                    "name": "lottery_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "ticket_price",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opt_total_tickets",
+                    "type": "Option<u32>"
+                },
+                {
+                    "name": "opt_deadline",
+                    "type": "Option<u64>"
+                },
+                {
+                    "name": "opt_max_entries_per_user",
+                    "type": "Option<u32>"
+                },
+                {
+                    "name": "opt_prize_distribution",
+                    "type": "Option<bytes>"
+                },
+                {
+                    "name": "opt_whitelist",
+                    "type": "Option<List<Address>>"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "createLotteryPool",
+            "inputs": [
+                {
+                    "name": "lottery_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "ticket_price",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "opt_total_tickets",
+                    "type": "Option<u32>"
+                },
+                {
+                    "name": "opt_deadline",
+                    "type": "Option<u64>"
+                },
+                {
+                    "name": "opt_max_entries_per_user",
+                    "type": "Option<u32>"
+                },
+                {
+                    "name": "opt_prize_distribution",
+                    "type": "Option<bytes>"
+                },
+                {
+                    "name": "opt_whitelist",
+                    "type": "Option<List<Address>>"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "buy_ticket",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "lottery_name",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "determine_winner",
+            "inputs": [
+                {
+                    "name": "lottery_name",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "status",
+            "inputs": [
+                {
+                    "name": "lottery_name",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Status"
+                }
+            ]
+        },
+        {
+            "name": "lotteryInfo",
+            "inputs": [
+                {
+                    "name": "lottery_name",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "LotteryInfo"
+                }
+            ]
+        }
+    ],
+    "types": {
+        "LotteryInfo": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "ticket_price",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "tickets_left",
+                    "type": "u32"
+                },
+                {
+                    "name": "deadline",
+                    "type": "u64"
+                },
+                {
+                    "name": "max_entries_per_user",
+                    "type": "u32"
+                },
+                {
+                    "name": "prize_distribution",
+                    "type": "bytes"
+                },
+                {
+                    "name": "whitelist",
+                    "type": "List<Address>"
+                },
+                {
+                    "name": "current_ticket_number",
+                    "type": "u32"
+                },
+                {
+                    "name": "prize_pool",
+                    "type": "BigUint"
+                }
+            ]
+        },
+        "Status": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "Inactive",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Running",
+                    "discriminant": 1
+                },
+                {
+                    "name": "Ended",
+                    "discriminant": 2
+                }
+            ]
+        }
+    }
+}

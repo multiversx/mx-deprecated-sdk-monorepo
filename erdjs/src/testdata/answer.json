@@ -3,16 +3,12 @@
     "endpoints": [
         {
             "name": "getUltimateAnswer",
-            "input": [],
-            "output": [
+            "inputs": [],
+            "outputs": [
                 {
-                    "description": "the ultimate answer",
-                    "type": [
-                        "I64"
-                    ]
+                    "type": "i64"
                 }
             ]
         }
-    ],
-    "structures": []
+    ]
 }
