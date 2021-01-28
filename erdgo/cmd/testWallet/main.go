@@ -1,15 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"time"
 
 	"github.com/ElrondNetwork/elrond-sdk/erdgo"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/blockchain"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
 )
 
 func main() {
-	ep := erdgo.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079")
 
 	// Generating new mnemonic wallet
 	mnemonic, err := erdgo.GenerateNewMnemonic()
@@ -25,18 +28,18 @@ func main() {
 	privateKey := erdgo.GetPrivateKeyFromMnemonic(mnemonic, account, addressIndex)
 	fmt.Printf("Private key: %s\n\r", hex.EncodeToString(privateKey))
 	// Generating wallet address from the private key
-	address, err := erdgo.GetAddressFromPrivateKey(privateKey)
+	addressString, err := erdgo.GetAddressFromPrivateKey(privateKey)
 	if err != nil {
 		fmt.Printf("Error getting address from private key: %s\n\r", err)
 		return
 	}
-	// Convert address to pubkey
-	pubkey, err := erdgo.Bech32ToPubkey(address)
+
+	address, err := data.NewAddressFromBech32String(addressString)
 	if err != nil {
 		fmt.Printf("Error converting address to pubkey: %s\n\r", err)
 		return
 	}
-	fmt.Printf("Public key: %s\n\r", hex.EncodeToString(pubkey))
+	fmt.Printf("Public key: %s\n\r", hex.EncodeToString(address.AddressBytes()))
 
 	// Retrieving network configuration parameters
 	networkConfig, err := ep.GetNetworkConfig()
@@ -44,9 +47,14 @@ func main() {
 		fmt.Printf("Error getting network config: %s\n\r", err)
 		return
 	}
-	// Computing the shard ID of the address
-	shard, err := erdgo.GetAddressShard(address, networkConfig.NumShardsWithoutMeta)
 
+	shardCoordinator, err := blockchain.NewShardCoordinator(networkConfig.NumShardsWithoutMeta, 0)
+	if err != nil {
+		fmt.Printf("Error creating shard coordinator: %s\n\r", err)
+		return
+	}
+	// Computing the shard ID of the address
+	shard, err := shardCoordinator.ComputeShardId(address)
 	fmt.Printf("Address: %s on shard %v\n\r", address, shard)
 
 	// Save the private key to a .PEM file and reload it
@@ -55,13 +63,20 @@ func main() {
 	_ = erdgo.SavePrivateKeyToPemFile(privateKey, walletFilename)
 	privateKey, err = erdgo.LoadPrivateKeyFromPemFile(walletFilename)
 	// Generate the address from the loaded private key
-	address2, err := erdgo.GetAddressFromPrivateKey(privateKey)
+	address2String, err := erdgo.GetAddressFromPrivateKey(privateKey)
 	if err != nil {
 		fmt.Printf("Error getting address from private key: %s\n\r", err)
 		return
 	}
+
+	address2, err := data.NewAddressFromBech32String(address2String)
+	if err != nil {
+		fmt.Printf("Error converting address to pubkey: %s\n\r", err)
+		return
+	}
+
 	// Compare the old and new addresses (should match)
-	if address != address2 {
+	if !bytes.Equal(address.AddressBytes(), address2.AddressBytes()) {
 		fmt.Printf("Different address (%s). Something went wrong\n\r", address2)
 		return
 	}
