@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
-import { AddressType, AddressValue, BigIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I8Type, NumericalType, NumericalValue, OldTypesRegistry, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypeDescriptor, TypedValue, U16Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
+import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I32Type, I64Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypedValue, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMsbOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
@@ -14,17 +14,17 @@ describe("test binary codec (basic)", () => {
 
         function check(asBoolean: boolean, nested: number[], topLevel: number[]) {
             let value = new BooleanValue(asBoolean);
-            let typeDescriptor = new TypeDescriptor([new BooleanType()]);
+            let type = new BooleanType();
 
             assert.deepEqual(codec.encodeNested(value), Buffer.from(nested));
             assert.deepEqual(codec.encodeTopLevel(value), Buffer.from(topLevel));
 
-            let [decodedNested, nestedLength] = codec.decodeNested<BooleanValue>(Buffer.from(nested), typeDescriptor);
+            let [decodedNested, nestedLength] = codec.decodeNested<BooleanValue>(Buffer.from(nested), type);
             assert.instanceOf(decodedNested, BooleanValue);
             assert.isTrue((decodedNested).equals(value));
             assert.equal(nestedLength, 1);
 
-            let decodedTop = codec.decodeTopLevel<BooleanValue>(Buffer.from(topLevel), typeDescriptor);
+            let decodedTop = codec.decodeTopLevel<BooleanValue>(Buffer.from(topLevel), type);
             assert.instanceOf(decodedTop, BooleanValue);
             assert.isTrue((decodedTop).equals(value));
         }
@@ -55,28 +55,28 @@ describe("test binary codec (basic)", () => {
 
         // Zero, fixed-size
 
-        (<NumericalType[]>OldTypesRegistry.Default.findTypes(type => type instanceof NumericalType && type.hasFixedSize())).forEach(type => {
+        [new U8Type(), new I8Type(), new U16Type(), new I16Type(), new U32Type(), new I32Type(), new U64Type(), new I64Type()].forEach(type => {
             check(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
         });
 
         // Zero, arbitrary-size (big)
 
-        (<NumericalType[]>OldTypesRegistry.Default.findTypes(type => type instanceof NumericalType && type.hasArbitrarySize())).forEach(type => {
+        [new BigIntType(), new BigUIntType()].forEach(type => {
             check(BigInt(0), type, [0, 0, 0, 0], []);
         });
 
         function check(asBigInt: bigint, type: NumericalType, nested: number[], topLevel: number[]) {
-            let value = new NumericalValue(asBigInt, type);
+            let value = new NumericalValue(type, asBigInt);
 
             assert.deepEqual(codec.encodeNested(value), Buffer.from(nested));
             assert.deepEqual(codec.encodeTopLevel(value), Buffer.from(topLevel));
 
-            let [decodedNested, nestedLength] = codec.decodeNested<NumericalValue>(Buffer.from(nested), new TypeDescriptor([type]));
+            let [decodedNested, nestedLength] = codec.decodeNested<NumericalValue>(Buffer.from(nested), type);
             assert.instanceOf(decodedNested, NumericalValue);
             assert.isTrue(decodedNested.equals(value));
             assert.equal(nestedLength, nested.length);
 
-            let decodedTop = codec.decodeTopLevel<NumericalValue>(Buffer.from(topLevel), new TypeDescriptor([type]));
+            let decodedTop = codec.decodeTopLevel<NumericalValue>(Buffer.from(topLevel), type);
             assert.instanceOf(decodedTop, NumericalValue);
             assert.isTrue(decodedTop.equals(value));
         }
@@ -86,19 +86,21 @@ describe("test binary codec (basic)", () => {
 describe("test binary codec (advanced)", () => {
     it("should encode / decode vectors", async () => {
         let codec = new BinaryCodec();
-        let vector = new Vector([
-            new AddressValue(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th")),
-            new AddressValue(new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx")),
-            new AddressValue(new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8"))
-        ]);
+        let vector = new Vector(
+            new VectorType(new AddressType()),
+            [
+                new AddressValue(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th")),
+                new AddressValue(new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx")),
+                new AddressValue(new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8"))
+            ]);
 
         let bufferNested = codec.encodeNested(vector);
         let bufferTopLevel = codec.encodeTopLevel(vector);
         assert.equal(bufferNested.length, 4 + vector.getLength() * 32);
         assert.equal(bufferTopLevel.length, vector.getLength() * 32);
 
-        let [decodedNested, decodedNestedLength] = codec.decodeNested<Vector>(bufferNested, new TypeDescriptor([new VectorType(), new AddressType()]));
-        let decodedTopLevel = codec.decodeTopLevel<Vector>(bufferTopLevel, TypeDescriptor.createFromTypeNames(["Vector", "Address"]));
+        let [decodedNested, decodedNestedLength] = codec.decodeNested<Vector>(bufferNested, new VectorType(new AddressType()));
+        let decodedTopLevel = codec.decodeTopLevel<Vector>(bufferTopLevel, new VectorType(new AddressType()));
         assert.equal(decodedNestedLength, bufferNested.length);
         assert.equal(decodedNested.getLength(), 3);
         assert.equal(decodedTopLevel.getLength(), 3);
@@ -108,18 +110,19 @@ describe("test binary codec (advanced)", () => {
     });
 
     it("benchmark: should work well with large vectors", async () => {
-        let numItems = 2**16;
+        let numItems = 2 ** 16;
         let codec = new BinaryCodec(new BinaryCodecConstraints({
             maxVectorLength: numItems,
             maxBufferLength: numItems * 4 + 4
         }));
+
         let items: TypedValue[] = [];
 
         for (let i = 0; i < numItems; i++) {
             items.push(new U32Value(i));
         }
 
-        let vector = new Vector(items);
+        let vector = new Vector(new VectorType(new U32Type()), items);
 
         console.time("encoding");
         let buffer = codec.encodeNested(vector);
@@ -127,7 +130,7 @@ describe("test binary codec (advanced)", () => {
         assert.equal(buffer.length, 4 + numItems * 4);
 
         console.time("decoding");
-        let [decodedVector, decodedLength] = codec.decodeNested<Vector>(buffer, TypeDescriptor.createFromTypeNames(["Vector", "U32"]));
+        let [decodedVector, decodedLength] = codec.decodeNested<Vector>(buffer,  new VectorType(new U32Type()));
         console.timeEnd("decoding");
         assert.equal(decodedLength, buffer.length);
         assert.deepEqual(decodedVector, vector);
@@ -138,14 +141,14 @@ describe("test binary codec (advanced)", () => {
         let fooDefinition = new StructureDefinition(
             "Foo",
             [
-                new StructureFieldDefinition("ticket_price", "", ["BigUInt"]),
-                new StructureFieldDefinition("tickets_left", "", ["U32"]),
-                new StructureFieldDefinition("deadline", "", ["U64"]),
-                new StructureFieldDefinition("max_entries_per_user", "", ["U32"]),
-                new StructureFieldDefinition("prize_distribution", "", ["Vector", "U8"]),
-                new StructureFieldDefinition("whitelist", "", ["Vector", "Address"]),
-                new StructureFieldDefinition("current_ticket_number", "", ["U32"]),
-                new StructureFieldDefinition("prize_pool", "", ["BigUInt"])
+                new StructureFieldDefinition("ticket_price", "", new BigUIntType()),
+                new StructureFieldDefinition("tickets_left", "", new U32Type()),
+                new StructureFieldDefinition("deadline", "", new U64Type()),
+                new StructureFieldDefinition("max_entries_per_user", "", new U32Type()),
+                new StructureFieldDefinition("prize_distribution", "", new VectorType(new U8Type())),
+                new StructureFieldDefinition("whitelist", "", new VectorType(new AddressType())),
+                new StructureFieldDefinition("current_ticket_number", "", new U32Type()),
+                new StructureFieldDefinition("prize_pool", "", new BigUIntType())
             ]
         );
 
@@ -155,8 +158,8 @@ describe("test binary codec (advanced)", () => {
             new StructureField(new U32Value(0), "tickets_left"),
             new StructureField(new U64Value(BigInt("0x000000005fc2b9db")), "deadline"),
             new StructureField(new U32Value(0xffffffff), "max_entries_per_user"),
-            new StructureField(new Vector([new U8Value(0x64)]), "prize_distribution"),
-            new StructureField(new Vector([]), "whitelist"),
+            new StructureField(new Vector(new VectorType(new U8Type()), [new U8Value(0x64)]), "prize_distribution"),
+            new StructureField(new Vector(new VectorType(new AddressType()), []), "whitelist"),
             new StructureField(new U32Value(9472), "current_ticket_number"),
             new StructureField(new BigUIntValue(BigInt("94720000000000000000000")), "prize_pool")
         ]);
@@ -165,7 +168,7 @@ describe("test binary codec (advanced)", () => {
         let encoded = codec.encodeNested(fooStructure);
         assert.deepEqual(encoded, encodedExpected);
 
-        let [decoded, decodedLength] = codec.decodeNested(encodedExpected, new TypeDescriptor([fooType]));
+        let [decoded, decodedLength] = codec.decodeNested(encodedExpected, fooType);
         assert.equal(decodedLength, encodedExpected.length);
         assert.deepEqual(decoded, fooStructure);
 

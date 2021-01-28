@@ -28,8 +28,8 @@ describe("test smart contract interactor", function () {
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/answer.json");
-        let abi = new SmartContractAbi(abiRegistry, ["default"], ["answer"]);
+        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/answer.abi.json");
+        let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
 
@@ -74,8 +74,8 @@ describe("test smart contract interactor", function () {
     it("should interact with 'counter'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/counter.json");
-        let abi = new SmartContractAbi(abiRegistry, ["default"], ["counter"]);
+        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/counter.abi.json");
+        let abi = new SmartContractAbi(abiRegistry, ["counter"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
 
@@ -122,8 +122,8 @@ describe("test smart contract interactor", function () {
     it("should interact with 'lottery-egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/lottery-egld.json");
-        let abi = new SmartContractAbi(abiRegistry, ["default"], ["lottery-egld"]);
+        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/lottery_egld.abi.json");
+        let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
 
