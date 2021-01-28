@@ -3,7 +3,8 @@ import { Address } from "../address";
 import { guardLength } from "../utils";
 import { parseUserKey } from "./pem";
 
-export const SEED_LENGTH = 32;
+const SEED_LENGTH = 32;
+const PUBKEY_LENGTH = 32;
 
 export class UserSecretKey {
     private readonly buffer: Buffer;
@@ -25,9 +26,7 @@ export class UserSecretKey {
         return parseUserKey(text, index);
     }
 
-    toPublicKey(): UserPublicKey {
-        // TODO: Question for review: @ccorcoveanu, @AdoAdoAdo, as opposed to core-js, here we use "fromSeed" (instead of fromSecretKey, which wouldn't work on 32-byte private keys).
-        // TODO: Question for review: is this all right?
+    generatePublicKey(): UserPublicKey {
         let keyPair = tweetnacl.sign.keyPair.fromSeed(this.buffer);
         let buffer = Buffer.from(keyPair.publicKey);
         return new UserPublicKey(buffer);
@@ -37,6 +36,7 @@ export class UserSecretKey {
         let pair = tweetnacl.sign.keyPair.fromSeed(this.buffer);
         let signingKey = pair.secretKey;
         let signature = tweetnacl.sign(new Uint8Array(message), signingKey);
+        // "tweetnacl.sign()" returns the concatenated [signature, message], therfore we remove the appended message:
         signature = signature.slice(0, signature.length - message.length);
 
         return Buffer.from(signature);
@@ -55,7 +55,7 @@ export class UserPublicKey {
     private readonly buffer: Buffer;
 
     constructor(buffer: Buffer) {
-        guardLength(buffer, 32);
+        guardLength(buffer, PUBKEY_LENGTH);
         
         this.buffer = buffer;
     }

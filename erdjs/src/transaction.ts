@@ -1,3 +1,4 @@
+import { BigNumber } from "bignumber.js";
 import { ISignable, IProvider } from "./interface";
 import { Address } from "./address";
 import { Balance } from "./balance";
@@ -358,6 +359,29 @@ export class Transaction implements ISignable {
         return new Promise<void>((resolve, _reject) => {
             this.onSigned.on(() => resolve());
         });
+    }
+
+    /**
+     * Computes the current transaction fee based on the {@link NetworkConfig} and transaction properties
+     * @param networkConfig {@link NetworkConfig}
+     */
+    computeFee(networkConfig: NetworkConfig): BigNumber {
+        let moveBalanceGas = networkConfig.MinGasLimit.valueOf() + this.data.length() * networkConfig.GasPerDataByte.valueOf();
+        if (moveBalanceGas > this.gasLimit.valueOf()) {
+            throw new errors.ErrNotEnoughGas(this.gasLimit.valueOf());
+        }
+
+        let gasPrice = new BigNumber(this.gasPrice.valueOf());
+        let feeForMove = (new BigNumber(moveBalanceGas)).multipliedBy(gasPrice);
+        if (moveBalanceGas === this.gasLimit.valueOf()) {
+            return feeForMove;
+        }
+
+        let diff = new BigNumber(this.gasLimit.valueOf() - moveBalanceGas);
+        let modifiedGasPrice = gasPrice.multipliedBy(new BigNumber(networkConfig.GasPriceModifier.valueOf()));
+        let processingFee = diff.multipliedBy(modifiedGasPrice);
+
+        return feeForMove.plus(processingFee);
     }
 
     /**

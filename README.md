@@ -30,3 +30,20 @@ Thanks and credits go to:
 ## Contribute
 
 One can contribute by creating *pull requests*, or by opening *issues* for discovered bugs or desired features.
+
+## How to publish an update
+
+### erdpy
+
+*Note: this flow will be improved in the near future.*
+
+ - Create a new branch on top of `development`: `git checkout -b release-erdpy-v... development`
+ - Bump version in `setup.py` and `erdpy/_version.py`.
+ - Update `erdpy/CHANGELOG.md`.
+ - Make a commit such as `Bump version: erdpy v...`.
+ - Open a PR and get reviewers.
+ - Once the PR is merged into `development`, trigger the action `Publish erdpy` from the Github Actions dashboard. This will publish the package on PyPi.
+
+### erdjs
+
+ - TBD

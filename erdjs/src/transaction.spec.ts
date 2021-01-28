@@ -2,10 +2,11 @@ import { assert } from "chai";
 import { Transaction } from "./transaction";
 import * as errors from "./errors";
 import { Nonce } from "./nonce";
-import { ChainID, GasLimit, GasPrice } from "./networkParams";
+import { ChainID, GasLimit, GasPrice, GasPriceModifier } from "./networkParams";
 import { TransactionPayload } from "./transactionPayload";
 import { Balance } from "./balance";
 import { TestWallets } from "./testutils";
+import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 
 describe("test transaction", () => {
@@ -80,9 +81,46 @@ describe("test transaction construction", async () => {
             data: new TransactionPayload("for the spaceship"),
             chainID: new ChainID("local-testnet")
         });
-        
+
         await wallets.alice.signer.sign(transaction);
         assert.equal("39938d15812708475dfc8125b5d41dbcea0b2e3e7aabbbfceb6ce4f070de3033676a218b73facd88b1432d7d4accab89c6130b3abe5cc7bbbb5146e61d355b03", transaction.getSignature().hex());
         assert.equal(transaction.getHash().valueOf(), "e4a6048d92409cfe50f12e81218cb92f39966c618979a693b8d16320a06061c1");
+    });
+
+    it("computes correct fee", () => {
+        let transaction = new Transaction({
+            nonce: new Nonce(92),
+            value: Balance.fromString("123456789000000000000000000000"),
+            receiver: wallets.bob.address,
+            gasPrice: new GasPrice(500),
+            gasLimit: new GasLimit(20),
+            chainID: new ChainID("local-testnet")
+        });
+
+        let networkConfig = new NetworkConfig();
+        networkConfig.MinGasLimit = new GasLimit(10);
+        networkConfig.GasPriceModifier = new GasPriceModifier(0.01);
+
+        let fee = transaction.computeFee(networkConfig);
+        assert.equal(fee.toString(), "5050");
+    });
+
+    it("computes correct fee with data field", () => {
+        let transaction = new Transaction({
+            nonce: new Nonce(92),
+            value: Balance.fromString("123456789000000000000000000000"),
+            receiver: wallets.bob.address,
+            data: new TransactionPayload("testdata"),
+            gasPrice: new GasPrice(500),
+            gasLimit: new GasLimit(12010),
+            chainID: new ChainID("local-testnet")
+        });
+
+        let networkConfig = new NetworkConfig();
+        networkConfig.MinGasLimit = new GasLimit(10);
+        networkConfig.GasPriceModifier = new GasPriceModifier(0.01);
+
+        let fee = transaction.computeFee(networkConfig);
+        assert.equal(fee.toString(), "6005000");
     });
 });

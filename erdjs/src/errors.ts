@@ -166,6 +166,15 @@ export class ErrGasLimitInvalid extends Err {
 }
 
 /**
+ * Signals an invalid value for {@link GasLimit} objects.
+ */
+export class ErrNotEnoughGas extends Err {
+    public constructor(value: number) {
+        super(`Not enough gas provided: ${value}`);
+    }
+}
+
+/**
  * Signals an invalid value for {@link Nonce} objects.
  */
 export class ErrNonceInvalid extends Err {
@@ -189,6 +198,15 @@ export class ErrChainIDInvalid extends Err {
 export class ErrTransactionVersionInvalid extends Err {
     public constructor(value: number) {
         super(`Invalid transaction version: ${value}`);
+    }
+}
+
+/**
+ * Signals an invalid value for {@link GasPriceModifier} objects.
+ */
+export class ErrGasPriceModifierInvalid extends Err {
+    public constructor(value: number) {
+        super(`Invalid gas price modifier: ${value}`);
     }
 }
 

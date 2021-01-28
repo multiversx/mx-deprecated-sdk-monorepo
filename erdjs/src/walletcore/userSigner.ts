@@ -50,6 +50,6 @@ export class UserSigner implements ISigner {
      * Gets the address of the signer.
      */
     getAddress(): Address {
-        return this.secretKey.toPublicKey().toAddress();
+        return this.secretKey.generatePublicKey().toAddress();
     }
 }

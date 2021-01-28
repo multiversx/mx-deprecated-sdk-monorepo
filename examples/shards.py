@@ -1,3 +1,9 @@
+
+from erdpy import wallet
+from erdpy.accounts import Address
+from erdpy.wallet import pem
+
+
 def get_shard_of_address(pub_key):
     num_shards = 3
     mask_high = int("11", 2)
@@ -26,3 +32,13 @@ def is_address_of_metachain(pub_key):
         return True
 
     return False
+
+
+def create_address_in_shard(desired_shard: int, pem_file="mypem.pem"):
+    while True:
+        seed, pubkey = wallet.generate_pair()
+        address = Address(pubkey)
+        shard = get_shard_of_address(pubkey)
+        if shard == desired_shard:
+            pem.write(pem_file, seed, pubkey, name=address.bech32())
+            break
