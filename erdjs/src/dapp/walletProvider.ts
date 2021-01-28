@@ -199,9 +199,9 @@ export class WalletProvider implements IDappProvider {
             let plainTransaction = transaction.toPlainObject();
 
             // We adjust the fields, in order to make them compatible with what the wallet expected
-            plainTransaction["data"] = transaction.data.valueOf().toString();
-            plainTransaction["value"] = transaction.value.toDenominated();
-            plainTransaction["gasPrice"] = transaction.gasPrice.toDenominated();
+            plainTransaction["data"] = transaction.getData().valueOf().toString();
+            plainTransaction["value"] = transaction.getValue().toDenominated();
+            plainTransaction["gasPrice"] = transaction.getGasPrice().toDenominated();
             
             console.log("postMessage", DAPP_MESSAGE_SEND_TRANSACTION_URL, plainTransaction);
 
