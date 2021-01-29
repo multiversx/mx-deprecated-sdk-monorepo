@@ -17,7 +17,7 @@ Here is an example for sending a transaction.
 // Create a wallet from mnemonics
 val wallet = Wallet.createFromMnemonic(..., 0)
 
-// Get informations related to this address (ie: balance and nonce)
+// Get information related to this address (ie: balance and nonce)
 val account = ErdSdk.getAccountUsecase().execute(Address.fromHex(wallet.publicKeyHex))
 
 // Get the network informations
@@ -35,7 +35,7 @@ val transaction = Transaction(
     nonce = account.nonce
 )
 
-// Send trasaction.
+// Send transaction.
 // Signature is handled internally
 ErdSdk.sendTransactionUsecase().execute(transaction, wallet).also { sentTransaction ->
     Log.d("Transaction", "tx:${sentTransaction.txHash}")
