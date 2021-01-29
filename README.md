@@ -27,6 +27,7 @@ Thanks and credits go to:
 
 - [Elrond Developers Group on Telegram](https://t.me/ElrondDevelopers) for testing, reporting issues and having very good suggestions and feature requests.
 -  **[@flyingbasalt](https://github.com/flyingbasalt)** for implementing [json2pem](https://github.com/flyingbasalt/erdkeys/blob/master/erdkeys/json2pem.py). For more details, go to [erdkeys](https://github.com/flyingbasalt/erdkeys).
+- **[@Alexandre-saddour](https://github.com/Alexandre-saddour)** for implementing [erdkotlin](https://github.com/ElrondNetwork/elrond-sdk/erdkotlin).
 
 ## Contribute
 
