@@ -4,7 +4,6 @@ import org.junit.Test
 
 import org.junit.Assert.assertEquals
 
-
 class TransactionTest {
 
     @Test

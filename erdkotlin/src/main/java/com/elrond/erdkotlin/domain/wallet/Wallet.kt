@@ -17,7 +17,6 @@ import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
 
-
 class Wallet(
     private val publicKey: ByteArray,
     private val privateKey: ByteArray,
@@ -49,7 +48,7 @@ class Wallet(
         private const val BIP39_SALT_MODIFIER = "mnemonic"
         private const val BIP39_PBKDF2_ROUNDS = 2048
         private const val BIP32_SEED_MODIFIER = "ed25519 seed"
-        private const val HARDENED_OFFSET: Long = -0x80000000
+        private const val HARDENED_OFFSET: Long = 0x80000000
         private val ELROND_DERIVATION_PATH = longArrayOf(44, 508, 0, 0, 0)
 
         fun createFromPrivateKey(privateKey: ByteArray): Wallet {
@@ -165,14 +164,21 @@ class Wallet(
 
     private data class KeyAndChainCode(val key: ByteArray, val chainCode: ByteArray) {
         override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (javaClass != other?.javaClass) return false
+            if (this === other) {
+                return true
+            }
+            if (javaClass != other?.javaClass) {
+                return false
+            }
 
             other as KeyAndChainCode
 
-            if (!key.contentEquals(other.key)) return false
-            if (!chainCode.contentEquals(other.chainCode)) return false
-
+            if (!key.contentEquals(other.key)) {
+                return false
+            }
+            if (!chainCode.contentEquals(other.chainCode)) {
+                return false
+            }
             return true
         }
 

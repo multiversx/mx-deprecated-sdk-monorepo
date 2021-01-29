@@ -6,7 +6,6 @@ import org.bouncycastle.util.encoders.DecoderException
 import org.bouncycastle.util.encoders.Hex
 import java.io.ByteArrayOutputStream
 
-
 @Suppress("DataClassPrivateConstructor")
 data class Address private constructor(
     val hex: String

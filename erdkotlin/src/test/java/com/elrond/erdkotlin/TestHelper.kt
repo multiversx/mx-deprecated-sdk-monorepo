@@ -30,5 +30,4 @@ object TestHelper {
     fun transactionWithData() = transactionWithData.copy()
     fun transactionWithoutData() = transactionWithoutData.copy()
 
-
 }
