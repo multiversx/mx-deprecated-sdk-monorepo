@@ -10,6 +10,7 @@ This is a monorepo containing the following:
 | erdgo | Go SDK | [pkg.go.dev](https://pkg.go.dev/github.com/ElrondNetwork/elrond-sdk/erdgo) | N / A | [CHANGELOG](erdgo/CHANGELOG.md) | N / A  | `go.mod` (Github)
 | erdjava | Java SDK | [JavaDoc](https://elrondnetwork.github.io/elrond-sdk-docs/erdjava) | N / A | [CHANGELOG](erdjava/CHANGELOG.md) | [CLI](erdjava/README.md)  | Source code (Github)
 | erdjs |    TypeScript SDK   | TBD | [TypeDoc](https://elrondnetwork.github.io/elrond-sdk-docs/erdjs/) | [CHANGELOG](erdjs/CHANGELOG.md) | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdjs)
+| erdkotlin | Kotlin SDK | TBD | N / A | [CHANGELOG](erdkotlin/CHANGELOG.md) | N / A  | Source code (Github)
 | erdtestjs |    TypeScript SDK   |  TBD | TypeDoc (TBD) | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdtestjs)
 | erdwalletjs-cli | NodeJS CLI | TBD | N / A | [CHANGELOG](erdwalletjs-cli/CHANGELOG.md) | [CLI](erdwalletjs-cli/README.md)  | [npm](https://www.npmjs.com/package/@elrondnetwork/erdwalletjs-cli)
 
@@ -26,6 +27,7 @@ Thanks and credits go to:
 
 - [Elrond Developers Group on Telegram](https://t.me/ElrondDevelopers) for testing, reporting issues and having very good suggestions and feature requests.
 -  **[@flyingbasalt](https://github.com/flyingbasalt)** for implementing [json2pem](https://github.com/flyingbasalt/erdkeys/blob/master/erdkeys/json2pem.py). For more details, go to [erdkeys](https://github.com/flyingbasalt/erdkeys).
+- **[@Alexandre-saddour](https://github.com/Alexandre-saddour)** for implementing [erdkotlin](https://github.com/ElrondNetwork/elrond-sdk/erdkotlin).
 
 ## Contribute
 
