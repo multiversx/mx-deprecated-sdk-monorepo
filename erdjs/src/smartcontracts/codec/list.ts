@@ -13,6 +13,7 @@ export class ListBinaryCodec {
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
     decodeNested(buffer: Buffer, type: BetterType): [List, number] {
+        let typeParameter = type.getFirstTypeParameter();
         let result: TypedValue[] = [];
         let numItems = buffer.readUInt32BE();
         this.parentCodec.constraints.checkListLength(numItems);
@@ -23,7 +24,7 @@ export class ListBinaryCodec {
         buffer = originalBuffer.slice(offset);
 
         for (let i = 0; i < numItems; i++) {
-            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, type);
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeParameter);
             result.push(decoded);
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);
@@ -37,13 +38,14 @@ export class ListBinaryCodec {
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
     decodeTopLevel(buffer: Buffer, type: BetterType): List {
+        let typeParameter = type.getFirstTypeParameter();
         let result: TypedValue[] = [];
 
         let originalBuffer = buffer;
         let offset = 0;
 
         while (buffer.length > 0) {
-            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, type);
+            let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, typeParameter);
             result.push(decoded);
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);

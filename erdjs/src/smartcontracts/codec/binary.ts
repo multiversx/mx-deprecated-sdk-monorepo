@@ -44,7 +44,7 @@ export class BinaryCodec {
 
         let typedValue = onTypeSelect<TypedValue>(type, {
             onOptional: () => this.optionalCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
-            onList: () => this.listCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
+            onList: () => this.listCodec.decodeTopLevel(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
             onStruct: () => this.structCodec.decodeTopLevel(buffer, <StructType>type)
         });
@@ -57,7 +57,7 @@ export class BinaryCodec {
 
         let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {
             onOptional: () => this.optionalCodec.decodeNested(buffer, type.getFirstTypeParameter()),
-            onList: () => this.listCodec.decodeNested(buffer, type.getFirstTypeParameter()),
+            onList: () => this.listCodec.decodeNested(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
             onStruct: () => this.structCodec.decodeNested(buffer, <StructType>type)
         });

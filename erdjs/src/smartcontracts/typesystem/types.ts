@@ -24,7 +24,7 @@ export class BetterType {
     }
 
     getFirstTypeParameter(): BetterType {
-        guardTrue(this.typeParameters.length > 1, "type parameters length > 1");
+        guardTrue(this.typeParameters.length > 0, "type parameters length > 0");
         return this.typeParameters[0];
     }
 
