@@ -20,8 +20,7 @@ describe("test abi registry", () => {
         assert.lengthOf(registry.customTypes, 2);
 
         assert.lengthOf(registry.findInterface("Lottery").endpoints, 7);
-        assert.lengthOf(registry.findStructure("LotteryInfo").definition.fields, 8);
-        // TODO: Uncomment when implemented.
-        // assert.lengthOf(registry.findEnum("Status").definition.variants, 3);
+        assert.lengthOf(registry.findStructure("LotteryInfo").fields, 8);
+        assert.lengthOf(registry.findEnum("Status").variants, 3);
     });
 });

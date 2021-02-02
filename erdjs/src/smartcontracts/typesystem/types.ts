@@ -24,7 +24,7 @@ export class BetterType {
     }
 
     getFirstTypeParameter(): BetterType {
-        guardTrue(this.typeParameters.length > 1, "type parameters");
+        guardTrue(this.typeParameters.length > 1, "type parameters length > 1");
         return this.typeParameters[0];
     }
 
@@ -62,6 +62,9 @@ export class PrimitiveType extends BetterType {
     constructor(name: string) {
         super(name);
     }
+}
+
+export abstract class CustomType extends BetterType {
 }
 
 export abstract class TypedValue {

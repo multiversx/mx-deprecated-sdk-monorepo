@@ -3,7 +3,7 @@ import { AddressType, AddressValue } from "./address";
 import { BooleanType, BooleanValue } from "./boolean";
 import { OptionalType, OptionalValue, List, ListType } from "./generic";
 import { NumericalType, NumericalValue } from "./numerical";
-import { Structure, StructureType } from "./structure";
+import { Struct, StructType } from "./struct";
 import { BetterType, PrimitiveType, PrimitiveValue } from "./types";
 
 export function onTypeSelect<TResult>(type: BetterType, selectors: {
@@ -22,7 +22,7 @@ export function onTypeSelect<TResult>(type: BetterType, selectors: {
     if (type instanceof PrimitiveType) {
         return selectors.onPrimitive();
     }
-    if (type instanceof StructureType) {
+    if (type instanceof StructType) {
         return selectors.onStructure();
     }
 
@@ -49,7 +49,7 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     if (value instanceof List) {
         return selectors.onList();
     }
-    if (value instanceof Structure) {
+    if (value instanceof Struct) {
         return selectors.onStructure();
     }
 

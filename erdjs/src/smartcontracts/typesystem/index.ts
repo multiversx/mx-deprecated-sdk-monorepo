@@ -5,5 +5,6 @@ export * from "./endpoint";
 export * from "./generic";
 export * from "./matchers";
 export * from "./numerical";
-export * from "./structure";
+export * from "./struct";
+export * from "./enum";
 export * from "./types";

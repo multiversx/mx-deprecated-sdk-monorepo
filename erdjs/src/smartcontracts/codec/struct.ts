@@ -1,4 +1,4 @@
-import { StructureType, Structure, StructureField } from "../typesystem";
+import { StructType, Struct, StructField } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
 export class StructureBinaryCodec {
@@ -8,31 +8,31 @@ export class StructureBinaryCodec {
         this.parentCodec = parentCodec;
     }
 
-    decodeTopLevel(buffer: Buffer, type: StructureType): Structure {
+    decodeTopLevel(buffer: Buffer, type: StructType): Struct {
         let [decoded, length] = this.decodeNested(buffer, type);
         return decoded;
     }
 
-    decodeNested(buffer: Buffer, type: StructureType): [Structure, number] {
+    decodeNested(buffer: Buffer, type: StructType): [Struct, number] {
         let originalBuffer = buffer;
         let offset = 0;
 
-        let fieldDefinitions = type.definition.fields;
-        let fields: StructureField[] = [];
+        let fieldDefinitions = type.fields;
+        let fields: StructField[] = [];
 
         for (const fieldDefinition of fieldDefinitions) {
             let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer, fieldDefinition.type);
-            let field = new StructureField(decoded, fieldDefinition.name);
+            let field = new StructField(decoded, fieldDefinition.name);
             fields.push(field);
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);
         }
         
-        let structure = new Structure(type, fields);
+        let structure = new Struct(type, fields);
         return [structure, offset];
     }
 
-    encodeNested(structure: Structure): Buffer {
+    encodeNested(structure: Struct): Buffer {
         let buffers: Buffer[] = [];
         let fields = structure.getFields();
         
@@ -45,7 +45,7 @@ export class StructureBinaryCodec {
         return buffer;
     }
 
-    encodeTopLevel(structure: Structure): Buffer {
+    encodeTopLevel(structure: Struct): Buffer {
         return this.encodeNested(structure);
     }
 }

@@ -1,10 +1,10 @@
 import * as errors from "../../errors";
-import { BetterType, EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypedValue, U8Type } from "../typesystem";
+import { BetterType, EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructType, TypedValue, U8Type } from "../typesystem";
 import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { ListBinaryCodec } from "./list";
-import { StructureBinaryCodec } from "./structure";
+import { StructureBinaryCodec } from "./struct";
 
 export class BinaryCodec {
     readonly constraints: BinaryCodecConstraints;
@@ -46,7 +46,7 @@ export class BinaryCodec {
             onOptional: () => this.optionalCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
-            onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructureType>type)
+            onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructType>type)
         });
 
         return <TResult>typedValue;
@@ -59,7 +59,7 @@ export class BinaryCodec {
             onOptional: () => this.optionalCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
-            onStructure: () => this.structureCodec.decodeNested(buffer, <StructureType>type)
+            onStructure: () => this.structureCodec.decodeNested(buffer, <StructType>type)
         });
 
         return [<TResult>typedResult, decodedLength];

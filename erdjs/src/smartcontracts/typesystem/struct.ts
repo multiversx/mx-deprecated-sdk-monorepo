@@ -1,26 +1,47 @@
 import * as errors from "../../errors";
 import { TypeExpressionParser } from "./typeExpressionParser";
-import { BetterType, TypedValue } from "./types";
+import { BetterType, CustomType, TypedValue } from "./types";
 
-export class StructureType extends BetterType {
-    readonly definition: StructureDefinition;
+export class StructType extends CustomType {
+    readonly fields: StructFieldDefinition[] = [];
 
-    constructor(definition: StructureDefinition) {
-        super(definition.name);
-        this.definition = definition;
+    constructor(name: string, fields: StructFieldDefinition[]) {
+        super(name);
+        this.fields = fields;
+    }
+
+    static fromJSON(json: { name: string, fields: any[] }): StructType {
+        let fields = (json.fields || []).map(field => StructFieldDefinition.fromJSON(field));
+        return new StructType(json.name, fields);
     }
 }
 
+export class StructFieldDefinition {
+    readonly name: string;
+    readonly description: string;
+    readonly type: BetterType;
+
+    constructor(name: string, description: string, type: BetterType) {
+        this.name = name;
+        this.description = description;
+        this.type = type;
+    }
+
+    static fromJSON(json: { name: string, description: string, type: string }): StructFieldDefinition {
+        let parsedType = new TypeExpressionParser().parse(json.type);
+        return new StructFieldDefinition(json.name, json.description, parsedType);
+    }
+}
 
 // TODO: implement setField(), convenience method.
 // TODO: Hold fields in a map (by name), and use the order within "field definitions" to perform codec operations.
-export class Structure extends TypedValue {
-    private readonly fields: StructureField[] = [];
+export class Struct extends TypedValue {
+    private readonly fields: StructField[] = [];
 
     /**
      * Currently, one can only set fields at initialization time. Construction will be improved at a later time.
      */
-    constructor(type: StructureType, fields: StructureField[]) {
+    constructor(type: StructType, fields: StructField[]) {
         super(type);
         this.fields = fields;
 
@@ -29,8 +50,8 @@ export class Structure extends TypedValue {
 
     private checkTyping() {
         let fields = this.fields;
-        let type = <StructureType>this.getType();
-        let definitions = type.definition.fields;
+        let type = <StructType>this.getType();
+        let definitions = type.fields;
 
         if (fields.length != definitions.length) {
             throw new errors.ErrStructureTyping("fields length vs. field definitions length");
@@ -51,7 +72,7 @@ export class Structure extends TypedValue {
         }
     }
 
-    getFields(): ReadonlyArray<StructureField> {
+    getFields(): ReadonlyArray<StructField> {
         return this.fields;
     }
 
@@ -65,7 +86,7 @@ export class Structure extends TypedValue {
         return result;
     }
 
-    equals(other: Structure): boolean {
+    equals(other: Struct): boolean {
         if (!this.getType().equals(other.getType())) {
             return false;
         }
@@ -90,7 +111,7 @@ export class Structure extends TypedValue {
     }
 }
 
-export class StructureField {
+export class StructField {
     readonly value: TypedValue;
     readonly name: string;
 
@@ -99,39 +120,7 @@ export class StructureField {
         this.name = name;
     }
 
-    equals(other: StructureField) {
+    equals(other: StructField) {
         return this.name == other.name && this.value.equals(other.value);
-    }
-}
-
-export class StructureDefinition {
-    readonly name: string;
-    readonly fields: StructureFieldDefinition[] = [];
-
-    constructor(name: string, fields: StructureFieldDefinition[]) {
-        this.name = name;
-        this.fields = fields || [];
-    }
-
-    static fromJSON(json: { name: string, fields: any[] }): StructureDefinition {
-        let fields = (json.fields || []).map(field => StructureFieldDefinition.fromJSON(field));
-        return new StructureDefinition(json.name, fields);
-    }
-}
-
-export class StructureFieldDefinition {
-    readonly name: string;
-    readonly description: string;
-    readonly type: BetterType;
-
-    constructor(name: string, description: string, type: BetterType) {
-        this.name = name;
-        this.description = description;
-        this.type = type;
-    }
-
-    static fromJSON(json: { name: string, description: string, type: string }): StructureFieldDefinition {
-        let parsedType = new TypeExpressionParser().parse(json.type);
-        return new StructureFieldDefinition(json.name, json.description, parsedType);
     }
 }
