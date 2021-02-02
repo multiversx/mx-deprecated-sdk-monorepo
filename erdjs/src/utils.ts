@@ -20,8 +20,12 @@ export function guardType(name: string, type: any, value?: any, allowUndefined: 
 }
 
 export function guardValueIsSet(name: string, value?: any | null | undefined) {
+    guardValueIsSetWithMessage(`${name} isn't set (null or undefined)`, value);
+}
+
+export function guardValueIsSetWithMessage(message: string, value?: any | null | undefined) {
     if (value == null || value === undefined) {
-        throw new errors.ErrInvariantFailed(`${name} isn't set (null or undefined)`);
+        throw new errors.ErrInvariantFailed(message);
     }
 }
 

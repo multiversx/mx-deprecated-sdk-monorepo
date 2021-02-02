@@ -1,6 +1,8 @@
 import { TypeExpressionParser } from "./typeExpressionParser";
 import { BetterType } from "./types";
 
+const NamePlaceholder = "?";
+
 export class EndpointDefinition {
     readonly name: string;
     readonly input: EndpointParameterDefinition[] = [];
@@ -18,11 +20,16 @@ export class EndpointDefinition {
         name: string,
         storageModifier: string,
         payableInTokens: string[],
-        input: any[],
-        output: []
+        inputs: any[],
+        outputs: []
     }): EndpointDefinition {
-        let input = json.input.map(param => EndpointParameterDefinition.fromJSON(param));
-        let output = json.output.map(param => EndpointParameterDefinition.fromJSON(param));
+        json.name = json.name || NamePlaceholder;
+        json.payableInTokens = json.payableInTokens || [];
+        json.inputs = json.inputs || [];
+        json.outputs = json.outputs || [];
+
+        let input = json.inputs.map(param => EndpointParameterDefinition.fromJSON(param));
+        let output = json.outputs.map(param => EndpointParameterDefinition.fromJSON(param));
         let modifiers = new EndpointModifiers(json.storageModifier, json.payableInTokens);
 
         return new EndpointDefinition(json.name, input, output, modifiers);
