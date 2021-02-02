@@ -201,7 +201,7 @@ export class WalletProvider implements IDappProvider {
 
             // We adjust the fields, in order to make them compatible with what the wallet expected
             plainTransaction["data"] = transaction.data.valueOf().toString();
-            plainTransaction["value"] = Balance.eGLD(transaction.value.toString()).toString();
+            plainTransaction["value"] = transaction.value.toString();
             plainTransaction["gasPrice"] = transaction.gasPrice.valueOf();
             plainTransaction["gasLimit"] = transaction.gasLimit.valueOf();
             console.log("postMessage", DAPP_MESSAGE_SEND_TRANSACTION_URL, plainTransaction);
