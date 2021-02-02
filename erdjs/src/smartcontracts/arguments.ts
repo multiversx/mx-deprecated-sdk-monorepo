@@ -1,7 +1,7 @@
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
-import { AddressValue, BigUIntValue, EndpointDefinition, OptionalType, OptionalValue, TypedValue, TypePlaceholder, U8Type, U8Value, Vector, VectorType } from "./typesystem";
+import { AddressValue, BigUIntValue, EndpointDefinition, OptionalType, OptionalValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType } from "./typesystem";
 
 /**
  * For the moment, this is the only codec used.
@@ -148,9 +148,9 @@ export class Argument {
     static fromUTF8(value: string): Argument {
         let buffer = Buffer.from(value, "utf-8");
         let typedBytes = [...buffer].map(byte => new U8Value(byte));
-        let type = new VectorType(new U8Type());
+        let type = new ListType(new U8Type());
 
-        return Argument.fromTypedValue(new Vector(type, typedBytes));
+        return Argument.fromTypedValue(new List(type, typedBytes));
     }
 
     /**

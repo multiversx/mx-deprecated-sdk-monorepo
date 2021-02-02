@@ -7,7 +7,7 @@ export class OptionalType extends BetterType {
     }
 }
 
-export class VectorType extends BetterType {
+export class ListType extends BetterType {
     constructor(typeParameter: BetterType) {
         super("List", [typeParameter]);
     }
@@ -43,7 +43,7 @@ export class OptionalValue extends TypedValue {
     }
 }
 
-export class Vector extends TypedValue {
+export class List extends TypedValue {
     private readonly items: TypedValue[];
 
     constructor(type: BetterType, items: TypedValue[]) {
@@ -67,7 +67,7 @@ export class Vector extends TypedValue {
         return this.items.map(item => item.valueOf());
     }
 
-    equals(other: Vector): boolean {
+    equals(other: List): boolean {
         if (this.getLength() != other.getLength()) {
             return false;
         }

@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
-import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I32Type, I64Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypedValue, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, Vector, VectorType } from "../typesystem";
+import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I32Type, I64Type, I8Type, NumericalType, NumericalValue, Structure, StructureDefinition, StructureField, StructureFieldDefinition, StructureType, TypedValue, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, List, ListType } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMsbOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
@@ -84,35 +84,35 @@ describe("test binary codec (basic)", () => {
 });
 
 describe("test binary codec (advanced)", () => {
-    it("should encode / decode vectors", async () => {
+    it("should encode / decode lists", async () => {
         let codec = new BinaryCodec();
-        let vector = new Vector(
-            new VectorType(new AddressType()),
+        let list = new List(
+            new ListType(new AddressType()),
             [
                 new AddressValue(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th")),
                 new AddressValue(new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx")),
                 new AddressValue(new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8"))
             ]);
 
-        let bufferNested = codec.encodeNested(vector);
-        let bufferTopLevel = codec.encodeTopLevel(vector);
-        assert.equal(bufferNested.length, 4 + vector.getLength() * 32);
-        assert.equal(bufferTopLevel.length, vector.getLength() * 32);
+        let bufferNested = codec.encodeNested(list);
+        let bufferTopLevel = codec.encodeTopLevel(list);
+        assert.equal(bufferNested.length, 4 + list.getLength() * 32);
+        assert.equal(bufferTopLevel.length, list.getLength() * 32);
 
-        let [decodedNested, decodedNestedLength] = codec.decodeNested<Vector>(bufferNested, new VectorType(new AddressType()));
-        let decodedTopLevel = codec.decodeTopLevel<Vector>(bufferTopLevel, new VectorType(new AddressType()));
+        let [decodedNested, decodedNestedLength] = codec.decodeNested<List>(bufferNested, new ListType(new AddressType()));
+        let decodedTopLevel = codec.decodeTopLevel<List>(bufferTopLevel, new ListType(new AddressType()));
         assert.equal(decodedNestedLength, bufferNested.length);
         assert.equal(decodedNested.getLength(), 3);
         assert.equal(decodedTopLevel.getLength(), 3);
 
-        assert.deepEqual(decodedNested, vector);
-        assert.deepEqual(decodedTopLevel, vector);
+        assert.deepEqual(decodedNested, list);
+        assert.deepEqual(decodedTopLevel, list);
     });
 
-    it("benchmark: should work well with large vectors", async () => {
+    it("benchmark: should work well with large lists", async () => {
         let numItems = 2 ** 16;
         let codec = new BinaryCodec(new BinaryCodecConstraints({
-            maxVectorLength: numItems,
+            maxListLength: numItems,
             maxBufferLength: numItems * 4 + 4
         }));
 
@@ -122,18 +122,18 @@ describe("test binary codec (advanced)", () => {
             items.push(new U32Value(i));
         }
 
-        let vector = new Vector(new VectorType(new U32Type()), items);
+        let list = new List(new ListType(new U32Type()), items);
 
         console.time("encoding");
-        let buffer = codec.encodeNested(vector);
+        let buffer = codec.encodeNested(list);
         console.timeEnd("encoding");
         assert.equal(buffer.length, 4 + numItems * 4);
 
         console.time("decoding");
-        let [decodedVector, decodedLength] = codec.decodeNested<Vector>(buffer,  new VectorType(new U32Type()));
+        let [decodedList, decodedLength] = codec.decodeNested<List>(buffer,  new ListType(new U32Type()));
         console.timeEnd("decoding");
         assert.equal(decodedLength, buffer.length);
-        assert.deepEqual(decodedVector, vector);
+        assert.deepEqual(decodedList, list);
     });
 
     it("should encode / decode structures", async () => {
@@ -145,8 +145,8 @@ describe("test binary codec (advanced)", () => {
                 new StructureFieldDefinition("tickets_left", "", new U32Type()),
                 new StructureFieldDefinition("deadline", "", new U64Type()),
                 new StructureFieldDefinition("max_entries_per_user", "", new U32Type()),
-                new StructureFieldDefinition("prize_distribution", "", new VectorType(new U8Type())),
-                new StructureFieldDefinition("whitelist", "", new VectorType(new AddressType())),
+                new StructureFieldDefinition("prize_distribution", "", new ListType(new U8Type())),
+                new StructureFieldDefinition("whitelist", "", new ListType(new AddressType())),
                 new StructureFieldDefinition("current_ticket_number", "", new U32Type()),
                 new StructureFieldDefinition("prize_pool", "", new BigUIntType())
             ]
@@ -158,8 +158,8 @@ describe("test binary codec (advanced)", () => {
             new StructureField(new U32Value(0), "tickets_left"),
             new StructureField(new U64Value(BigInt("0x000000005fc2b9db")), "deadline"),
             new StructureField(new U32Value(0xffffffff), "max_entries_per_user"),
-            new StructureField(new Vector(new VectorType(new U8Type()), [new U8Value(0x64)]), "prize_distribution"),
-            new StructureField(new Vector(new VectorType(new AddressType()), []), "whitelist"),
+            new StructureField(new List(new ListType(new U8Type()), [new U8Value(0x64)]), "prize_distribution"),
+            new StructureField(new List(new ListType(new AddressType()), []), "whitelist"),
             new StructureField(new U32Value(9472), "current_ticket_number"),
             new StructureField(new BigUIntValue(BigInt("94720000000000000000000")), "prize_pool")
         ]);

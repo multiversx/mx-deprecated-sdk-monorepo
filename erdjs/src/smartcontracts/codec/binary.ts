@@ -3,20 +3,20 @@ import { BetterType, EndpointDefinition, onTypedValueSelect, onTypeSelect, Primi
 import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
 import { PrimitiveBinaryCodec } from "./primitive";
-import { VectorBinaryCodec } from "./vector";
+import { ListBinaryCodec } from "./list";
 import { StructureBinaryCodec } from "./structure";
 
 export class BinaryCodec {
     readonly constraints: BinaryCodecConstraints;
     private readonly optionalCodec: OptionalValueBinaryCodec;
-    private readonly vectorCodec: VectorBinaryCodec;
+    private readonly listCodec: ListBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
     private readonly structureCodec: StructureBinaryCodec;
     
     constructor(constraints: BinaryCodecConstraints | null = null) {
         this.constraints = constraints || new BinaryCodecConstraints();
         this.optionalCodec = new OptionalValueBinaryCodec(this);
-        this.vectorCodec = new VectorBinaryCodec(this);
+        this.listCodec = new ListBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
         this.structureCodec = new  StructureBinaryCodec(this);
     }
@@ -44,7 +44,7 @@ export class BinaryCodec {
 
         let typedValue = onTypeSelect<TypedValue>(type, {
             onOptional: () => this.optionalCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
-            onVector: () => this.vectorCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
+            onList: () => this.listCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
             onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructureType>type)
         });
@@ -57,7 +57,7 @@ export class BinaryCodec {
 
         let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {
             onOptional: () => this.optionalCodec.decodeNested(buffer, type.getFirstTypeParameter()),
-            onVector: () => this.vectorCodec.decodeNested(buffer, type.getFirstTypeParameter()),
+            onList: () => this.listCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
             onStructure: () => this.structureCodec.decodeNested(buffer, <StructureType>type)
         });
@@ -69,7 +69,7 @@ export class BinaryCodec {
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
             onOptional: () => this.optionalCodec.encodeNested(typedValue),
-            onVector: () => this.vectorCodec.encodeNested(typedValue),
+            onList: () => this.listCodec.encodeNested(typedValue),
             onStructure: () => this.structureCodec.encodeNested(typedValue)
         });
     }
@@ -78,7 +78,7 @@ export class BinaryCodec {
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
             onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
-            onVector: () => this.vectorCodec.encodeTopLevel(typedValue),
+            onList: () => this.listCodec.encodeTopLevel(typedValue),
             onStructure: () => this.structureCodec.encodeTopLevel(typedValue)
         });
     }
@@ -86,11 +86,11 @@ export class BinaryCodec {
 
 export class BinaryCodecConstraints {
     maxBufferLength: number;
-    maxVectorLength: number;
+    maxListLength: number;
 
     constructor(init?: Partial<BinaryCodecConstraints>) {
         this.maxBufferLength = init?.maxBufferLength || 4096;
-        this.maxVectorLength = init?.maxVectorLength || 1024;
+        this.maxListLength = init?.maxListLength || 1024;
     }
 
     checkBufferLength(buffer: Buffer) {
@@ -102,9 +102,9 @@ export class BinaryCodecConstraints {
     /**
      * This constraint avoids computer-freezing decode bugs (e.g. due to invalid ABI or structure definitions).
      */
-    checkVectorLength(length: number) {
-        if (length > this.maxVectorLength) {
-            throw new errors.ErrCodec(`Vector too large: ${length} > ${this.maxVectorLength}`);
+    checkListLength(length: number) {
+        if (length > this.maxListLength) {
+            throw new errors.ErrCodec(`List too large: ${length} > ${this.maxListLength}`);
         }
     }
 }

@@ -1,7 +1,7 @@
-import { BetterType, TypedValue, Vector } from "../typesystem";
+import { BetterType, TypedValue, List as List } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
-export class VectorBinaryCodec {
+export class ListBinaryCodec {
     private readonly parentCodec: BinaryCodec;
 
     constructor(parentCodec: BinaryCodec) {
@@ -9,13 +9,13 @@ export class VectorBinaryCodec {
     }
 
     /**
-     * Reads and decodes a Vector from a given buffer,
+     * Reads and decodes a List from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeNested(buffer: Buffer, type: BetterType): [Vector, number] {
+    decodeNested(buffer: Buffer, type: BetterType): [List, number] {
         let result: TypedValue[] = [];
         let numItems = buffer.readUInt32BE();
-        this.parentCodec.constraints.checkVectorLength(numItems);
+        this.parentCodec.constraints.checkListLength(numItems);
 
         let originalBuffer = buffer;
         let offset = 4;
@@ -29,14 +29,14 @@ export class VectorBinaryCodec {
             buffer = originalBuffer.slice(offset);
         }
 
-        return [new Vector(type, result), offset];
+        return [new List(type, result), offset];
     }
 
     /**
-     * Reads and decodes a Vector from a given buffer,
+     * Reads and decodes a List from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeTopLevel(buffer: Buffer, type: BetterType): Vector {
+    decodeTopLevel(buffer: Buffer, type: BetterType): List {
         let result: TypedValue[] = [];
 
         let originalBuffer = buffer;
@@ -48,21 +48,21 @@ export class VectorBinaryCodec {
             offset += decodedLength;
             buffer = originalBuffer.slice(offset);
 
-            this.parentCodec.constraints.checkVectorLength(result.length);
+            this.parentCodec.constraints.checkListLength(result.length);
         }
 
-        return new Vector(type, result);
+        return new List(type, result);
     }
 
-    encodeNested(vector: Vector): Buffer {
-        this.parentCodec.constraints.checkVectorLength(vector.getLength());
+    encodeNested(list: List): Buffer {
+        this.parentCodec.constraints.checkListLength(list.getLength());
 
         let lengthBuffer = Buffer.alloc(4);
-        lengthBuffer.writeUInt32BE(vector.getLength());
+        lengthBuffer.writeUInt32BE(list.getLength());
 
         let itemsBuffers: Buffer[] = [];
 
-        for (const item of vector.getItems()) {
+        for (const item of list.getItems()) {
             let itemBuffer = this.parentCodec.encodeNested(item);
             itemsBuffers.push(itemBuffer);
         }
@@ -71,12 +71,12 @@ export class VectorBinaryCodec {
         return buffer;
     }
 
-    encodeTopLevel(vector: Vector): Buffer {
-        this.parentCodec.constraints.checkVectorLength(vector.getLength());
+    encodeTopLevel(list: List): Buffer {
+        this.parentCodec.constraints.checkListLength(list.getLength());
 
         let itemsBuffers: Buffer[] = [];
 
-        for (const item of vector.getItems()) {
+        for (const item of list.getItems()) {
             let itemBuffer = this.parentCodec.encodeNested(item);
             itemsBuffers.push(itemBuffer);
         }
