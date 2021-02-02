@@ -382,11 +382,11 @@ export class ErrTypingSystem extends Err {
 }
 
 /**
- * Signals a generic structure typing error.
+ * Signals a generic struct typing error.
  */
-export class ErrStructureTyping extends Err {
+export class ErrStructTyping extends Err {
     public constructor(reason: string) {
-        super(`Incorrect structure typing: ${reason}`);
+        super(`Incorrect struct typing: ${reason}`);
     }
 }
 

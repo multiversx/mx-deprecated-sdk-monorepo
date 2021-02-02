@@ -54,7 +54,7 @@ export class Struct extends TypedValue {
         let definitions = type.fields;
 
         if (fields.length != definitions.length) {
-            throw new errors.ErrStructureTyping("fields length vs. field definitions length");
+            throw new errors.ErrStructTyping("fields length vs. field definitions length");
         }
 
         for (let i = 0; i < fields.length; i++) {
@@ -64,10 +64,10 @@ export class Struct extends TypedValue {
             let definitionType = definition.type;
 
             if (!fieldType.equals(definitionType)) {
-                throw new errors.ErrStructureTyping(`check type of field "${definition.name}"`);
+                throw new errors.ErrStructTyping(`check type of field "${definition.name}"`);
             }
             if (field.name != definition.name) {
-                throw new errors.ErrStructureTyping(`check name of field "${definition.name}"`);
+                throw new errors.ErrStructTyping(`check name of field "${definition.name}"`);
             }
         }
     }

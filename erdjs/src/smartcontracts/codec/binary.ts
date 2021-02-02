@@ -4,21 +4,21 @@ import { guardSameLength } from "../../utils";
 import { OptionalValueBinaryCodec } from "./optional";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { ListBinaryCodec } from "./list";
-import { StructureBinaryCodec } from "./struct";
+import { StructBinaryCodec } from "./struct";
 
 export class BinaryCodec {
     readonly constraints: BinaryCodecConstraints;
     private readonly optionalCodec: OptionalValueBinaryCodec;
     private readonly listCodec: ListBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
-    private readonly structureCodec: StructureBinaryCodec;
+    private readonly structCodec: StructBinaryCodec;
     
     constructor(constraints: BinaryCodecConstraints | null = null) {
         this.constraints = constraints || new BinaryCodecConstraints();
         this.optionalCodec = new OptionalValueBinaryCodec(this);
         this.listCodec = new ListBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
-        this.structureCodec = new  StructureBinaryCodec(this);
+        this.structCodec = new  StructBinaryCodec(this);
     }
 
     decodeOutput(outputItems: Buffer[], definition: EndpointDefinition): TypedValue[] {
@@ -46,7 +46,7 @@ export class BinaryCodec {
             onOptional: () => this.optionalCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
-            onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructType>type)
+            onStruct: () => this.structCodec.decodeTopLevel(buffer, <StructType>type)
         });
 
         return <TResult>typedValue;
@@ -59,7 +59,7 @@ export class BinaryCodec {
             onOptional: () => this.optionalCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
-            onStructure: () => this.structureCodec.decodeNested(buffer, <StructType>type)
+            onStruct: () => this.structCodec.decodeNested(buffer, <StructType>type)
         });
 
         return [<TResult>typedResult, decodedLength];
@@ -70,7 +70,7 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
             onOptional: () => this.optionalCodec.encodeNested(typedValue),
             onList: () => this.listCodec.encodeNested(typedValue),
-            onStructure: () => this.structureCodec.encodeNested(typedValue)
+            onStruct: () => this.structCodec.encodeNested(typedValue)
         });
     }
 
@@ -79,7 +79,7 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
             onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
             onList: () => this.listCodec.encodeTopLevel(typedValue),
-            onStructure: () => this.structureCodec.encodeTopLevel(typedValue)
+            onStruct: () => this.structCodec.encodeTopLevel(typedValue)
         });
     }
 }
@@ -100,7 +100,7 @@ export class BinaryCodecConstraints {
     }
 
     /**
-     * This constraint avoids computer-freezing decode bugs (e.g. due to invalid ABI or structure definitions).
+     * This constraint avoids computer-freezing decode bugs (e.g. due to invalid ABI or struct definitions).
      */
     checkListLength(length: number) {
         if (length > this.maxListLength) {

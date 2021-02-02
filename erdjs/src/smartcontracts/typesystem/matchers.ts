@@ -10,7 +10,7 @@ export function onTypeSelect<TResult>(type: BetterType, selectors: {
     onOptional: () => TResult,
     onList: () => TResult,
     onPrimitive: () => TResult,
-    onStructure: () => TResult,
+    onStruct: () => TResult,
     onOther?: () => TResult
 }): TResult {
     if (type instanceof OptionalType) {
@@ -23,7 +23,7 @@ export function onTypeSelect<TResult>(type: BetterType, selectors: {
         return selectors.onPrimitive();
     }
     if (type instanceof StructType) {
-        return selectors.onStructure();
+        return selectors.onStruct();
     }
 
     if (selectors.onOther) {
@@ -37,7 +37,7 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     onPrimitive: () => TResult,
     onOptional: () => TResult,
     onList: () => TResult,
-    onStructure: () => TResult,
+    onStruct: () => TResult,
     onOther?: () => TResult
 }): TResult {
     if (value instanceof PrimitiveValue) {
@@ -50,7 +50,7 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
         return selectors.onList();
     }
     if (value instanceof Struct) {
-        return selectors.onStructure();
+        return selectors.onStruct();
     }
 
     if (selectors.onOther) {

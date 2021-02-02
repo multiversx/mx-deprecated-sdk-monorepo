@@ -136,7 +136,7 @@ describe("test binary codec (advanced)", () => {
         assert.deepEqual(decodedList, list);
     });
 
-    it("should encode / decode structures", async () => {
+    it("should encode / decode structs", async () => {
         let codec = new BinaryCodec();
         let fooType = new StructType(
             "Foo",
@@ -152,7 +152,7 @@ describe("test binary codec (advanced)", () => {
             ]
         );
 
-        let fooStructure = new Struct(fooType, [
+        let fooStruct = new Struct(fooType, [
             new StructField(new BigUIntValue(Balance.eGLD(10).valueOf()), "ticket_price"),
             new StructField(new U32Value(0), "tickets_left"),
             new StructField(new U64Value(BigInt("0x000000005fc2b9db")), "deadline"),
@@ -164,12 +164,12 @@ describe("test binary codec (advanced)", () => {
         ]);
 
         let encodedExpected = serialized("[00000008|8ac7230489e80000] [00000000] [000000005fc2b9db] [ffffffff] [00000001|64] [00000000] [00002500] [0000000a|140ec80fa7ee88000000]");
-        let encoded = codec.encodeNested(fooStructure);
+        let encoded = codec.encodeNested(fooStruct);
         assert.deepEqual(encoded, encodedExpected);
 
         let [decoded, decodedLength] = codec.decodeNested(encodedExpected, fooType);
         assert.equal(decodedLength, encodedExpected.length);
-        assert.deepEqual(decoded, fooStructure);
+        assert.deepEqual(decoded, fooStruct);
 
         let plainFoo = decoded.valueOf();
         assert.deepEqual(plainFoo, {
