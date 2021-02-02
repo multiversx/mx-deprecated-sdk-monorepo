@@ -6,15 +6,15 @@ This is a monorepo containing the following:
 
 | Component   |      Type      |  Documentation | API | Changelog | CLI | Distribution
 |----------|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/tools/erdpy) | Sphinx (TBD) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) | [erdpy-up](https://docs.elrond.com/tools/erdpy/installing-erdpy#install-using-erdpy-up) and [PyPi](https://pypi.org/project/erdpy/#history)
+| erdpy |  CLI and Python SDK | [docs.elrond.com](https://docs.elrond.com/sdk-and-tools/erdpy/erdpy/) | Sphinx (TBD) | [CHANGELOG](erdpy/CHANGELOG.md) | [CLI](erdpy/CLI.md) | [erdpy-up](https://docs.elrond.com/sdk-and-tools/erdpy/installing-erdpy/) and [PyPi](https://pypi.org/project/erdpy/#history)
 | erdgo | Go SDK | [pkg.go.dev](https://pkg.go.dev/github.com/ElrondNetwork/elrond-sdk/erdgo) | N / A | [CHANGELOG](erdgo/CHANGELOG.md) | N / A  | `go.mod` (Github)
 | erdjava | Java SDK | [JavaDoc](https://elrondnetwork.github.io/elrond-sdk-docs/erdjava) | N / A | [CHANGELOG](erdjava/CHANGELOG.md) | [CLI](erdjava/README.md)  | Source code (Github)
+| erdjs |    TypeScript SDK   | TBD | [TypeDoc](https://elrondnetwork.github.io/elrond-sdk-docs/erdjs/) | [CHANGELOG](erdjs/CHANGELOG.md) | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdjs)
 | erdkotlin | Kotlin SDK | TBD | N / A | [CHANGELOG](erdkotlin/CHANGELOG.md) | N / A  | Source code (Github)
-| erdjs |    TypeScript SDK   | TBD | [TypeDoc](https://elrondnetwork.github.io/elrond-sdk/erdjs/api/index.html) | [CHANGELOG](erdjs/CHANGELOG.md) | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdjs)
 | erdtestjs |    TypeScript SDK   |  TBD | TypeDoc (TBD) | TBD | N / A | [npm](https://www.npmjs.com/package/@elrondnetwork/erdtestjs)
 | erdwalletjs-cli | NodeJS CLI | TBD | N / A | [CHANGELOG](erdwalletjs-cli/CHANGELOG.md) | [CLI](erdwalletjs-cli/README.md)  | [npm](https://www.npmjs.com/package/@elrondnetwork/erdwalletjs-cli)
 
-For developing Smart Contracts, [our tutorials](https://docs.elrond.com/docs/developers/tutorials/crowdfunding-p1), plus [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide) - which is a frontend for erdpy - should be a good start. 
+For developing Smart Contracts, [our tutorials](https://docs.elrond.com/developers/tutorials/crowdfunding-p1/), plus [Elrond IDE](https://marketplace.visualstudio.com/items?itemName=Elrond.vscode-elrond-ide) - which is a frontend for erdpy - should be a good start. 
 
 
 ## Developers
