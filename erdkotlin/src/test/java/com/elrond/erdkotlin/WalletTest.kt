@@ -1,6 +1,6 @@
 package com.elrond.erdkotlin
 
-import com.elrond.erdkotlin.domain.wallet.Wallet
+import com.elrond.erdkotlin.domain.wallet.models.Wallet
 import org.junit.Test
 
 import org.junit.Assert.assertEquals
