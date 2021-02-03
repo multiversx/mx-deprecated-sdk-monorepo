@@ -1,6 +1,11 @@
-package erdgo
+package data
 
-import "math/big"
+import (
+	"errors"
+	"math/big"
+)
+
+var errInvalidBalance = errors.New("invalid balance")
 
 // AccountResponse holds the account endpoint response
 type AccountResponse struct {
@@ -11,7 +16,7 @@ type AccountResponse struct {
 	Code  string `json:"code"`
 }
 
-// Account holds an Account's informations
+// Account holds an Account's information
 type Account struct {
 	Address  string `json:"address"`
 	Nonce    uint64 `json:"nonce"`

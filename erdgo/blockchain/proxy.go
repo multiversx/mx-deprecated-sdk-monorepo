@@ -1,4 +1,4 @@
-package erdgo
+package blockchain
 
 import (
 	"encoding/json"
@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/ElrondNetwork/elrond-go/core"
+	"github.com/ElrondNetwork/elrond-go/core/check"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
 )
 
 const (
-	metachainID = 4294967295
-
 	// endpoints
 	networkConfigEndpoint        = "network/config"
 	accountEndpoint              = "address/%s"
@@ -23,14 +25,14 @@ const (
 	getNetworkStatusEndpoint     = "network/status/%v"
 )
 
-// ElrondProxy implements basic functions for interacting with an Elrond Proxy
-type ElrondProxy struct {
+// elrondProxy implements basic functions for interacting with an Elrond Proxy
+type elrondProxy struct {
 	proxyURL string
 }
 
 // NewElrondProxy initializes and returns an ElrondProxy object
-func NewElrondProxy(url string) *ElrondProxy {
-	ep := &ElrondProxy{
+func NewElrondProxy(url string) *elrondProxy {
+	ep := &elrondProxy{
 		proxyURL: url,
 	}
 
@@ -38,13 +40,14 @@ func NewElrondProxy(url string) *ElrondProxy {
 }
 
 // GetNetworkConfig retrieves the network configuration from the proxy
-func (ep *ElrondProxy) GetNetworkConfig() (*NetworkConfig, error) {
-	data, err := ep.getHTTP(networkConfigEndpoint)
+func (ep *elrondProxy) GetNetworkConfig() (*data.NetworkConfig, error) {
+	buff, err := ep.getHTTP(networkConfigEndpoint)
 	if err != nil {
 		return nil, err
 	}
-	response := &NetworkConfigResponse{}
-	err = json.Unmarshal(data, response)
+
+	response := &data.NetworkConfigResponse{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return nil, err
 	}
@@ -56,17 +59,21 @@ func (ep *ElrondProxy) GetNetworkConfig() (*NetworkConfig, error) {
 }
 
 // GetAccount retrieves an account info from the network (nonce, balance)
-func (ep *ElrondProxy) GetAccount(address string) (*Account, error) {
-	if !IsValidBech32Address(address) {
-		return nil, errInvalidAddress
+func (ep *elrondProxy) GetAccount(address addressHandler) (*data.Account, error) {
+	if check.IfNil(address) {
+		return nil, ErrNilAddress
+	}
+	if !address.IsValid() {
+		return nil, ErrInvalidAddress
 	}
 	endpoint := fmt.Sprintf(accountEndpoint, address)
-	data, err := ep.getHTTP(endpoint)
+
+	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return nil, err
 	}
-	response := &AccountResponse{}
-	err = json.Unmarshal(data, response)
+	response := &data.AccountResponse{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return nil, err
 	}
@@ -78,17 +85,18 @@ func (ep *ElrondProxy) GetAccount(address string) (*Account, error) {
 }
 
 // SendTransaction broadcasts a transaction to the network and returns the txhash if successful
-func (ep *ElrondProxy) SendTransaction(tx *Transaction) (string, error) {
+func (ep *elrondProxy) SendTransaction(tx *data.Transaction) (string, error) {
 	jsonTx, err := json.Marshal(tx)
 	if err != nil {
 		return "", err
 	}
-	data, err := ep.postHTTP(sendTransactionEndpoint, jsonTx)
+	buff, err := ep.postHTTP(sendTransactionEndpoint, jsonTx)
 	if err != nil {
 		return "", err
 	}
-	response := &SendTransactionResponse{}
-	err = json.Unmarshal(data, response)
+
+	response := &data.SendTransactionResponse{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return "", err
 	}
@@ -100,14 +108,15 @@ func (ep *ElrondProxy) SendTransaction(tx *Transaction) (string, error) {
 }
 
 // GetTransactionStatus retrieves a transaction's status from the network
-func (ep *ElrondProxy) GetTransactionStatus(hash string) (string, error) {
+func (ep *elrondProxy) GetTransactionStatus(hash string) (string, error) {
 	endpoint := fmt.Sprintf(getTransactionStatusEndpoint, hash)
-	data, err := ep.getHTTP(endpoint)
+	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return "", err
 	}
-	response := &TransactionStatus{}
-	err = json.Unmarshal(data, response)
+
+	response := &data.TransactionStatus{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return "", err
 	}
@@ -119,14 +128,15 @@ func (ep *ElrondProxy) GetTransactionStatus(hash string) (string, error) {
 }
 
 // GetTransactionInfo retrieves a transaction's details from the network
-func (ep *ElrondProxy) GetTransactionInfo(hash string) (*TransactionInfo, error) {
+func (ep *elrondProxy) GetTransactionInfo(hash string) (*data.TransactionInfo, error) {
 	endpoint := fmt.Sprintf(getTransactionInfoEndpoint, hash)
-	data, err := ep.getHTTP(endpoint)
+	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return nil, err
 	}
-	response := &TransactionInfo{}
-	err = json.Unmarshal(data, response)
+
+	response := &data.TransactionInfo{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return nil, err
 	}
@@ -138,14 +148,15 @@ func (ep *ElrondProxy) GetTransactionInfo(hash string) (*TransactionInfo, error)
 }
 
 // GetLatestHyperblockNonce retrieves the latest hyperblock (metachain) nonce from the network
-func (ep *ElrondProxy) GetLatestHyperblockNonce() (uint64, error) {
-	endpoint := fmt.Sprintf(getNetworkStatusEndpoint, metachainID)
-	data, err := ep.getHTTP(endpoint)
+func (ep *elrondProxy) GetLatestHyperblockNonce() (uint64, error) {
+	endpoint := fmt.Sprintf(getNetworkStatusEndpoint, core.MetachainShardId)
+	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return 0, err
 	}
-	response := &NetworkStatusResponse{}
-	err = json.Unmarshal(data, response)
+
+	response := &data.NetworkStatusResponse{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return 0, err
 	}
@@ -157,26 +168,27 @@ func (ep *ElrondProxy) GetLatestHyperblockNonce() (uint64, error) {
 }
 
 // GetHyperblockByNonce retrieves a hyperblock's info by nonce from the network
-func (ep *ElrondProxy) GetHyperblockByNonce(nonce uint64) (*Hyperblock, error) {
+func (ep *elrondProxy) GetHyperblockByNonce(nonce uint64) (*data.Hyperblock, error) {
 	endpoint := fmt.Sprintf(getHyperblockByNonceEndpoint, nonce)
 
 	return ep.getHyperblock(endpoint)
 }
 
 // GetHyperblockByHash retrieves a hyperblock's info by hash from the network
-func (ep *ElrondProxy) GetHyperblockByHash(hash string) (*Hyperblock, error) {
+func (ep *elrondProxy) GetHyperblockByHash(hash string) (*data.Hyperblock, error) {
 	endpoint := fmt.Sprintf(getHyperblockByHashEndpoint, hash)
 
 	return ep.getHyperblock(endpoint)
 }
 
-func (ep *ElrondProxy) getHyperblock(endpoint string) (*Hyperblock, error) {
-	data, err := ep.getHTTP(endpoint)
+func (ep *elrondProxy) getHyperblock(endpoint string) (*data.Hyperblock, error) {
+	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
 		return nil, err
 	}
-	response := &HyperblockResponse{}
-	err = json.Unmarshal(data, response)
+
+	response := &data.HyperblockResponse{}
+	err = json.Unmarshal(buff, response)
 	if err != nil {
 		return nil, err
 	}
@@ -187,7 +199,7 @@ func (ep *ElrondProxy) getHyperblock(endpoint string) (*Hyperblock, error) {
 	return &response.Data.Hyperblock, nil
 }
 
-func (ep *ElrondProxy) getHTTP(endpoint string) ([]byte, error) {
+func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
 	request, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
@@ -209,7 +221,7 @@ func (ep *ElrondProxy) getHTTP(endpoint string) ([]byte, error) {
 	return body, nil
 }
 
-func (ep *ElrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
+func (ep *elrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
 	response, err := http.Post(url, "", strings.NewReader(string(data)))
 	if err != nil {
