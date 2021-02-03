@@ -1,4 +1,4 @@
-package com.elrond.erdkotlin.data
+package com.elrond.erdkotlin.data.api
 
 import com.elrond.erdkotlin.Exceptions
 import com.google.gson.Gson
@@ -10,7 +10,8 @@ import okhttp3.RequestBody
 import java.io.IOException
 
 internal class ElrondClient(
-    var url: String
+    var url: String,
+    private val gson: Gson
 ) {
 
     private val httpClient = OkHttpClient()
@@ -45,20 +46,17 @@ internal class ElrondClient(
 
     companion object {
         private val JSON = MediaType.get("application/json; charset=utf-8")
-        private val gson = Gson()
     }
 
     class ResponseBase<T> {
         val data: T? = null
         val error: String? = null
-        val code: String = ""
+        val code: String = "" // ex: "successful"
 
         @Throws(Exceptions.ProxyRequestException::class)
         fun throwIfError() {
-            error?.let { error ->
-                if (error.isNotEmpty()) {
-                    throw Exceptions.ProxyRequestException(error)
-                }
+            if (!error.isNullOrEmpty()) {
+                throw Exceptions.ProxyRequestException(error)
             }
             if (code != "successful") {
                 throw Exceptions.ProxyRequestException(code)
