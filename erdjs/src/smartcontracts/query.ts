@@ -122,8 +122,8 @@ export class ContractReturnData {
     asString: string;
 
     constructor(asBase64: any) {
-        this.asBase64 = asBase64;
-        this.asBuffer = Buffer.from(asBase64, "base64");
+        this.asBase64 = asBase64 || "";
+        this.asBuffer = Buffer.from(this.asBase64, "base64");
         this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
         this.asBool = this.asNumber != 0;
