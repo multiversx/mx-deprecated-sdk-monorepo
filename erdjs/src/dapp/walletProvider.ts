@@ -5,7 +5,8 @@ import {
     DAPP_MESSAGE_IS_CONNECTED,
     DAPP_MESSAGE_GET_ADDRESS,
     DAPP_MESSAGE_CONNECT_URL,
-    DAPP_MESSAGE_SEND_TRANSACTION_URL
+    DAPP_MESSAGE_SEND_TRANSACTION_URL,
+    DAPP_MESSAGE_LOG_OUT
 } from "./constants";
 import {mainFrameStyle} from "./dom";
 import {Transaction} from "../transaction";
@@ -136,6 +137,49 @@ export class WalletProvider implements IDappProvider {
         }).catch(_ => {
             return '';
         });
+    }
+
+     /**
+     * Fetches the logout hook url and redirects the client to the wallet logout.
+     */
+    async logout(): Promise<boolean> {
+        if (!this.mainFrame) {
+            return false;
+        }
+
+        const {contentWindow} = this.mainFrame;
+        if (!contentWindow) {
+            console.warn("Something went wrong, main wallet iframe does not contain a contentWindow");
+            return false;
+        }
+
+        return new Promise<boolean>((resolve, reject) => {
+            console.log("postMessage", DAPP_MESSAGE_LOG_OUT);
+
+            contentWindow.postMessage({
+                type: DAPP_MESSAGE_LOG_OUT,
+            }, this.walletUrl);
+
+            const timeout = setTimeout(_ => reject('logout url not responding'), 5000);
+            const logout = (ev: IDappMessageEvent) => {
+                console.log("event", "logouturl", ev);
+
+                if (!this.isValidWalletSource(ev.origin)) {
+                    return;
+                }
+
+                const {data} = ev;
+                if (data.type !== DAPP_MESSAGE_LOG_OUT) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                window.removeEventListener('message', logout.bind(this));
+                return resolve(data.data);
+            };
+
+            window.addEventListener('message', logout);
+        })
     }
 
     /**
