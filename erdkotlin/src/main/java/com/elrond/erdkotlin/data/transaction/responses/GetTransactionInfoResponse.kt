@@ -13,6 +13,8 @@ internal class GetTransactionInfoResponse(
         val value: BigInteger,
         val sender: String,
         val receiver: String,
+        val senderUsername: String?,
+        val receiverUsername: String?,
         val gasPrice: Long,
         val gasLimit: Long,
         val data: String?,
@@ -23,6 +25,7 @@ internal class GetTransactionInfoResponse(
         val miniBlockHash: String?,
         val blockHash: String?,
         val status: String,
+        val hyperblockNonce: Long?
     )
 
 }

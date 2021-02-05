@@ -11,6 +11,8 @@ data class TransactionInfo(
     val value: BigInteger,
     val sender: Address,
     val receiver: Address,
+    val senderUsername: String?,
+    val receiverUsername: String?,
     val gasPrice: Long,
     val gasLimit: Long,
     val data: String?,
@@ -21,4 +23,5 @@ data class TransactionInfo(
     val miniBlockHash: String?,
     val blockHash: String?,
     val status: String,
+    val hyperblockNonce: Long?
 )

@@ -9,6 +9,8 @@ internal data class GetAddressTransactionsResponse(
     data class TransactionOnNetworkData(
         val sender: String,
         val receiver: String,
+        val senderUsername: String?,
+        val receiverUsername: String?,
         val nonce: Long,
         val value: BigInteger,
         val gasPrice: Long,
@@ -26,5 +28,6 @@ internal data class GetAddressTransactionsResponse(
         val searchOrder: Long,
         val fee: String,
         val scResults: List<TransactionOnNetwork.ScResult>?,
+        val hyperblockNonce: Long?
     )
 }

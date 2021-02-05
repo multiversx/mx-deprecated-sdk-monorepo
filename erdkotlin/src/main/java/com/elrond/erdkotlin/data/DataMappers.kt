@@ -22,6 +22,8 @@ internal fun GetAddressTransactionsResponse.TransactionOnNetworkData.toDomain() 
     TransactionOnNetwork(
         sender = Address.fromBech32(sender),
         receiver = Address.fromBech32(receiver),
+        senderUsername = senderUsername,
+        receiverUsername = receiverUsername,
         nonce = nonce,
         value = value,
         gasPrice = gasPrice,
@@ -38,7 +40,8 @@ internal fun GetAddressTransactionsResponse.TransactionOnNetworkData.toDomain() 
         round = round,
         searchOrder = searchOrder,
         fee = fee,
-        scResults = scResults
+        scResults = scResults,
+        hyperblockNonce = hyperblockNonce
     )
 
 internal fun GetTransactionInfoResponse.TransactionInfoData.toDomain() = TransactionInfo(
@@ -49,6 +52,8 @@ internal fun GetTransactionInfoResponse.TransactionInfoData.toDomain() = Transac
     value = value,
     sender = Address.fromBech32(sender),
     receiver = Address.fromBech32(receiver),
+    senderUsername = senderUsername,
+    receiverUsername = receiverUsername,
     gasPrice = gasPrice,
     gasLimit = gasLimit,
     data = data,
@@ -58,7 +63,8 @@ internal fun GetTransactionInfoResponse.TransactionInfoData.toDomain() = Transac
     blockNonce = blockNonce,
     miniBlockHash = miniBlockHash,
     blockHash = blockHash,
-    status = status
+    status = status,
+    hyperblockNonce = hyperblockNonce
 )
 
 internal fun QueryContractResponse.Data.toDomain() = SmartContractOutput(

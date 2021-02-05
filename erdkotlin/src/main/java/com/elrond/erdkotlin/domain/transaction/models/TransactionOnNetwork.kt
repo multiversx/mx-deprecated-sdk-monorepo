@@ -6,6 +6,8 @@ import java.math.BigInteger
 data class TransactionOnNetwork(
     val sender: Address,
     val receiver: Address,
+    val senderUsername: String?,
+    val receiverUsername: String?,
     val nonce: Long,
     val value: BigInteger,
     val gasPrice: Long,
@@ -23,6 +25,7 @@ data class TransactionOnNetwork(
     val searchOrder: Long,
     val fee: String,
     val scResults: List<ScResult>?,
+    val hyperblockNonce: Long?
 ) {
 
     data class ScResult(
