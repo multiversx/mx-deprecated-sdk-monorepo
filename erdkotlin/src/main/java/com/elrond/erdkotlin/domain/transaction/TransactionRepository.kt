@@ -27,7 +27,7 @@ internal interface TransactionRepository {
         Exceptions.CannotSerializeTransactionException::class,
         Exceptions.ProxyRequestException::class
     )
-    fun estimateCostOfTransaction(transaction: TransactionToEstimate): String
+    fun estimateCostOfTransaction(transaction: Transaction): String
 
     @Throws(
         IOException::class,

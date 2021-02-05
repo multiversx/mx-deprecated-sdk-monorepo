@@ -11,7 +11,6 @@ import com.elrond.erdkotlin.data.transaction.responses.GetTransactionStatusRespo
 import com.elrond.erdkotlin.data.transaction.responses.SendTransactionResponse
 import com.elrond.erdkotlin.domain.vm.SmartContractQuery
 import com.elrond.erdkotlin.data.vm.responses.QueryContractResponse
-import com.elrond.erdkotlin.domain.transaction.models.TransactionToEstimate
 import com.elrond.erdkotlin.domain.transaction.models.Transaction
 import com.elrond.erdkotlin.domain.wallet.models.Address
 import com.google.gson.Gson
@@ -56,8 +55,8 @@ internal class ElrondProxy(
         return elrondClient.doPost("transaction/send", requestJson)
     }
 
-    fun estimateCostOfTransaction(transaction: TransactionToEstimate): ElrondClient.ResponseBase<EstimateCostOfTransactionResponse> {
-        return elrondClient.doPost("transaction/cost", gson.toJson(transaction))
+    fun estimateCostOfTransaction(transaction: Transaction): ElrondClient.ResponseBase<EstimateCostOfTransactionResponse> {
+        return elrondClient.doPost("transaction/cost", transaction.serialize())
     }
 
     fun getTransactionInfo(txHash: String, sender: Address?): ElrondClient.ResponseBase<GetTransactionInfoResponse> {

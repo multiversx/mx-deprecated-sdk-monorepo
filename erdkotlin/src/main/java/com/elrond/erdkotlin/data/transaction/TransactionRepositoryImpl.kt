@@ -27,7 +27,7 @@ internal class TransactionRepositoryImpl(
         return requireNotNull(response.data).transactions.map { it.toDomain() }
     }
 
-    override fun estimateCostOfTransaction(transaction: TransactionToEstimate): String {
+    override fun estimateCostOfTransaction(transaction: Transaction): String {
         val response = elrondProxy.estimateCostOfTransaction(transaction)
         return requireNotNull(response.data).txGasUnits
     }
