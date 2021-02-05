@@ -62,6 +62,17 @@ export class HWProvider implements IDappProvider {
     }
 
     /**
+     * Mocks a logout request by returning true
+     */
+    async logout(): Promise<boolean> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+
+        return true;
+    }
+
+    /**
      * Fetches current selected ledger address
      */
     async getAddress(): Promise<string> {
