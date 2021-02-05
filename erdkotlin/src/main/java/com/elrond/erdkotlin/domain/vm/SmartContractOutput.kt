@@ -19,8 +19,8 @@ data class SmartContractOutput(
         val storageUpdates: LinkedTreeMap<String, StorageUpdate>?,
         val callType: Long,
 
-        // documentation is not clear about this
         // Keeping those as placeholders for future development
+        // https://github.com/ElrondNetwork/elrond-go/blob/master/core/vmcommon/output.go
         val code: Any?,
         val codeMetadata: Any?,
         val data: Any?,

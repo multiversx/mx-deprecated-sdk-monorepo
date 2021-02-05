@@ -6,7 +6,11 @@ import org.bouncycastle.jcajce.provider.digest.Keccak
 import org.bouncycastle.util.encoders.Hex
 import java.nio.charset.StandardCharsets
 
-// returns the compatible DNS address
+// Returns the compatible DNS address
+//
+// The implementation is based on
+// - https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/dns.py
+// - https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/contracts.py
 internal class ComputeDnsAddressUsecase {
 
     fun execute(username: String): Address {
@@ -15,6 +19,8 @@ internal class ComputeDnsAddressUsecase {
         return execute(shardId)
     }
 
+    // Based on
+    // https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/dns.py#L91
     fun execute(shardId: Byte): Address {
         val deployerPubkeyPrefix = initialDNSAddress.sliceArray(
             0 until initialDNSAddress.size - shardIdentiferLen
@@ -27,11 +33,15 @@ internal class ComputeDnsAddressUsecase {
         return computeAddress(account)
     }
 
+    // Based on
+    // https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/dns.py#L64
     private fun nameHash(name: String): ByteArray {
         val digest = Keccak.Digest256()
         return digest.digest(name.toByteArray(StandardCharsets.UTF_8))
     }
 
+    // Based on
+    // https://github.com/ElrondNetwork/elrond-sdk/blob/d896fb777ca354374d93fec7723adbe28ea3f580/erdpy/contracts.py#L51
     private fun computeAddress(account: Account): Address {
         // 8 bytes of zero + 2 bytes for VM type + 20 bytes of hash(owner) + 2 bytes of shard(owner)
         val ownerBytes = account.address.pubkey()
