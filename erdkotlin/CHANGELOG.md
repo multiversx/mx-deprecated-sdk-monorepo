@@ -1,7 +1,7 @@
 Changelog
 ============
 
-v0.2
+## [0.2.0] - 03.02.2021
 =
 Add a `.pom` file for `.jar` building. (more infos in the readme)
 Add support for Dns username: `Transaction.senderUsername` and `Transaction.receiverUsername`
@@ -19,7 +19,7 @@ Add the folowing usecases :
 - RegisterDnsUsecase // equivalent to `erdpy dns register`
 - GetDnsRegistrationCostUsecase // equivalent to `erdpy dns registration-cost`
 
-v0.1
+## [0.1.0] - 26.01.2021
 =
 Initial version allowing to import a wallet and send transaction.
 Usecases:
