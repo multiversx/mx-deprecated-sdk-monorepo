@@ -9,12 +9,16 @@ class QuerySmartContractUsecase internal constructor(
     fun execute(
         address: Address,
         function: String,
-        args: List<String> = emptyList()
+        args: List<String> = emptyList(),
+        caller: String? = null,
+        value: String? = null
     ): SmartContractOutput {
         val payload = SmartContractQuery(
             scAddress = address.bech32(),
             funcName = function,
             args = args,
+            caller = caller,
+            value = value
         )
         return vmRepository.queryContract(payload)
     }
