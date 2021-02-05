@@ -62,7 +62,7 @@ export class HWProvider implements IDappProvider {
     }
 
     /**
-     * Mocks a logout request by returning the ledger selected address
+     * Mocks a logout request by returning true
      */
     async logout(): Promise<boolean> {
         if (!this.hwApp) {

@@ -10,7 +10,6 @@ import {
 } from "./constants";
 import {mainFrameStyle} from "./dom";
 import {Transaction} from "../transaction";
-import { Balance } from "../balance";
 
 export class WalletProvider implements IDappProvider {
     walletUrl: string;
@@ -101,7 +100,7 @@ export class WalletProvider implements IDappProvider {
 
         const {contentWindow} = this.mainFrame;
         if (!contentWindow) {
-            console.warn("Something went wrong, main wallet iframe does not contain a contentWindow");
+            console.warn("something went wrong, main wallet iframe does not contain a contentWindow");
             return '';
         }
 
@@ -149,7 +148,7 @@ export class WalletProvider implements IDappProvider {
 
         const {contentWindow} = this.mainFrame;
         if (!contentWindow) {
-            console.warn("Something went wrong, main wallet iframe does not contain a contentWindow");
+            console.warn("something went wrong, main wallet iframe does not contain a contentWindow");
             return false;
         }
 
