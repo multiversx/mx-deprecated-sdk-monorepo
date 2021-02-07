@@ -11,9 +11,10 @@ import java.nio.charset.StandardCharsets
 // The implementation is based on
 // - https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/dns.py
 // - https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/contracts.py
-internal class ComputeDnsAddressUsecase {
+internal class ComputeDnsAddressUsecase(private val checkUsernameUsecase: CheckUsernameUsecase) {
 
     fun execute(username: String): Address {
+        checkUsernameUsecase.execute(username, shouldThrow = true)
         val hash = nameHash(username)
         val shardId = hash.last()
         return execute(shardId)

@@ -8,6 +8,7 @@ import com.elrond.erdkotlin.data.vm.VmRepositoryImpl
 import com.elrond.erdkotlin.domain.account.GetAccountUsecase
 import com.elrond.erdkotlin.domain.account.GetAddressBalanceUsecase
 import com.elrond.erdkotlin.domain.account.GetAddressNonceUsecase
+import com.elrond.erdkotlin.domain.dns.CheckUsernameUsecase
 import com.elrond.erdkotlin.domain.dns.ComputeDnsAddressUsecase
 import com.elrond.erdkotlin.domain.dns.RegisterDnsUsecase
 import com.elrond.erdkotlin.domain.networkconfig.GetNetworkConfigUsecase
@@ -32,6 +33,7 @@ object ErdSdk {
         SignTransactionUsecase(),
         transactionRepository
     )
+
     fun getTransactionsUsecase() = GetAddressTransactionsUsecase(transactionRepository)
     fun getTransactionInfoUsecase() = GetTransactionInfoUsecase(transactionRepository)
     fun getTransactionStatusUsecase() = GetTransactionStatusUsecase(transactionRepository)
@@ -41,12 +43,16 @@ object ErdSdk {
         querySmartContractUsecase(),
         computeDnsAddressUsecase()
     )
+
     fun registerDnsUsecase() = RegisterDnsUsecase(
         sendTransactionUsecase(),
         computeDnsAddressUsecase(),
         getDnsRegistrationCostUsecase()
     )
-    private fun computeDnsAddressUsecase() = ComputeDnsAddressUsecase()
+
+    fun checkUsernameUsecase() = CheckUsernameUsecase()
+
+    private fun computeDnsAddressUsecase() = ComputeDnsAddressUsecase(checkUsernameUsecase())
 
     private val elrondProxy = ElrondProxy(ElrondNetwork.DevNet.url())
     private val networkConfigRepository = NetworkConfigRepositoryImpl(elrondProxy)
