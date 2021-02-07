@@ -9,7 +9,6 @@ import org.junit.Test
 class AddressTest {
 
     @Test
-    @Throws(Exception::class)
     fun shouldCreate() {
         val aliceBech32 = "erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"
         val bobBech32 = "erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r"
@@ -37,7 +36,6 @@ class AddressTest {
     }
 
     @Test
-    @Throws(java.lang.Exception::class)
     fun isValidBech32() {
         assertTrue(Address.isValidBech32("erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz"))
         assertTrue(Address.isValidBech32("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r"))

@@ -8,14 +8,12 @@ import org.junit.Assert.assertEquals
 class WalletTest {
 
     @Test
-    @Throws(Exceptions.CannotGenerateMnemonicException::class)
     fun generateMnemonic() {
         val words = Wallet.generateMnemonic()
         assertEquals(24, words.size)
     }
 
     @Test
-    @Throws(Exceptions.CannotDeriveKeysException::class)
     fun deriveFromMnemonic() {
         // Emotion spare
         var mnemonic =

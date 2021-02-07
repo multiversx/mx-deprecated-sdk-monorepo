@@ -36,14 +36,14 @@ internal class ComputeDnsAddressUsecase(private val checkUsernameUsecase: CheckU
 
     // Based on
     // https://github.com/ElrondNetwork/elrond-sdk/blob/52a0ba4414f96068a280b936bd3b456d0b2dd557/erdpy/dns.py#L64
-    private fun nameHash(name: String): ByteArray {
+    internal fun nameHash(name: String): ByteArray {
         val digest = Keccak.Digest256()
         return digest.digest(name.toByteArray(StandardCharsets.UTF_8))
     }
 
     // Based on
     // https://github.com/ElrondNetwork/elrond-sdk/blob/d896fb777ca354374d93fec7723adbe28ea3f580/erdpy/contracts.py#L51
-    private fun computeAddress(account: Account): Address {
+    internal fun computeAddress(account: Account): Address {
         // 8 bytes of zero + 2 bytes for VM type + 20 bytes of hash(owner) + 2 bytes of shard(owner)
         val ownerBytes = account.address.pubkey()
         val nonceBytes = longToUInt32ByteArray(account.nonce, 8)
@@ -55,7 +55,7 @@ internal class ComputeDnsAddressUsecase(private val checkUsernameUsecase: CheckU
     }
 
     // litte endian implementation
-    private fun longToUInt32ByteArray(value: Long, length: Int): ByteArray {
+    internal fun longToUInt32ByteArray(value: Long, length: Int): ByteArray {
         val bytes = ByteArray(length)
         for (i in 0 until length) {
             bytes[i] = ((value ushr (i * 8)) and 0xFFFF).toByte()
