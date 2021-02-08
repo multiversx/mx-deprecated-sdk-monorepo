@@ -11,6 +11,7 @@ type Proxy interface {
 	GetNetworkConfig() (*data.NetworkConfig, error)
 	GetAccount(address blockchain.AddressHandler) (*data.Account, error)
 	SendTransaction(tx *data.Transaction) (string, error)
+	SendTransactions(txs []*data.Transaction) ([]string, error)
 	IsInterfaceNil() bool
 }
 
