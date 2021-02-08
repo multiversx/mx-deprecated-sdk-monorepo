@@ -3,6 +3,7 @@ package interactors
 import (
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"sync"
 
 	"github.com/ElrondNetwork/elrond-go/core/check"
@@ -101,7 +102,7 @@ func (ti *transactionInteractor) ApplySignatureAndSender(skBytes []byte, arg Arg
 
 	copyArg := arg
 	copyArg.Signature = ""
-	arg.SndAddr = core.AddressPublicKeyConverter.Encode(pkBytes)
+	copyArg.SndAddr = core.AddressPublicKeyConverter.Encode(pkBytes)
 
 	unsignedMessaged, err := ti.createUnsignedMessage(copyArg)
 	if err != nil {
@@ -122,4 +123,28 @@ func (ti *transactionInteractor) createUnsignedMessage(arg ArgCreateTransaction)
 	tx := ti.CreateTransaction(arg)
 
 	return json.Marshal(tx)
+}
+
+func (ti *transactionInteractor) SendTransactionsAsBunch(numberOfBunches int) ([]string, error) {
+
+	bnchSize := len(ti.txAccumulator) / numberOfBunches
+	var bunch []*data.Transaction
+	var msg []string
+	var err error
+	txIndex := 0
+
+	for bnchIndex := 0; bnchIndex < bnchSize; bnchIndex++ {
+		fmt.Println("Bunch index: ", bnchIndex)
+
+		for txIndex < bnchSize {
+			bunch = append(bunch, ti.txAccumulator[txIndex])
+			txIndex++
+		}
+
+		msg, err = ti.Proxy.SendTransactions(bunch)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return msg, err
 }
