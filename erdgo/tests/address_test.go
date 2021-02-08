@@ -2,6 +2,7 @@ package tests
 
 import (
 	"crypto/rand"
+	"encoding/hex"
 	"fmt"
 	"testing"
 
@@ -45,9 +46,11 @@ func TestGenerateSameDNSAddress(t *testing.T) {
 	ag, err := blockchain.NewAddressGenerator(coord)
 	require.Nil(t, err)
 
-	newDNS, err := ag.CompatibleDNSAddressFromUsername("christopher.elrond")
+	newDNS, err := ag.CompatibleDNSAddressFromUsername("laura.elrond")
 	require.Nil(t, err)
 
 	fmt.Printf("Compatibile DNS address is %s\n", newDNS.AddressAsBech32String())
 	assert.Equal(t, "erd1qqqqqqqqqqqqqpgqa2re7lsvuxz2gcpnkdh7qp75teyqff8gqqes39p5ge", newDNS.AddressAsBech32String())
+
+	fmt.Println(hex.EncodeToString([]byte("borcan.elrond")))
 }

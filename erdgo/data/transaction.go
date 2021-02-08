@@ -9,7 +9,17 @@ type SendTransactionResponse struct {
 	Code  string `json:"code"`
 }
 
-// Transaction holds the fields of a transaction to be broadcasted to the network
+// SendTransactionsResponse holds the response received from the network when broadcasting multiple transactions
+type SendTransactionsResponse struct {
+	Data struct {
+		NumOfSentTxs int            `json:"numOfSentTxs"`
+		TxHashes     map[int]string `json:"txHashes"`
+	} `json:"data"`
+	Error string `json:"error"`
+	Code  string `json:"code"`
+}
+
+// Transaction holds the fields of a transaction to be broadcast to the network
 type Transaction struct {
 	Nonce     uint64 `json:"nonce"`
 	Value     string `json:"value"`
