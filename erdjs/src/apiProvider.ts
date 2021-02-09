@@ -27,8 +27,7 @@ export class ApiProvider implements IApiProvider {
    */
   async getNetworkStake(): Promise<NetworkStake> {
     let response = await this.doGet("stake");
-    let payload = response;
-    return NetworkStake.fromHttpResponse(payload);
+    return NetworkStake.fromHttpResponse(response);
   }
 
   private async doGet(resourceUrl: string): Promise<any> {
