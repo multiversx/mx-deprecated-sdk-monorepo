@@ -26,7 +26,7 @@ export class ApiProvider implements IApiProvider {
    * Fetches the Network Stake.
    */
   async getNetworkStake(): Promise<NetworkStake> {
-    let response = await this.doGet(`stake`);
+    let response = await this.doGet("stake");
     let payload = response;
     return NetworkStake.fromHttpResponse(payload);
   }
@@ -35,28 +35,27 @@ export class ApiProvider implements IApiProvider {
     try {
       let url = `${this.url}/${resourceUrl}`;
       let response = await axios.get(url, { timeout: this.timeoutLimit });
-      let payload = response.data;
 
-      return payload;
+      return response.data;
     } catch (error) {
-      if (!error.response) {
-        Logger.warn(error);
-        throw new errors.ErrApiProviderGet(
-          resourceUrl,
-          error.toString(),
-          error
-        );
-      }
-
-      let errorData = error.response.data;
-      let originalErrorMessage =
-        errorData.error || errorData.message || JSON.stringify(errorData);
-      throw new errors.ErrApiProviderGet(
-        resourceUrl,
-        originalErrorMessage,
-        error
-      );
+      this.handleApiError(error, resourceUrl);
     }
+  }
+
+  private handleApiError(error: any, resourceUrl: string) {
+    if (!error.response) {
+      Logger.warn(error);
+      throw new errors.ErrApiProviderGet(resourceUrl, error.toString(), error);
+    }
+
+    let errorData = error.response.data;
+    let originalErrorMessage =
+      errorData.error || errorData.message || JSON.stringify(errorData);
+    throw new errors.ErrApiProviderGet(
+      resourceUrl,
+      originalErrorMessage,
+      error
+    );
   }
 }
 
