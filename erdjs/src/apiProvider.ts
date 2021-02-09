@@ -28,14 +28,12 @@ export class ApiProvider implements IApiProvider {
   async getNetworkStake(): Promise<NetworkStake> {
     let response = await this.doGet(`stake`);
     let payload = response;
-    console.log("Netwoork Stake,  ", payload);
     return NetworkStake.fromHttpResponse(payload);
   }
 
   private async doGet(resourceUrl: string): Promise<any> {
     try {
       let url = `${this.url}/${resourceUrl}`;
-      console.log("url ", url);
       let response = await axios.get(url, { timeout: this.timeoutLimit });
       let payload = response.data;
 
