@@ -3,20 +3,20 @@ import { Address } from "../address";
 import { guardLength } from "../utils";
 import { parseUserKey } from "./pem";
 
-const SEED_LENGTH = 32;
-const PUBKEY_LENGTH = 32;
+export const USER_SEED_LENGTH = 32;
+export const USER_PUBKEY_LENGTH = 32;
 
 export class UserSecretKey {
     private readonly buffer: Buffer;
 
     constructor(buffer: Buffer) {
-        guardLength(buffer, SEED_LENGTH);
+        guardLength(buffer, USER_SEED_LENGTH);
 
         this.buffer = buffer;
     }
 
     static fromString(value: string): UserSecretKey {
-        guardLength(value, SEED_LENGTH * 2);
+        guardLength(value, USER_SEED_LENGTH * 2);
 
         let buffer = Buffer.from(value, "hex");
         return new UserSecretKey(buffer);
@@ -55,7 +55,7 @@ export class UserPublicKey {
     private readonly buffer: Buffer;
 
     constructor(buffer: Buffer) {
-        guardLength(buffer, PUBKEY_LENGTH);
+        guardLength(buffer, USER_PUBKEY_LENGTH);
         
         this.buffer = buffer;
     }
