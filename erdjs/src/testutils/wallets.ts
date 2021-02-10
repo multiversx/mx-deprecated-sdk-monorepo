@@ -110,6 +110,7 @@ NDg3ZGNkMjZjODRiNTAxN2EzOWUzMWEzNjcwODg5YmE=
 export class TestWallet {
     readonly address: Address;
     readonly secretKeyHex: string;
+    readonly secretKey: Buffer;
     readonly signer: ISigner;
     readonly keyFileObject: any;
     readonly pemFileText: any;
@@ -117,6 +118,7 @@ export class TestWallet {
     constructor(address: Address, secretKeyHex: string, keyFileObject: any, pemFileText: any) {
         this.address = address;
         this.secretKeyHex = secretKeyHex;
+        this.secretKey = Buffer.from(secretKeyHex, "hex");
         this.signer = new UserSigner(UserSecretKey.fromString(secretKeyHex));
         this.keyFileObject = keyFileObject;
         this.pemFileText = pemFileText;
