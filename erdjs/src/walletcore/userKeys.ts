@@ -27,13 +27,13 @@ export class UserSecretKey {
     }
 
     generatePublicKey(): UserPublicKey {
-        let keyPair = tweetnacl.sign.keyPair.fromSeed(this.buffer);
+        let keyPair = tweetnacl.sign.keyPair.fromSeed(new Uint8Array(this.buffer));
         let buffer = Buffer.from(keyPair.publicKey);
         return new UserPublicKey(buffer);
     }
 
     sign(message: Buffer): Buffer {
-        let pair = tweetnacl.sign.keyPair.fromSeed(this.buffer);
+        let pair = tweetnacl.sign.keyPair.fromSeed(new Uint8Array(this.buffer));
         let signingKey = pair.secretKey;
         let signature = tweetnacl.sign(new Uint8Array(message), signingKey);
         // "tweetnacl.sign()" returns the concatenated [signature, message], therfore we remove the appended message:
