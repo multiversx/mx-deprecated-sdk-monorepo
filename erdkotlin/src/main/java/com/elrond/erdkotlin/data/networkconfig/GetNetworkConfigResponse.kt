@@ -3,7 +3,6 @@ package com.elrond.erdkotlin.data.networkconfig
 import com.google.gson.annotations.SerializedName
 
 internal data class GetNetworkConfigResponse(
-    @SerializedName(value = "config")
     val config: NetworkConfigData
 ) {
     internal data class NetworkConfigData(

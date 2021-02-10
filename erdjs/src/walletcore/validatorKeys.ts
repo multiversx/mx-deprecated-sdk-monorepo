@@ -1,10 +1,11 @@
+import * as errors from "../errors";
 import { guardLength } from "../utils";
 import { parseValidatorKey } from "./pem";
 
 const bls = require('@elrondnetwork/bls-wasm');
 
-const SECRETKEY_LENGTH = 32;
-const PUBKEY_LENGTH = 96;
+export const VALIDATOR_SECRETKEY_LENGTH = 32;
+export const VALIDATOR_PUBKEY_LENGTH = 96;
 
 export class BLS {
     private static isInitialized: boolean = false;
@@ -18,6 +19,12 @@ export class BLS {
 
         BLS.isInitialized = true;
     }
+
+    static guardInitialized() {
+        if (!BLS.isInitialized) {
+            throw new errors.ErrInvariantFailed("BLS modules are not initalized. Make sure that 'await BLS.initIfNecessary()' is called correctly.");
+        }
+    }
 }
 
 export class ValidatorSecretKey {
@@ -25,7 +32,8 @@ export class ValidatorSecretKey {
     private readonly publicKey: any;
 
     constructor(buffer: Buffer) {
-        guardLength(buffer, SECRETKEY_LENGTH);
+        BLS.guardInitialized();
+        guardLength(buffer, VALIDATOR_SECRETKEY_LENGTH);
 
         this.secretKey = new bls.SecretKey();
         this.secretKey.setLittleEndian(Uint8Array.from(buffer));
@@ -60,7 +68,7 @@ export class ValidatorPublicKey {
     private readonly buffer: Buffer;
 
     constructor(buffer: Buffer) {
-        guardLength(buffer, PUBKEY_LENGTH);
+        guardLength(buffer, VALIDATOR_PUBKEY_LENGTH);
 
         this.buffer = buffer;
     }

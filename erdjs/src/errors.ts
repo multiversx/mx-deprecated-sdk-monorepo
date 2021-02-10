@@ -432,3 +432,12 @@ export class ErrWrongMnemonic extends ErrWallet {
     super("Wrong mnemonic format");
   }
 }
+
+/**
+ * Signals a bad PEM file.
+ */
+export class ErrBadPEM extends ErrWallet {
+  public constructor(message?: string) {
+    super(message ? `Bad PEM: ${message}` : `Bad PEM`);
+  }
+}

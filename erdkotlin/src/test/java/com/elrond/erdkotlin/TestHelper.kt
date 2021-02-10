@@ -1,7 +1,7 @@
 package com.elrond.erdkotlin
 
-import com.elrond.erdkotlin.domain.wallet.Address
-import com.elrond.erdkotlin.domain.transaction.Transaction
+import com.elrond.erdkotlin.domain.wallet.models.Address
+import com.elrond.erdkotlin.domain.transaction.models.Transaction
 
 object TestHelper {
     const val alicePrivateKey = "1a927e2af5306a9bb2ea777f73e06ecc0ac9aaa72fb4ea3fecf659451394cccf"
