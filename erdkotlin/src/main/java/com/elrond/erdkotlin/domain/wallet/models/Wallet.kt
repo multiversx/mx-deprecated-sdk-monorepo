@@ -1,4 +1,4 @@
-package com.elrond.erdkotlin.domain.wallet
+package com.elrond.erdkotlin.domain.wallet.models
 
 import com.elrond.erdkotlin.Exceptions
 import org.bitcoinj.crypto.MnemonicCode
@@ -16,6 +16,7 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.charset.StandardCharsets
 import java.security.SecureRandom
+
 
 class Wallet(
     private val publicKey: ByteArray,
@@ -164,7 +165,7 @@ class Wallet(
 
     private data class KeyAndChainCode(val key: ByteArray, val chainCode: ByteArray) {
         override fun equals(other: Any?): Boolean {
-            if (this === other) {
+            if (this === other){
                 return true
             }
             if (javaClass != other?.javaClass) {
@@ -179,6 +180,7 @@ class Wallet(
             if (!chainCode.contentEquals(other.chainCode)) {
                 return false
             }
+
             return true
         }
 

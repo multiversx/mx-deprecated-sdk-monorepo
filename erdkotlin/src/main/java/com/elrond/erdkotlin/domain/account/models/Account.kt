@@ -1,6 +1,6 @@
-package com.elrond.erdkotlin.domain.account
+package com.elrond.erdkotlin.domain.account.models
 
-import com.elrond.erdkotlin.domain.wallet.Address
+import com.elrond.erdkotlin.domain.wallet.models.Address
 import java.math.BigInteger
 
 data class Account(

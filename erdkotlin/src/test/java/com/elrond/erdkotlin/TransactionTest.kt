@@ -7,7 +7,6 @@ import org.junit.Assert.assertEquals
 class TransactionTest {
 
     @Test
-    @Throws(java.lang.Exception::class)
     fun shouldSerialize() {
         // Without data field
         var transaction = TestHelper.transactionWithoutData()

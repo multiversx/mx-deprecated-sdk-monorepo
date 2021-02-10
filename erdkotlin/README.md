@@ -51,5 +51,8 @@ The sample application showcase how to do it on Android with Hilt framework (see
 ErdSdk.setNetwork(ProviderUrl.MainNet) // default value is ProviderUrl.DevNet
 ```
 
+## Build
+You can build the jar from the sources with `mvn package`
+
 ## Complete Example
 For a complete example you can checkout this [sample application](https://github.com/Alexandre-saddour/ElrondKotlinSampleApp)
