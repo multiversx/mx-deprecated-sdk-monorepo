@@ -1,7 +1,7 @@
-package com.elrond.erdkotlin.domain.transaction
+package com.elrond.erdkotlin.domain.transaction.models
 
 import com.elrond.erdkotlin.Exceptions
-import com.elrond.erdkotlin.domain.wallet.Address
+import com.elrond.erdkotlin.domain.wallet.models.Address
 import com.google.gson.GsonBuilder
 import java.math.BigInteger
 import java.nio.charset.StandardCharsets
@@ -11,12 +11,14 @@ data class Transaction(
     val sender: Address,
     val receiver: Address,
     val chainID: String,
+    val senderUsername: String? = null,
+    val receiverUsername: String? = null,
     val nonce: Long = 0,
     val value: BigInteger = 0.toBigInteger(),
     val gasPrice: Long = 1000000000,
     val gasLimit: Long = 50000,
     val version: Int = 1,
-    val data: String = "",
+    val data: String? = null,
     val signature: String = "",
     val txHash: String = ""
 ) {
@@ -38,10 +40,16 @@ data class Transaction(
             put("value", value.toString(10))
             put("receiver", receiver.bech32())
             put("sender", sender.bech32())
+            if (!senderUsername.isNullOrEmpty()) {
+                put("senderUsername", encode(senderUsername))
+            }
+            if (!receiverUsername.isNullOrEmpty()) {
+                put("receiverUsername", encode(receiverUsername))
+            }
             put("gasPrice", gasPrice)
             put("gasLimit", gasLimit)
-            if (data.isNotEmpty()) {
-                put("data", getDataEncoded())
+            if (!data.isNullOrEmpty()) {
+                put("data", encode(data))
             }
             put("chainID", chainID)
             put("version", version)
@@ -51,7 +59,7 @@ data class Transaction(
         }
     }
 
-    fun getDataEncoded(): String {
+    private fun encode(data: String): String {
         val dataAsBytes: ByteArray = data.toByteArray(StandardCharsets.UTF_8)
         val encodedAsBytes: ByteArray = Base64.encode(dataAsBytes)
         return String(encodedAsBytes)

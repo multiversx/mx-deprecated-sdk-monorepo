@@ -1,8 +1,8 @@
 package com.elrond.erdkotlin.domain.transaction
 
 import com.elrond.erdkotlin.Exceptions
-import com.elrond.erdkotlin.domain.wallet.Wallet
-
+import com.elrond.erdkotlin.domain.transaction.models.Transaction
+import com.elrond.erdkotlin.domain.wallet.models.Wallet
 
 internal class SignTransactionUsecase {
 
