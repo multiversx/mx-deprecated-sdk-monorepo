@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.2.2] - 11.02.2021
+ - [Walletcore minor fixes on Uint8Array casting before Buffers are passet to tweetnacl #198](https://github.com/ElrondNetwork/elrond-sdk/pull/198)
+
 ## [2.2.1] - 10.02.2021
  - [Walletcore improvements - minor fixes on PEM parsing, added tests #195](https://github.com/ElrondNetwork/elrond-sdk/pull/195)
 
