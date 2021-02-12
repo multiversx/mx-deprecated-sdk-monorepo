@@ -58,4 +58,5 @@ jobs:
     - name: Commit and push elrond-sdk-docs
       run: |
         cd ${GITHUB_WORKSPACE}/elrond-sdk-docs
-        git status
+        git commit -m "Update docs"
+        git push origin
