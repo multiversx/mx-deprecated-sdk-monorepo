@@ -60,5 +60,6 @@ jobs:
         cd ${GITHUB_WORKSPACE}/elrond-sdk-docs
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions"
+        git add -A
         git commit -m "Update docs"
         git push origin
