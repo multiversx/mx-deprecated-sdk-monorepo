@@ -23,7 +23,7 @@
         "src/**/*"
     ],
     "exclude": [
-		"node_modules",
+        "node_modules",
         "out",
         "out-tests",
         "out-browser",
@@ -32,8 +32,10 @@
         "src/examples"
     ],
     "typedocOptions": {
-        "entryPoints": ["./src/index.ts"],
-        "out": "../../elrond-sdk-docs/erdjs",
-        "excludePrivate": true
+        "entryPoints": [
+            "./src/index.ts"
+        ],
+        "excludePrivate": true,
+        "includeVersion": true
     }
 }

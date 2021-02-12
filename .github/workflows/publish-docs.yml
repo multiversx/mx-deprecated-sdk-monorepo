@@ -38,14 +38,16 @@ jobs:
       run: |
         cd ${GITHUB_WORKSPACE}/elrond-sdk/erdjs
         npm ci
-        npx typedoc
+        VERSION=$(node -p "require('./package.json').version")
+        npx typedoc --includeVersion --out ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/latest
+	      npx typedoc --includeVersion --out ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/${VERSION}
 
     - name: Build docs (erdpy)
       run: |
-        cd ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
         python3 -m pip install --upgrade pip
-        pip3 install -r requirements.txt
         sudo apt-get install python3-sphinx
+        cd ${GITHUB_WORKSPACE}/elrond-sdk
+        pip3 install -r requirements.txt
         sphinx-apidoc -o ${GITHUB_WORKSPACE}/elrond-sdk-docs/source ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
         cd ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdpy
         make html

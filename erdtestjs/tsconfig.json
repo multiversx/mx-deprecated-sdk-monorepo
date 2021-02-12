@@ -19,6 +19,10 @@
     "out"
   ],
   "typedocOptions": {
-    "out": "../../elrond-sdk-docs/erdtestjs"
+    "entryPoints": [
+      "./src/index.ts"
+    ],
+    "excludePrivate": true,
+    "includeVersion": true
   }
 }
