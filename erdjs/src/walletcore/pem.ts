@@ -1,5 +1,5 @@
 /**
- * @module walletcore
+ * @category Wallet
  */
 
 import * as errors from "../errors";

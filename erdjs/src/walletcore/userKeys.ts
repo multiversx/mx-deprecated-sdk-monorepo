@@ -1,5 +1,5 @@
 /**
- * @module walletcore
+ * @category Wallet
  */
 
 import * as tweetnacl from "tweetnacl";

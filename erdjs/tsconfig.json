@@ -36,6 +36,9 @@
             "./src/index.ts"
         ],
         "excludePrivate": true,
-        "includeVersion": true
+        "includeVersion": true,
+        "categorizeByGroup": true,
+        "defaultCategory": "Other",
+        "categoryOrder": ["Core", "Wallet", "Smart Contracts", "dApps", "*"]
     }
 }
