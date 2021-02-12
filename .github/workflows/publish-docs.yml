@@ -41,14 +41,14 @@ jobs:
         VERSION=$(node -p "require('./package.json').version")
         npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/latest"
         npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/${VERSION}"
-
+  
     - name: Build docs (erdpy)
       run: |
         python3 -m pip install --upgrade pip
         sudo apt-get install python3-sphinx
         cd ${GITHUB_WORKSPACE}/elrond-sdk
         pip3 install -r requirements.txt
-        sphinx-apidoc -o ${GITHUB_WORKSPACE}/elrond-sdk-docs/source ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
+        sphinx-apidoc -o ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdpy/source ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
         cd ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdpy
         make html
 
