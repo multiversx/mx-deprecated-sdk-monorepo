@@ -57,10 +57,11 @@ jobs:
 
     - name: Commit and push elrond-sdk-docs
       run: |
-        cd ${GITHUB_WORKSPACE}/elrond-sdk-docs
+        cd ${GITHUB_WORKSPACE}/elrond-sdk
+        echo "Test commit" > test.txt
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/ElrondNetwork/elrond-sdk-docs
         git add -A
-        git commit -m "Update docs"
+        git commit -m "Test commit"
         git push origin
