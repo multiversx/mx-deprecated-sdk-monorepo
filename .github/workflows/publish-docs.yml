@@ -40,7 +40,7 @@ jobs:
         npm ci
         VERSION=$(node -p "require('./package.json').version")
         npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/latest"
-	      npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/${VERSION}"
+        npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/${VERSION}"
 
     - name: Build docs (erdpy)
       run: |
