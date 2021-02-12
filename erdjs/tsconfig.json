@@ -32,7 +32,6 @@
         "src/examples"
     ],
     "typedocOptions": {
-        "mode": "library",
         "out": "../../elrond-sdk-docs/erdjs",
         "excludePrivate": true
     }

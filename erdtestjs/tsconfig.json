@@ -19,7 +19,6 @@
     "out"
   ],
   "typedocOptions": {
-    "mode": "library",
     "out": "../../elrond-sdk-docs/erdtestjs"
   }
 }
