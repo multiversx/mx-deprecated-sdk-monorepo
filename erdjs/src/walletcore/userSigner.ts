@@ -1,3 +1,7 @@
+/**
+ * @module walletcore
+ */
+
 import * as errors from "../errors";
 import { Address } from "../address";
 import { ISignable, ISigner } from "../interface";

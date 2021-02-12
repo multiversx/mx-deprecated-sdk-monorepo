@@ -1,3 +1,7 @@
+/**
+ * @module walletcore
+ */
+
 import * as errors from "../errors";
 import { UserSecretKey, USER_PUBKEY_LENGTH, USER_SEED_LENGTH } from "./userKeys";
 import { ValidatorSecretKey, VALIDATOR_SECRETKEY_LENGTH } from "./validatorKeys";
