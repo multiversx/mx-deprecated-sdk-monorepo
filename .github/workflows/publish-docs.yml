@@ -35,13 +35,13 @@ jobs:
         python-version: 3.8
 
     - name: Build docs (erdjs)
-    - run: |
+      run: |
         cd ${GITHUB_WORKSPACE}/elrond-sdk/erdjs
         npm ci
         npx typedoc
 
     - name: Build docs (erdpy)
-    - run: |
+      run: |
         cd ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
         python3 -m pip install --upgrade pip
         pip3 install -r requirements.txt
@@ -51,6 +51,6 @@ jobs:
         make html
 
     - name: Commit and push elrond-sdk-docs
-    - run: |
+      run: |
         cd ${GITHUB_WORKSPACE}/elrond-sdk-docs
         git status
