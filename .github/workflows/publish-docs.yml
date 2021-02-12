@@ -42,14 +42,17 @@ jobs:
         npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/latest"
         npx typedoc --includeVersion --out "${GITHUB_WORKSPACE}/elrond-sdk-docs/erdjs/${VERSION}"
   
-    - name: Build docs (erdpy)
+    - name: Install dependencies for erdpy
       run: |
-        python3 -m pip install --upgrade pip
         sudo apt-get install python3-sphinx
         cd ${GITHUB_WORKSPACE}/elrond-sdk
         pip3 install -r requirements.txt
-        sphinx-apidoc -o ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdpy/source ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
+
+    - name: Build docs (erdpy)
+      run: |
         cd ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdpy
+        rm -rf ./source/erdpy.*.rst
+        sphinx-apidoc -o ${GITHUB_WORKSPACE}/elrond-sdk-docs/erdpy/source ${GITHUB_WORKSPACE}/elrond-sdk/erdpy
         make html
 
     - name: Commit and push elrond-sdk-docs
