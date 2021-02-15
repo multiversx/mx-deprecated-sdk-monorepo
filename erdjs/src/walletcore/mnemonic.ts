@@ -1,7 +1,3 @@
-/**
- * @category Wallet
- */
-
 import * as errors from "../errors";
 import { generateMnemonic, validateMnemonic, mnemonicToSeedSync } from "bip39";
 import { UserSecretKey } from "./userKeys";

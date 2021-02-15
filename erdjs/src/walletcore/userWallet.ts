@@ -1,7 +1,3 @@
-/**
- * @category Wallet
- */
-
 import * as errors from "../errors";
 import nacl from "tweetnacl";
 import { UserPublicKey, UserSecretKey } from "./userKeys";

@@ -1,7 +1,3 @@
-/**
- * @category Wallet
- */
-
 import * as tweetnacl from "tweetnacl";
 import { Address } from "../address";
 import { guardLength } from "../utils";

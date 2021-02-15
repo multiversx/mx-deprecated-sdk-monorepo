@@ -1,13 +1,8 @@
-/**
- * @category Wallet
- */
-
 import * as errors from "../errors";
 import { BLS, ValidatorSecretKey } from "./validatorKeys";
 
 /**
  * Validator signer (BLS signer)
- * @category Wallet
  */
 export class ValidatorSigner {
     /**

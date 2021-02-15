@@ -1,7 +1,3 @@
-/**
- * @category Wallet
- */
-
 import * as errors from "../errors";
 import { guardLength } from "../utils";
 import { parseValidatorKey } from "./pem";
