@@ -1,7 +1,7 @@
 import { IApiProvider } from "./interface";
 
 /**
- * An object holding Network stake parameters.
+ * An object holding Network stats parameters.
  */
 export class Stats {
     private static default: Stats;
@@ -52,18 +52,7 @@ export class Stats {
     }
 
     /**
-     * Gets the default configuration object (think of the Singleton pattern).
-     */
-    static getDefault(): Stats {
-        if (!Stats.default) {
-            Stats.default = new Stats();
-        }
-
-        return Stats.default;
-    }
-
-    /**
-     * Synchronizes a configuration object by querying the Network, through a {@link IProvider}.
+     * Synchronizes a stats object by querying the Network, through a {@link IProvider}.
      * @param provider The provider to use
      */
     async sync(provider: IApiProvider): Promise<void> {
@@ -72,7 +61,7 @@ export class Stats {
     }
 
     /**
-     * Constructs a configuration object from a HTTP response (as returned by the provider).
+     * Constructs a stats object from a HTTP response (as returned by the provider).
      */
     static fromHttpResponse(payload: any): Stats {
         let stats = new Stats();
