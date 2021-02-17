@@ -1,10 +1,16 @@
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
+import {
+    Transaction,
+    TransactionHash,
+    TransactionOnNetwork,
+    TransactionStatus,
+} from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
 import { AccountOnNetwork } from "./account";
 import { Query, QueryResponse } from "./smartcontracts/query";
-
+import { NetworkStake } from "./networkStake";
+import { Stats } from "./stats";
 
 /**
  * An interface that defines the endpoints of an HTTP API Provider.
@@ -47,6 +53,20 @@ export interface IProvider {
 }
 
 /**
+ * An interface that defines the endpoints of an HTTP API Provider.
+ */
+export interface IApiProvider {
+    /**
+     * Fetches the Network Stake.
+     */
+    getNetworkStake(): Promise<NetworkStake>;
+    /**
+     * Fetches the Network Stats.
+     */
+    getNetworkStats(): Promise<Stats>;
+}
+
+/**
  * An interface that defines a signing-capable object.
  */
 export interface ISigner {
@@ -72,7 +92,7 @@ export interface ISignable {
 
     /**
      * Applies the computed signature on the object itself.
-     * 
+     *
      * @param signature The computed signature
      * @param signedBy The address of the {@link Signer}
      */
@@ -80,7 +100,7 @@ export interface ISignable {
 }
 
 /**
- * An interface that defines a disposable object. 
+ * An interface that defines a disposable object.
  */
 export interface Disposable {
     dispose(): void;

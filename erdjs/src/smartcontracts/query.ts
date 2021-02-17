@@ -35,14 +35,14 @@ export class Query {
 
     toHttpRequest() {
         let request: any = {
-            "ScAddress": this.address.bech32(),
-            "FuncName": this.func.toString(),
-            "Args": this.args.map(arg => arg.valueOf()),
-            "CallValue": this.value.toString()
+            "scAddress": this.address.bech32(),
+            "funcName": this.func.toString(),
+            "args": this.args.map(arg => arg.valueOf()),
+            "value": this.value.toString()
         };
 
         if (!this.caller.isEmpty()) {
-            request["CallerAddr"] = this.caller.bech32();
+            request["caller"] = this.caller.bech32();
         }
 
         return request;
@@ -122,8 +122,8 @@ export class ContractReturnData {
     asString: string;
 
     constructor(asBase64: any) {
-        this.asBase64 = asBase64;
-        this.asBuffer = Buffer.from(asBase64, "base64");
+        this.asBase64 = asBase64 || "";
+        this.asBuffer = Buffer.from(this.asBase64, "base64");
         this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
         this.asBool = this.asNumber != 0;
