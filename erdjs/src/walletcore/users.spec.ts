@@ -166,11 +166,10 @@ describe("test user wallets", () => {
             gasPrice: new GasPrice(1000000000),
             gasLimit: new GasLimit(50000),
             data: new TransactionPayload("foo"),
-            chainID: new ChainID("1"),
-            version: new TransactionVersion(1)
+            chainID: new ChainID("1")
         });
 
         await signer.sign(transaction);
-        assert.equal(transaction.signature.hex(), "c0bd2b3b33a07b9cc5ee7435228acb0936b3829c7008aacabceea35163e555e19a34def2c03a895cf36b0bcec30a7e11215c11efc0da29294a11234eb2b3b906");
+        assert.equal(transaction.getSignature().hex(), "c0bd2b3b33a07b9cc5ee7435228acb0936b3829c7008aacabceea35163e555e19a34def2c03a895cf36b0bcec30a7e11215c11efc0da29294a11234eb2b3b906");
     });
 });
