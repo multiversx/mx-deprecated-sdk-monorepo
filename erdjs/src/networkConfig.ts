@@ -1,5 +1,12 @@
+import BigNumber from "bignumber.js";
 import { IProvider } from "./interface";
-import {GasPrice, GasLimit, TransactionVersion, ChainID, GasPriceModifier} from "./networkParams";
+import {
+    GasPrice,
+    GasLimit,
+    TransactionVersion,
+    ChainID,
+    GasPriceModifier,
+} from "./networkParams";
 
 /**
  * An object holding Network configuration parameters.
@@ -16,6 +23,16 @@ export class NetworkConfig {
      * The gas required by the Network to process a byte of the {@link TransactionPayload}.
      */
     public GasPerDataByte: number;
+
+    /**
+     * The Top Up Factor for APR calculation
+     */
+    public TopUpFactor: number;
+
+    /**
+     * The Top Up Factor for APR calculation
+     */
+    public TopUpRewardsGradientPoint: BigInt;
 
     /**
      *
@@ -40,6 +57,8 @@ export class NetworkConfig {
     constructor() {
         this.ChainID = new ChainID("T");
         this.GasPerDataByte = 1500;
+        this.TopUpFactor = 0;
+        this.TopUpRewardsGradientPoint = BigInt(0);
         this.MinGasLimit = new GasLimit(50000);
         this.MinGasPrice = new GasPrice(1000000000);
         this.GasPriceModifier = new GasPriceModifier(1);
@@ -74,10 +93,18 @@ export class NetworkConfig {
 
         networkConfig.ChainID = new ChainID(payload["erd_chain_id"]);
         networkConfig.GasPerDataByte = Number(payload["erd_gas_per_data_byte"]);
+        networkConfig.TopUpFactor = Number(payload["erd_top_up_factor"]);
+        networkConfig.TopUpRewardsGradientPoint = BigInt(
+            payload["erd_rewards_top_up_gradient_point"]
+        );
         networkConfig.MinGasLimit = new GasLimit(payload["erd_min_gas_limit"]);
         networkConfig.MinGasPrice = new GasPrice(payload["erd_min_gas_price"]);
-        networkConfig.MinTransactionVersion = new TransactionVersion(payload["erd_min_transaction_version"]);
-        networkConfig.GasPriceModifier = new GasPriceModifier(payload["erd_gas_price_modifier"]);
+        networkConfig.MinTransactionVersion = new TransactionVersion(
+            payload["erd_min_transaction_version"]
+        );
+        networkConfig.GasPriceModifier = new GasPriceModifier(
+            payload["erd_gas_price_modifier"]
+        );
 
         return networkConfig;
     }
