@@ -1,20 +1,20 @@
 import * as errors from "../../errors";
 import { AddressType, AddressValue } from "./address";
 import { BooleanType, BooleanValue } from "./boolean";
-import { OptionalType, OptionalValue, List, ListType } from "./generic";
+import { OptionType, OptionValue, List, ListType } from "./generic";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
 import { BetterType, PrimitiveType, PrimitiveValue } from "./types";
 
 export function onTypeSelect<TResult>(type: BetterType, selectors: {
-    onOptional: () => TResult,
+    onOption: () => TResult,
     onList: () => TResult,
     onPrimitive: () => TResult,
     onStruct: () => TResult,
     onOther?: () => TResult
 }): TResult {
-    if (type instanceof OptionalType) {
-        return selectors.onOptional();
+    if (type instanceof OptionType) {
+        return selectors.onOption();
     }
     if (type instanceof ListType) {
         return selectors.onList();
@@ -35,7 +35,7 @@ export function onTypeSelect<TResult>(type: BetterType, selectors: {
 
 export function onTypedValueSelect<TResult>(value: any, selectors: {
     onPrimitive: () => TResult,
-    onOptional: () => TResult,
+    onOption: () => TResult,
     onList: () => TResult,
     onStruct: () => TResult,
     onOther?: () => TResult
@@ -43,8 +43,8 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     if (value instanceof PrimitiveValue) {
         return selectors.onPrimitive();
     }
-    if (value instanceof OptionalValue) {
-        return selectors.onOptional();
+    if (value instanceof OptionValue) {
+        return selectors.onOption();
     }
     if (value instanceof List) {
         return selectors.onList();

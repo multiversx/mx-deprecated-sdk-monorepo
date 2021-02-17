@@ -1,9 +1,9 @@
 import { guardValueIsSet } from "../../utils";
 import { BetterType, isTyped, TypedValue } from "./types";
 
-export class OptionalType extends BetterType {
+export class OptionType extends BetterType {
     constructor(typeParameter: BetterType) {
-        super("Optional", [typeParameter]);
+        super("Option", [typeParameter]);
     }
 }
 
@@ -13,7 +13,7 @@ export class ListType extends BetterType {
     }
 }
 
-export class OptionalValue extends TypedValue {
+export class OptionValue extends TypedValue {
     private readonly value: TypedValue | null;
 
     constructor(type: BetterType, value: TypedValue | null = null) {
@@ -38,7 +38,7 @@ export class OptionalValue extends TypedValue {
         return this.value ? this.value.valueOf() : null;
     }
 
-    equals(other: OptionalValue): boolean {
+    equals(other: OptionValue): boolean {
         return this.value?.equals(other.value) || false;
     }
 }

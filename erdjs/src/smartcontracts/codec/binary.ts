@@ -1,21 +1,21 @@
 import * as errors from "../../errors";
 import { BetterType, EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructType, TypedValue, U8Type } from "../typesystem";
 import { guardSameLength } from "../../utils";
-import { OptionalValueBinaryCodec } from "./optional";
+import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { ListBinaryCodec } from "./list";
 import { StructBinaryCodec } from "./struct";
 
 export class BinaryCodec {
     readonly constraints: BinaryCodecConstraints;
-    private readonly optionalCodec: OptionalValueBinaryCodec;
+    private readonly optionCodec: OptionValueBinaryCodec;
     private readonly listCodec: ListBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
     private readonly structCodec: StructBinaryCodec;
     
     constructor(constraints: BinaryCodecConstraints | null = null) {
         this.constraints = constraints || new BinaryCodecConstraints();
-        this.optionalCodec = new OptionalValueBinaryCodec(this);
+        this.optionCodec = new OptionValueBinaryCodec(this);
         this.listCodec = new ListBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
         this.structCodec = new  StructBinaryCodec(this);
@@ -43,7 +43,7 @@ export class BinaryCodec {
         this.constraints.checkBufferLength(buffer);
 
         let typedValue = onTypeSelect<TypedValue>(type, {
-            onOptional: () => this.optionalCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
+            onOption: () => this.optionCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeTopLevel(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
             onStruct: () => this.structCodec.decodeTopLevel(buffer, <StructType>type)
@@ -56,7 +56,7 @@ export class BinaryCodec {
         this.constraints.checkBufferLength(buffer);
 
         let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {
-            onOptional: () => this.optionalCodec.decodeNested(buffer, type.getFirstTypeParameter()),
+            onOption: () => this.optionCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeNested(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
             onStruct: () => this.structCodec.decodeNested(buffer, <StructType>type)
@@ -68,7 +68,7 @@ export class BinaryCodec {
     encodeNested(typedValue: any): Buffer {
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
-            onOptional: () => this.optionalCodec.encodeNested(typedValue),
+            onOption: () => this.optionCodec.encodeNested(typedValue),
             onList: () => this.listCodec.encodeNested(typedValue),
             onStruct: () => this.structCodec.encodeNested(typedValue)
         });
@@ -77,7 +77,7 @@ export class BinaryCodec {
     encodeTopLevel(typedValue: any): Buffer {
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
-            onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
+            onOption: () => this.optionCodec.encodeTopLevel(typedValue),
             onList: () => this.listCodec.encodeTopLevel(typedValue),
             onStruct: () => this.structCodec.encodeTopLevel(typedValue)
         });

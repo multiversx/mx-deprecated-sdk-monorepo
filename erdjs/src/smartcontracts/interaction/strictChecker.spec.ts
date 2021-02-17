@@ -43,18 +43,18 @@ describe("integration tests: test checker within interactor", function () {
         assert.throw(() => interactor.prepare().start([
             Argument.fromUTF8("lucky"),
             Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-            Argument.fromMissingOptional(),
+            Argument.fromMissingOption(),
         ]), errors.ErrContractInteraction, "bad arguments, expected: 7, got: 3");
 
         // Bad types (U64 instead of U32)
         assert.throw(() => interactor.prepare().start([
             Argument.fromUTF8("lucky"),
             Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-            Argument.fromMissingOptional(),
-            Argument.fromMissingOptional(),
-            Argument.fromProvidedOptional(new U64Value(BigInt(1))),
-            Argument.fromMissingOptional(),
-            Argument.fromMissingOptional()
+            Argument.fromMissingOption(),
+            Argument.fromMissingOption(),
+            Argument.fromProvidedOption(new U64Value(BigInt(1))),
+            Argument.fromMissingOption(),
+            Argument.fromMissingOption()
         ]), errors.ErrContractInteraction, "...");
     });
 });

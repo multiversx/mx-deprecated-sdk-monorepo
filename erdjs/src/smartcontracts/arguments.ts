@@ -1,7 +1,7 @@
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
-import { AddressValue, BigUIntValue, EndpointDefinition, OptionalType, OptionalValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType } from "./typesystem";
+import { AddressValue, BigUIntValue, EndpointDefinition, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType } from "./typesystem";
 
 /**
  * For the moment, this is the only codec used.
@@ -161,19 +161,19 @@ export class Argument {
     }
 
     /**
-     * Creates an Argument object, as a missing optional argument.
+     * Creates an Argument object, as a missing option argument.
      */
-    static fromMissingOptional(): Argument {
-        let type = new OptionalType(new TypePlaceholder());
-        return Argument.fromTypedValue(new OptionalValue(type));
+    static fromMissingOption(): Argument {
+        let type = new OptionType(new TypePlaceholder());
+        return Argument.fromTypedValue(new OptionValue(type));
     }
 
     /**
-     * Creates an Argument object, as a provided optional argument.
+     * Creates an Argument object, as a provided option argument.
      */
-    static fromProvidedOptional(typedValue: TypedValue): Argument {
-        let type = new OptionalType(typedValue.getType());
-        return Argument.fromTypedValue(new OptionalValue(type, typedValue));
+    static fromProvidedOption(typedValue: TypedValue): Argument {
+        let type = new OptionType(typedValue.getType());
+        return Argument.fromTypedValue(new OptionValue(type, typedValue));
     }
 
     static fromTypedValue(typedValue: TypedValue): Argument {

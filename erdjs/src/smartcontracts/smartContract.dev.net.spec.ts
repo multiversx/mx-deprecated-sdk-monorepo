@@ -246,11 +246,11 @@ describe("test on devnet (local)", function () {
             args: [
                 Argument.fromUTF8("foobar"), 
                 Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-                Argument.fromMissingOptional(),
-                Argument.fromMissingOptional(),
-                Argument.fromProvidedOptional(new U32Value(1)),
-                Argument.fromMissingOptional(),
-                Argument.fromMissingOptional()
+                Argument.fromMissingOption(),
+                Argument.fromMissingOption(),
+                Argument.fromProvidedOption(new U32Value(1)),
+                Argument.fromMissingOption(),
+                Argument.fromMissingOption()
             ]
         });
 

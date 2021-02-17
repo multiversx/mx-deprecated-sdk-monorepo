@@ -130,11 +130,11 @@ describe("test smart contract interactor", function () {
         let startInteraction = <Interaction>interactor.prepare().start([
             Argument.fromUTF8("lucky"),
             Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-            Argument.fromMissingOptional(),
-            Argument.fromMissingOptional(),
-            Argument.fromProvidedOptional(new U32Value(1)),
-            Argument.fromMissingOptional(),
-            Argument.fromMissingOptional()
+            Argument.fromMissingOption(),
+            Argument.fromMissingOption(),
+            Argument.fromProvidedOption(new U32Value(1)),
+            Argument.fromMissingOption(),
+            Argument.fromMissingOption()
         ]).withGasLimit(new GasLimit(5000000));
 
         let lotteryExistsInteraction = <Interaction>interactor.prepare().lotteryExists([
