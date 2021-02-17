@@ -6,7 +6,7 @@ import { NetworkStake } from "./networkStake";
 import { Stats } from "./stats";
 const JSONbig = require("json-bigint");
 
-/*
+/**
  * This is a temporary change, this will be the only provider used, ProxyProvider will be deprecated
  */
 export class ApiProvider implements IApiProvider {
