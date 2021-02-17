@@ -1,10 +1,11 @@
-package com.elrond.erdkotlin.domain.wallet
+package com.elrond.erdkotlin.domain.wallet.models
 
 import com.elrond.erdkotlin.Exceptions
 import org.bitcoinj.core.Bech32
 import org.bouncycastle.util.encoders.DecoderException
 import org.bouncycastle.util.encoders.Hex
 import java.io.ByteArrayOutputStream
+
 
 @Suppress("DataClassPrivateConstructor")
 data class Address private constructor(

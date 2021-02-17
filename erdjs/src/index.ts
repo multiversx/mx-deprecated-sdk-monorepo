@@ -7,9 +7,12 @@ export * from "./transaction";
 export * from "./transactionPayload";
 export * from "./balance";
 export * from "./networkConfig";
+export * from "./networkStake";
 export * from "./networkParams";
-export * as valid from "./utils";
+export * from "./utils";
 export * from "./proxyProvider";
+export * from "./apiProvider";
+
 export * from "./walletcore";
 export * from "./nullSigner";
 

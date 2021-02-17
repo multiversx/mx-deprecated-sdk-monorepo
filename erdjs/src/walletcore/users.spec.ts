@@ -155,4 +155,22 @@ describe("test user wallets", () => {
         assert.equal(serialized, `{"nonce":8,"value":"10000000000000000000","receiver":"erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r","sender":"erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz","gasPrice":1000000000,"gasLimit":50000,"chainID":"1","version":1}`);
         assert.equal(transaction.getSignature().hex(), "4a6d8186eae110894e7417af82c9bf9592696c0600faf110972e0e5310d8485efc656b867a2336acec2b4c1e5f76c9cc70ba1803c6a46455ed7f1e2989a90105");
     });
+
+    it("should sign transactions using PEM files", async () => {
+        let signer = UserSigner.fromPem(alice.pemFileText);
+        
+        let transaction = new Transaction({
+            nonce: new Nonce(0),
+            value: Balance.Zero(),
+            receiver: new Address("erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r"),
+            gasPrice: new GasPrice(1000000000),
+            gasLimit: new GasLimit(50000),
+            data: new TransactionPayload("foo"),
+            chainID: new ChainID("1"),
+            version: new TransactionVersion(1)
+        });
+
+        await signer.sign(transaction);
+        assert.equal(transaction.signature.hex(), "c0bd2b3b33a07b9cc5ee7435228acb0936b3829c7008aacabceea35163e555e19a34def2c03a895cf36b0bcec30a7e11215c11efc0da29294a11234eb2b3b906");
+    });
 });

@@ -4,6 +4,27 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [2.3.0] - 16.02.2021
+ - [Minor bugfixes and new getNetworkStats function #203](https://github.com/ElrondNetwork/elrond-sdk/pull/203)
+
+## [2.2.2] - 11.02.2021
+ - [Walletcore minor fixes on Uint8Array casting before Buffers are passet to tweetnacl #198](https://github.com/ElrondNetwork/elrond-sdk/pull/198)
+
+## [2.2.1] - 10.02.2021
+ - [Walletcore improvements - minor fixes on PEM parsing, added tests #195](https://github.com/ElrondNetwork/elrond-sdk/pull/195)
+
+## [2.2.0] - 09.02.2021
+ - [Add api provider and userName to getAccount #191](https://github.com/ElrondNetwork/elrond-sdk/pull/191)
+
+## [2.1.0] - 05.02.2021
+ - [Add logout on dapp #183](https://github.com/ElrondNetwork/elrond-sdk/pull/183)
+
+## [2.0.0] - 03.02.2021
+ - [Fix query http request #178](https://github.com/ElrondNetwork/elrond-sdk/pull/178)
+
+## [1.1.9] - 03.02.2021
+ - [Add handling for null on Contract return data #160](https://github.com/ElrondNetwork/elrond-sdk/pull/160)
+
 ## [1.1.8] - 15.01.2021
 
  - Publish erdjs via Github Actions #151.

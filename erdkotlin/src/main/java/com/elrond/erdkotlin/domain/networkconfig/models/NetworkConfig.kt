@@ -1,4 +1,4 @@
-package com.elrond.erdkotlin.domain.networkconfig
+package com.elrond.erdkotlin.domain.networkconfig.models
 
 data class NetworkConfig(
     var chainID: String,
