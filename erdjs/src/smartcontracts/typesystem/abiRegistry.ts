@@ -84,5 +84,20 @@ export class AbiRegistry {
 
     findEnums(names: string[]): EnumType[] {
         return names.map(name => this.findEnum(name));
-    }  
+    }
+
+    /**
+     * Right after loading ABI definitions into a registry (e.g. from a file), the endpoints and the custom types (structs, enums)
+     * use raw types for their I/O parameters (in the case of endpoints), or for their fields (in the case of structs).
+     * 
+     * A raw type is merely an instance of {@link BetterType}, with a given name and type parameters (if it's a generic type).
+     * 
+     * Though, for most (development) purposes, we'd like to operate using known, specific types (e.g. {@link List}, {@link U8Type} etc.).
+     * This function increases the specificity of the types used by parameter / field definitions within a registry (on best-efforts basis).
+     * The result is an equivalent, more explicit ABI registry.
+     */
+    remapKnownTypes(): AbiRegistry {
+        // TODO: Implement.
+        return new AbiRegistry();
+    }
 }

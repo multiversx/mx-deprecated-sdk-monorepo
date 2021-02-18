@@ -23,4 +23,8 @@ describe("test abi registry", () => {
         assert.lengthOf(registry.findStruct("LotteryInfo").fields, 8);
         assert.lengthOf(registry.findEnum("Status").variants, 3);
     });
+
+    it("should remap known types", () => {
+        // TODO: Add test.
+    });
 });
