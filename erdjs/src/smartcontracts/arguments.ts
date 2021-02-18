@@ -3,6 +3,8 @@ import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
 import { AddressValue, BigUIntValue, EndpointDefinition, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType } from "./typesystem";
 
+export const ArgumentsSeparator = "@";
+
 /**
  * For the moment, this is the only codec used.
  */
@@ -16,6 +18,16 @@ export class Arguments {
 
     constructor(args: Argument[]) {
         this.args = args;
+    }
+
+    static fromJoinedString(joined: string, endpointDefinition?: EndpointDefinition): Arguments {
+        let buffers = Arguments.parseIntoBuffers(joined);
+        let args = Arguments.fromBuffers(buffers, endpointDefinition);
+        return args;
+    }
+
+    static parseIntoBuffers(input: string): Buffer[] {
+        return input.split(ArgumentsSeparator).map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
     }
 
     static fromBuffers(buffers: Buffer[], endpointDefinition?: EndpointDefinition): Arguments {
@@ -77,7 +89,7 @@ export class Arguments {
         }
     
         this.args.forEach(arg => {
-            to += "@" + arg.hex();
+            to += ArgumentsSeparator + arg.hex();
         });
     
         return to;

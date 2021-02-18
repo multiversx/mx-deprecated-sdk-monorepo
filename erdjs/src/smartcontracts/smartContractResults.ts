@@ -104,7 +104,7 @@ export class SmartContractResultItem {
     }
 
     getDataTokens(): Buffer[] {
-        return this.data.split("@").map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
+        return Arguments.parseIntoBuffers(this.data);
     }
 }
 

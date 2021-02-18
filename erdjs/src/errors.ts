@@ -398,15 +398,6 @@ export class ErrStructTyping extends Err {
 }
 
 /**
- * Signals an unknown type.
- */
-export class ErrUnknownType extends ErrTypingSystem {
-  public constructor(typeName: string) {
-    super(`Unknown type: ${typeName}`);
-  }
-}
-
-/**
  * Signals a generic codec (encode / decode) error.
  */
 export class ErrCodec extends Err {
