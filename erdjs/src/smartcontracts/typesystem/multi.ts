@@ -8,6 +8,10 @@ export class VarArgsType extends BetterType {
     constructor(typeParameter: BetterType) {
         super("VarArgsType", [typeParameter]);
     }
+
+    isEncodable(): boolean {
+        return false;
+    }
 }
 
 /**
@@ -23,5 +27,9 @@ export class CompositeArgType extends BetterType {
     constructor(typeParameters: BetterType[]) {
         super("CompositeArg", typeParameters);
         this.cardinality = typeParameters.length;
+    }
+
+    isEncodable(): boolean {
+        return false;
     }
 }

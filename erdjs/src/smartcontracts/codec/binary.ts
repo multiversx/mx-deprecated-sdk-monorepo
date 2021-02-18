@@ -1,6 +1,6 @@
 import * as errors from "../../errors";
-import { BetterType, EndpointDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructType, TypedValue, U8Type } from "../typesystem";
-import { guardSameLength } from "../../utils";
+import { BetterType, EndpointDefinition, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue, U8Type } from "../typesystem";
+import { guardSameLength, guardTrue } from "../../utils";
 import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { ListBinaryCodec } from "./list";
@@ -30,9 +30,9 @@ export class BinaryCodec {
         for (let i = 0; i < outputItems.length; i++) {
             let buffer = outputItems[i];
             let parameterDefinition = definition.output[i];
-            let typeDescriptor = parameterDefinition.type;
+            let type = parameterDefinition.type;
 
-            let decoded = this.decodeTopLevel(buffer, typeDescriptor);
+            let decoded = this.decodeTopLevel(buffer, type);
             result.push(decoded);
         }
 
@@ -65,21 +65,27 @@ export class BinaryCodec {
         return [<TResult>typedResult, decodedLength];
     }
 
-    encodeNested(typedValue: any): Buffer {
+    encodeNested(typedValue: TypedValue): Buffer {
+        guardTrue(typedValue.getType().isEncodable(), "type is encodable");
+        // TODO: assert is not composite, instead? => because composite aren't encodable (consequence)
+
         return onTypedValueSelect(typedValue, {
-            onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
-            onOption: () => this.optionCodec.encodeNested(typedValue),
-            onList: () => this.listCodec.encodeNested(typedValue),
-            onStruct: () => this.structCodec.encodeNested(typedValue)
+            onPrimitive: () => this.primitiveCodec.encodeNested(<PrimitiveValue>typedValue),
+            onOption: () => this.optionCodec.encodeNested(<OptionValue>typedValue),
+            onList: () => this.listCodec.encodeNested(<List>typedValue),
+            onStruct: () => this.structCodec.encodeNested(<Struct>typedValue)
         });
     }
 
-    encodeTopLevel(typedValue: any): Buffer {
+    encodeTopLevel(typedValue: TypedValue): Buffer {
+        guardTrue(typedValue.getType().isEncodable(), "type is encodable");
+        // TODO: assert is not composite, instead? => because composite aren't encodable (consequence)
+
         return onTypedValueSelect(typedValue, {
-            onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
-            onOption: () => this.optionCodec.encodeTopLevel(typedValue),
-            onList: () => this.listCodec.encodeTopLevel(typedValue),
-            onStruct: () => this.structCodec.encodeTopLevel(typedValue)
+            onPrimitive: () => this.primitiveCodec.encodeTopLevel(<PrimitiveValue>typedValue),
+            onOption: () => this.optionCodec.encodeTopLevel(<OptionValue>typedValue),
+            onList: () => this.listCodec.encodeTopLevel(<List>typedValue),
+            onStruct: () => this.structCodec.encodeTopLevel(<Struct>typedValue)
         });
     }
 }

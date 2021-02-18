@@ -256,3 +256,24 @@ export class Argument {
         return this.asBuffer;
     }
 }
+
+export class CompositeArgument {
+    readonly parts: Argument[];
+
+    constructor(parts: Argument[]) {
+        this.parts = parts;
+    }
+
+    static fromTypedValues(typedValues: TypedValue[]): CompositeArgument {
+        let parts = typedValues.map(item => Argument.fromTypedValue(item));
+        return new CompositeArgument(parts);
+    }
+
+    toString(): string {
+        return this.parts.map(part => part.hex()).join(ArgumentsSeparator);
+    }
+
+    valueOf(): Buffer[] {
+        return this.parts.map(part => part.buffer());
+    }
+}

@@ -56,6 +56,18 @@ export class BetterType {
             typeParameters: this.typeParameters.map(item => item.toJSON())
         };
     }
+
+    /**
+     * Not all types are encodable per se.
+     * For example, types that represent composite I/O arguments (e.g. {@link VarArgsType}, {@link CompositeArgType})
+     * are not encodable per se (though their inner parts are).
+     * 
+     * TODO: isNotComposite()? isSingularType()?
+     * IsComposite(): false by default, true for those?
+     */
+    isEncodable(): boolean {
+        return true;
+    }
 }
 
 export class PrimitiveType extends BetterType {
