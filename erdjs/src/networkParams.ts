@@ -138,6 +138,30 @@ export class TransactionVersion {
     }
 }
 
+export class TransactionOptions {
+    /**
+     * The actual numeric value.
+     */
+    private readonly value: number;
+
+    /**
+     * Creates a TransactionVersion object given a value.
+     */
+    constructor(value: number) {
+        value = Number(value);
+        
+        if (value < 0) {
+            throw new errors.ErrTransactionVersionInvalid(value);
+        }
+
+        this.value = value;
+    }
+
+    valueOf(): number {
+        return this.value;
+    }
+}
+
 export class GasPriceModifier {
     /**
      * The actual numeric value.

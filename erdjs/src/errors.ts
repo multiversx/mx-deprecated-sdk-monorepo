@@ -216,6 +216,15 @@ export class ErrTransactionVersionInvalid extends Err {
 }
 
 /**
+ * Signals an invalid value for {@link TransactionOptions} objects.
+ */
+export class ErrTransactionOptionsInvalid extends Err {
+  public constructor(value: number) {
+    super(`Invalid transaction options: ${value}`);
+  }
+}
+
+/**
  * Signals an invalid value for {@link GasPriceModifier} objects.
  */
 export class ErrGasPriceModifierInvalid extends Err {

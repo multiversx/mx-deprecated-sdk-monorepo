@@ -1,20 +1,22 @@
-import { BigNumber } from "bignumber.js";
-import { ISignable, IProvider } from "./interface";
-import { Address } from "./address";
-import { Balance } from "./balance";
-import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
-import { NetworkConfig } from "./networkConfig";
-import { Nonce } from "./nonce";
-import { Signature } from "./signature";
-import { guardType } from "./utils";
-import { TransactionPayload } from "./transactionPayload";
+import {BigNumber} from "bignumber.js";
+import {IProvider, ISignable} from "./interface";
+import {Address} from "./address";
+import {Balance} from "./balance";
+import {ChainID, GasLimit, GasPrice, TransactionOptions, TransactionVersion} from "./networkParams";
+import {NetworkConfig} from "./networkConfig";
+import {Nonce} from "./nonce";
+import {Signature} from "./signature";
+import {guardType} from "./utils";
+import {TransactionPayload} from "./transactionPayload";
 import * as errors from "./errors";
-import { TypedEvent } from "./events";
-import { TransactionWatcher } from "./transactionWatcher";
-import { ProtoSerializer } from "./proto";
+import {TypedEvent} from "./events";
+import {TransactionWatcher} from "./transactionWatcher";
+import {ProtoSerializer} from "./proto";
+
 const createTransactionHasher = require("blake2b");
 
 const TRANSACTION_VERSION = new TransactionVersion(1);
+const TRANSACTION_OPTIONS = new TransactionOptions(0);
 const TRANSACTION_HASH_LENGTH = 32;
 
 /**
@@ -69,6 +71,11 @@ export class Transaction implements ISignable {
     version: TransactionVersion;
 
     /**
+     * The options field, useful for describing different settings available for transactions
+     */
+    options: TransactionOptions;
+
+    /**
      * The signature.
      */
     signature: Signature;
@@ -93,6 +100,7 @@ export class Transaction implements ISignable {
         this.data = new TransactionPayload();
         this.chainID = NetworkConfig.getDefault().ChainID;
         this.version = TRANSACTION_VERSION;
+        this.options = TRANSACTION_OPTIONS;
 
         this.signature = new Signature();
         this.hash = new TransactionHash("");
@@ -145,7 +153,7 @@ export class Transaction implements ISignable {
      * @param sender The address of the sender (will be provided when called within the signing procedure)
      */
     toPlainObject(sender?: Address): any {
-        let result: any = {
+        return {
             nonce: this.nonce.valueOf(),
             value: this.value.toString(),
             receiver: this.receiver.bech32(),
@@ -155,10 +163,9 @@ export class Transaction implements ISignable {
             data: this.data.isEmpty() ? undefined : this.data.encoded(),
             chainID: this.chainID.valueOf(),
             version: this.version.valueOf(),
+            options: this.options.valueOf() == 0 ? undefined : this.options.valueOf(),
             signature: this.signature.isEmpty() ? undefined : this.signature.hex()
         };
-
-        return result;
     }
 
     /**
@@ -194,8 +201,7 @@ export class Transaction implements ISignable {
      * Simulates a transaction on the Network, via a {@link IProvider}.
      */
     async simulate(provider: IProvider): Promise<any> {
-        let response = await provider.simulateTransaction(this);
-        return response;
+        return await provider.simulateTransaction(this);
     }
 
     /**
