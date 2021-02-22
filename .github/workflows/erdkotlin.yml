@@ -3,8 +3,10 @@ name: Test and build the sample app
 on:
   push:
     branches: [master, development]
+    paths: "erdkotlin/**"
   pull_request:
     branches: [master, development]
+    paths: "erdkotlin/**"
   workflow_dispatch:
 
 jobs:
