@@ -23,7 +23,7 @@
         "src/**/*"
     ],
     "exclude": [
-		"node_modules",
+        "node_modules",
         "out",
         "out-tests",
         "out-browser",
@@ -32,8 +32,19 @@
         "src/examples"
     ],
     "typedocOptions": {
-        "mode": "library",
-        "out": "../../elrond-sdk-docs/erdjs",
-        "excludePrivate": true
+        "entryPoints": [
+            "./src/_docs.ts",
+            "./src/_docs_api.ts",
+            "./src/_docs_transactions.ts",
+            "./src/errors.ts",
+            "./src/dapp/index.ts",
+            "./src/walletcore/index.ts",
+            "./src/proto/index.ts",
+            "./src/smartcontracts/index.ts",
+            "./src/smartcontracts/typesystem/index.ts",
+            "./src/smartcontracts/codec/index.ts"
+        ],
+        "excludePrivate": true,
+        "includeVersion": true
     }
 }
