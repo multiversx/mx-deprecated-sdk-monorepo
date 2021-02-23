@@ -137,7 +137,7 @@ describe("test smart contract interactor", function () {
             Argument.fromMissingOption()
         ]).withGasLimit(new GasLimit(5000000));
 
-        let lotteryExistsInteraction = <Interaction>interactor.prepare().lotteryExists([
+        let lotteryStatusInteraction = <Interaction>interactor.prepare().status([
             Argument.fromUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 
@@ -159,18 +159,18 @@ describe("test smart contract interactor", function () {
         assert.lengthOf(startReturnvalues, 0);
 
         // lotteryExists() (this is a view function, but for the sake of the test, we'll execute it)
-        let [, { returnCode: existsReturnCode, values: existsReturnvalues, firstValue: existsFirstValue }] = await Promise.all([
+        let [, { returnCode: statusReturnCode, values: statusReturnvalues, firstValue: statusFirstValue }] = await Promise.all([
             provider.mockTransactionTimeline(
-                lotteryExistsInteraction.getTransaction(),
+                lotteryStatusInteraction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@01"), new MarkNotarized()]
             ),
-            await lotteryExistsInteraction.withNonce(new Nonce(15)).broadcastAwaitExecution()
+            await lotteryStatusInteraction.withNonce(new Nonce(15)).broadcastAwaitExecution()
         ]);
 
-        assert.equal(lotteryExistsInteraction.getTransaction().getData().toString(), "lotteryExists@6c75636b79");
-        assert.isTrue(existsReturnCode.equals(ReturnCode.Ok));
-        assert.lengthOf(existsReturnvalues, 1);
-        assert.equal(existsFirstValue.valueOf(), true);
+        assert.equal(lotteryStatusInteraction.getTransaction().getData().toString(), "status@6c75636b79");
+        assert.isTrue(statusReturnCode.equals(ReturnCode.Ok));
+        assert.lengthOf(statusReturnvalues, 1);
+        assert.equal(statusFirstValue.valueOf(), true);
 
         // lotteryInfo() (this is a view function, but for the sake of the test, we'll execute it)
         let [, { returnCode: infoReturnCode, values: infoReturnvalues, firstValue: infoFirstValue }] = await Promise.all([

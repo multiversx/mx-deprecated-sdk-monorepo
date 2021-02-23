@@ -1,6 +1,7 @@
 import * as errors from "../../errors";
 import { AddressType, AddressValue } from "./address";
 import { BooleanType, BooleanValue } from "./boolean";
+import { EnumType } from "./enum";
 import { OptionType, OptionValue, List, ListType } from "./generic";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
@@ -12,6 +13,7 @@ export function onTypeSelect<TResult>(type: BetterType, selectors: {
     onList: () => TResult,
     onPrimitive: () => TResult,
     onStruct: () => TResult,
+    onEnum: () => TResult,
     onOther?: () => TResult
 }): TResult {
     if (type instanceof OptionType) {
@@ -25,6 +27,9 @@ export function onTypeSelect<TResult>(type: BetterType, selectors: {
     }
     if (type instanceof StructType) {
         return selectors.onStruct();
+    }
+    if (type instanceof EnumType) {
+        return selectors.onEnum();
     }
 
     if (selectors.onOther) {
@@ -81,6 +86,8 @@ export function onPrimitiveValueSelect<TResult>(value: any, selectors: {
     if (selectors.onOther) {
         return selectors.onOther();
     }
+
+    // TODO: bytes, H256.
 
     throw new errors.ErrTypingSystem(`values isn't a primitive: ${value}`);
 }

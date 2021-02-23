@@ -1,10 +1,11 @@
 import * as errors from "../../errors";
-import { BetterType, EndpointDefinition, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue, U8Type } from "../typesystem";
-import { guardSameLength, guardTrue } from "../../utils";
+import { BetterType, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue } from "../typesystem";
+import { guardTrue } from "../../utils";
 import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { ListBinaryCodec } from "./list";
 import { StructBinaryCodec } from "./struct";
+import { EnumBinaryCodec } from "./enum";
 
 export class BinaryCodec {
     readonly constraints: BinaryCodecConstraints;
@@ -12,6 +13,7 @@ export class BinaryCodec {
     private readonly listCodec: ListBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
     private readonly structCodec: StructBinaryCodec;
+    private readonly enumCodec: EnumBinaryCodec;
     
     constructor(constraints: BinaryCodecConstraints | null = null) {
         this.constraints = constraints || new BinaryCodecConstraints();
@@ -19,6 +21,7 @@ export class BinaryCodec {
         this.listCodec = new ListBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
         this.structCodec = new  StructBinaryCodec(this);
+        this.enumCodec = new EnumBinaryCodec(this);
     }
 
     decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: BetterType): TResult {
@@ -28,7 +31,8 @@ export class BinaryCodec {
             onOption: () => this.optionCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeTopLevel(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
-            onStruct: () => this.structCodec.decodeTopLevel(buffer, <StructType>type)
+            onStruct: () => this.structCodec.decodeTopLevel(buffer, <StructType>type),
+            onEnum: () => this.enumCodec.decodeTopLevel(buffer, <EnumType>type)
         });
 
         return <TResult>typedValue;
@@ -41,7 +45,8 @@ export class BinaryCodec {
             onOption: () => this.optionCodec.decodeNested(buffer, type.getFirstTypeParameter()),
             onList: () => this.listCodec.decodeNested(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
-            onStruct: () => this.structCodec.decodeNested(buffer, <StructType>type)
+            onStruct: () => this.structCodec.decodeNested(buffer, <StructType>type),
+            onEnum: () => this.enumCodec.decodeNested(buffer, <EnumType>type)
         });
 
         return [<TResult>typedResult, decodedLength];
