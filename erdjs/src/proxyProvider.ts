@@ -14,7 +14,7 @@ import { Query, QueryResponse } from "./smartcontracts/query";
 import { Logger } from "./logger";
 const JSONbig = require("json-bigint");
 
-/*
+/**
  * This will be deprecated once all the endpoints move to ApiProvider
  */
 export class ProxyProvider implements IProvider {
