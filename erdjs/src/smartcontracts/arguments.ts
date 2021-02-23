@@ -1,7 +1,10 @@
+import { read } from "fs";
 import { Address } from "../address";
-import { guardValueIsSet } from "../utils";
+import { guardTrue, guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
-import { AddressValue, BigUIntValue, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType, EndpointParameterDefinition } from "./typesystem";
+import { AddressValue, BigUIntValue, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType, EndpointParameterDefinition, BetterType } from "./typesystem";
+import { CompositeType, CompositeValue } from "./typesystem/composite";
+import { OptionalType, OptionalValue, VariadicType, VariadicValue } from "./typesystem/variadic";
 
 export const ArgumentsSeparator = "@";
 
@@ -39,20 +42,65 @@ export class Arguments {
         return new Arguments(buffers.map(Argument.fromBytes));
     }
 
+    // TODO: Refactor, split (function is quite complex).
     static fromBuffers(buffers: Buffer[], parameters: EndpointParameterDefinition[]): Arguments {
         buffers = buffers || [];
+
         let args: Argument[] = []
+        let bufferIndex = 0;
+        let numBuffers = buffers.length;
 
         for (let i = 0; i < parameters.length; i++) {
-            let buffer = buffers[i];
             let parameter = parameters[i];
             let type = parameter.type;
-            let typeCardinality = type.getCardinality();
-            let isCountable = typeCardinality.isCountable()
+            let value = readValue(type);
+            let arg = Argument.fromTypedValue(value);
+            args.push(arg);
+        }
 
+        // This is a recursive function.
+        function readValue(type: BetterType): TypedValue {
+            // TODO: Use matchers.
 
+            if (type instanceof OptionalType) {
+                let typedValue = readValue(type.getFirstTypeParameter());
+                return new OptionalValue(type, typedValue);
+            } else if (type instanceof VariadicType) {
+                let typedValues = [];
+
+                while (!hasReachedTheEnd()) {
+                    typedValues.push(readValue(type.getFirstTypeParameter()));
+                }
+
+                return new VariadicValue(type, typedValues);
+            } else if (type instanceof CompositeType) {
+                let typedValues = [];
+
+                for (const typeParameter of type.getTypeParameters()) {
+                    typedValues.push(readValue(typeParameter));
+                }
+
+                return new CompositeValue(type, typedValues);
+            } else {
+                // Non-composite (singular), non-variadic (fixed) type.
+                // The only branching without a recursive call.
+                let typedValue = decodeNextBuffer(type);
+                return typedValue!;
+            }
+        }
+
+        function decodeNextBuffer(type: BetterType): TypedValue | null {
+            if (hasReachedTheEnd()) {
+                return null;
+            }
+
+            let buffer = buffers[bufferIndex++];
             let decodedValue = Codec.decodeTopLevel(buffer, type);
-            args.push(new Argument(buffer, decodedValue));
+            return decodedValue;
+        }
+
+        function hasReachedTheEnd() {
+            return bufferIndex >= numBuffers;
     }
 
         return new Arguments(args);
