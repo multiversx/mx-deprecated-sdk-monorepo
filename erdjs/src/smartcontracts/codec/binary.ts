@@ -66,8 +66,7 @@ export class BinaryCodec {
     }
 
     encodeNested(typedValue: TypedValue): Buffer {
-        guardTrue(typedValue.getType().isEncodable(), "type is encodable");
-        // TODO: assert is not composite, instead? => because composite aren't encodable (consequence)
+        guardTrue(typedValue.getType().getCardinality().isFixed(), "fixed cardinality, thus encodable type");
 
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeNested(<PrimitiveValue>typedValue),
@@ -78,8 +77,7 @@ export class BinaryCodec {
     }
 
     encodeTopLevel(typedValue: TypedValue): Buffer {
-        guardTrue(typedValue.getType().isEncodable(), "type is encodable");
-        // TODO: assert is not composite, instead? => because composite aren't encodable (consequence)
+        guardTrue(typedValue.getType().getCardinality().isFixed(), "fixed cardinality, thus encodable type");
 
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(<PrimitiveValue>typedValue),

@@ -4,6 +4,7 @@ import { guardValueIsSet } from "../../utils";
 import { AddressType } from "./address";
 import { BooleanType } from "./boolean";
 import { BytesType } from "./bytes";
+import { MultiArgType, MultiResultType, MultiResultVecType, OptionalArgType, OptionalResultType, VarArgsType } from "./composite";
 import { EnumType } from "./enum";
 import { ListType, OptionType } from "./generic";
 import { H256Type } from "./h256";
@@ -20,6 +21,8 @@ const KnownTypes: TypeConstructor[] = [
     U8Type, U16Type, U32Type, U64Type, BigUIntType, I8Type, I16Type, I32Type, I64Type, BigIntType, 
     BooleanType, BytesType, AddressType, H256Type, 
     OptionType, ListType,
+    VarArgsType, MultiResultVecType, OptionalArgType, OptionalResultType,
+    MultiArgType, MultiResultType
 ];
 
 export class TypeMapper {

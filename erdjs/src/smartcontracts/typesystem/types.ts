@@ -7,12 +7,14 @@ import { guardTrue, guardValueIsSet } from "../../utils";
 export class BetterType {
     private readonly name: string;
     private readonly typeParameters: BetterType[];
+    protected readonly cardinality: TypeCardinality;
 
-    public constructor(name: string, typeParameters: BetterType[] = []) {
+    public constructor(name: string, typeParameters: BetterType[] = [], cardinality: TypeCardinality = TypeCardinality.fixed(1)) {
         guardValueIsSet("name", name);
 
         this.name = name;
         this.typeParameters = typeParameters || [];
+        this.cardinality = cardinality;
     }
 
     getName(): string {
@@ -61,16 +63,42 @@ export class BetterType {
         };
     }
 
+    getCardinality(): TypeCardinality {
+        return this.cardinality;
+    }
+}
+
     /**
-     * Not all types are encodable per se.
-     * For example, types that represent composite I/O arguments (e.g. {@link VarArgsType}, {@link CompositeArgType})
-     * are not encodable per se (though their inner parts are).
+ * An abstraction for defining and operating with the cardinality of a (composite or simple) type.
      * 
-     * TODO: isNotComposite()? isSingularType()?
-     * IsComposite(): false by default, true for those?
+ * Simple types (the ones that are directly encodable) have a fixed cardinality: [lower = 1, upper = 1].
+ * Composite types (not directly encodable) do not follow this constraint. For example:
+ *  - VarArgs: [lower = 0, upper = *]
+ *  - OptionalResult: [lower = 0, upper = 1]
      */
-    isEncodable(): boolean {
-        return true;
+export class TypeCardinality {
+    private readonly lowerBound: number;
+    private readonly upperBound?: number;
+
+    private constructor(lowerBound: number, upperBound?: number) {
+        this.lowerBound = lowerBound;
+        this.upperBound = upperBound;
+    }
+
+    static fixed(value: number): TypeCardinality {
+        return new TypeCardinality(value, value);
+    }
+
+    static variable(value?: number) {
+        return new TypeCardinality(0, value);
+    }
+
+    isFixed(): boolean {
+        return this.lowerBound == this.upperBound;
+    }
+
+    isCountable(): boolean {
+        return this.upperBound ? true : false;
     }
 }
 
