@@ -38,8 +38,14 @@ export class BetterType {
         return this.name;
     }
 
-    equals(type: BetterType): boolean {
-        return this.name == type.name;
+    equals(other: BetterType): boolean {
+        // Workaround that seems to always work properly. Most probable reasons: 
+        // - ES6 is quite strict about enumerating over the properties on an object.
+        // - toJSON() returns an object literal (most probably, this results in deterministic iteration in all browser implementations).
+        let a = JSON.stringify(this.toJSON());
+        let b = JSON.stringify(other.toJSON());
+
+        return a == b
     }
 
     valueOf() {
