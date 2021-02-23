@@ -6,6 +6,7 @@ import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
 import { BetterType, PrimitiveType, PrimitiveValue } from "./types";
 
+// TODO: Extend functionality or rename wrt. restricted / reduced functionality (not all types are handled: composite, variadic).
 export function onTypeSelect<TResult>(type: BetterType, selectors: {
     onOption: () => TResult,
     onList: () => TResult,

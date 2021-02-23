@@ -1,4 +1,5 @@
 import { TypeExpressionParser } from "./typeExpressionParser";
+import { TypeMapper } from "./typeMapper";
 import { BetterType } from "./types";
 
 const NamePlaceholder = "?";
@@ -83,6 +84,7 @@ export class EndpointParameterDefinition {
 
     static fromJSON(json: { name: string, description: string, type: string }): EndpointParameterDefinition {
         let parsedType = new TypeExpressionParser().parse(json.type);
-        return new EndpointParameterDefinition(json.name, json.description, parsedType);
+        let knownType = TypeMapper.getDefault().mapType(parsedType);
+        return new EndpointParameterDefinition(json.name, json.description, knownType);
     }
 }

@@ -24,6 +24,8 @@ const KnownTypes: TypeConstructor[] = [
 ];
 
 export class TypeMapper {
+    private static default: TypeMapper;
+
     private readonly knownTypesMap: Map<string, TypeConstructor>;
 
     constructor() {
@@ -41,6 +43,17 @@ export class TypeMapper {
         this.knownTypesMap.set("OptionalResult", OptionalType);
         this.knownTypesMap.set("MultiArg", CompositeType);
         this.knownTypesMap.set("MultiResult", CompositeType);
+    }
+
+    /**
+     * Gets the default mapper (think of the Singleton pattern).
+     */
+    static getDefault(): TypeMapper {
+        if (!TypeMapper.default) {
+            TypeMapper.default = new TypeMapper();
+        }
+
+        return TypeMapper.default;
     }
 
     mapType(type: BetterType): BetterType {

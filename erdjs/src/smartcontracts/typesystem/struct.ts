@@ -1,5 +1,6 @@
 import * as errors from "../../errors";
 import { TypeExpressionParser } from "./typeExpressionParser";
+import { TypeMapper } from "./typeMapper";
 import { BetterType, CustomType, TypedValue } from "./types";
 
 export class StructType extends CustomType {
@@ -29,7 +30,8 @@ export class StructFieldDefinition {
 
     static fromJSON(json: { name: string, description: string, type: string }): StructFieldDefinition {
         let parsedType = new TypeExpressionParser().parse(json.type);
-        return new StructFieldDefinition(json.name, json.description, parsedType);
+        let knownType = TypeMapper.getDefault().mapType(parsedType);
+        return new StructFieldDefinition(json.name, json.description, knownType);
     }
 }
 
