@@ -42,12 +42,12 @@ describe("test parser", () => {
             ]
         });
 
-        type = parser.parse("VarArgs<MultiArg2<bytes, Address>>");
+        type = parser.parse("VarArgs<MultiArg<bytes, Address>>");
         assert.deepEqual(type.toJSON(), {
             "name": "VarArgs",
             "typeParameters": [
                 {
-                    "name": "MultiArg2",
+                    "name": "MultiArg",
                     "typeParameters": [
                         {
                             "name": "bytes",
@@ -62,12 +62,12 @@ describe("test parser", () => {
             ]
         });
 
-        type = parser.parse("MultiResultVec<MultiResult2<Address, u64>>");
+        type = parser.parse("MultiResultVec<MultiResult<Address, u64>>");
         assert.deepEqual(type.toJSON(), {
             "name": "MultiResultVec",
             "typeParameters": [
                 {
-                    "name": "MultiResult2",
+                    "name": "MultiResult",
                     "typeParameters": [
                         {
                             "name": "Address",
@@ -75,6 +75,26 @@ describe("test parser", () => {
                         },
                         {
                             "name": "u64",
+                            "typeParameters": []
+                        }
+                    ]
+                }
+            ]
+        });
+
+        type = parser.parse("MultiResultVec<MultiResult<i32,bytes,>>");
+        assert.deepEqual(type.toJSON(), {
+            "name": "MultiResultVec",
+            "typeParameters": [
+                {
+                    "name": "MultiResult",
+                    "typeParameters": [
+                        {
+                            "name": "i32",
+                            "typeParameters": []
+                        },
+                        {
+                            "name": "bytes",
                             "typeParameters": []
                         }
                     ]

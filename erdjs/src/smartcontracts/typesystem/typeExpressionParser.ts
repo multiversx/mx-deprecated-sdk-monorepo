@@ -45,6 +45,7 @@ export class TypeExpressionParser {
         for (var i = 0; i < expression.length; i++) {
             let char = expression.charAt(i);
             let previousChar = expression.charAt(i - 1);
+            let nextChar = expression.charAt(i + 1);
 
             if (char == "<") {
                 jsoned += ": {";
@@ -55,7 +56,11 @@ export class TypeExpressionParser {
                     jsoned += "}";
                 }
             } else if (char == ",") {
-                jsoned += ": {},";
+                if (nextChar == ">") {
+                    // Skip superfluous comma
+                } else {
+                    jsoned += ": {},";
+                }
             } else {
                 jsoned += char;
             }
