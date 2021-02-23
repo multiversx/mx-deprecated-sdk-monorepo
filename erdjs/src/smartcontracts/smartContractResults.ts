@@ -125,9 +125,14 @@ export class ImmediateResult extends SmartContractResultItem {
     }
 
     outputArguments(): Arguments {
-        let argsToken = this.getDataTokens().slice(1);
-        let args = Arguments.fromBuffers(argsToken, this.endpointDefinition);
-        return args;
+        let buffers = this.getDataTokens().slice(1);
+        let isTyped = this.endpointDefinition ? true : false;
+
+        if (!isTyped) {
+            return Arguments.fromBuffersUntyped(buffers);
+        }
+
+        return Arguments.fromBuffers(buffers, this.endpointDefinition!.output);
     }
 
     setEndpointDefinition(endpointDefinition: EndpointDefinition) {

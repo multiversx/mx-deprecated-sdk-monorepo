@@ -1,7 +1,7 @@
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
-import { AddressValue, BigUIntValue, EndpointDefinition, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType } from "./typesystem";
+import { AddressValue, BigUIntValue, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType, EndpointParameterDefinition } from "./typesystem";
 
 export const ArgumentsSeparator = "@";
 
@@ -20,9 +20,9 @@ export class Arguments {
         this.args = args;
     }
 
-    static fromJoinedString(joined: string, endpointDefinition?: EndpointDefinition): Arguments {
+    static fromJoinedString(joined: string, parameters: EndpointParameterDefinition[]): Arguments {
         let buffers = Arguments.parseIntoBuffers(joined);
-        let args = Arguments.fromBuffers(buffers, endpointDefinition);
+        let args = Arguments.fromBuffers(buffers, parameters);
         return args;
     }
 
@@ -30,28 +30,32 @@ export class Arguments {
         return input.split(ArgumentsSeparator).map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
     }
 
-    static fromBuffers(buffers: Buffer[], endpointDefinition?: EndpointDefinition): Arguments {
-        let isTyped = endpointDefinition ? true : false;
-        let typedValues = isTyped ? Codec.decodeOutput(buffers, endpointDefinition!) : [];
-        let args = buffers.map((buffer, index) => new Argument(buffer, typedValues[index]));
+    /**
+     * This function returns raw (untyped) {@link Argument} objects. 
+     * Should be used only when there is no type information (e.g. ABI is missing).
+     */
+    static fromBuffersUntyped(buffers: Buffer[]): Arguments {
+        buffers = buffers || [];
+        return new Arguments(buffers.map(Argument.fromBytes));
+    }
+
+    static fromBuffers(buffers: Buffer[], parameters: EndpointParameterDefinition[]): Arguments {
+        buffers = buffers || [];
+        let args: Argument[] = []
+
+        for (let i = 0; i < parameters.length; i++) {
+            let buffer = buffers[i];
+            let parameter = parameters[i];
+            let type = parameter.type;
+            let typeCardinality = type.getCardinality();
+            let isCountable = typeCardinality.isCountable()
+
+
+            let decodedValue = Codec.decodeTopLevel(buffer, type);
+            args.push(new Argument(buffer, decodedValue));
+    }
 
         return new Arguments(args);
-    }
-
-    static fromQueryResponse(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
-        return Arguments.fromArrayBase64(items, endpointDefinition);
-    }
-
-    static fromArrayBase64(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
-        items = items || [];
-        let buffers = items.map(item => Buffer.from(item, "base64"));
-        return Arguments.fromBuffers(buffers, endpointDefinition);
-    }
-
-    static fromArrayHex(items: string[], endpointDefinition?: EndpointDefinition): Arguments {
-        items = items || [];
-        let buffers = items.map(item => Buffer.from(item, "hex"));
-        return Arguments.fromBuffers(buffers, endpointDefinition);
     }
 
     items(): ReadonlyArray<Argument> {

@@ -58,7 +58,14 @@ export class QueryResponse {
     }
 
     outputArguments(): Arguments {
-        return Arguments.fromQueryResponse(this.returnData, this.endpointDefinition);
+        let isTyped = this.endpointDefinition ? true : false;
+        let buffers = this.returnData.map(item => Buffer.from(item, "base64"));
+
+        if (!isTyped) {
+            return Arguments.fromBuffersUntyped(buffers);
+        }
+
+        return Arguments.fromBuffers(buffers, this.endpointDefinition!.output);
     }
 
     /**

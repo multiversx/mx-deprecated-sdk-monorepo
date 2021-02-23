@@ -21,24 +21,6 @@ export class BinaryCodec {
         this.structCodec = new  StructBinaryCodec(this);
     }
 
-    decodeOutput(outputItems: Buffer[], definition: EndpointDefinition): TypedValue[] {
-        guardSameLength(outputItems, definition.output);
-
-        let result: TypedValue[] = [];
-
-        // For output parameters, top-level decoding is normally used.
-        for (let i = 0; i < outputItems.length; i++) {
-            let buffer = outputItems[i];
-            let parameterDefinition = definition.output[i];
-            let type = parameterDefinition.type;
-
-            let decoded = this.decodeTopLevel(buffer, type);
-            result.push(decoded);
-        }
-
-        return result;
-    }
-
     decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: BetterType): TResult {
         this.constraints.checkBufferLength(buffer);
 
@@ -67,7 +49,7 @@ export class BinaryCodec {
 
     encodeNested(typedValue: TypedValue): Buffer {
         guardTrue(typedValue.getType().getCardinality().isFixed(), "fixed cardinality, thus encodable type");
-
+        
         return onTypedValueSelect(typedValue, {
             onPrimitive: () => this.primitiveCodec.encodeNested(<PrimitiveValue>typedValue),
             onOption: () => this.optionCodec.encodeNested(<OptionValue>typedValue),
