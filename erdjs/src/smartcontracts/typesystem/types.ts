@@ -23,6 +23,10 @@ export class BetterType {
         return this.typeParameters;
     }
 
+    isGenericType(): boolean {
+        return this.typeParameters.length > 0;
+    }
+
     getFirstTypeParameter(): BetterType {
         guardTrue(this.typeParameters.length > 0, "type parameters length > 0");
         return this.typeParameters[0];
