@@ -16,11 +16,10 @@ export class ListType extends BetterType {
 export class OptionValue extends TypedValue {
     private readonly value: TypedValue | null;
 
-    constructor(type: BetterType, value: TypedValue | null = null) {
+    constructor(type: OptionType, value: TypedValue | null = null) {
         super(type);
 
-        // TODO: assert has one type parameter
-        // TODO: assert value is of type parameter
+        // TODO: assert value is of type type.getFirstTypeParameter()
 
         this.value = value;
     }
@@ -43,14 +42,19 @@ export class OptionValue extends TypedValue {
     }
 }
 
+// TODO: Rename to ListValue, for consistency (though the term is slighly unfortunate).
 export class List extends TypedValue {
     private readonly items: TypedValue[];
 
-    constructor(type: BetterType, items: TypedValue[]) {
+    /**
+     * 
+     * @param type the type of this TypedValue (an instance of ListType), not the type parameter of the ListType
+     * @param items the items, having the type type.getFirstTypeParameter()
+     */
+    constructor(type: ListType, items: TypedValue[]) {
         super(type);
 
-        // TODO: assert has one type parameter
-        // TODO: assert items are of type parameter
+        // TODO: assert items are of type type.getFirstTypeParameter()
 
         this.items = items;
     }

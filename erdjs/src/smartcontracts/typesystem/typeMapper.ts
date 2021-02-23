@@ -1,16 +1,16 @@
 import * as errors from "../../errors";
 import { Logger } from "../../logger";
-import { guardValueIsSet } from "../../utils";
 import { AddressType } from "./address";
 import { BooleanType } from "./boolean";
 import { BytesType } from "./bytes";
-import { MultiArgType, MultiResultType, MultiResultVecType, OptionalArgType, OptionalResultType, VarArgsType } from "./composite";
+import { CompositeType } from "./composite";
 import { EnumType } from "./enum";
 import { ListType, OptionType } from "./generic";
 import { H256Type } from "./h256";
 import { BigIntType, BigUIntType, I16Type, I32Type, I64Type, I8Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
 import { StructFieldDefinition, StructType } from "./struct";
-import { BetterType, CustomType, TypePlaceholder } from "./types";
+import { BetterType } from "./types";
+import { OptionalType, VariadicType } from "./variadic";
 
 type TypeConstructor = new (...typeParameters: BetterType[]) => BetterType;
 
@@ -21,8 +21,6 @@ const KnownTypes: TypeConstructor[] = [
     U8Type, U16Type, U32Type, U64Type, BigUIntType, I8Type, I16Type, I32Type, I64Type, BigIntType, 
     BooleanType, BytesType, AddressType, H256Type, 
     OptionType, ListType,
-    VarArgsType, MultiResultVecType, OptionalArgType, OptionalResultType,
-    MultiArgType, MultiResultType
 ];
 
 export class TypeMapper {
@@ -35,6 +33,14 @@ export class TypeMapper {
             let name = new knownType().getName();
             this.knownTypesMap.set(name, knownType);
         }
+
+        // We use a slightly different typing than the one defined by elrond-wasm-rs (temporary workaround).
+        this.knownTypesMap.set("VarArgs", VariadicType);
+        this.knownTypesMap.set("MultiResultVec", VariadicType);
+        this.knownTypesMap.set("OptionalArg", OptionalType);
+        this.knownTypesMap.set("OptionalResult", OptionalType);
+        this.knownTypesMap.set("MultiArg", CompositeType);
+        this.knownTypesMap.set("MultiResult", CompositeType);
     }
 
     mapType(type: BetterType): BetterType {

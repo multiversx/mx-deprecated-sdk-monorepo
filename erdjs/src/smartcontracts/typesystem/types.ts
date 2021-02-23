@@ -48,6 +48,10 @@ export class BetterType {
         return a == b
     }
 
+    differs(other: BetterType): boolean {
+        return !this.equals(other);
+    }
+
     valueOf() {
         return this.name;
     }
@@ -74,15 +78,22 @@ export class BetterType {
     }
 }
 
-    /**
+/**
+ * TODO: Simplify this class, keep only what is needed.
+ * 
  * An abstraction for defining and operating with the cardinality of a (composite or simple) type.
-     * 
+ * 
  * Simple types (the ones that are directly encodable) have a fixed cardinality: [lower = 1, upper = 1].
  * Composite types (not directly encodable) do not follow this constraint. For example:
  *  - VarArgs: [lower = 0, upper = *]
  *  - OptionalResult: [lower = 0, upper = 1]
-     */
+ */
 export class TypeCardinality {
+    /**
+     * An arbitrarily chosen, reasonably large number.
+     */
+    private static MaxCardinality: number = 4096;
+
     private readonly lowerBound: number;
     private readonly upperBound?: number;
 
@@ -99,12 +110,28 @@ export class TypeCardinality {
         return new TypeCardinality(0, value);
     }
 
+    isSingular(): boolean {
+        return this.lowerBound == 1 && this.upperBound == 1;
+    }
+
+    isSingularOrNone(): boolean {
+        return this.lowerBound == 0 && this.upperBound == 1;
+    }
+
+    isComposite(): boolean {
+        return !this.isSingular();
+    }
+
     isFixed(): boolean {
         return this.lowerBound == this.upperBound;
     }
 
-    isCountable(): boolean {
-        return this.upperBound ? true : false;
+    getLowerBound(): number {
+        return this.lowerBound;
+    }
+
+    getUpperBound(): number {
+        return this.upperBound || TypeCardinality.MaxCardinality;
     }
 }
 

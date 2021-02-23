@@ -4,9 +4,10 @@ import { BetterType } from "./types";
 import { TypeExpressionParser } from "./typeExpressionParser";
 import { TypeMapper } from "./typeMapper";
 import { BigUIntType, I32Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
-import { MultiArgType, MultiResultType, MultiResultVecType, OptionalResultType, VarArgsType } from "./composite";
 import { BytesType } from "./bytes";
 import { AddressType } from "./address";
+import { OptionalType, VariadicType } from "./variadic";
+import { CompositeType } from "./composite";
 
 type TypeConstructor = new (...typeParameters: BetterType[]) => BetterType;
 
@@ -23,16 +24,16 @@ describe("test mapper", () => {
     });
 
     it("should map variadic types", () => {
-        testMapping("VarArgs<u32>", VarArgsType, [new U32Type()]);
-        testMapping("VarArgs<bytes>", VarArgsType, [new BytesType()]);
-        testMapping("MultiResultVec<u32>", MultiResultVecType, [new U32Type()]);
-        testMapping("MultiResultVec<Address>", MultiResultVecType, [new AddressType()]);
+        testMapping("VarArgs<u32>", VariadicType, [new U32Type()]);
+        testMapping("VarArgs<bytes>", VariadicType, [new BytesType()]);
+        testMapping("MultiResultVec<u32>", VariadicType, [new U32Type()]);
+        testMapping("MultiResultVec<Address>", VariadicType, [new AddressType()]);
     });
 
     it("should map complex generic, composite, variadic types", () => {
-        testMapping("MultiResultVec<MultiResult<i32,bytes,>>", MultiResultVecType, [new MultiResultType(new I32Type(), new BytesType())]);
-        testMapping("VarArgs<MultiArg<i32,bytes,>>", VarArgsType, [new MultiArgType(new I32Type(), new BytesType())]);
-        testMapping("OptionalResult<Address>", OptionalResultType, [new AddressType()]);
+        testMapping("MultiResultVec<MultiResult<i32,bytes,>>", VariadicType, [new CompositeType(new I32Type(), new BytesType())]);
+        testMapping("VarArgs<MultiArg<i32,bytes,>>", VariadicType, [new CompositeType(new I32Type(), new BytesType())]);
+        testMapping("OptionalResult<Address>", OptionalType, [new AddressType()]);
     });
 
     function testMapping(expression: string, constructor: TypeConstructor, typeParameters: BetterType[] = []) {

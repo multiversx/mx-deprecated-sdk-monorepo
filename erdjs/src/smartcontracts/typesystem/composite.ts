@@ -1,37 +1,47 @@
-import { BetterType, TypeCardinality } from "./types";
+import { guardLength } from "../../utils";
+import { BetterType, TypeCardinality, TypedValue } from "./types";
 
-export class VarArgsType extends BetterType {
-    constructor(typeParameter: BetterType) {
-        super("VarArgs", [typeParameter], TypeCardinality.variable());
-    }
-}
-
-export class MultiResultVecType extends BetterType {
-    constructor(typeParameter: BetterType) {
-        super("MultiResultVec", [typeParameter], TypeCardinality.variable());
-    }
-}
-
-export class OptionalArgType extends BetterType {
-    constructor(typeParameter: BetterType) {
-        super("OptionalArg", [typeParameter], TypeCardinality.variable(1));
-    }
-}
-
-export class OptionalResultType extends BetterType {
-    constructor(typeParameter: BetterType) {
-        super("OptionalResult", [typeParameter], TypeCardinality.variable(1));
-    }
-}
-
-export class MultiArgType extends BetterType {
+export class CompositeType extends BetterType {
     constructor(...typeParameters: BetterType[]) {
-        super("MultiArg", typeParameters, TypeCardinality.variable(typeParameters.length));
+        super("Composite", typeParameters, TypeCardinality.variable(typeParameters.length));
     }
 }
 
-export class MultiResultType extends BetterType {
-    constructor(...typeParameters: BetterType[]) {
-        super("MultiResult", typeParameters, TypeCardinality.variable(typeParameters.length));
+export class CompositeValue extends TypedValue {
+    private readonly items: TypedValue[];
+
+    constructor(type: CompositeType, items: TypedValue[]) {
+        super(type);
+
+        guardLength(items, type.getTypeParameters().length);
+
+        // TODO: assert type of each item (wrt. type.getTypeParameters()).
+
+        this.items = items;
+    }
+
+    getItems(): ReadonlyArray<TypedValue> {
+        return this.items;
+    }
+
+    valueOf(): any[] {
+        return this.items.map(item => item.valueOf());
+    }
+
+    equals(other: CompositeValue): boolean {
+        if (this.getType().differs(other.getType())) {
+            return false;
+        }
+
+        for (let i = 0; i < this.items.length; i++) {
+            let selfItem = this.items[i];
+            let otherItem = other.items[i];
+
+            if (!selfItem.equals(otherItem)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

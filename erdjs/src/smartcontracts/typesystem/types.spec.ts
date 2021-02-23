@@ -6,7 +6,6 @@ import { PrimitiveType, BetterType } from "./types";
 import { BooleanType } from "./boolean";
 import { AddressType } from "./address";
 import { TypeExpressionParser } from "./typeExpressionParser";
-import { parse } from "uuid";
 import { OptionType } from "./generic";
 
 describe("test types", () => {
