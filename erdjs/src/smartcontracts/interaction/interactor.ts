@@ -1,8 +1,8 @@
-import { Argument } from "../arguments";
 import { ContractFunction } from "../function";
 import { SmartContract } from "../smartContract";
 import { Interaction } from "./interaction";
 import { IInteractionRunner } from "./interface";
+import { TypedValue } from "../typesystem";
 
 export class SmartContractInteractor {
     private readonly contract: SmartContract;
@@ -23,7 +23,7 @@ export class SmartContractInteractor {
         for (const definition of abi.getAllEndpoints()) {
             let functionName = definition.name;
 
-            this.preparators[functionName] = function (args: Argument[]) {
+            this.preparators[functionName] = function (args: TypedValue[]) {
                 return self.doPrepare(functionName, args || []);
             };
         }
@@ -33,7 +33,7 @@ export class SmartContractInteractor {
         return this.preparators;
     }
 
-    private doPrepare(functionName: string, args: Argument[]): Interaction {
+    private doPrepare(functionName: string, args: TypedValue[]): Interaction {
         let func = new ContractFunction(functionName);
         let interaction = new Interaction(this.contract, func, args, this.runner);
         return interaction;

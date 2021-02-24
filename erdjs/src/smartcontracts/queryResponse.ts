@@ -1,9 +1,10 @@
 import { GasLimit } from "../networkParams";
 import * as errors from "../errors";
-import { EndpointDefinition } from "./typesystem";
-import { Arguments } from "./arguments";
+import { EndpointDefinition, TypedValue } from "./typesystem";
 import { MaxUint64 } from "./query";
 import { ReturnCode } from "./returnCode";
+import { guardValueIsSet } from "../utils";
+import { Serializer } from "./serializer";
 
 export class QueryResponse {
     /**
@@ -57,15 +58,17 @@ export class QueryResponse {
         this.endpointDefinition = endpointDefinition;
     }
 
-    outputArguments(): Arguments {
-        let isTyped = this.endpointDefinition ? true : false;
+    outputUntyped(): Buffer[] {
         let buffers = this.returnData.map(item => Buffer.from(item, "base64"));
+        return buffers;
+    }
 
-        if (!isTyped) {
-            return Arguments.fromBuffersUntyped(buffers);
-        }
+    outputTyped(): TypedValue[] {
+        guardValueIsSet("endpointDefinition", this.endpointDefinition);
 
-        return Arguments.fromBuffers(buffers, this.endpointDefinition!.output);
+        let buffers = this.outputUntyped();
+        let values = new Serializer().buffersToValues(buffers, this.endpointDefinition!.output);
+        return values;
     }
 
     /**

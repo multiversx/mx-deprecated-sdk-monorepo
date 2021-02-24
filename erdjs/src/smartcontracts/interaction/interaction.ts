@@ -1,13 +1,12 @@
 import { Balance } from "../../balance";
 import { GasLimit } from "../../networkParams";
-import { Transaction, TransactionHash } from "../../transaction";
+import { Transaction } from "../../transaction";
 import { TransactionOnNetwork } from "../../transactionOnNetwork";
 import { Query } from "../query";
 import { QueryResponse } from "../queryResponse";
 import { ContractFunction } from "../function";
 import { Address } from "../../address";
 import { SmartContract } from "../smartContract";
-import { Argument, Arguments } from "../arguments";
 import { IInteractionRunner } from "./interface";
 import { EndpointDefinition, TypedValue } from "../typesystem";
 import { Nonce } from "../../nonce";
@@ -22,7 +21,7 @@ import { ReturnCode } from "../returnCode";
 export class Interaction {
     private readonly contract: SmartContract;
     private readonly func: ContractFunction;
-    private readonly args: Argument[];
+    private readonly args: TypedValue[];
     private readonly runner: IInteractionRunner;
 
     private value: Balance = Balance.Zero();
@@ -34,7 +33,7 @@ export class Interaction {
     constructor(
         contract: SmartContract,
         func: ContractFunction,
-        args: Argument[],
+        args: TypedValue[],
         runner: IInteractionRunner
     ) {
         this.contract = contract;
@@ -73,7 +72,7 @@ export class Interaction {
         return this.func;
     }
 
-    getArguments(): Argument[] {
+    getArguments(): TypedValue[] {
         return this.args;
     }
 
@@ -110,7 +109,6 @@ export class Interaction {
             asOnNetwork: TransactionOnNetwork,
             smartContractResults: SmartContractResults,
             immediateResult: ImmediateResult,
-            outputArguments: Arguments,
             values: TypedValue[],
             firstValue: TypedValue,
             returnCode: ReturnCode
@@ -122,18 +120,15 @@ export class Interaction {
 
         immediateResult.setEndpointDefinition(endpoint);
 
-        let outputArguments = immediateResult.outputArguments();
-        let values = outputArguments.valuesTyped();
-        let firstOutputArgument = outputArguments.firstValueTyped();
+        let values = immediateResult.outputTyped();
         let returnCode = immediateResult.getReturnCode();
 
         return {
             asOnNetwork: asOnNetwork,
             smartContractResults: smartContractResults,
             immediateResult: immediateResult,
-            outputArguments: outputArguments,
             values: values,
-            firstValue: firstOutputArgument,
+            firstValue: values[0],
             returnCode: returnCode
         };
     }
@@ -144,7 +139,6 @@ export class Interaction {
      */
     async query(caller?: Address): Promise<{
         response: QueryResponse,
-        outputArguments: Arguments,
         firstValue: TypedValue,
         values: TypedValue[],
         returnCode: ReturnCode
@@ -153,16 +147,13 @@ export class Interaction {
         let endpoint = this.getEndpointDefinition();
         response.setEndpointDefinition(endpoint);
 
-        let outputArguments = response.outputArguments();
-        let values = outputArguments.valuesTyped();
-        let firstOutputArgument = outputArguments.firstValueTyped();
+        let values = response.outputTyped();
         let returnCode = response.returnCode;
 
         return {
             response: response,
-            outputArguments: outputArguments,
             values: values,
-            firstValue: firstOutputArgument,
+            firstValue: values[0],
             returnCode: returnCode
         };
     }

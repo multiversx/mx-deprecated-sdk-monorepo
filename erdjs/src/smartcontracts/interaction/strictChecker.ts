@@ -34,9 +34,8 @@ export class StrictChecker implements IInteractionChecker {
             let type = formalArguments[i].type;
             let arg = actualArguments[i];
 
-            if (!arg.isTyped()) {
-                throw new errors.ErrContractInteraction(`untyped argument: "${arg}" at index ${i}`);
-            }
+            // TODO: detect type mismatch.
+            // throw new errors.ErrContractInteraction(`type mismatch at index ${i}`);
         }
     }
 }

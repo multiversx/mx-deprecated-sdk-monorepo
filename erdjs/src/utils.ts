@@ -4,7 +4,7 @@ import * as errors from "./errors";
 
 export function guardTrue(value: boolean, what: string) {
     if (!value) {
-        throw new errors.ErrInvariantFailed(`${what} isn't true`);
+        throw new errors.ErrInvariantFailed(`[<${what}>] isn't true`);
     }
 }
 

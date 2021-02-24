@@ -3,8 +3,11 @@ import { Balance } from "../balance";
 import { Hash } from "../hash";
 import { GasLimit, GasPrice } from "../networkParams";
 import { Nonce } from "../nonce";
-import { Arguments, EndpointDefinition, ReturnCode } from ".";
+import { EndpointDefinition, ReturnCode } from ".";
 import { TransactionHash } from "../transaction";
+import { Serializer } from "./serializer";
+import { TypedValue } from "./typesystem";
+import { guardValueIsSet } from "../utils";
 
 export class SmartContractResults {
     private readonly items: SmartContractResultItem[] = [];
@@ -104,7 +107,8 @@ export class SmartContractResultItem {
     }
 
     getDataTokens(): Buffer[] {
-        return Arguments.parseIntoBuffers(this.data);
+        let serializer = new Serializer();
+        return serializer.stringToBuffers(this.data);
     }
 }
 
@@ -124,15 +128,16 @@ export class ImmediateResult extends SmartContractResultItem {
         return ReturnCode.fromBuffer(returnCodeToken);
     }
 
-    outputArguments(): Arguments {
-        let buffers = this.getDataTokens().slice(1);
-        let isTyped = this.endpointDefinition ? true : false;
+    outputUntyped(): Buffer[] {
+        return this.getDataTokens().slice(1);
+    }
 
-        if (!isTyped) {
-            return Arguments.fromBuffersUntyped(buffers);
-        }
+    outputTyped(): TypedValue[] {
+        guardValueIsSet("endpointDefinition", this.endpointDefinition);
 
-        return Arguments.fromBuffers(buffers, this.endpointDefinition!.output);
+        let buffers = this.outputUntyped();
+        let values = new Serializer().buffersToValues(buffers, this.endpointDefinition!.output);
+        return values;
     }
 
     setEndpointDefinition(endpointDefinition: EndpointDefinition) {

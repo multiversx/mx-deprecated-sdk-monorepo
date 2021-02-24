@@ -3,6 +3,7 @@ import { TypeMapper } from "./typeMapper";
 import { BetterType } from "./types";
 
 const NamePlaceholder = "?";
+const DescriptionPlaceholder = "N / A";
 
 export class EndpointDefinition {
     readonly name: string;
@@ -82,9 +83,9 @@ export class EndpointParameterDefinition {
         this.type = type;
     }
 
-    static fromJSON(json: { name: string, description: string, type: string }): EndpointParameterDefinition {
+    static fromJSON(json: { name?: string, description?: string, type: string }): EndpointParameterDefinition {
         let parsedType = new TypeExpressionParser().parse(json.type);
         let knownType = TypeMapper.getDefault().mapType(parsedType);
-        return new EndpointParameterDefinition(json.name, json.description, knownType);
+        return new EndpointParameterDefinition(json.name || NamePlaceholder, json.description || DescriptionPlaceholder, knownType);
     }
 }

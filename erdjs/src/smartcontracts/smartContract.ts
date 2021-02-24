@@ -3,7 +3,6 @@ import { Address } from "../address";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
 import { TransactionPayload } from "../transactionPayload";
-import { Argument } from "./arguments";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ISmartContract as ISmartContract } from "./interface";
@@ -15,6 +14,7 @@ import { QueryResponse } from "./queryResponse";
 import { IProvider } from "../interface";
 import { SmartContractAbi } from "./abi";
 import { guardValueIsSet } from "../utils";
+import { TypedValue } from "./typesystem";
 const createKeccakHash = require("keccak");
 
 /**
@@ -89,7 +89,7 @@ export class SmartContract implements ISmartContract {
      * Creates a {@link Transaction} for deploying the Smart Contract to the Network.
      */
     deploy({ code, codeMetadata, initArguments, value, gasLimit }
-        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: Argument[], value?: Balance, gasLimit: GasLimit }
+        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: TypedValue[], value?: Balance, gasLimit: GasLimit }
     ): Transaction {
         codeMetadata = codeMetadata || new CodeMetadata();
         initArguments = initArguments || [];
@@ -128,7 +128,7 @@ export class SmartContract implements ISmartContract {
      * Creates a {@link Transaction} for upgrading the Smart Contract on the Network.
      */
     upgrade({ code, codeMetadata, initArgs, value, gasLimit }
-        : { code: Code, codeMetadata?: CodeMetadata, initArgs?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction {
+        : { code: Code, codeMetadata?: CodeMetadata, initArgs?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction {
         codeMetadata = codeMetadata || new CodeMetadata();
         initArgs = initArgs || [];
         value = value || Balance.Zero();
@@ -161,7 +161,7 @@ export class SmartContract implements ISmartContract {
      * Creates a {@link Transaction} for calling (a function of) the Smart Contract.
      */
     call({ func, args, value, gasLimit }
-        : { func: ContractFunction, args?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction {
+        : { func: ContractFunction, args?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction {
         args = args || [];
         value = value || Balance.Zero();
 
@@ -188,7 +188,7 @@ export class SmartContract implements ISmartContract {
 
     async runQuery(
         provider: IProvider,
-        { func, args, value, caller }: { func: ContractFunction, args?: Argument[], value?: Balance, caller?: Address })
+        { func, args, value, caller }: { func: ContractFunction, args?: TypedValue[], value?: Balance, caller?: Address })
         : Promise<QueryResponse> {
         let query = new Query({
             address: this.address,

@@ -1,11 +1,11 @@
 
 import { TransactionPayload } from "../transactionPayload";
 import { guardValueIsSet } from "../utils";
-
-import { Argument, Arguments } from "./arguments";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
+import { Serializer } from "./serializer";
+import { TypedValue } from "./typesystem";
 
 export const ArwenVirtualMachine = "0500";
 
@@ -15,7 +15,7 @@ export const ArwenVirtualMachine = "0500";
 export class ContractDeployPayloadBuilder {
     private code: Code | null = null;
     private codeMetadata: CodeMetadata = new CodeMetadata();
-    private arguments: Argument[] = [];
+    private arguments: TypedValue[] = [];
 
     /**
      * Sets the code of the Smart Contract.
@@ -36,7 +36,7 @@ export class ContractDeployPayloadBuilder {
     /**
      * Adds constructor (`init`) arguments.
      */
-    addInitArg(arg: Argument): ContractDeployPayloadBuilder {
+    addInitArg(arg: TypedValue): ContractDeployPayloadBuilder {
         this.arguments.push(arg);
         return this;
     }
@@ -44,7 +44,7 @@ export class ContractDeployPayloadBuilder {
     /**
      * Sets constructor (`init`) arguments.
      */
-    setInitArgs(args: Argument[]): ContractDeployPayloadBuilder {
+    setInitArgs(args: TypedValue[]): ContractDeployPayloadBuilder {
         this.arguments = args;
         return this;
     }
@@ -58,8 +58,7 @@ export class ContractDeployPayloadBuilder {
         let code = this.code!.toString();
         let codeMetadata = this.codeMetadata.toString();
         let data = `${code}@${ArwenVirtualMachine}@${codeMetadata}`;
-        let args = new Arguments(this.arguments);
-        data = args.appendToString(data);
+        data = appendArgumentsToString(data, this.arguments);
 
         return new TransactionPayload(data);
     }
@@ -71,7 +70,7 @@ export class ContractDeployPayloadBuilder {
 export class ContractUpgradePayloadBuilder {
     private code: Code | null = null;
     private codeMetadata: CodeMetadata = new CodeMetadata();
-    private arguments: Argument[] = [];
+    private arguments: TypedValue[] = [];
 
     /**
      * Sets the code of the Smart Contract.
@@ -92,7 +91,7 @@ export class ContractUpgradePayloadBuilder {
     /**
      * Adds upgrade (`init`) arguments.
      */
-    addInitArg(arg: Argument): ContractUpgradePayloadBuilder {
+    addInitArg(arg: TypedValue): ContractUpgradePayloadBuilder {
         this.arguments.push(arg);
         return this;
     }
@@ -100,7 +99,7 @@ export class ContractUpgradePayloadBuilder {
     /**
      * Sets upgrade (`init`) arguments.
      */
-    setInitArgs(args: Argument[]): ContractUpgradePayloadBuilder {
+    setInitArgs(args: TypedValue[]): ContractUpgradePayloadBuilder {
         this.arguments = args;
         return this;
     }
@@ -114,8 +113,7 @@ export class ContractUpgradePayloadBuilder {
         let code = this.code!.toString();
         let codeMetadata = this.codeMetadata.toString();
         let data = `upgradeContract@${code}@${codeMetadata}`;
-        let args = new Arguments(this.arguments);
-        data = args.appendToString(data);
+        data = appendArgumentsToString(data, this.arguments);
 
         return new TransactionPayload(data);
     }
@@ -126,7 +124,7 @@ export class ContractUpgradePayloadBuilder {
  */
 export class ContractCallPayloadBuilder {
     private contractFunction: ContractFunction | null = null;
-    private arguments: Argument[] = [];
+    private arguments: TypedValue[] = [];
 
     /**
      * Sets the function to be called (executed).
@@ -139,7 +137,7 @@ export class ContractCallPayloadBuilder {
     /**
      * Adds a function argument.
      */
-    addArg(arg: Argument): ContractCallPayloadBuilder {
+    addArg(arg: TypedValue): ContractCallPayloadBuilder {
         this.arguments.push(arg);
         return this;
     }
@@ -147,7 +145,7 @@ export class ContractCallPayloadBuilder {
     /**
      * Sets the function arguments.
      */
-    setArgs(args: Argument[]): ContractCallPayloadBuilder {
+    setArgs(args: TypedValue[]): ContractCallPayloadBuilder {
         this.arguments = args;
         return this;
     }
@@ -159,9 +157,18 @@ export class ContractCallPayloadBuilder {
         guardValueIsSet("calledFunction", this.contractFunction);
 
         let data = this.contractFunction!.name;
-        let args = new Arguments(this.arguments);
-        data = args.appendToString(data);
+        data = appendArgumentsToString(data, this.arguments);
 
         return new TransactionPayload(data);
     }
+}
+
+function appendArgumentsToString(to: string, values: TypedValue[]) {
+    if (values.length == 0) {
+        return to;
+    }
+
+    let serializer = new Serializer();
+    let argumentsString = serializer.valuesToString(values);
+    return `${to}@${argumentsString}`;
 }

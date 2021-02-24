@@ -2,10 +2,10 @@ import { Address } from "../address";
 import { Balance } from "../balance";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
-import { Argument } from "./arguments";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
+import { TypedValue } from "./typesystem";
 
 /**
  * ISmartContract defines a general interface for operating with {@link SmartContract} objects.
@@ -20,19 +20,19 @@ export interface ISmartContract {
      * Creates a {@link Transaction} for deploying the Smart Contract to the Network.
      */
     deploy({ code, codeMetadata, initArguments, value, gasLimit }
-        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction;
+        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction;
 
     /**
      * Creates a {@link Transaction} for upgrading the Smart Contract on the Network.
      */
     upgrade({ code, codeMetadata, initArguments, value, gasLimit }
-        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction;
+        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction;
 
     /**
      * Creates a {@link Transaction} for calling (a function of) the Smart Contract.
      */ 
     call({ func, args, value, gasLimit }
-        : { func: ContractFunction, args?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction;
+        : { func: ContractFunction, args?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction;
 }
 
 // export interface ERC20Client extends ISmartContract {

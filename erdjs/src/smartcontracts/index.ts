@@ -3,7 +3,6 @@
  * @module smartcontracts
  */
 
-export * from "./arguments";
 export * from "./code";
 export * from "./codeMetadata";
 export * from "./function";

@@ -1,8 +1,9 @@
 import { ContractFunction } from "./function";
-import { Argument } from "./arguments";
 import { Balance } from "../balance";
 import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
+import { TypedValue } from "./typesystem";
+import { Serializer } from "./serializer";
 
 export const MaxUint64 = BigInt("18446744073709551615");
 
@@ -10,7 +11,7 @@ export class Query {
     caller: Address;
     address: Address;
     func: ContractFunction;
-    args: Argument[];
+    args: TypedValue[];
     value: Balance;
 
     constructor(init?: Partial<Query>) {
@@ -35,7 +36,7 @@ export class Query {
         let request: any = {
             "scAddress": this.address.bech32(),
             "funcName": this.func.toString(),
-            "args": this.args.map(arg => arg.toString()),
+            "args": new Serializer().valuesToStrings(this.args),
             "value": this.value.toString()
         };
 
