@@ -3,11 +3,11 @@ import { Balance } from "../balance";
 import { Hash } from "../hash";
 import { GasLimit, GasPrice } from "../networkParams";
 import { Nonce } from "../nonce";
-import { EndpointDefinition, ReturnCode } from ".";
 import { TransactionHash } from "../transaction";
 import { Serializer } from "./serializer";
-import { TypedValue } from "./typesystem";
+import { EndpointDefinition, TypedValue } from "./typesystem";
 import { guardValueIsSet } from "../utils";
+import { ReturnCode } from "./returnCode";
 
 export class SmartContractResults {
     private readonly items: SmartContractResultItem[] = [];

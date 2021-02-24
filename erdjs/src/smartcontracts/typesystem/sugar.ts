@@ -1,5 +1,6 @@
 import { Address } from "../../address";
 import { AddressValue } from "./address";
+import { BytesValue } from "./bytes";
 import { List, ListType, OptionType, OptionValue } from "./generic";
 import { BigUIntValue, U8Type, U8Value } from "./numerical";
 import { TypedValue, TypePlaceholder } from "./types";
@@ -49,4 +50,9 @@ export function typedUTF8(value: string): TypedValue {
     let typedBytes = [...buffer].map(byte => new U8Value(byte));
     let type = new ListType(new U8Type());
     return new List(type, typedBytes);
+}
+
+export function typedBytesFromHex(value: string) {
+    let buffer = Buffer.from(value, "hex");
+    return new BytesValue(buffer);
 }

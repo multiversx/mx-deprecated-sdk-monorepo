@@ -4,7 +4,7 @@ import { ContractFunction } from "./function";
 import { getMainnetProvider } from "../testutils";
 import { SmartContract } from "./smartContract";
 import * as errors from "../errors";
-import { Argument } from "./arguments";
+import { typedAddress, typedBigInt } from "./typesystem";
 
 describe("test queries on mainnet", function () {
     let provider = getMainnetProvider();
@@ -26,7 +26,6 @@ describe("test queries on mainnet", function () {
 
         assert.isTrue(response.isSuccess());
         assert.lengthOf(response.returnData, 1);
-        assert.isAtLeast(response.outputArguments().firstItem().number(), 5000);
         assert.isAtLeast(response.gasUsed.valueOf(), 25000000);
         assert.isAtMost(response.gasUsed.valueOf(), 35000000);
     });
@@ -60,7 +59,7 @@ describe("test queries on mainnet", function () {
         // Then do a successful query:
         let response = await delegationContract.runQuery(provider, {
             func: new ContractFunction("getClaimableRewards"),
-            args: [Argument.fromPubkey(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"))]
+            args: [typedAddress(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"))]
         });
 
         assert.isTrue(response.isSuccess());

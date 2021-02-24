@@ -11,4 +11,3 @@ export * from "./query";
 export * from "./returnCode";
 export * from "./smartContract";
 export * from "./transactionPayloadBuilders";
-export * from "./typesystem";

@@ -1,10 +1,10 @@
 import { assert } from "chai";
 import { Address } from "../address";
 import { TransactionPayload } from "../transactionPayload";
-import { Argument } from "./arguments";
 import { ContractFunction } from "./function";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
+import { typedAddress, typedNumber } from "./typesystem";
 
 
 describe("test contract payload builders", () => {
@@ -13,7 +13,7 @@ describe("test contract payload builders", () => {
             .contractDeploy()
             .setCode(Code.fromBuffer(Buffer.from([1, 2, 3, 4])))
             .setCodeMetadata(new CodeMetadata(true, false, true))
-            .addInitArg(Argument.fromNumber(1024))
+            .addInitArg(typedNumber(1024))
             .build();
 
         assert.equal(payload.valueOf().toString(), "01020304@0500@0102@0400");
@@ -24,7 +24,7 @@ describe("test contract payload builders", () => {
             .contractUpgrade()
             .setCode(Code.fromBuffer(Buffer.from([1, 2, 3, 4])))
             .setCodeMetadata(new CodeMetadata(true, false, true))
-            .addInitArg(Argument.fromNumber(1024))
+            .addInitArg(typedNumber(1024))
             .build();
 
         assert.equal(payload.valueOf().toString(), "upgradeContract@01020304@0102@0400");
@@ -35,8 +35,8 @@ describe("test contract payload builders", () => {
         let payload = TransactionPayload
             .contractCall()
             .setFunction(new ContractFunction("transferToken"))
-            .addArg(Argument.fromPubkey(alice))
-            .addArg(Argument.fromNumber(1024))
+            .addArg(typedAddress(alice))
+            .addArg(typedNumber(1024))
             .build();
 
         assert.equal(payload.valueOf().toString(), "transferToken@fd691bb5e85d102687d81079dffce842d4dc328276d2d4c60d8fd1c3433c3293@0400");

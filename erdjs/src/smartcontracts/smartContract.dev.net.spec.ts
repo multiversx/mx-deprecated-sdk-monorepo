@@ -7,10 +7,10 @@ import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
 import { getDevnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
-import { Argument } from "./arguments";
 import { assert } from "chai";
 import { Balance } from "../balance";
-import { U32Value } from "./typesystem";
+import { missingOption, providedOption, typedAddress, typedBigInt, typedNumber, typedUTF8, U32Value } from "./typesystem";
+import { decodeBool, decodeUnsignedNumber } from "./codec";
 
 describe("test on devnet (local)", function () {
     let devnet = getDevnetProvider();
@@ -134,7 +134,7 @@ describe("test on devnet (local)", function () {
 
         // Check counter
         let queryResponse = await contract.runQuery(devnet, { func: new ContractFunction("get") });
-        assert.equal(3, queryResponse.outputArguments().firstItem().number());
+        assert.equal(3, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
 
     it("erc20: should deploy, call and query contract", async function() {
@@ -151,7 +151,7 @@ describe("test on devnet (local)", function () {
         let transactionDeploy = contract.deploy({
             code: await loadContractCode("src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
-            initArguments: [Argument.fromNumber(10000)]
+            initArguments: [typedNumber(10000)]
         });
 
         // The deploy transaction should be signed, so that the address of the contract
@@ -164,13 +164,13 @@ describe("test on devnet (local)", function () {
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(5000000),
-            args: [Argument.fromPubkey(wallets.bob.address), Argument.fromNumber(1000)]
+            args: [typedAddress(wallets.bob.address), typedNumber(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(5000000),
-            args: [Argument.fromPubkey(wallets.carol.address), Argument.fromNumber(1500)]
+            args: [typedAddress(wallets.carol.address), typedNumber(1500)]
         });
 
         // Apply nonces and sign the remaining transactions
@@ -195,25 +195,25 @@ describe("test on devnet (local)", function () {
         let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("totalSupply")
         });
-        assert.equal(10000, queryResponse.outputArguments().firstItem().number());
+        assert.equal(10000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.fromPubkey(wallets.alice.address)]
+            args: [typedAddress(wallets.alice.address)]
         });
-        assert.equal(7500, queryResponse.outputArguments().firstItem().number());
-
+        assert.equal(7500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
+        
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.fromPubkey(wallets.bob.address)]
+            args: [typedAddress(wallets.bob.address)]
         });
-        assert.equal(1000, queryResponse.outputArguments().firstItem().number());
-
+        assert.equal(1000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
+        
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.fromPubkey(wallets.carol.address)]
+            args: [typedAddress(wallets.carol.address)]
         });
-        assert.equal(1500, queryResponse.outputArguments().firstItem().number());
+        assert.equal(1500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
 
     it("lottery: should deploy, call and query contract", async function() {
@@ -244,13 +244,13 @@ describe("test on devnet (local)", function () {
             func: new ContractFunction("start"),
             gasLimit: new GasLimit(5000000),
             args: [
-                Argument.fromUTF8("foobar"), 
-                Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-                Argument.fromMissingOption(),
-                Argument.fromMissingOption(),
-                Argument.fromProvidedOption(new U32Value(1)),
-                Argument.fromMissingOption(),
-                Argument.fromMissingOption()
+                typedUTF8("foobar"), 
+                typedBigInt(Balance.eGLD(1).valueOf()),
+                missingOption(),
+                missingOption(),
+                providedOption(new U32Value(1)),
+                missingOption(),
+                missingOption()
             ]
         });
 
@@ -270,17 +270,17 @@ describe("test on devnet (local)", function () {
         let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("lotteryExists"),
             args: [
-                Argument.fromUTF8("foobar")
+                typedUTF8("foobar")
             ]
         });
-        assert.equal(queryResponse.outputArguments().firstItem().bool(), true);
+        assert.equal(decodeBool(queryResponse.outputUntyped()[0]), true);
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("lotteryExists"),
             args: [
-                Argument.fromUTF8("missingLottery")
+                typedUTF8("missingLottery")
             ]
         });
-        assert.equal(queryResponse.outputArguments().firstItem().bool(), false);
+        assert.equal(decodeBool(queryResponse.outputUntyped()[0]), false);
     });
 });

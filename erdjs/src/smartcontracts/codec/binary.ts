@@ -1,6 +1,6 @@
 import * as errors from "../../errors";
 import { BetterType, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue } from "../typesystem";
-import { guardTrue } from "../../utils";
+import { guardTrue, guardType } from "../../utils";
 import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
 import { ListBinaryCodec } from "./list";
@@ -64,6 +64,7 @@ export class BinaryCodec {
     }
 
     encodeTopLevel(typedValue: TypedValue): Buffer {
+        guardType("value", TypedValue, typedValue, false);
         guardTrue(typedValue.getType().getCardinality().isFixed(), "fixed cardinality, thus encodable type");
 
         return onTypedValueSelect(typedValue, {

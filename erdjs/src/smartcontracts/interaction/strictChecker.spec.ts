@@ -3,13 +3,12 @@ import { SmartContractInteractor } from "./interactor";
 import { StrictChecker as StrictInteractionChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
-import { AbiRegistry, U64Value } from "../typesystem";
+import { AbiRegistry, missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "../typesystem";
 import { MockProvider, TestWallets } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
 import { assert } from "chai";
 import { Interaction } from "./interaction";
-import { Argument } from "../arguments";
 import { Balance } from "../../balance";
 
 describe("integration tests: test checker within interactor", function () {
@@ -30,7 +29,7 @@ describe("integration tests: test checker within interactor", function () {
         assert.throw(() => (<Interaction>interactor.prepare().getUltimateAnswer()).withValue(Balance.eGLD(1)), errors.ErrContractInteraction, "cannot send eGLD value to non-payable");
 
         // Bad arguments
-        assert.throw(() => (<Interaction>interactor.prepare().getUltimateAnswer([Argument.fromHex("abba")])), errors.ErrContractInteraction, "bad arguments, expected: 0, got: 1");
+        assert.throw(() => (<Interaction>interactor.prepare().getUltimateAnswer([typedBytesFromHex("abba")])), errors.ErrContractInteraction, "bad arguments, expected: 0, got: 1");
     });
 
     it("should detect errors for 'lottery'", async function () {
@@ -41,20 +40,20 @@ describe("integration tests: test checker within interactor", function () {
 
         // Bad number of arguments
         assert.throw(() => interactor.prepare().start([
-            Argument.fromUTF8("lucky"),
-            Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-            Argument.fromMissingOption(),
+            typedUTF8("lucky"),
+            typedBigInt(Balance.eGLD(1).valueOf()),
+            missingOption(),
         ]), errors.ErrContractInteraction, "bad arguments, expected: 7, got: 3");
 
         // Bad types (U64 instead of U32)
         assert.throw(() => interactor.prepare().start([
-            Argument.fromUTF8("lucky"),
-            Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-            Argument.fromMissingOption(),
-            Argument.fromMissingOption(),
-            Argument.fromProvidedOption(new U64Value(BigInt(1))),
-            Argument.fromMissingOption(),
-            Argument.fromMissingOption()
+            typedUTF8("lucky"),
+            typedBigInt(Balance.eGLD(1).valueOf()),
+            missingOption(),
+            missingOption(),
+            providedOption(new U64Value(BigInt(1))),
+            missingOption(),
+            missingOption()
         ]), errors.ErrContractInteraction, "...");
     });
 });

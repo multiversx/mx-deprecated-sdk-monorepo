@@ -2,7 +2,7 @@ import { SmartContractInteractor } from "./interactor";
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
-import { AbiRegistry, U32Value } from "../typesystem";
+import { AbiRegistry, missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "../typesystem";
 import { AddImmediateResult, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets, Wait } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
@@ -14,7 +14,6 @@ import { QueryResponse } from "../queryResponse";
 import { Nonce } from "../../nonce";
 import { TransactionStatus } from "../../transaction";
 import { ReturnCode } from "../returnCode";
-import { Argument } from "../arguments";
 import { Balance } from "../../balance";
 
 describe("test smart contract interactor", function () {
@@ -128,21 +127,21 @@ describe("test smart contract interactor", function () {
         let interactor = new SmartContractInteractor(contract, runner);
 
         let startInteraction = <Interaction>interactor.prepare().start([
-            Argument.fromUTF8("lucky"),
-            Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-            Argument.fromMissingOption(),
-            Argument.fromMissingOption(),
-            Argument.fromProvidedOption(new U32Value(1)),
-            Argument.fromMissingOption(),
-            Argument.fromMissingOption()
+            typedUTF8("lucky"),
+            typedBigInt(Balance.eGLD(1).valueOf()),
+            missingOption(),
+            missingOption(),
+            providedOption(new U32Value(1)),
+            missingOption(),
+            missingOption()
         ]).withGasLimit(new GasLimit(5000000));
 
         let lotteryStatusInteraction = <Interaction>interactor.prepare().status([
-            Argument.fromUTF8("lucky")
+            typedUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 
         let getLotteryInfoInteraction = <Interaction>interactor.prepare().lotteryInfo([
-            Argument.fromUTF8("lucky")
+            typedUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 
         // start()

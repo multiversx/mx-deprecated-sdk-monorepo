@@ -6,10 +6,10 @@ import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
 import { MockProvider, setupUnitTestWatcherTimeouts, Wait } from "../testutils";
 import { TransactionStatus } from "../transaction";
-import { Argument } from "./arguments";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { TestWallets } from "../testutils";
+import { typedBytesFromHex, typedNumber } from "./typesystem";
 
 
 describe("test contract", () => {
@@ -76,13 +76,13 @@ describe("test contract", () => {
 
         let callTransactionOne = contract.call({
             func: new ContractFunction("helloEarth"),
-            args: [Argument.fromNumber(5), Argument.fromHex("0123")],
+            args: [typedNumber(5), typedBytesFromHex("0123")],
             gasLimit: new GasLimit(150000)
         });
 
         let callTransactionTwo = contract.call({
             func: new ContractFunction("helloMars"),
-            args: [Argument.fromNumber(5), Argument.fromHex("0123")],
+            args: [typedNumber(5), typedBytesFromHex("0123")],
             gasLimit: new GasLimit(1500000)
         });
 

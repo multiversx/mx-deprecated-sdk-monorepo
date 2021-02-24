@@ -65,7 +65,7 @@ describe("fetch transactions from devnet", function () {
         assert.isTrue(deployImmediateResult.value.valueOf() > 0);
         assert.lengthOf(deployResultingCalls, 0);
 
-        assert.lengthOf(incrementImmediateResult.outputArguments().items(), 1);
+        assert.lengthOf(incrementImmediateResult.outputUntyped(), 1);
         // There is some refund
         assert.isTrue(incrementImmediateResult.value.valueOf() > 0);
         assert.lengthOf(incrementResultingCalls, 0);
