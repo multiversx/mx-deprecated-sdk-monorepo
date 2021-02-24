@@ -29,7 +29,7 @@ def prepare_args_for_add_nodes(args: Any):
     validators_file = ValidatorsFile(args.validators_file)
 
     # TODO: Refactor, so that only address is received here.
-    if args.using_dm:
+    if args.using_delegation_manager:
         account = Account(address=args.delegation_contract)
     elif args.pem:
         account = Account(pem_file=args.pem)
@@ -43,7 +43,7 @@ def prepare_args_for_add_nodes(args: Any):
         validator_pem = validator.get("pemFile")
         validator_pem = path.join(path.dirname(args.validators_file), validator_pem)
         seed, bls_key = parse_validator_pem(validator_pem)
-        if (not args.using_dm):
+        if (not args.using_delegation_manager):
             seed = seed.hex()
         signed_message = sign_message_with_bls_key(account.address.pubkey().hex(), seed)
         add_nodes_data += f"@{bls_key}@{signed_message}"
