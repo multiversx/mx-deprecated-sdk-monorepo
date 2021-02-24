@@ -1,6 +1,5 @@
-import { read } from "fs";
 import { Address } from "../address";
-import { guardTrue, guardValueIsSet } from "../utils";
+import { guardValueIsSet } from "../utils";
 import { BinaryCodec } from "./codec";
 import { AddressValue, BigUIntValue, OptionType, OptionValue, TypedValue, TypePlaceholder, U8Type, U8Value, List, ListType, EndpointParameterDefinition, BetterType } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
@@ -101,7 +100,7 @@ export class Arguments {
 
         function hasReachedTheEnd() {
             return bufferIndex >= numBuffers;
-    }
+        }
 
         return new Arguments(args);
     }
@@ -139,11 +138,11 @@ export class Arguments {
         if (this.args.length == 0) {
             return to;
         }
-    
+
         this.args.forEach(arg => {
             to += ArgumentsSeparator + arg.hex();
         });
-    
+
         return to;
     }
 }
@@ -306,26 +305,5 @@ export class Argument {
 
     valueOf(): Buffer {
         return this.asBuffer;
-    }
-}
-
-export class CompositeArgument {
-    readonly parts: Argument[];
-
-    constructor(parts: Argument[]) {
-        this.parts = parts;
-    }
-
-    static fromTypedValues(typedValues: TypedValue[]): CompositeArgument {
-        let parts = typedValues.map(item => Argument.fromTypedValue(item));
-        return new CompositeArgument(parts);
-    }
-
-    toString(): string {
-        return this.parts.map(part => part.hex()).join(ArgumentsSeparator);
-    }
-
-    valueOf(): Buffer[] {
-        return this.parts.map(part => part.buffer());
     }
 }
