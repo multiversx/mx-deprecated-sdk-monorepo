@@ -15,8 +15,8 @@ import {ProtoSerializer} from "./proto";
 
 const createTransactionHasher = require("blake2b");
 
-const TRANSACTION_VERSION = TransactionVersion.withDefaultVersion();
-const TRANSACTION_OPTIONS = TransactionOptions.withDefaultOptions();
+const DEFAULT_TRANSACTION_VERSION = TransactionVersion.withDefaultVersion();
+const DEFAULT_TRANSACTION_OPTIONS = TransactionOptions.withDefaultOptions();
 const TRANSACTION_HASH_LENGTH = 32;
 
 /**
@@ -99,8 +99,8 @@ export class Transaction implements ISignable {
         this.gasLimit = NetworkConfig.getDefault().MinGasLimit;
         this.data = new TransactionPayload();
         this.chainID = NetworkConfig.getDefault().ChainID;
-        this.version = TRANSACTION_VERSION;
-        this.options = TRANSACTION_OPTIONS;
+        this.version = DEFAULT_TRANSACTION_VERSION;
+        this.options = DEFAULT_TRANSACTION_OPTIONS;
 
         this.signature = new Signature();
         this.hash = new TransactionHash("");
