@@ -27,7 +27,7 @@ describe("test smart contract interactor", function () {
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/answer.abi.json");
+        let abiRegistry = await AbiRegistry.load({ files: ["src/testdata/answer.abi.json"] });
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -73,7 +73,7 @@ describe("test smart contract interactor", function () {
     it("should interact with 'counter'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/counter.abi.json");
+        let abiRegistry = await AbiRegistry.load({ files: ["src/testdata/counter.abi.json"] });
         let abi = new SmartContractAbi(abiRegistry, ["counter"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -121,7 +121,7 @@ describe("test smart contract interactor", function () {
     it("should interact with 'lottery-egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/lottery_egld.abi.json");
+        let abiRegistry = await AbiRegistry.load({ files: ["src/testdata/lottery_egld.abi.json"] });
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -169,7 +169,7 @@ describe("test smart contract interactor", function () {
         assert.equal(lotteryStatusInteraction.getTransaction().getData().toString(), "status@6c75636b79");
         assert.isTrue(statusReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(statusReturnvalues, 1);
-        assert.equal(statusFirstValue.valueOf(), true);
+        assert.equal(statusFirstValue.valueOf(), "Running");
 
         // lotteryInfo() (this is a view function, but for the sake of the test, we'll execute it)
         let [, { returnCode: infoReturnCode, values: infoReturnvalues, firstValue: infoFirstValue }] = await Promise.all([
