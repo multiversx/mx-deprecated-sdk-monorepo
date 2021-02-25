@@ -30,8 +30,7 @@ export class StructFieldDefinition {
 
     static fromJSON(json: { name: string, description: string, type: string }): StructFieldDefinition {
         let parsedType = new TypeExpressionParser().parse(json.type);
-        let knownType = TypeMapper.getDefault().mapType(parsedType);
-        return new StructFieldDefinition(json.name, json.description, knownType);
+        return new StructFieldDefinition(json.name, json.description, parsedType);
     }
 }
 

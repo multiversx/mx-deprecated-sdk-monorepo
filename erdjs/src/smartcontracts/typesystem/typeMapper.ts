@@ -1,5 +1,4 @@
 import * as errors from "../../errors";
-import { Logger } from "../../logger";
 import { AddressType } from "./address";
 import { BooleanType } from "./boolean";
 import { BytesType } from "./bytes";
@@ -9,51 +8,49 @@ import { ListType, OptionType } from "./generic";
 import { H256Type } from "./h256";
 import { BigIntType, BigUIntType, I16Type, I32Type, I64Type, I8Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
 import { StructFieldDefinition, StructType } from "./struct";
-import { BetterType } from "./types";
+import { BetterType, CustomType } from "./types";
 import { OptionalType, VariadicType } from "./variadic";
 
 type TypeConstructor = new (...typeParameters: BetterType[]) => BetterType;
 
-/**
- * This list contains all known types, including generic ones and non-encodable ones - with the exception of custom types (enums and structs).
- */
-const KnownTypes: TypeConstructor[] = [
-    U8Type, U16Type, U32Type, U64Type, BigUIntType, I8Type, I16Type, I32Type, I64Type, BigIntType, 
-    BooleanType, BytesType, AddressType, H256Type, 
-    OptionType, ListType,
-];
-
 export class TypeMapper {
-    private static default: TypeMapper;
+    private readonly openTypesConstructors: Map<string, TypeConstructor>;
+    private readonly closedTypesMap: Map<string, BetterType>;
 
-    private readonly knownTypesMap: Map<string, TypeConstructor>;
+    constructor(customTypes: CustomType[] = []) {
+        this.openTypesConstructors = new Map<string, TypeConstructor>([
+            ["Option", OptionType],
+            ["List", ListType],
+            // For the following open generics, we use a slightly different typing than the one defined by elrond-wasm-rs (temporary workaround).
+            ["VarArgs", VariadicType],
+            ["MultiResultVec", VariadicType],
+            ["OptionalArg", OptionalType],
+            ["OptionalResult", OptionalType],
+            ["MultiArg", CompositeType],
+            ["MultiResult", CompositeType]
+        ]);
 
-    constructor() {
-        this.knownTypesMap = new Map<string, TypeConstructor>();
+        // For closed types, we hold actual type instances instead of type constructors (no type parameters needed).
+        this.closedTypesMap = new Map<string, BetterType>([
+            ["u8", new U8Type()],
+            ["u16", new U16Type()],
+            ["u32", new U32Type()],
+            ["u64", new U64Type()],
+            ["BigUint", new BigUIntType()],
+            ["i8", new I8Type()],
+            ["i16", new I16Type()],
+            ["i32", new I32Type()],
+            ["i64", new I64Type()],
+            ["Bigint", new BigIntType()],
+            ["bool", new BooleanType()],
+            ["bytes", new BytesType()],
+            ["Address", new AddressType()],
+            ["H256", new H256Type()]
+        ]);
 
-        for (const knownType of KnownTypes) {
-            let name = new knownType().getName();
-            this.knownTypesMap.set(name, knownType);
+        for (const customType of customTypes) {
+            this.closedTypesMap.set(customType.getName(), customType);
         }
-
-        // We use a slightly different typing than the one defined by elrond-wasm-rs (temporary workaround).
-        this.knownTypesMap.set("VarArgs", VariadicType);
-        this.knownTypesMap.set("MultiResultVec", VariadicType);
-        this.knownTypesMap.set("OptionalArg", OptionalType);
-        this.knownTypesMap.set("OptionalResult", OptionalType);
-        this.knownTypesMap.set("MultiArg", CompositeType);
-        this.knownTypesMap.set("MultiResult", CompositeType);
-    }
-
-    /**
-     * Gets the default mapper (think of the Singleton pattern).
-     */
-    static getDefault(): TypeMapper {
-        if (!TypeMapper.default) {
-            TypeMapper.default = new TypeMapper();
-        }
-
-        return TypeMapper.default;
     }
 
     mapType(type: BetterType): BetterType {
@@ -64,20 +61,21 @@ export class TypeMapper {
         }
 
         if (type instanceof StructType) {
+            // This will call mapType() recursively, for all the struct's fields.
             return this.mapStructType(type);
         }
 
-        if (!this.isKnown(type)) {
-            Logger.warn(`Unknown type: ${type}. Won't be mapped.`);
-            return type;
-        }
-
         if (isGeneric) {
+            // This will call mapType() recursively, for all the type parameters.
             return this.mapGenericType(type);
         }
 
-        let constructor = this.getKnown(type);
-        return new constructor();
+        let knownClosedType = this.closedTypesMap.get(type.getName());
+        if (!knownClosedType) {
+            throw new errors.ErrTypingSystem(`Cannot map the type "${type.getName()}" to a known type`);
+        }
+
+        return knownClosedType;
     }
 
     private mapStructType(type: StructType): StructType {
@@ -89,16 +87,12 @@ export class TypeMapper {
     private mapGenericType(type: BetterType): BetterType {
         let typeParameters = type.getTypeParameters();
         let mappedTypeParameters = typeParameters.map(item => this.mapType(item));
-        let constructor = this.getKnown(type);
+
+        let constructor = this.openTypesConstructors.get(type.getName());
+        if (!constructor) {
+            throw new errors.ErrTypingSystem(`Cannot map the generic type "${type.getName()}" to a known type`);
+        }
+
         return new constructor(...mappedTypeParameters);
-    }
-
-    private isKnown(type: BetterType): boolean {
-        return this.knownTypesMap.has(type.getName());
-    }
-
-    private getKnown(type: BetterType): TypeConstructor {
-        let constructor = this.knownTypesMap.get(type.getName());
-        return constructor!;
     }
 }

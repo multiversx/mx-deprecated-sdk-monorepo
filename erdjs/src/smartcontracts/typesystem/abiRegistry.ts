@@ -6,10 +6,31 @@ import { StructType } from "./struct";
 import { ContractInterface } from "./contractInterface";
 import { CustomType } from "./types";
 import { EnumType } from "./enum";
+import { TypeMapper } from "./typeMapper";
+import { EndpointDefinition, EndpointParameterDefinition } from "./endpoint";
 
 export class AbiRegistry {
     readonly interfaces: ContractInterface[] = [];
     readonly customTypes: CustomType[] = [];
+
+    /**
+     * Convenience factory function to load ABIs (from files or URLs).
+     * This function will also remap ABI types to know types (on best-efforts basis).
+     */
+    static async load(json: { files?: string[], urls?: string[] }) {
+        let registry = new AbiRegistry();
+
+        for (const file of json.files || []) {
+            await registry.extendFromFile(file);
+        }
+
+        for (const url of json.urls || []) {
+            await registry.extendFromUrl(url);
+        }
+
+        registry = registry.remapToKnownTypes();
+        return registry;
+    }
 
     async extendFromFile(file: string): Promise<AbiRegistry> {
         let jsonContent: string = await fs.promises.readFile(file, { encoding: "utf8" });
@@ -96,8 +117,39 @@ export class AbiRegistry {
      * This function increases the specificity of the types used by parameter / field definitions within a registry (on best-efforts basis).
      * The result is an equivalent, more explicit ABI registry.
      */
-    remapKnownTypes(): AbiRegistry {
-        // TODO: Implement.
-        return new AbiRegistry();
+    remapToKnownTypes(): AbiRegistry {
+        let mapper = new TypeMapper(this.customTypes);
+
+        let newCustomTypes: CustomType[] = [];
+        let newInterfaces: ContractInterface[] = [];
+        
+        // First, remap custom types (actually, under the hood, this will remap types of struct fields)
+        for (const type of this.customTypes) {
+            newCustomTypes.push(mapper.mapType(type));
+        }
+
+        // Then, remap types of all endpoint parameters. 
+        // But we'll use an enhanced mapper, that takes into account the results from the previous step.
+        mapper = new TypeMapper(newCustomTypes);
+
+        for (const iface of this.interfaces) {
+            let newEndpoints: EndpointDefinition[] = [];
+
+            for (const endpoint of iface.endpoints) {
+                let newInput = endpoint.input.map(e => new EndpointParameterDefinition(e.name, e.description, mapper.mapType(e.type)));
+                let newOutput = endpoint.output.map(e => new EndpointParameterDefinition(e.name, e.description, mapper.mapType(e.type)));
+                newEndpoints.push(new EndpointDefinition(endpoint.name, newInput, newOutput, endpoint.modifiers));
+            }
+
+            newInterfaces.push(new ContractInterface(iface.name, newEndpoints));
+        }
+
+        // Now return the new registry, with all types remapped to known types
+        let newRegistry = new AbiRegistry();
+
+        newRegistry.customTypes.push(...newCustomTypes);
+        newRegistry.interfaces.push(...newInterfaces);
+        
+        return newRegistry;
     }
 }

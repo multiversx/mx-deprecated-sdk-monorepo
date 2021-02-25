@@ -85,7 +85,6 @@ export class EndpointParameterDefinition {
 
     static fromJSON(json: { name?: string, description?: string, type: string }): EndpointParameterDefinition {
         let parsedType = new TypeExpressionParser().parse(json.type);
-        let knownType = TypeMapper.getDefault().mapType(parsedType);
-        return new EndpointParameterDefinition(json.name || NamePlaceholder, json.description || DescriptionPlaceholder, knownType);
+        return new EndpointParameterDefinition(json.name || NamePlaceholder, json.description || DescriptionPlaceholder, parsedType);
     }
 }
