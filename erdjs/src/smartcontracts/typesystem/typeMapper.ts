@@ -8,14 +8,14 @@ import { ListType, OptionType } from "./generic";
 import { H256Type } from "./h256";
 import { BigIntType, BigUIntType, I16Type, I32Type, I64Type, I8Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
 import { StructFieldDefinition, StructType } from "./struct";
-import { BetterType, CustomType } from "./types";
+import { Type, CustomType } from "./types";
 import { OptionalType, VariadicType } from "./variadic";
 
-type TypeConstructor = new (...typeParameters: BetterType[]) => BetterType;
+type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
 export class TypeMapper {
     private readonly openTypesConstructors: Map<string, TypeConstructor>;
-    private readonly closedTypesMap: Map<string, BetterType>;
+    private readonly closedTypesMap: Map<string, Type>;
 
     constructor(customTypes: CustomType[] = []) {
         this.openTypesConstructors = new Map<string, TypeConstructor>([
@@ -31,7 +31,7 @@ export class TypeMapper {
         ]);
 
         // For closed types, we hold actual type instances instead of type constructors (no type parameters needed).
-        this.closedTypesMap = new Map<string, BetterType>([
+        this.closedTypesMap = new Map<string, Type>([
             ["u8", new U8Type()],
             ["u16", new U16Type()],
             ["u32", new U32Type()],
@@ -53,7 +53,7 @@ export class TypeMapper {
         }
     }
 
-    mapType(type: BetterType): BetterType {
+    mapType(type: Type): Type {
         let isGeneric = type.isGenericType();
 
         if (type instanceof EnumType) {
@@ -84,7 +84,7 @@ export class TypeMapper {
         return mappedStruct;
     }
 
-    private mapGenericType(type: BetterType): BetterType {
+    private mapGenericType(type: Type): Type {
         let typeParameters = type.getTypeParameters();
         let mappedTypeParameters = typeParameters.map(item => this.mapType(item));
 

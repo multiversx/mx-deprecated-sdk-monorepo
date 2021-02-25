@@ -1,6 +1,6 @@
 import * as errors from "../../errors";
 import { guardType } from "../../utils";
-import { PrimitiveType, PrimitiveValue, BetterType } from "./types";
+import { PrimitiveType, PrimitiveValue, Type } from "./types";
 
 export class NumericalType extends PrimitiveType {
     readonly sizeInBytes: number;

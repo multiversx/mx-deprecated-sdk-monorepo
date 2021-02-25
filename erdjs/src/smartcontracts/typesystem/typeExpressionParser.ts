@@ -1,8 +1,8 @@
 import * as errors from "../../errors";
-import { BetterType } from "./types";
+import { Type } from "./types";
 
 export class TypeExpressionParser {
-    parse(expression: string): BetterType {
+    parse(expression: string): Type {
         let root = this.doParse(expression);
         let rootKeys = Object.keys(root);
 
@@ -78,8 +78,8 @@ export class TypeExpressionParser {
         return `{${jsoned}}`;
     }
 
-    private nodeToType(name: string, node: any): BetterType {
+    private nodeToType(name: string, node: any): Type {
         let typeParameters = Object.keys(node).map(key => this.nodeToType(key, node[key]));
-        return new BetterType(name, typeParameters);
+        return new Type(name, typeParameters);
     }
 }

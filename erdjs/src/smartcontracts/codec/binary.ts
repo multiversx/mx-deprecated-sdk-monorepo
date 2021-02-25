@@ -1,5 +1,5 @@
 import * as errors from "../../errors";
-import { BetterType, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue } from "../typesystem";
+import { Type, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue } from "../typesystem";
 import { guardTrue, guardType } from "../../utils";
 import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
@@ -24,7 +24,7 @@ export class BinaryCodec {
         this.enumCodec = new EnumBinaryCodec(this);
     }
 
-    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: BetterType): TResult {
+    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: Type): TResult {
         this.constraints.checkBufferLength(buffer);
 
         let typedValue = onTypeSelect<TypedValue>(type, {
@@ -38,7 +38,7 @@ export class BinaryCodec {
         return <TResult>typedValue;
     }
 
-    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: BetterType): [TResult, number] {
+    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: Type): [TResult, number] {
         this.constraints.checkBufferLength(buffer);
 
         let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {

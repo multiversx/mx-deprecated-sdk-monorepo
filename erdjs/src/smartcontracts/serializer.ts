@@ -1,5 +1,5 @@
 import { BinaryCodec } from "./codec";
-import { BetterType, EndpointParameterDefinition, TypedValue } from "./typesystem";
+import { Type, EndpointParameterDefinition, TypedValue } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
 import { OptionalType, OptionalValue, VariadicType, VariadicValue } from "./typesystem/variadic";
 
@@ -37,7 +37,7 @@ export class Serializer {
         }
 
         // This is a recursive function.
-        function readValue(type: BetterType): TypedValue {
+        function readValue(type: Type): TypedValue {
             // TODO: Use matchers.
 
             if (type instanceof OptionalType) {
@@ -67,7 +67,7 @@ export class Serializer {
             }
         }
 
-        function decodeNextBuffer(type: BetterType): TypedValue | null {
+        function decodeNextBuffer(type: Type): TypedValue | null {
             if (hasReachedTheEnd()) {
                 return null;
             }

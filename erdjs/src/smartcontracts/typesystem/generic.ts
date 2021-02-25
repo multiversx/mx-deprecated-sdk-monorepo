@@ -1,14 +1,14 @@
 import { guardValueIsSet } from "../../utils";
-import { BetterType, isTyped, TypedValue } from "./types";
+import { Type, isTyped, TypedValue } from "./types";
 
-export class OptionType extends BetterType {
-    constructor(typeParameter: BetterType) {
+export class OptionType extends Type {
+    constructor(typeParameter: Type) {
         super("Option", [typeParameter]);
     }
 }
 
-export class ListType extends BetterType {
-    constructor(typeParameter: BetterType) {
+export class ListType extends Type {
+    constructor(typeParameter: Type) {
         super("List", [typeParameter]);
     }
 }

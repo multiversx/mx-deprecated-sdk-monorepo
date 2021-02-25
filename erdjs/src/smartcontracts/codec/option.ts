@@ -1,5 +1,5 @@
 import * as errors from "../../errors";
-import { BetterType, OptionValue } from "../typesystem";
+import { Type, OptionValue } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
 export class OptionValueBinaryCodec {
@@ -13,7 +13,7 @@ export class OptionValueBinaryCodec {
      * Reads and decodes an OptionValue from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeNested(buffer: Buffer, type: BetterType): [OptionValue, number] {
+    decodeNested(buffer: Buffer, type: Type): [OptionValue, number] {
         if (buffer[0] == 0x00) {
             return [new OptionValue(type), 1];
         }
@@ -26,7 +26,7 @@ export class OptionValueBinaryCodec {
      * Reads and decodes an OptionValue from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeTopLevel(buffer: Buffer, type: BetterType): OptionValue {
+    decodeTopLevel(buffer: Buffer, type: Type): OptionValue {
         if (buffer.length == 0) {
             return new OptionValue(type);
         }

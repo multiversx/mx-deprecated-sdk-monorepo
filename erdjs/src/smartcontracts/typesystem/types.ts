@@ -4,12 +4,12 @@ import { guardTrue, guardValueIsSet } from "../../utils";
  * An abstraction that represents a Type. Handles both generic and non-generic types.
  * Once instantiated as a Type, a generic type is "closed" (as opposed to "open").
  */
-export class BetterType {
+export class Type {
     private readonly name: string;
-    private readonly typeParameters: BetterType[];
+    private readonly typeParameters: Type[];
     protected readonly cardinality: TypeCardinality;
 
-    public constructor(name: string, typeParameters: BetterType[] = [], cardinality: TypeCardinality = TypeCardinality.fixed(1)) {
+    public constructor(name: string, typeParameters: Type[] = [], cardinality: TypeCardinality = TypeCardinality.fixed(1)) {
         guardValueIsSet("name", name);
 
         this.name = name;
@@ -21,7 +21,7 @@ export class BetterType {
         return this.name;
     }
 
-    getTypeParameters(): BetterType[] {
+    getTypeParameters(): Type[] {
         return this.typeParameters;
     }
 
@@ -29,7 +29,7 @@ export class BetterType {
         return this.typeParameters.length > 0;
     }
 
-    getFirstTypeParameter(): BetterType {
+    getFirstTypeParameter(): Type {
         guardTrue(this.typeParameters.length > 0, "type parameters length > 0");
         return this.typeParameters[0];
     }
@@ -38,7 +38,7 @@ export class BetterType {
         return this.name;
     }
 
-    equals(other: BetterType): boolean {
+    equals(other: Type): boolean {
         // Workaround that seems to always work properly. Most probable reasons: 
         // - ES6 is quite strict about enumerating over the properties on an object.
         // - toJSON() returns an object literal (most probably, this results in deterministic iteration in all browser implementations).
@@ -48,7 +48,7 @@ export class BetterType {
         return a == b
     }
 
-    differs(other: BetterType): boolean {
+    differs(other: Type): boolean {
         return !this.equals(other);
     }
 
@@ -59,7 +59,7 @@ export class BetterType {
     /**
      * Inspired from: https://docs.microsoft.com/en-us/dotnet/api/system.type.isassignablefrom
      */
-    isAssignableFrom(type: BetterType): boolean {
+    isAssignableFrom(type: Type): boolean {
         return type instanceof this.constructor;
     }
 
@@ -135,23 +135,23 @@ export class TypeCardinality {
     }
 }
 
-export class PrimitiveType extends BetterType {
+export class PrimitiveType extends Type {
     constructor(name: string) {
         super(name);
     }
 }
 
-export abstract class CustomType extends BetterType {
+export abstract class CustomType extends Type {
 }
 
 export abstract class TypedValue {
-    private readonly type: BetterType;
+    private readonly type: Type;
 
-    constructor(type: BetterType) {
+    constructor(type: Type) {
         this.type = type;
     }
 
-    getType(): BetterType {
+    getType(): Type {
         return this.type;
     }
 
@@ -166,7 +166,7 @@ export function isTyped(value: any) {
     return value instanceof TypedValue;
 }
 
-export class TypePlaceholder extends BetterType {
+export class TypePlaceholder extends Type {
     constructor() {
         super("... ? ...");
     }

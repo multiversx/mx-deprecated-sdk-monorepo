@@ -1,7 +1,7 @@
 import * as errors from "../../errors";
 import { TypeExpressionParser } from "./typeExpressionParser";
 import { TypeMapper } from "./typeMapper";
-import { BetterType, CustomType, TypedValue } from "./types";
+import { Type, CustomType, TypedValue } from "./types";
 
 export class StructType extends CustomType {
     readonly fields: StructFieldDefinition[] = [];
@@ -20,9 +20,9 @@ export class StructType extends CustomType {
 export class StructFieldDefinition {
     readonly name: string;
     readonly description: string;
-    readonly type: BetterType;
+    readonly type: Type;
 
-    constructor(name: string, description: string, type: BetterType) {
+    constructor(name: string, description: string, type: Type) {
         this.name = name;
         this.description = description;
         this.type = type;

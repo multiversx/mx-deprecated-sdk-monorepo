@@ -1,6 +1,6 @@
 import { TypeExpressionParser } from "./typeExpressionParser";
 import { TypeMapper } from "./typeMapper";
-import { BetterType } from "./types";
+import { Type } from "./types";
 
 const NamePlaceholder = "?";
 const DescriptionPlaceholder = "N / A";
@@ -75,9 +75,9 @@ export class EndpointModifiers {
 export class EndpointParameterDefinition {
     readonly name: string;
     readonly description: string;
-    readonly type: BetterType;
+    readonly type: Type;
 
-    constructor(name: string, description: string, type: BetterType) {
+    constructor(name: string, description: string, type: Type) {
         this.name = name;
         this.description = description;
         this.type = type;

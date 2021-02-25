@@ -1,13 +1,13 @@
 import * as errors from "../../errors";
 import { assert } from "chai";
-import { BetterType } from "./types";
+import { Type } from "./types";
 import { TypeExpressionParser } from "./typeExpressionParser";
 
 describe("test parser", () => {
     let parser = new TypeExpressionParser();
 
     it("should parse expression", () => {
-        let type: BetterType;
+        let type: Type;
 
         type = parser.parse("u32");
         assert.deepEqual(type.toJSON(), {

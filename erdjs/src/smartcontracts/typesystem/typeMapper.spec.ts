@@ -1,6 +1,6 @@
 import * as errors from "../../errors";
 import { assert } from "chai";
-import { BetterType } from "./types";
+import { Type } from "./types";
 import { TypeExpressionParser } from "./typeExpressionParser";
 import { TypeMapper } from "./typeMapper";
 import { BigUIntType, I32Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
@@ -9,7 +9,7 @@ import { AddressType } from "./address";
 import { OptionalType, VariadicType } from "./variadic";
 import { CompositeType } from "./composite";
 
-type TypeConstructor = new (...typeParameters: BetterType[]) => BetterType;
+type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
 describe("test mapper", () => {
     let parser = new TypeExpressionParser();
@@ -36,7 +36,7 @@ describe("test mapper", () => {
         testMapping("OptionalResult<Address>", OptionalType, [new AddressType()]);
     });
 
-    function testMapping(expression: string, constructor: TypeConstructor, typeParameters: BetterType[] = []) {
+    function testMapping(expression: string, constructor: TypeConstructor, typeParameters: Type[] = []) {
         let type = parser.parse(expression);
         let mappedType = mapper.mapType(type);
 

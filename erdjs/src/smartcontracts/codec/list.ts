@@ -1,4 +1,4 @@
-import { BetterType, TypedValue, List as List } from "../typesystem";
+import { Type, TypedValue, List as List } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
 export class ListBinaryCodec {
@@ -12,7 +12,7 @@ export class ListBinaryCodec {
      * Reads and decodes a List from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeNested(buffer: Buffer, type: BetterType): [List, number] {
+    decodeNested(buffer: Buffer, type: Type): [List, number] {
         let typeParameter = type.getFirstTypeParameter();
         let result: TypedValue[] = [];
         let numItems = buffer.readUInt32BE();
@@ -37,7 +37,7 @@ export class ListBinaryCodec {
      * Reads and decodes a List from a given buffer,
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
-    decodeTopLevel(buffer: Buffer, type: BetterType): List {
+    decodeTopLevel(buffer: Buffer, type: Type): List {
         let typeParameter = type.getFirstTypeParameter();
         let result: TypedValue[] = [];
 

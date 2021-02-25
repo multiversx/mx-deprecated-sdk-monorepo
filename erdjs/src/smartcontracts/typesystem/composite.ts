@@ -1,8 +1,8 @@
 import { guardLength } from "../../utils";
-import { BetterType, TypeCardinality, TypedValue } from "./types";
+import { Type, TypeCardinality, TypedValue } from "./types";
 
-export class CompositeType extends BetterType {
-    constructor(...typeParameters: BetterType[]) {
+export class CompositeType extends Type {
+    constructor(...typeParameters: Type[]) {
         super("Composite", typeParameters, TypeCardinality.variable(typeParameters.length));
     }
 }

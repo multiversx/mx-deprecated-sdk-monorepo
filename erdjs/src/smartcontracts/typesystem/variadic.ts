@@ -1,8 +1,8 @@
 import { guardValueIsSet } from "../../utils";
-import { BetterType, TypeCardinality, TypedValue } from "./types";
+import { Type, TypeCardinality, TypedValue } from "./types";
 
-export class VariadicType extends BetterType {
-    constructor(typeParameter: BetterType) {
+export class VariadicType extends Type {
+    constructor(typeParameter: Type) {
         super("Variadic", [typeParameter], TypeCardinality.variable());
     }
 }
@@ -11,8 +11,8 @@ export class VariadicType extends BetterType {
  * For simpler design, we chose not to subclass {@link VariadicType}, but create a different type instead for optionals,
  * even though an optional is conceptually variadic: it holds zero or one values.
  */
-export class OptionalType extends BetterType {
-    constructor(typeParameter: BetterType) {
+export class OptionalType extends Type {
+    constructor(typeParameter: Type) {
         super("Optional", [typeParameter], TypeCardinality.variable(1));
     }
 }

@@ -5,10 +5,10 @@ import { EnumType } from "./enum";
 import { OptionType, OptionValue, List, ListType } from "./generic";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
-import { BetterType, PrimitiveType, PrimitiveValue } from "./types";
+import { Type, PrimitiveType, PrimitiveValue } from "./types";
 
 // TODO: Extend functionality or rename wrt. restricted / reduced functionality (not all types are handled: composite, variadic).
-export function onTypeSelect<TResult>(type: BetterType, selectors: {
+export function onTypeSelect<TResult>(type: Type, selectors: {
     onOption: () => TResult,
     onList: () => TResult,
     onPrimitive: () => TResult,
@@ -67,7 +67,7 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
 }
 
 
-export function onPrimitiveValueSelect<TResult>(value: any, selectors: {
+export function onPrimitiveValueSelect<TResult>(value: PrimitiveValue, selectors: {
     onBoolean: () => TResult,
     onNumerical: () => TResult,
     onAddress: () => TResult,
@@ -89,7 +89,7 @@ export function onPrimitiveValueSelect<TResult>(value: any, selectors: {
 
     // TODO: bytes, H256.
 
-    throw new errors.ErrTypingSystem(`values isn't a primitive: ${value}`);
+    throw new errors.ErrTypingSystem(`value isn't a primitive: ${value.getType()}`);
 }
 
 export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {

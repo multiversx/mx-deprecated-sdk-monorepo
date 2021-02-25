@@ -2,7 +2,7 @@ import * as errors from "../../errors";
 import { assert } from "chai";
 import { NumericalValue } from ".";
 import { I64Type, U16Type, U32Type, U32Value } from "./numerical";
-import { PrimitiveType, BetterType } from "./types";
+import { PrimitiveType, Type } from "./types";
 import { BooleanType } from "./boolean";
 import { AddressType } from "./address";
 import { TypeExpressionParser } from "./typeExpressionParser";
@@ -17,10 +17,10 @@ describe("test types", () => {
     });
 
     it("should report type hierarchy", () => {
-        assert.isTrue((new BetterType("Type")).isAssignableFrom(new PrimitiveType("PrimitiveType")));
-        assert.isTrue((new BetterType("Type")).isAssignableFrom(new BooleanType()));
-        assert.isTrue((new BetterType("Type")).isAssignableFrom(new AddressType()));
-        assert.isTrue((new BetterType("Type")).isAssignableFrom(new U32Type()));
+        assert.isTrue((new Type("Type")).isAssignableFrom(new PrimitiveType("PrimitiveType")));
+        assert.isTrue((new Type("Type")).isAssignableFrom(new BooleanType()));
+        assert.isTrue((new Type("Type")).isAssignableFrom(new AddressType()));
+        assert.isTrue((new Type("Type")).isAssignableFrom(new U32Type()));
 
         assert.isTrue((new PrimitiveType("PrimitiveType")).isAssignableFrom(new BooleanType()));
         assert.isTrue((new PrimitiveType("PrimitiveType")).isAssignableFrom(new AddressType()));
@@ -33,8 +33,8 @@ describe("test types", () => {
     });
 
     it("should report equality", () => {
-        assert.isFalse(new BetterType("foo").equals(new BetterType("bar")));
-        assert.isTrue(new BetterType("foo").equals(new BetterType("foo")));
+        assert.isFalse(new Type("foo").equals(new Type("bar")));
+        assert.isTrue(new Type("foo").equals(new Type("foo")));
         assert.isTrue(new U32Type().equals(new U32Type()));
         assert.isFalse(new U32Type().equals(new I64Type()));
 
