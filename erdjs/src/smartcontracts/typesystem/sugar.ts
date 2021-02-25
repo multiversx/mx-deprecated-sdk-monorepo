@@ -45,14 +45,23 @@ export function typedAddress(value: Address): TypedValue {
 /**
  * Creates an TypedValue from a utf-8 string.
  */
-export function typedUTF8(value: string): TypedValue {
+export function typedUTF8(value: string): List {
     let buffer = Buffer.from(value, "utf-8");
     let typedBytes = [...buffer].map(byte => new U8Value(byte));
     let type = new ListType(new U8Type());
     return new List(type, typedBytes);
 }
 
-export function typedBytesFromHex(value: string) {
+export function typedBytesFromHex(value: string): BytesValue {
     let buffer = Buffer.from(value, "hex");
     return new BytesValue(buffer);
+}
+
+/**
+ * Utility function to convert a "bytes" instance to a "list<u8>" instance.
+ */
+export function convertBytesToList(bytes: BytesValue): List {
+    let typedBytes = [...bytes.valueOf()].map(byte => new U8Value(byte));
+    let type = new ListType(new U8Type());
+    return new List(type, typedBytes);
 }

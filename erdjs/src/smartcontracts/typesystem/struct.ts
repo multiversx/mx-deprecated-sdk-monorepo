@@ -65,7 +65,7 @@ export class Struct extends TypedValue {
             let definitionType = definition.type;
 
             if (!fieldType.equals(definitionType)) {
-                throw new errors.ErrStructTyping(`check type of field "${definition.name}"`);
+                throw new errors.ErrStructTyping(`check type of field "${definition.name}; expected: ${definitionType}, actual: ${fieldType}"`);
             }
             if (field.name != definition.name) {
                 throw new errors.ErrStructTyping(`check name of field "${definition.name}"`);

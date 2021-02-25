@@ -1,8 +1,10 @@
 import * as errors from "../../errors";
 import { AddressType, AddressValue } from "./address";
 import { BooleanType, BooleanValue } from "./boolean";
+import { BytesType, BytesValue } from "./bytes";
 import { EnumType } from "./enum";
 import { OptionType, OptionValue, List, ListType } from "./generic";
+import { H256Type, H256Value } from "./h256";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
 import { Type, PrimitiveType, PrimitiveValue } from "./types";
@@ -71,6 +73,8 @@ export function onPrimitiveValueSelect<TResult>(value: PrimitiveValue, selectors
     onBoolean: () => TResult,
     onNumerical: () => TResult,
     onAddress: () => TResult,
+    onBytes: () => TResult,
+    onH256: () => TResult,
     onOther?: () => TResult
 }): TResult {
     if (value instanceof BooleanValue) {
@@ -82,12 +86,15 @@ export function onPrimitiveValueSelect<TResult>(value: PrimitiveValue, selectors
     if (value instanceof AddressValue) {
         return selectors.onAddress();
     }
-
+    if (value instanceof BytesValue) {
+        return selectors.onBytes();
+    }
+    if (value instanceof H256Value) {
+        return selectors.onH256();
+    }
     if (selectors.onOther) {
         return selectors.onOther();
     }
-
-    // TODO: bytes, H256.
 
     throw new errors.ErrTypingSystem(`value isn't a primitive: ${value.getType()}`);
 }
@@ -96,6 +103,8 @@ export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {
     onBoolean: () => TResult,
     onNumerical: () => TResult,
     onAddress: () => TResult,
+    onBytes: () => TResult,
+    onH256: () => TResult,
     onOther?: () => TResult
 }): TResult {
     if (type instanceof BooleanType) {
@@ -107,7 +116,12 @@ export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {
     if (type instanceof AddressType) {
         return selectors.onAddress();
     }
-
+    if (type instanceof BytesType) {
+        return selectors.onBytes();
+    }
+    if (type instanceof H256Type) {
+        return selectors.onH256();
+    }
     if (selectors.onOther) {
         return selectors.onOther();
     }
