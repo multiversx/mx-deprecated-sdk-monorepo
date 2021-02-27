@@ -32,6 +32,9 @@ export class AbiRegistry {
         return registry;
     }
 
+    /**
+     * Generally, one should use {@link AbiRegistry.load} instead.
+     */
     async extendFromFile(file: string): Promise<AbiRegistry> {
         let jsonContent: string = await fs.promises.readFile(file, { encoding: "utf8" });
         let json = JSON.parse(jsonContent);
@@ -39,6 +42,9 @@ export class AbiRegistry {
         return this.extend(json);
     }
 
+    /**
+     * Generally, one should use {@link AbiRegistry.load} instead.
+     */
     async extendFromUrl(url: string): Promise<AbiRegistry> {
         let response: AxiosResponse = await axios.get(url);
         let json = response.data;

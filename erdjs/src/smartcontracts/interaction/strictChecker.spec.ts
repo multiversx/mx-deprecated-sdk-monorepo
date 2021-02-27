@@ -20,7 +20,7 @@ describe("integration tests: test checker within interactor", function () {
     let runner = new DefaultInteractionRunner(checker, signer, provider);
 
     it("should detect errors for 'ultimate answer'", async function () {
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/answer.abi.json");
+        let abiRegistry = await AbiRegistry.load({files: ["src/testdata/answer.abi.json"]});
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -33,7 +33,7 @@ describe("integration tests: test checker within interactor", function () {
     });
 
     it("should detect errors for 'lottery'", async function () {
-        let abiRegistry = await new AbiRegistry().extendFromFile("src/testdata/lottery_egld.abi.json");
+        let abiRegistry = await AbiRegistry.load({files: ["src/testdata/lottery_egld.abi.json"]});
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -54,6 +54,6 @@ describe("integration tests: test checker within interactor", function () {
             providedOption(new U64Value(BigInt(1))),
             missingOption(),
             missingOption()
-        ]), errors.ErrContractInteraction, "...");
+        ]), errors.ErrContractInteraction, "type mismatch at index 4, expected: Option<u32>, got: Option<u64>");
     });
 });

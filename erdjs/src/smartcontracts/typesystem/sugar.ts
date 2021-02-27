@@ -1,15 +1,15 @@
 import { Address } from "../../address";
 import { AddressValue } from "./address";
 import { BytesValue } from "./bytes";
-import { List, ListType, OptionType, OptionValue } from "./generic";
-import { BigUIntValue, U8Type, U8Value } from "./numerical";
-import { TypedValue, TypePlaceholder } from "./types";
+import { OptionType, OptionValue } from "./generic";
+import { BigUIntValue } from "./numerical";
+import { NullType, TypedValue } from "./types";
 
 /**
  * Creates a TypedValue, as a missing option argument.
  */
 export function missingOption(): TypedValue {
-    let type = new OptionType(new TypePlaceholder());
+    let type = new OptionType(new NullType());
     return new OptionValue(type);
 }
 
@@ -45,11 +45,9 @@ export function typedAddress(value: Address): TypedValue {
 /**
  * Creates an TypedValue from a utf-8 string.
  */
-export function typedUTF8(value: string): List {
+export function typedUTF8(value: string): BytesValue {
     let buffer = Buffer.from(value, "utf-8");
-    let typedBytes = [...buffer].map(byte => new U8Value(byte));
-    let type = new ListType(new U8Type());
-    return new List(type, typedBytes);
+    return new BytesValue(buffer);
 }
 
 export function typedBytesFromHex(value: string): BytesValue {

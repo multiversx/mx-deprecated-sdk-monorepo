@@ -35,17 +35,33 @@ export class Type {
     }
 
     toString() {
-        return this.name;
+        // Naive implementation for generating type expressions similar to elrond-wasm-rs. 
+        // Involves recursive calls to toString().
+        let typeParameters: string = this.getTypeParameters().map(type => type.toString()).join(", ");
+        let typeParametersExpression = typeParameters ? `<${typeParameters}>` : "";
+        return `${this.name}${typeParametersExpression}`;
     }
 
     equals(other: Type): boolean {
+        return Type.equals(this, other);
+    }
+
+    static equals(a: Type, b: Type): boolean {
         // Workaround that seems to always work properly. Most probable reasons: 
         // - ES6 is quite strict about enumerating over the properties on an object.
         // - toJSON() returns an object literal (most probably, this results in deterministic iteration in all browser implementations).
-        let a = JSON.stringify(this.toJSON());
-        let b = JSON.stringify(other.toJSON());
+        let aJson = JSON.stringify(a.toJSON());
+        let bJson = JSON.stringify(b.toJSON());
 
-        return a == b
+        return aJson == bJson;
+    }
+
+    static equalsMany(a: Type[], b: Type[]) {
+        return a.every((type: Type, i: number) => type.equals(b[i]));
+    }
+
+    static isAssignableFromMany(a: Type[], b: Type[]) {
+        return a.every((type: Type, i: number) => type.isAssignableFrom(b[i]));
     }
 
     differs(other: Type): boolean {
@@ -58,9 +74,19 @@ export class Type {
 
     /**
      * Inspired from: https://docs.microsoft.com/en-us/dotnet/api/system.type.isassignablefrom
+     * For (most) generics, type invariance is expected (assumed) - neither covariance, nor contravariance are supported yet (will be supported in a next release).
+     * 
+     * One exception though: for {@link OptionType}, we simulate covariance for missing (not provided) values.
+     * For example, Option<u32> is assignable from Option<?>.
+     * For more details, see the implementation of {@link OptionType}.
+     * 
+     * Also see:
+     *  - https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)
+     *  - https://docs.microsoft.com/en-us/dotnet/standard/generics/covariance-and-contravariance
      */
     isAssignableFrom(type: Type): boolean {
-        return type instanceof this.constructor;
+        let invariantTypeParameters = Type.equalsMany(this.getTypeParameters(), type.getTypeParameters());
+        return type instanceof this.constructor && invariantTypeParameters;
     }
 
     /**
@@ -160,6 +186,9 @@ export abstract class TypedValue {
 }
 
 export abstract class PrimitiveValue extends TypedValue {
+    constructor(type: Type) {
+        super(type);
+    }
 }
 
 export function isTyped(value: any) {
@@ -168,6 +197,13 @@ export function isTyped(value: any) {
 
 export class TypePlaceholder extends Type {
     constructor() {
-        super("... ? ...");
+        super("...");
+    }
+}
+
+
+export class NullType extends Type {
+    constructor() {
+        super("?");
     }
 }

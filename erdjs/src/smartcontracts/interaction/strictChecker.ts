@@ -31,11 +31,14 @@ export class StrictChecker implements IInteractionChecker {
         }
 
         for (let i = 0; i < numFormalArguments; i++) {
-            let type = formalArguments[i].type;
-            let arg = actualArguments[i];
-
-            // TODO: detect type mismatch.
-            // throw new errors.ErrContractInteraction(`type mismatch at index ${i}`);
+            let expectedType = formalArguments[i].type;
+            let argument = actualArguments[i];
+            let actualType = argument.getType();
+            let ok = expectedType.isAssignableFrom(actualType);
+            
+            if (!ok) {
+                throw new errors.ErrContractInteraction(`type mismatch at index ${i}, expected: ${expectedType}, got: ${actualType}`);
+            }
         }
     }
 }

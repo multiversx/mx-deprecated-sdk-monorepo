@@ -1,9 +1,19 @@
 import { guardValueIsSet } from "../../utils";
-import { Type, isTyped, TypedValue } from "./types";
+import { Type, isTyped, TypedValue, NullType } from "./types";
 
 export class OptionType extends Type {
     constructor(typeParameter: Type) {
         super("Option", [typeParameter]);
+    }
+
+    isAssignableFrom(type: Type): boolean {
+        if (!(type instanceof OptionType)) {
+            return false;
+        }
+
+        let invariantTypeParameters = this.getFirstTypeParameter().equals(type.getFirstTypeParameter());
+        let fakeCovarianceToNull = type.getFirstTypeParameter() instanceof NullType;
+        return invariantTypeParameters || fakeCovarianceToNull;
     }
 }
 

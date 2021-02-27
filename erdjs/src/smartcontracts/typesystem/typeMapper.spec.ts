@@ -8,6 +8,7 @@ import { BytesType } from "./bytes";
 import { AddressType } from "./address";
 import { OptionalType, VariadicType } from "./variadic";
 import { CompositeType } from "./composite";
+import { ListType, OptionType } from "./generic";
 
 type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
@@ -21,6 +22,11 @@ describe("test mapper", () => {
         testMapping("u32", U32Type);
         testMapping("u64", U64Type);
         testMapping("BigUint", BigUIntType);
+    });
+
+    it("should map generic types", () => {
+        testMapping("Option<u64>", OptionType, [new U64Type()]);
+        testMapping("List<u64>", ListType, [new U64Type()]);
     });
 
     it("should map variadic types", () => {
