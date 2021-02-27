@@ -4,6 +4,7 @@ import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, Boole
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMsbOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
+import { BytesType, BytesValue } from "../typesystem/bytes";
 
 describe("test binary codec (basic)", () => {
     let codec = new BinaryCodec();
@@ -145,7 +146,7 @@ describe("test binary codec (advanced)", () => {
                 new StructFieldDefinition("tickets_left", "", new U32Type()),
                 new StructFieldDefinition("deadline", "", new U64Type()),
                 new StructFieldDefinition("max_entries_per_user", "", new U32Type()),
-                new StructFieldDefinition("prize_distribution", "", new ListType(new U8Type())),
+                new StructFieldDefinition("prize_distribution", "", new BytesType()),
                 new StructFieldDefinition("whitelist", "", new ListType(new AddressType())),
                 new StructFieldDefinition("current_ticket_number", "", new U32Type()),
                 new StructFieldDefinition("prize_pool", "", new BigUIntType())
@@ -157,7 +158,7 @@ describe("test binary codec (advanced)", () => {
             new StructField(new U32Value(0), "tickets_left"),
             new StructField(new U64Value(BigInt("0x000000005fc2b9db")), "deadline"),
             new StructField(new U32Value(0xffffffff), "max_entries_per_user"),
-            new StructField(new List(new ListType(new U8Type()), [new U8Value(0x64)]), "prize_distribution"),
+            new StructField(new BytesValue(Buffer.from([0x64])), "prize_distribution"),
             new StructField(new List(new ListType(new AddressType()), []), "whitelist"),
             new StructField(new U32Value(9472), "current_ticket_number"),
             new StructField(new BigUIntValue(BigInt("94720000000000000000000")), "prize_pool")
@@ -177,7 +178,7 @@ describe("test binary codec (advanced)", () => {
             tickets_left: BigInt(0),
             deadline: BigInt("0x000000005fc2b9db"),
             max_entries_per_user: BigInt(0xffffffff),
-            prize_distribution: [BigInt(100)],
+            prize_distribution: Buffer.from([0x64]),
             whitelist: [],
             current_ticket_number: BigInt(9472),
             prize_pool: BigInt("94720000000000000000000")

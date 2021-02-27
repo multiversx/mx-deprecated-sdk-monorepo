@@ -189,7 +189,7 @@ describe("test smart contract interactor", function () {
             tickets_left: BigInt(800),
             deadline: BigInt("1611835398"),
             max_entries_per_user: BigInt(1),
-            prize_distribution: [BigInt(100)],
+            prize_distribution: Buffer.from([0x64]),
             whitelist: [],
             current_ticket_number: BigInt(0),
             prize_pool: BigInt("0")

@@ -1,12 +1,12 @@
-import { PrimitiveType, PrimitiveValue, onPrimitiveTypeSelect, NumericalType, onPrimitiveValueSelect, BooleanValue, NumericalValue, AddressValue, convertBytesToList, U8Type, ListType } from "../typesystem";
+import { PrimitiveType, PrimitiveValue, onPrimitiveTypeSelect, NumericalType, onPrimitiveValueSelect, BooleanValue, NumericalValue, AddressValue } from "../typesystem";
 import { AddressBinaryCodec } from "./address";
 import { BooleanBinaryCodec } from "./boolean";
 import { BinaryCodec } from "./binary";
 import { NumericalBinaryCodec } from "./numerical";
-import { ListBinaryCodec } from "./list";
 import { BytesValue } from "../typesystem/bytes";
 import { H256BinaryCodec } from "./h256";
-import { H256Type, H256Value } from "../typesystem/h256";
+import { H256Value } from "../typesystem/h256";
+import { BytesBinaryCodec } from "./bytes";
 
 export class PrimitiveBinaryCodec {
     private readonly parentCodec: BinaryCodec;
@@ -15,8 +15,7 @@ export class PrimitiveBinaryCodec {
     private readonly numericalCodec: NumericalBinaryCodec;
     private readonly addressCodec: AddressBinaryCodec;
     private readonly h256Codec: H256BinaryCodec;
-    // We'll use this one for the "bytes" primitive (workaround).
-    private readonly listCodec: ListBinaryCodec;
+    private readonly bytesCodec: BytesBinaryCodec;
 
     constructor(parentCodec: BinaryCodec) {
         this.parentCodec = parentCodec;
@@ -25,7 +24,7 @@ export class PrimitiveBinaryCodec {
         this.numericalCodec = new NumericalBinaryCodec();
         this.addressCodec = new AddressBinaryCodec();
         this.h256Codec = new H256BinaryCodec();
-        this.listCodec = new ListBinaryCodec(parentCodec);
+        this.bytesCodec = new BytesBinaryCodec();
     }
 
     decodeNested(buffer: Buffer, type: PrimitiveType): [PrimitiveValue, number] {
@@ -33,8 +32,7 @@ export class PrimitiveBinaryCodec {
             onBoolean: () => this.booleanCodec.decodeNested(buffer),
             onNumerical: () => this.numericalCodec.decodeNested(buffer, <NumericalType>type),
             onAddress: () => this.addressCodec.decodeNested(buffer),
-            // TODO: Convert to BytesValue (instead of List<u8>)
-            onBytes: () => this.listCodec.decodeNested(buffer, new ListType(new U8Type())),
+            onBytes: () => this.bytesCodec.decodeNested(buffer),
             onH256: () => this.h256Codec.decodeNested(buffer)
         });
     }
@@ -44,8 +42,7 @@ export class PrimitiveBinaryCodec {
             onBoolean: () => this.booleanCodec.decodeTopLevel(buffer),
             onNumerical: () => this.numericalCodec.decodeTopLevel(buffer, <NumericalType>type),
             onAddress: () => this.addressCodec.decodeTopLevel(buffer),
-            // TODO: Convert to BytesValue (instead of List<u8>)
-            onBytes: () => this.listCodec.decodeTopLevel(buffer, new ListType(new U8Type())),
+            onBytes: () => this.bytesCodec.decodeTopLevel(buffer),
             onH256: () => this.h256Codec.decodeTopLevel(buffer)
         });
     }
@@ -55,7 +52,7 @@ export class PrimitiveBinaryCodec {
             onBoolean: () => this.booleanCodec.encodeNested(<BooleanValue>value),
             onNumerical: () => this.numericalCodec.encodeNested(<NumericalValue>value),
             onAddress: () => this.addressCodec.encodeNested(<AddressValue>value),
-            onBytes: () => this.listCodec.encodeNested(convertBytesToList(<BytesValue>value)),
+            onBytes: () => this.bytesCodec.encodeNested(<BytesValue>value),
             onH256: () => this.h256Codec.encodeNested(<H256Value>value)
         });
     }
@@ -65,7 +62,7 @@ export class PrimitiveBinaryCodec {
             onBoolean: () => this.booleanCodec.encodeTopLevel(<BooleanValue>value),
             onNumerical: () => this.numericalCodec.encodeTopLevel(<NumericalValue>value),
             onAddress: () => this.addressCodec.encodeTopLevel(<AddressValue>value),
-            onBytes: () => this.listCodec.encodeTopLevel(convertBytesToList(<BytesValue>value)),
+            onBytes: () => this.bytesCodec.encodeTopLevel(<BytesValue>value),
             onH256: () => this.h256Codec.encodeTopLevel(<H256Value>value)
         });
     }

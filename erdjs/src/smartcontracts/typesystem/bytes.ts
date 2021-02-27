@@ -15,6 +15,10 @@ export class BytesValue extends PrimitiveValue {
         this.value = value;
     }
 
+    getLength(): number {
+        return this.value.length;
+    }
+
     /**
      * Returns whether two objects have the same value.
      */
