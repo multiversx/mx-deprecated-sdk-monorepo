@@ -1,4 +1,5 @@
 import { assert } from "chai";
+import { loadAbiRegistry } from "../../testutils";
 import { AbiRegistry } from "./abiRegistry";
 import { AddressType } from "./address";
 import { BytesType } from "./bytes";
@@ -31,13 +32,11 @@ describe("test abi registry", () => {
     });
 
     it("load should also remap known to types", async () => {
-        let registry = await AbiRegistry.load({
-            files: [
-                "src/testdata/answer.abi.json",
-                "src/testdata/counter.abi.json",
-                "src/testdata/lottery_egld.abi.json"
-            ]
-        });
+        let registry = await loadAbiRegistry([
+            "src/testdata/answer.abi.json",
+            "src/testdata/counter.abi.json",
+            "src/testdata/lottery_egld.abi.json"
+        ]);
 
         // Ultimate answer
         let answer = registry.findInterface("answer");

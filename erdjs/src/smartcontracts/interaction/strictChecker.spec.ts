@@ -4,7 +4,7 @@ import { StrictChecker as StrictInteractionChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
 import { AbiRegistry, missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "../typesystem";
-import { MockProvider, TestWallets } from "../../testutils";
+import { loadAbiRegistry, MockProvider, TestWallets } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
 import { assert } from "chai";
@@ -20,7 +20,7 @@ describe("integration tests: test checker within interactor", function () {
     let runner = new DefaultInteractionRunner(checker, signer, provider);
 
     it("should detect errors for 'ultimate answer'", async function () {
-        let abiRegistry = await AbiRegistry.load({files: ["src/testdata/answer.abi.json"]});
+        let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -33,7 +33,7 @@ describe("integration tests: test checker within interactor", function () {
     });
 
     it("should detect errors for 'lottery'", async function () {
-        let abiRegistry = await AbiRegistry.load({files: ["src/testdata/lottery_egld.abi.json"]});
+        let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);

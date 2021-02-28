@@ -1,6 +1,7 @@
 import { PathLike } from "fs";
 import { ProxyProvider } from "../proxyProvider";
 import { Code } from "../smartcontracts/code";
+import { AbiRegistry } from "../smartcontracts/typesystem";
 import { TransactionWatcher } from "../transactionWatcher";
 
 export function getDevnetProvider(): ProxyProvider {
@@ -21,6 +22,14 @@ export async function loadContractCode(path: PathLike): Promise<Code> {
     }
 
     return Code.fromFile(path);
+}
+
+export async function loadAbiRegistry(paths: PathLike[]): Promise<AbiRegistry> {
+    if (isBrowser()) {
+        return AbiRegistry.load({ urls: paths.map(e => e.toString()) });
+    }
+
+    return AbiRegistry.load({ files: paths.map(e => e.toString()) });
 }
 
 function isBrowser() {

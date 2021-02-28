@@ -3,7 +3,7 @@ import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
 import { AbiRegistry, missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "../typesystem";
-import { AddImmediateResult, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets, Wait } from "../../testutils";
+import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets, Wait } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
 import { assert } from "chai";
@@ -27,7 +27,7 @@ describe("test smart contract interactor", function () {
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await AbiRegistry.load({ files: ["src/testdata/answer.abi.json"] });
+        let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -73,7 +73,7 @@ describe("test smart contract interactor", function () {
     it("should interact with 'counter'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await AbiRegistry.load({ files: ["src/testdata/counter.abi.json"] });
+        let abiRegistry = await loadAbiRegistry(["src/testdata/counter.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["counter"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
@@ -121,7 +121,7 @@ describe("test smart contract interactor", function () {
     it("should interact with 'lottery-egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let abiRegistry = await AbiRegistry.load({ files: ["src/testdata/lottery_egld.abi.json"] });
+        let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
         let interactor = new SmartContractInteractor(contract, runner);
