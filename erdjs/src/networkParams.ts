@@ -146,7 +146,7 @@ export class TransactionVersion {
     }
 
     /**
-     * Created a TransactionVersion object with the VERSION setting for hash signing
+     * Creates a TransactionVersion object with the VERSION setting for hash signing
      */
     static withTxHashSignVersion(): TransactionVersion {
         return new TransactionVersion(TRANSACTION_VERSION_TX_HASH_SIGN);
