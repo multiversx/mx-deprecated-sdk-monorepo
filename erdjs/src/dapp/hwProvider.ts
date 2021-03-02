@@ -11,6 +11,10 @@ import {Transaction} from "../transaction";
 import {Address} from "../address";
 import {Signature} from "../signature";
 
+// This constant represents the minimum version in which the Elrond Ledger App doesn't support anymore regular
+// transactions' signing, and uses transaction's hash signing instead
+const LEDGER_TX_HASH_SIGN_MIN_VERSION = 1011;
+
 export class HWProvider implements IDappProvider {
     provider: IProvider;
     hwApp?: IHWElrondApp;
@@ -34,7 +38,7 @@ export class HWProvider implements IDappProvider {
     }
 
     /**
-     * Returns true if init() was previously called succesfully
+     * Returns true if init() was previously called successfully
      */
     isInitialized(): boolean {
         return !!this.hwApp;
@@ -90,13 +94,24 @@ export class HWProvider implements IDappProvider {
 
         const address = await this.getCurrentAddress();
         transaction.sender = new Address(address);
-
-        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)));
+        let signWithHash = await this.shouldSignWithHash();
+        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)), signWithHash);
         transaction.signature = new Signature(sig);
 
         await transaction.send(this.provider);
 
         return transaction;
+    }
+
+    private async shouldSignWithHash(): Promise<boolean> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+
+        const config = await this.hwApp.getAppConfiguration();
+        const numericVersion = parseInt(config.version.split('.').join(''));
+
+        return numericVersion >= LEDGER_TX_HASH_SIGN_MIN_VERSION;
     }
 
     private async getCurrentAddress(): Promise<string> {
