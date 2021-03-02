@@ -6,8 +6,20 @@ import { CompositeType } from "./composite";
 import { EnumType } from "./enum";
 import { ListType, OptionType } from "./generic";
 import { H256Type } from "./h256";
-import { BigIntType, BigUIntType, I16Type, I32Type, I64Type, I8Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
+import {
+    BigIntType,
+    BigUIntType,
+    I16Type,
+    I32Type,
+    I64Type,
+    I8Type,
+    U16Type,
+    U32Type,
+    U64Type,
+    U8Type,
+} from "./numerical";
 import { StructFieldDefinition, StructType } from "./struct";
+import { TokenIdentifierType } from "./tokenIdentifier";
 import { Type, CustomType } from "./types";
 import { OptionalType, VariadicType } from "./variadic";
 
@@ -27,7 +39,7 @@ export class TypeMapper {
             ["OptionalArg", OptionalType],
             ["OptionalResult", OptionalType],
             ["MultiArg", CompositeType],
-            ["MultiResult", CompositeType]
+            ["MultiResult", CompositeType],
         ]);
 
         // For closed types, we hold actual type instances instead of type constructors (no type parameters needed).
@@ -45,7 +57,8 @@ export class TypeMapper {
             ["bool", new BooleanType()],
             ["bytes", new BytesType()],
             ["Address", new AddressType()],
-            ["H256", new H256Type()]
+            ["H256", new H256Type()],
+            ["TokenIdentifier", new TokenIdentifierType()],
         ]);
 
         for (const customType of customTypes) {
@@ -79,14 +92,16 @@ export class TypeMapper {
     }
 
     private mapStructType(type: StructType): StructType {
-        let mappedFields = type.fields.map(item => new StructFieldDefinition(item.name, item.description, this.mapType(item.type)));
+        let mappedFields = type.fields.map(
+            (item) => new StructFieldDefinition(item.name, item.description, this.mapType(item.type))
+        );
         let mappedStruct = new StructType(type.getName(), mappedFields);
         return mappedStruct;
     }
 
     private mapGenericType(type: Type): Type {
         let typeParameters = type.getTypeParameters();
-        let mappedTypeParameters = typeParameters.map(item => this.mapType(item));
+        let mappedTypeParameters = typeParameters.map((item) => this.mapType(item));
 
         let constructor = this.openTypesConstructors.get(type.getName());
         if (!constructor) {
