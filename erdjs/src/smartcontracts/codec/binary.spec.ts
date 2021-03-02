@@ -110,8 +110,8 @@ describe("test binary codec (advanced)", () => {
         assert.deepEqual(decodedTopLevel, list);
     });
 
-    it("benchmark: should work well with large lists", async () => {
-        let numItems = 2 ** 16;
+    it("benchmark: should work well with large lists", async function() {
+        let numItems = 2 ** 12;
         let codec = new BinaryCodec(new BinaryCodecConstraints({
             maxListLength: numItems,
             maxBufferLength: numItems * 4 + 4

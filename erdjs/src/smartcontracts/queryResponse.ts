@@ -59,11 +59,14 @@ export class QueryResponse {
     }
 
     outputUntyped(): Buffer[] {
+        this.assertSuccess();
+
         let buffers = this.returnData.map(item => Buffer.from(item, "base64"));
         return buffers;
     }
 
     outputTyped(): TypedValue[] {
+        this.assertSuccess();
         guardValueIsSet("endpointDefinition", this.endpointDefinition);
 
         let buffers = this.outputUntyped();

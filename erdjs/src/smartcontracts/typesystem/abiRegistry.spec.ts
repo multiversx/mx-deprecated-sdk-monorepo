@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { loadAbiRegistry } from "../../testutils";
+import { extendAbiRegistry, loadAbiRegistry } from "../../testutils";
 import { AbiRegistry } from "./abiRegistry";
 import { AddressType } from "./address";
 import { BytesType } from "./bytes";
@@ -12,17 +12,17 @@ describe("test abi registry", () => {
     it("should extend", async () => {
         let registry = new AbiRegistry();
 
-        await registry.extendFromFile("src/testdata/answer.abi.json");
+        await extendAbiRegistry(registry, "src/testdata/answer.abi.json");
         assert.lengthOf(registry.interfaces, 1);
         assert.lengthOf(registry.customTypes, 0);
         assert.lengthOf(registry.findInterface("answer").endpoints, 1);
 
-        await registry.extendFromFile("src/testdata/counter.abi.json");
+        await extendAbiRegistry(registry, "src/testdata/counter.abi.json");
         assert.lengthOf(registry.interfaces, 2);
         assert.lengthOf(registry.customTypes, 0);
         assert.lengthOf(registry.findInterface("counter").endpoints, 3);
 
-        await registry.extendFromFile("src/testdata/lottery_egld.abi.json");
+        await extendAbiRegistry(registry, "src/testdata/lottery_egld.abi.json");
         assert.lengthOf(registry.interfaces, 3);
         assert.lengthOf(registry.customTypes, 2);
 

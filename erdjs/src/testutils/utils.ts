@@ -32,6 +32,14 @@ export async function loadAbiRegistry(paths: PathLike[]): Promise<AbiRegistry> {
     return AbiRegistry.load({ files: paths.map(e => e.toString()) });
 }
 
+export async function extendAbiRegistry(registry: AbiRegistry, path: PathLike): Promise<AbiRegistry> {
+    if (isBrowser()) {
+        return registry.extendFromUrl(path.toString());
+    }
+
+    return registry.extendFromFile(path.toString());
+}
+
 function isBrowser() {
     return typeof window !== "undefined";
 }

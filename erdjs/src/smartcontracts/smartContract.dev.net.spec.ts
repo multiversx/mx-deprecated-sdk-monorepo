@@ -228,7 +228,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: await loadContractCode("src/testdata/lottery-egld.wasm"),
+            code: await loadContractCode("src/testdata/lottery_egld.wasm"),
             gasLimit: new GasLimit(100000000),
             initArguments: []
         });

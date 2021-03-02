@@ -118,7 +118,7 @@ describe("test smart contract interactor", function () {
         assert.equal(valueAfterDecrement.valueOf(), BigInt(5));
     });
 
-    it("should interact with 'lottery-egld'", async function () {
+    it("should interact with 'lottery_egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
         let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);
