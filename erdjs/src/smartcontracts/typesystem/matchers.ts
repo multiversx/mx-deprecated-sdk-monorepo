@@ -7,17 +7,21 @@ import { OptionType, OptionValue, List, ListType } from "./generic";
 import { H256Type, H256Value } from "./h256";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
+import { TokenIdentifierType, TokenIdentifierValue } from "./tokenIdentifier";
 import { Type, PrimitiveType, PrimitiveValue } from "./types";
 
 // TODO: Extend functionality or rename wrt. restricted / reduced functionality (not all types are handled: composite, variadic).
-export function onTypeSelect<TResult>(type: Type, selectors: {
-    onOption: () => TResult,
-    onList: () => TResult,
-    onPrimitive: () => TResult,
-    onStruct: () => TResult,
-    onEnum: () => TResult,
-    onOther?: () => TResult
-}): TResult {
+export function onTypeSelect<TResult>(
+    type: Type,
+    selectors: {
+        onOption: () => TResult;
+        onList: () => TResult;
+        onPrimitive: () => TResult;
+        onStruct: () => TResult;
+        onEnum: () => TResult;
+        onOther?: () => TResult;
+    }
+): TResult {
     if (type instanceof OptionType) {
         return selectors.onOption();
     }
@@ -41,13 +45,16 @@ export function onTypeSelect<TResult>(type: Type, selectors: {
     throw new errors.ErrTypingSystem(`type isn't known: ${type}`);
 }
 
-export function onTypedValueSelect<TResult>(value: any, selectors: {
-    onPrimitive: () => TResult,
-    onOption: () => TResult,
-    onList: () => TResult,
-    onStruct: () => TResult,
-    onOther?: () => TResult
-}): TResult {
+export function onTypedValueSelect<TResult>(
+    value: any,
+    selectors: {
+        onPrimitive: () => TResult;
+        onOption: () => TResult;
+        onList: () => TResult;
+        onStruct: () => TResult;
+        onOther?: () => TResult;
+    }
+): TResult {
     if (value instanceof PrimitiveValue) {
         return selectors.onPrimitive();
     }
@@ -68,15 +75,18 @@ export function onTypedValueSelect<TResult>(value: any, selectors: {
     throw new errors.ErrTypingSystem(`value isn't typed: ${value}`);
 }
 
-
-export function onPrimitiveValueSelect<TResult>(value: PrimitiveValue, selectors: {
-    onBoolean: () => TResult,
-    onNumerical: () => TResult,
-    onAddress: () => TResult,
-    onBytes: () => TResult,
-    onH256: () => TResult,
-    onOther?: () => TResult
-}): TResult {
+export function onPrimitiveValueSelect<TResult>(
+    value: PrimitiveValue,
+    selectors: {
+        onBoolean: () => TResult;
+        onNumerical: () => TResult;
+        onAddress: () => TResult;
+        onBytes: () => TResult;
+        onH256: () => TResult;
+        onTypeIdentifier: () => TResult;
+        onOther?: () => TResult;
+    }
+): TResult {
     if (value instanceof BooleanValue) {
         return selectors.onBoolean();
     }
@@ -92,6 +102,9 @@ export function onPrimitiveValueSelect<TResult>(value: PrimitiveValue, selectors
     if (value instanceof H256Value) {
         return selectors.onH256();
     }
+    if (value instanceof TokenIdentifierValue) {
+        return selectors.onTypeIdentifier();
+    }
     if (selectors.onOther) {
         return selectors.onOther();
     }
@@ -99,14 +112,18 @@ export function onPrimitiveValueSelect<TResult>(value: PrimitiveValue, selectors
     throw new errors.ErrTypingSystem(`value isn't a primitive: ${value.getType()}`);
 }
 
-export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {
-    onBoolean: () => TResult,
-    onNumerical: () => TResult,
-    onAddress: () => TResult,
-    onBytes: () => TResult,
-    onH256: () => TResult,
-    onOther?: () => TResult
-}): TResult {
+export function onPrimitiveTypeSelect<TResult>(
+    type: PrimitiveType,
+    selectors: {
+        onBoolean: () => TResult;
+        onNumerical: () => TResult;
+        onAddress: () => TResult;
+        onBytes: () => TResult;
+        onH256: () => TResult;
+        onTokenIndetifier: () => TResult;
+        onOther?: () => TResult;
+    }
+): TResult {
     if (type instanceof BooleanType) {
         return selectors.onBoolean();
     }
@@ -121,6 +138,9 @@ export function onPrimitiveTypeSelect<TResult>(type: PrimitiveType, selectors: {
     }
     if (type instanceof H256Type) {
         return selectors.onH256();
+    }
+    if (type instanceof TokenIdentifierType) {
+        return selectors.onTokenIndetifier();
     }
     if (selectors.onOther) {
         return selectors.onOther();
