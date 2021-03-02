@@ -1,6 +1,8 @@
 /**
  * The base class for `erdjs` exceptions (errors).
  */
+import BigNumber from "bignumber.js";
+
 export class Err extends Error {
   inner: Error | undefined = undefined;
 
@@ -156,8 +158,8 @@ export class ErrSignerCannotSign extends Err {
  * Signals an invalid value for {@link Balance} objects.
  */
 export class ErrBalanceInvalid extends Err {
-  public constructor(value: bigint) {
-    super(`Invalid balance: ${value}`);
+  public constructor(value: BigNumber) {
+    super(`Invalid balance: ${value.toString()}`);
   }
 }
 

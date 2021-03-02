@@ -26,7 +26,7 @@ export class GasPrice {
     }
 
     toDenominated(): string {
-        let asBalance = new Balance(BigInt(this.value));
+        let asBalance = new Balance(this.value.toString(10));
         return asBalance.toDenominated();
     }
 
