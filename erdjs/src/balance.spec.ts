@@ -1,8 +1,12 @@
 import { assert } from "chai";
 import { Balance } from "./balance";
+import BigNumber from "bignumber.js";
+import {bigIntToBuffer} from "./smartcontracts/codec/utils";
 
 describe("test balance", () => {
     it("should have desired precision", () => {
+        const x = new Balance("10");
+
         assert.equal(Balance.eGLD(1).toString(), "1000000000000000000");
         assert.equal(Balance.eGLD(10).toString(), "10000000000000000000");
         assert.equal(Balance.eGLD(100).toString(), "100000000000000000000");
@@ -28,6 +32,6 @@ describe("test balance", () => {
     });
 
     it("should format as denominated", () => {
-        assert.equal(new Balance(BigInt(1000000000)).toDenominated(), "0.000000001000000000");
+        assert.equal(new Balance('1000000000').toDenominated(), "0.000000001000000000");
     });
 });

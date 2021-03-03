@@ -5,6 +5,7 @@ import { ContractFunction } from "./function";
 import { Query } from "./query";
 import { Balance } from "../balance";
 import * as errors from "../errors";
+import BigNumber from "bignumber.js";
 
 describe("test smart contract queries", () => {
     it("should prepare query", async () => {
@@ -29,7 +30,7 @@ describe("test smart contract queries", () => {
                 Argument.fromNumber(100),
                 Argument.fromUTF8("!"),
                 Argument.fromHex("abba"),
-                Argument.fromBigInt(BigInt("1000000000000000000000000000000000"))
+                Argument.fromBigInt(new BigNumber("1000000000000000000000000000000000"))
             ]
         });
 

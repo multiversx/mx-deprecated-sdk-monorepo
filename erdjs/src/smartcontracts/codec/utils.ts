@@ -1,9 +1,11 @@
+import BigNumber from "bignumber.js";
 
 /**
  * Returns whether the most significant bit of a given byte (within a buffer) is 1.
  * @param buffer the buffer to test
  * @param byteIndex the index of the byte to test
  */
+
 export function isMsbOne(buffer: Buffer, byteIndex: number = 0): boolean {
     let byte = buffer[byteIndex];
     let bit = byte >> 7;
@@ -26,27 +28,25 @@ export function cloneBuffer(buffer: Buffer) {
     return clone;
 }
 
-export function bufferToBigInt(buffer: Buffer): bigint {
+export function bufferToBigInt(buffer: Buffer): BigNumber {
     // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size Buffer to BigInt conversion.
     let hex = buffer.toString("hex");
-    let value = BigInt(`0x${hex}`);
-    return value;
+    return new BigNumber(`0x${hex}`, 16);
 }
 
-export function bigIntToBuffer(value: bigint): Buffer {
+export function bigIntToBuffer(value: BigNumber): Buffer {
     // Currently, in JavaScript, this is the feasible way to achieve reliable, arbitrary-size BigInt to Buffer conversion.
     let hex = getHexMagnitudeOfBigInt(value);
-    let buffer = Buffer.from(hex, "hex");
-    return buffer;
+    return Buffer.from(hex, "hex");
 }
 
-export function getHexMagnitudeOfBigInt(value: bigint): string {
+export function getHexMagnitudeOfBigInt(value: BigNumber): string {
     if (!value) {
         return "";
     }
 
-    if (value < BigInt(0)) {
-        value = value * BigInt(-1);
+    if (value.isNegative()) {
+        value = value.multipliedBy(new BigNumber(-1));
     }
 
     let hex = value.toString(16);
