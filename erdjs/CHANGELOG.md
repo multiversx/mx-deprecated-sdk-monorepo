@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.0.0] - 03.03.2021
+ - [Switched from nativ BigInt to bignumber.js #218](https://github.com/ElrondNetwork/elrond-sdk/pull/218)
+
 ## [2.3.0] - 16.02.2021
  - [Minor bugfixes and new getNetworkStats function #203](https://github.com/ElrondNetwork/elrond-sdk/pull/203)
 
