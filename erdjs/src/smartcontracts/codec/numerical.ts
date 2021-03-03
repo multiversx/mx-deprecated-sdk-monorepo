@@ -62,48 +62,8 @@ export class NumericalBinaryCodec {
      * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
      */
     encodeNested(primitive: NumericalValue): Buffer {
-
-
         if (primitive.sizeInBytes) {
-            let withSign = primitive.withSign;
-
-            // Nothing or Zero:
-            if (primitive.value.isZero()) {
-                return Buffer.alloc(primitive.sizeInBytes, 0x00);
-            }
-
-            // I don't care about the sign:
-            if (!withSign) {
-                const  buffer = bigIntToBuffer(primitive.value);
-                const paddingBytes = Buffer.alloc(primitive.sizeInBytes - buffer.length, 0x00);
-                return Buffer.concat([paddingBytes, buffer]);
-            }
-
-            if (primitive.value.isPositive()) {
-                let buffer = bigIntToBuffer(primitive.value);
-
-                // Fix ambiguity if any
-                if (isMsbOne(buffer)) {
-                    buffer = prependByteToBuffer(buffer, 0x00);
-                }
-
-                const paddingBytes = Buffer.alloc(primitive.sizeInBytes - buffer.length, 0x00);
-                return Buffer.concat([paddingBytes, buffer]);
-            }
-
-            // Negative:
-            // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
-            let valuePlusOne = primitive.value.plus(new BigNumber(1));
-            let buffer = bigIntToBuffer(valuePlusOne);
-            flipBufferBitsInPlace(buffer);
-
-            // Fix ambiguity if any
-            if (isMsbZero(buffer)) {
-                buffer = prependByteToBuffer(buffer, 0xFF);
-            }
-
-            const paddingBytes = Buffer.alloc(primitive.sizeInBytes - buffer.length, 0xff);
-            return Buffer.concat([paddingBytes, buffer]);
+            return this.encodeNestedFixedSize(primitive, primitive.sizeInBytes);
         }
 
         // Size is not known: arbitrary-size big integer. Therefore, we must emit the length (as U32) before the actual payload.
@@ -111,6 +71,45 @@ export class NumericalBinaryCodec {
         let length = Buffer.alloc(4);
         length.writeUInt32BE(buffer.length);
         return Buffer.concat([length, buffer]);
+    }
+
+    private encodeNestedFixedSize(primitive: NumericalValue, size: number): Buffer {
+        if (primitive.value.isZero()) {
+            return Buffer.alloc(size, 0x00);
+        }
+
+        if (!primitive.withSign) {
+            const  buffer = bigIntToBuffer(primitive.value);
+            const paddingBytes = Buffer.alloc(size - buffer.length, 0x00);
+
+            return Buffer.concat([paddingBytes, buffer]);
+        }
+
+        if (primitive.value.isPositive()) {
+            let buffer = bigIntToBuffer(primitive.value);
+
+            // Fix ambiguity if any
+            if (isMsbOne(buffer)) {
+                buffer = prependByteToBuffer(buffer, 0x00);
+            }
+
+            const paddingBytes = Buffer.alloc(size - buffer.length, 0x00);
+            return Buffer.concat([paddingBytes, buffer]);
+        }
+
+        // Negative:
+        // Also see: https://github.com/ElrondNetwork/big-int-util/blob/master/twos-complement/bigint2twos.go
+        let valuePlusOne = primitive.value.plus(new BigNumber(1));
+        let buffer = bigIntToBuffer(valuePlusOne);
+        flipBufferBitsInPlace(buffer);
+
+        // Fix ambiguity if any
+        if (isMsbZero(buffer)) {
+            buffer = prependByteToBuffer(buffer, 0xFF);
+        }
+
+        const paddingBytes = Buffer.alloc(size - buffer.length, 0xff);
+        return Buffer.concat([paddingBytes, buffer]);
     }
 
     /**
