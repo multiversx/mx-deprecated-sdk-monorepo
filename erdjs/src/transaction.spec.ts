@@ -1,11 +1,11 @@
-import { assert } from "chai";
-import { Transaction } from "./transaction";
+import {assert} from "chai";
+import {Transaction} from "./transaction";
 import * as errors from "./errors";
-import { Nonce } from "./nonce";
-import { ChainID, GasLimit, GasPrice, GasPriceModifier, TransactionVersion } from "./networkParams";
-import { TransactionPayload } from "./transactionPayload";
-import { Balance } from "./balance";
-import { TestWallets } from "./testutils";
+import {Nonce} from "./nonce";
+import {ChainID, GasLimit, GasPrice, GasPriceModifier, TransactionOptions, TransactionVersion} from "./networkParams";
+import {TransactionPayload} from "./transactionPayload";
+import {Balance} from "./balance";
+import {TestWallets} from "./testutils";
 import {NetworkConfig} from "./networkConfig";
 
 describe("test transaction", () => {
@@ -14,13 +14,17 @@ describe("test transaction", () => {
         let gasLimit: any = 42;
         let gasPrice: any = 42;
 
-        assert.throw(() => new Transaction({ nonce: nonce }), errors.ErrBadType);
-        assert.throw(() => new Transaction({ gasLimit: gasLimit }), errors.ErrBadType);
-        assert.throw(() => new Transaction({ gasPrice: gasPrice }), errors.ErrBadType);
+        assert.throw(() => new Transaction({nonce: nonce}), errors.ErrBadType);
+        assert.throw(() => new Transaction({gasLimit: gasLimit}), errors.ErrBadType);
+        assert.throw(() => new Transaction({gasPrice: gasPrice}), errors.ErrBadType);
 
         assert.doesNotThrow(() => new Transaction({}));
-        assert.doesNotThrow(() => new Transaction({ nonce: new Nonce(42), gasLimit: new GasLimit(42), gasPrice: new GasPrice(42) }));
-        assert.doesNotThrow(() => new Transaction({ nonce: undefined, gasLimit: undefined, gasPrice: undefined }));
+        assert.doesNotThrow(() => new Transaction({
+            nonce: new Nonce(42),
+            gasLimit: new GasLimit(42),
+            gasPrice: new GasPrice(42)
+        }));
+        assert.doesNotThrow(() => new Transaction({nonce: undefined, gasLimit: undefined, gasPrice: undefined}));
     });
 });
 
@@ -36,12 +40,13 @@ describe("test transaction construction", async () => {
             gasPrice: GasPrice.min(),
             gasLimit: GasLimit.min(),
             chainID: new ChainID("local-testnet"),
-            version: new TransactionVersion(1)
+            version: new TransactionVersion(1),
+            options: new TransactionOptions(1)
         });
 
         await wallets.alice.signer.sign(transaction);
-        assert.equal("b56769014f2bdc5cf9fc4a05356807d71fcf8775c819b0f1b0964625b679c918ffa64862313bfef86f99b38cb84fcdb16fa33ad6eb565276616723405cd8f109", transaction.signature.hex());
-        assert.equal(transaction.hash.valueOf(), "eb30c50c8831885ebcfac986d27e949ec02cf25676e22a009b7a486e5431ec2e");
+        assert.equal("c83e69b853a891bf2130c1839362fe2a7a8db327dcc0c9f130497a4f24b0236140b394801bb2e04ce061a6f873cb432bf1bb1e6072e295610904662ac427a30a", transaction.signature.hex());
+        assert.equal(transaction.hash.valueOf(), "3e204088f93109ed855ffe1e5619c96c0c5f9ab7d75d3690c296792451b4d1ab");
     });
 
     it("with data, no value", async () => {
@@ -96,6 +101,26 @@ describe("test transaction construction", async () => {
         await wallets.alice.signer.sign(transaction);
         assert.equal("39938d15812708475dfc8125b5d41dbcea0b2e3e7aabbbfceb6ce4f070de3033676a218b73facd88b1432d7d4accab89c6130b3abe5cc7bbbb5146e61d355b03", transaction.signature.hex());
         assert.equal(transaction.hash.valueOf(), "e4a6048d92409cfe50f12e81218cb92f39966c618979a693b8d16320a06061c1");
+    });
+
+    it("without options field, should be omitted", async () => {
+        let transaction = new Transaction({
+            nonce: new Nonce(89),
+            value: Balance.Zero(),
+            receiver: wallets.bob.address,
+            sender: wallets.alice.address,
+            gasPrice: GasPrice.min(),
+            gasLimit: GasLimit.min(),
+            chainID: new ChainID("local-testnet"),
+            version: new TransactionVersion(1)
+        });
+
+        await wallets.alice.signer.sign(transaction);
+        assert.equal("b56769014f2bdc5cf9fc4a05356807d71fcf8775c819b0f1b0964625b679c918ffa64862313bfef86f99b38cb84fcdb16fa33ad6eb565276616723405cd8f109", transaction.signature.hex());
+        assert.equal(transaction.hash.valueOf(), "eb30c50c8831885ebcfac986d27e949ec02cf25676e22a009b7a486e5431ec2e");
+
+        let result = transaction.serializeForSigning(wallets.alice.address);
+        assert.isFalse(result.toString().includes("options"));
     });
 
     it("computes correct fee", () => {

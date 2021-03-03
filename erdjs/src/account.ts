@@ -20,7 +20,7 @@ export class Account {
   /**
    * The balance of the account.
    */
-  balance: Balance = new Balance(BigInt(0));
+  balance: Balance = new Balance('0');
 
   private asOnNetwork: AccountOnNetwork = new AccountOnNetwork();
 
@@ -93,7 +93,7 @@ export class Account {
 export class AccountOnNetwork {
   address: Address = new Address();
   nonce: Nonce = new Nonce(0);
-  balance: Balance = new Balance(BigInt(0));
+  balance: Balance = new Balance('0');
   code: string = "";
   userName: string = "";
 
