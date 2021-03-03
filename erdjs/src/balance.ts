@@ -2,7 +2,7 @@ import * as errors from "./errors";
 import { BigNumber } from "bignumber.js";
 
 /**
- * The base used for toString methonds to avoid exponential notation
+ * The base used for toString methods to avoid exponential notation
  */
 const BASE_10 = 10;
 

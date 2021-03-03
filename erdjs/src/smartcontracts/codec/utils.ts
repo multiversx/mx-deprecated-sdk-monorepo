@@ -40,10 +40,6 @@ export function bigIntToBuffer(value: BigNumber): Buffer {
     return Buffer.from(hex, "hex");
 }
 
-// export function bigIntToSignedBuffer(value: BigNumber, length: number): Buffer {
-//
-// }
-
 export function getHexMagnitudeOfBigInt(value: BigNumber): string {
     if (!value) {
         return "";

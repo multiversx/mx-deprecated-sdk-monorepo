@@ -79,7 +79,7 @@ export class NumericalBinaryCodec {
         }
 
         if (!primitive.withSign) {
-            const  buffer = bigIntToBuffer(primitive.value);
+            const buffer = bigIntToBuffer(primitive.value);
             const paddingBytes = Buffer.alloc(size - buffer.length, 0x00);
 
             return Buffer.concat([paddingBytes, buffer]);
