@@ -39,7 +39,7 @@ export class ProtoSerializer {
      */
     private serializeBalance(balance: Balance): Buffer {
         let value = balance.valueOf();
-        if (value == BigInt(0)) {
+        if (value.isZero()) {
             return Buffer.from([0, 0]);
         }
 
