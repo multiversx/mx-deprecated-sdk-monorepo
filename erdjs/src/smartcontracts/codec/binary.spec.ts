@@ -5,6 +5,7 @@ import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, i
 import { Address } from "../../address";
 import { Balance } from "../../balance";
 import { BytesType, BytesValue } from "../typesystem/bytes";
+import BigNumber from "bignumber.js";
 
 describe("test binary codec (basic)", () => {
     let codec = new BinaryCodec();
@@ -67,7 +68,7 @@ describe("test binary codec (basic)", () => {
         });
 
         function check(asBigInt: bigint, type: NumericalType, nested: number[], topLevel: number[]) {
-            let value = new NumericalValue(type, asBigInt);
+            let value = new NumericalValue(type, new BigNumber(asBigInt.toString(10)));
 
             assert.deepEqual(codec.encodeNested(value), Buffer.from(nested));
             assert.deepEqual(codec.encodeTopLevel(value), Buffer.from(topLevel));
@@ -156,12 +157,12 @@ describe("test binary codec (advanced)", () => {
         let fooStruct = new Struct(fooType, [
             new StructField(new BigUIntValue(Balance.eGLD(10).valueOf()), "ticket_price"),
             new StructField(new U32Value(0), "tickets_left"),
-            new StructField(new U64Value(BigInt("0x000000005fc2b9db")), "deadline"),
+            new StructField(new U64Value(new BigNumber("0x000000005fc2b9db")), "deadline"),
             new StructField(new U32Value(0xffffffff), "max_entries_per_user"),
             new StructField(new BytesValue(Buffer.from([0x64])), "prize_distribution"),
             new StructField(new List(new ListType(new AddressType()), []), "whitelist"),
             new StructField(new U32Value(9472), "current_ticket_number"),
-            new StructField(new BigUIntValue(BigInt("94720000000000000000000")), "prize_pool")
+            new StructField(new BigUIntValue(new BigNumber("94720000000000000000000")), "prize_pool")
         ]);
 
         let encodedExpected = serialized("[00000008|8ac7230489e80000] [00000000] [000000005fc2b9db] [ffffffff] [00000001|64] [00000000] [00002500] [0000000a|140ec80fa7ee88000000]");
@@ -174,14 +175,14 @@ describe("test binary codec (advanced)", () => {
 
         let plainFoo = decoded.valueOf();
         assert.deepEqual(plainFoo, {
-            ticket_price: BigInt("10000000000000000000"),
-            tickets_left: BigInt(0),
-            deadline: BigInt("0x000000005fc2b9db"),
-            max_entries_per_user: BigInt(0xffffffff),
+            ticket_price: new BigNumber("10000000000000000000"),
+            tickets_left: new BigNumber(0),
+            deadline: new BigNumber("0x000000005fc2b9db", 16),
+            max_entries_per_user: new BigNumber(0xffffffff),
             prize_distribution: Buffer.from([0x64]),
             whitelist: [],
-            current_ticket_number: BigInt(9472),
-            prize_pool: BigInt("94720000000000000000000")
+            current_ticket_number: new BigNumber(9472),
+            prize_pool: new BigNumber("94720000000000000000000")
         });
     });
 });

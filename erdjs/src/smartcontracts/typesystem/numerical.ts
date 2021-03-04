@@ -1,6 +1,7 @@
 import * as errors from "../../errors";
 import { guardType } from "../../utils";
 import { PrimitiveType, PrimitiveValue, Type } from "./types";
+import BigNumber from "bignumber.js";
 
 export class NumericalType extends PrimitiveType {
     readonly sizeInBytes: number;
@@ -85,23 +86,24 @@ export class BigIntType extends NumericalType {
  * A numerical value fed to or fetched from a Smart Contract contract, as a strongly-typed, immutable abstraction.
  */
 export class NumericalValue extends PrimitiveValue {
-    readonly value: bigint;
+    readonly value: BigNumber;
     readonly sizeInBytes: number | undefined;
     readonly withSign: boolean;
 
-    constructor(type: NumericalType, value: bigint) {
+    constructor(type: NumericalType, value: BigNumber) {
         super(type);
         guardType("type", NumericalType, type, false);
+        
+        if (!(value instanceof BigNumber)) {
+            throw new errors.ErrInvalidArgument("value", value, "not a big number");
+        }
         
         this.value = value;
         this.sizeInBytes = type.sizeInBytes;
         this.withSign = type.withSign;
 
-        if (typeof (value) != "bigint") {
-            throw new errors.ErrInvalidArgument("value", value, "not a bigint");
-        }
-        if (!this.withSign && value < 0) {
-            throw new errors.ErrInvalidArgument("value", value, "negative, but type is unsigned");
+        if (!this.withSign && value.isNegative()) {
+            throw new errors.ErrInvalidArgument("value", value.toString(10), "negative, but type is unsigned");
         }
     }
 
@@ -111,70 +113,70 @@ export class NumericalValue extends PrimitiveValue {
      * @param other another NumericalValue
      */
     equals(other: NumericalValue): boolean {
-        return this.value == other.value;
+        return this.value.isEqualTo(other.value);
     }
 
-    valueOf(): bigint {
+    valueOf(): BigNumber {
         return this.value;
     }
 }
 
 export class U8Value extends NumericalValue {
-    constructor(value: number | bigint) {
-        super(new U8Type(), BigInt(value));
+    constructor(value: number | BigNumber) {
+        super(new U8Type(), new BigNumber(value));
     }
 }
 
 export class I8Value extends NumericalValue {
-    constructor(value: number | bigint) {
-        super(new I8Type(), BigInt(value));
+    constructor(value: number | BigNumber) {
+        super(new I8Type(), new BigNumber(value));
     }
 }
 
 export class U16Value extends NumericalValue {
-    constructor(value: number | bigint) {
-        super(new U16Type(), BigInt(value));
+    constructor(value: number | BigNumber) {
+        super(new U16Type(), new BigNumber(value));
     }
 }
 
 export class I16Value extends NumericalValue {
-    constructor(value: number | bigint) {
-        super(new I16Type(), BigInt(value));
+    constructor(value: number | BigNumber) {
+        super(new I16Type(), new BigNumber(value));
     }
 }
 
 export class U32Value extends NumericalValue {
-    constructor(value: number | bigint) {
-        super(new U32Type(), BigInt(value));
+    constructor(value: number | BigNumber) {
+        super(new U32Type(), new BigNumber(value));
     }
 }
 
 export class I32Value extends NumericalValue {
-    constructor(value: number | bigint) {
-        super(new I32Type(), BigInt(value));
+    constructor(value: number | BigNumber) {
+        super(new I32Type(), new BigNumber(value));
     }
 }
 
 export class U64Value extends NumericalValue {
-    constructor(value: bigint) {
+    constructor(value: BigNumber) {
         super(new U64Type(), value);
     }
 }
 
 export class I64Value extends NumericalValue {
-    constructor(value: bigint) {
+    constructor(value: BigNumber) {
         super(new I64Type(), value);
     }
 }
 
 export class BigUIntValue extends NumericalValue {
-    constructor(value: bigint) {
+    constructor(value: BigNumber) {
         super(new BigUIntType(), value);
     }
 }
 
 export class BigIntValue extends NumericalValue {
-    constructor(value: bigint) {
+    constructor(value: BigNumber) {
         super(new BigIntType(), value);
     }
 }

@@ -4,8 +4,9 @@ import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { TypedValue } from "./typesystem";
 import { Serializer } from "./serializer";
+import BigNumber from "bignumber.js";
 
-export const MaxUint64 = BigInt("18446744073709551615");
+export const MaxUint64 = new BigNumber("18446744073709551615");
 
 export class Query {
     caller: Address;

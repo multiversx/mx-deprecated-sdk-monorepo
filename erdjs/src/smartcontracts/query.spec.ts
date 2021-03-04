@@ -5,6 +5,7 @@ import { Query } from "./query";
 import { Balance } from "../balance";
 import * as errors from "../errors";
 import { typedBigInt, typedBytesFromHex, typedNumber, typedUTF8 } from "./typesystem";
+import BigNumber from "bignumber.js";
 
 describe("test smart contract queries", () => {
     it("should prepare query", async () => {
@@ -29,7 +30,7 @@ describe("test smart contract queries", () => {
                 typedNumber(100),
                 typedUTF8("!"),
                 typedBytesFromHex("abba"),
-                typedBigInt(BigInt("1000000000000000000000000000000000"))
+                typedBigInt(new BigNumber("1000000000000000000000000000000000"))
             ]
         });
 

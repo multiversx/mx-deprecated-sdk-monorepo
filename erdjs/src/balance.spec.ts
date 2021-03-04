@@ -28,6 +28,6 @@ describe("test balance", () => {
     });
 
     it("should format as denominated", () => {
-        assert.equal(new Balance(BigInt(1000000000)).toDenominated(), "0.000000001000000000");
+        assert.equal(new Balance('1000000000').toDenominated(), "0.000000001000000000");
     });
 });

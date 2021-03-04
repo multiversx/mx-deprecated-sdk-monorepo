@@ -1,8 +1,8 @@
 import { BigNumber } from "bignumber.js";
-import { ISignable, IProvider } from "./interface";
+import { IProvider, ISignable } from "./interface";
 import { Address } from "./address";
 import { Balance } from "./balance";
-import { GasPrice, GasLimit, TransactionVersion, ChainID } from "./networkParams";
+import { ChainID, GasLimit, GasPrice, TransactionOptions, TransactionVersion } from "./networkParams";
 import { NetworkConfig } from "./networkConfig";
 import { Nonce } from "./nonce";
 import { Signature } from "./signature";
@@ -12,11 +12,13 @@ import * as errors from "./errors";
 import { TypedEvent } from "./events";
 import { TransactionWatcher } from "./transactionWatcher";
 import { ProtoSerializer } from "./proto";
-import { Hash } from "./hash";
 import { TransactionOnNetwork } from "./transactionOnNetwork";
+import { Hash } from "./hash";
+
 const createTransactionHasher = require("blake2b");
 
-const TRANSACTION_VERSION = new TransactionVersion(1);
+const DEFAULT_TRANSACTION_VERSION = TransactionVersion.withDefaultVersion();
+const DEFAULT_TRANSACTION_OPTIONS = TransactionOptions.withDefaultOptions();
 const TRANSACTION_HASH_LENGTH = 32;
 
 /**
@@ -74,6 +76,11 @@ export class Transaction implements ISignable {
     private readonly version: TransactionVersion;
 
     /**
+     * The options field, useful for describing different settings available for transactions
+     */
+    options: TransactionOptions;
+
+    /**
      * The signature.
      */
     private signature: Signature;
@@ -109,7 +116,8 @@ export class Transaction implements ISignable {
         this.gasLimit = gasLimit || NetworkConfig.getDefault().MinGasLimit;
         this.data = data || new TransactionPayload();
         this.chainID = chainID || NetworkConfig.getDefault().ChainID;
-        this.version = TRANSACTION_VERSION;
+        this.version = DEFAULT_TRANSACTION_VERSION;
+        this.options = DEFAULT_TRANSACTION_OPTIONS;
 
         this.signature = Signature.empty();
         this.hash = TransactionHash.empty();
@@ -133,15 +141,15 @@ export class Transaction implements ISignable {
 
     /**
      * Sets the account sequence number of the sender. Must be done prior signing.
-     * 
+     *
      * ```
      * await alice.sync(provider);
-     * 
+     *
      * let tx = new Transaction({
      *      value: Balance.eGLD(1),
      *      receiver: bob.address
      * });
-     * 
+     *
      * tx.setNonce(alice.nonce);
      * await aliceSigner.sign(tx);
      * ```
@@ -218,9 +226,9 @@ export class Transaction implements ISignable {
     }
 
     /**
-     * Serializes a transaction to a sequence of bytes, ready to be signed. 
+     * Serializes a transaction to a sequence of bytes, ready to be signed.
      * This function is called internally, by {@link Signer} objects.
-     * 
+     *
      * @param signedBy The address of the future signer
      */
     serializeForSigning(signedBy: Address): Buffer {
@@ -233,11 +241,11 @@ export class Transaction implements ISignable {
     /**
      * Converts the transaction object into a ready-to-serialize, plain JavaScript object.
      * This function is called internally within the signing procedure.
-     * 
+     *
      * @param sender The address of the sender (will be provided when called within the signing procedure)
      */
     toPlainObject(sender?: Address): any {
-        let result: any = {
+        return {
             nonce: this.nonce.valueOf(),
             value: this.value.toString(),
             receiver: this.receiver.bech32(),
@@ -247,15 +255,14 @@ export class Transaction implements ISignable {
             data: this.data.isEmpty() ? undefined : this.data.encoded(),
             chainID: this.chainID.valueOf(),
             version: this.version.valueOf(),
+            options: this.options.valueOf() == 0 ? undefined : this.options.valueOf(),
             signature: this.signature.isEmpty() ? undefined : this.signature.hex()
         };
-
-        return result;
     }
 
     /**
      * Applies the signature on the transaction.
-     * 
+     *
      * @param signature The signature, as computed by a {@link ISigner}.
      * @param signedBy The address of the signer.
      */
@@ -272,7 +279,7 @@ export class Transaction implements ISignable {
 
     /**
      * Broadcasts a transaction to the Network, via a {@link IProvider}.
-     * 
+     *
      * ```
      * let provider = new ProxyProvider("https://gateway.elrond.com");
      * // ... Prepare, sign the transaction, then:
@@ -291,8 +298,7 @@ export class Transaction implements ISignable {
      * Simulates a transaction on the Network, via a {@link IProvider}.
      */
     async simulate(provider: IProvider): Promise<any> {
-        let response = await provider.simulateTransaction(this);
-        return response;
+        return await provider.simulateTransaction(this);
     }
 
     /**
@@ -309,7 +315,7 @@ export class Transaction implements ISignable {
 
     /**
      * Fetches a representation of the transaction (whether pending, processed or finalized), as found on the Network.
-     * 
+     *
      * @param provider The provider to use
      * @param cacheLocally Whether to cache the response locally, on the transaction object
      */

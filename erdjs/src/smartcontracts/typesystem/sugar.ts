@@ -4,6 +4,7 @@ import { BytesValue } from "./bytes";
 import { OptionType, OptionValue } from "./generic";
 import { BigUIntValue } from "./numerical";
 import { NullType, TypedValue } from "./types";
+import BigNumber from "bignumber.js";
 
 /**
  * Creates a TypedValue, as a missing option argument.
@@ -24,7 +25,7 @@ export function providedOption(typedValue: TypedValue): TypedValue {
 /**
  * Creates an TypedValue from a big integer.
  */
-export function typedBigInt(value: bigint): TypedValue {
+export function typedBigInt(value: BigNumber): TypedValue {
     return new BigUIntValue(value);
 }
 
@@ -32,7 +33,7 @@ export function typedBigInt(value: bigint): TypedValue {
  * Creates an TypedValue from a number.
  */
 export function typedNumber(value: number): TypedValue {
-    return typedBigInt(BigInt(value));
+    return typedBigInt(new BigNumber(value));
 }
 
 /**

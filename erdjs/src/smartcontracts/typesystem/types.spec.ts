@@ -5,14 +5,15 @@ import { I64Type, U16Type, U32Type, U32Value } from "./numerical";
 import { PrimitiveType, Type } from "./types";
 import { BooleanType } from "./boolean";
 import { AddressType } from "./address";
-import { TypeExpressionParser } from "./typeExpressionParser";
 import { OptionType } from "./generic";
+import { TypeExpressionParser } from "./typeExpressionParser";
+import BigNumber from "bignumber.js";
 
 describe("test types", () => {
     let parser = new TypeExpressionParser();
     
     it("for numeric values, should throw error when invalid input", () => {
-        assert.throw(() => new U32Value(BigInt(-42)), errors.ErrInvalidArgument);
+        assert.throw(() => new U32Value(new BigNumber(-42)), errors.ErrInvalidArgument);
         assert.throw(() => new NumericalValue(new U16Type(), <any>Number(42)), errors.ErrInvalidArgument);
     });
 

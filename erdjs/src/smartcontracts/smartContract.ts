@@ -15,6 +15,8 @@ import { IProvider } from "../interface";
 import { SmartContractAbi } from "./abi";
 import { guardValueIsSet } from "../utils";
 import { TypedValue } from "./typesystem";
+import { bigIntToBuffer } from "./codec/utils";
+import BigNumber from "bignumber.js";
 const createKeccakHash = require("keccak");
 
 /**
@@ -214,7 +216,11 @@ export class SmartContract implements ISmartContract {
         let ownerPubkey = owner.pubkey();
         let shardSelector = ownerPubkey.slice(30);
         let ownerNonceBytes = Buffer.alloc(8);
-        ownerNonceBytes.writeBigUInt64LE(BigInt(nonce.valueOf()));
+
+        const bigNonce = new BigNumber(nonce.valueOf().toString(10));
+        const bigNonceBuffer = bigIntToBuffer(bigNonce);
+        ownerNonceBytes.write(bigNonceBuffer.reverse().toString('hex'), 'hex');
+
         let bytesToHash = Buffer.concat([ownerPubkey, ownerNonceBytes]);
         let hash = createKeccakHash("keccak256").update(bytesToHash).digest();
         let vmTypeBytes = Buffer.from(ArwenVirtualMachine, "hex");
