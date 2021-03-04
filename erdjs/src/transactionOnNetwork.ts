@@ -70,7 +70,7 @@ export class TransactionOnNetwork {
         transactionOnNetwork.hyperblockHash = new Hash(response.hyperblockHash);
 
         transactionOnNetwork.receipt = Receipt.fromHttpResponse(response.receipt || {});
-        transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || [], transactionOnNetwork.nonce);
+        transactionOnNetwork.smartContractResults = SmartContractResults.fromHttpResponse(response.smartContractResults || []);
 
         return transactionOnNetwork;
     }

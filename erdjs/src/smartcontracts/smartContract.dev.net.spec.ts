@@ -263,24 +263,31 @@ describe("test on devnet (local)", function () {
         await transactionDeploy.send(devnet);
         await transactionStart.send(devnet);
 
-        await transactionDeploy.awaitExecuted(devnet);
-        await transactionStart.awaitExecuted(devnet);
+        await transactionDeploy.awaitNotarized(devnet);
+        await transactionStart.awaitNotarized(devnet);
+
+        // Let's check the SCRs
+        let deployResults = (await transactionDeploy.getAsOnNetwork(devnet)).getSmartContractResults();
+        deployResults.getImmediate().assertSuccess();
+
+        let startResults = (await transactionStart.getAsOnNetwork(devnet)).getSmartContractResults();
+        startResults.getImmediate().assertSuccess();
 
         // Query state, do some assertions
         let queryResponse = await contract.runQuery(devnet, {
-            func: new ContractFunction("lotteryExists"),
+            func: new ContractFunction("status"),
             args: [
                 typedUTF8("foobar")
             ]
         });
-        assert.equal(decodeBool(queryResponse.outputUntyped()[0]), true);
+        assert.equal(decodeUnsignedNumber(queryResponse.outputUntyped()[0]), 1);
 
         queryResponse = await contract.runQuery(devnet, {
-            func: new ContractFunction("lotteryExists"),
+            func: new ContractFunction("status"),
             args: [
                 typedUTF8("missingLottery")
             ]
         });
-        assert.equal(decodeBool(queryResponse.outputUntyped()[0]), false);
+        assert.equal(decodeUnsignedNumber(queryResponse.outputUntyped()[0]), 0);
     });
 });

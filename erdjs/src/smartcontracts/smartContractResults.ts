@@ -1,3 +1,4 @@
+import * as errors from "../errors";
 import { Address } from "../address";
 import { Balance } from "../balance";
 import { Hash } from "../hash";
@@ -8,16 +9,15 @@ import { Serializer } from "./serializer";
 import { EndpointDefinition, TypedValue } from "./typesystem";
 import { guardValueIsSet } from "../utils";
 import { ReturnCode } from "./returnCode";
+import { TransactionOnNetwork } from "../transactionOnNetwork";
 
 export class SmartContractResults {
     private readonly items: SmartContractResultItem[] = [];
-    private readonly originalTransactionNonce: Nonce;
     private readonly immediate: ImmediateResult = new ImmediateResult();
     private readonly resultingCalls: ResultingCall[] = [];
 
-    constructor(items: SmartContractResultItem[], originalTransactionNonce: Nonce) {
+    constructor(items: SmartContractResultItem[]) {
         this.items = items;
-        this.originalTransactionNonce = originalTransactionNonce;
 
         if (this.items.length > 0) {
             this.immediate = this.findImmediateResult();
@@ -26,31 +26,23 @@ export class SmartContractResults {
     }
 
     static empty(): SmartContractResults {
-        return new SmartContractResults([], new Nonce(0));
+        return new SmartContractResults([]);
     }
 
-    static fromHttpResponse(smartContractResults: any[], originalTransactionNonce: Nonce): SmartContractResults {
+    static fromHttpResponse(smartContractResults: any[]): SmartContractResults {
         let items = (smartContractResults || []).map((item: any) => SmartContractResultItem.fromHttpResponse(item));
-        return new SmartContractResults(items, originalTransactionNonce);
+        return new SmartContractResults(items);
     }
 
     private findImmediateResult(): ImmediateResult {
-        let withNextNonce = this.findWithNextNonce();
-        return new ImmediateResult(withNextNonce);
-    }
-
-    private findWithNextNonce(): SmartContractResultItem {
-        let nextNonce = this.originalTransactionNonce.increment();
-        let withNextNonce = this.items.find(item => item.nonce.equals(nextNonce));
-
-        return withNextNonce!;
+        let immediateItem = this.items[0];
+        guardValueIsSet("immediateItem", immediateItem);
+        return new ImmediateResult(immediateItem);
     }
 
     private findResultingCalls(): ResultingCall[] {
-        let withNextNonce = this.findWithNextNonce();
-        let otherItems = this.items.filter(item => item != withNextNonce);
+        let otherItems = this.items.slice(1);
         let resultingCalls = otherItems.map(item => new ResultingCall(item));
-
         return resultingCalls;
     }
 
@@ -75,6 +67,7 @@ export class SmartContractResultItem {
     gasLimit: GasLimit = new GasLimit(0);
     gasPrice: GasPrice = new GasPrice(0);
     callType: number = 0;
+    returnMessage: string = "";
 
     static fromHttpResponse(response: {
         hash: string,
@@ -87,7 +80,8 @@ export class SmartContractResultItem {
         originalTxHash: string,
         gasLimit: number,
         gasPrice: number,
-        callType: number
+        callType: number,
+        returnMessage: string
     }): SmartContractResultItem {
         let item = new SmartContractResultItem();
 
@@ -102,6 +96,7 @@ export class SmartContractResultItem {
         item.gasLimit = new GasLimit(response.gasLimit);
         item.gasPrice = new GasPrice(response.gasPrice);
         item.callType = response.callType;
+        item.returnMessage = response.returnMessage;
 
         return item;
     }
@@ -118,15 +113,28 @@ export class ImmediateResult extends SmartContractResultItem {
      */
     private endpointDefinition?: EndpointDefinition;
 
-    constructor(init?: Partial<ImmediateResult>) {
+    constructor(init?: Partial<SmartContractResultItem>) {
         super();
         Object.assign(this, init);
+    }
+
+    assertSuccess() {
+        if (this.isSuccess()) {
+            return;
+        }
+
+        throw new errors.ErrContract(`${this.getReturnCode()}: ${this.returnMessage}`);
+    }
+
+    isSuccess(): boolean {
+        return this.getReturnCode().equals(ReturnCode.Ok);
     }
 
     getReturnCode(): ReturnCode {
         let returnCodeToken = this.getDataTokens()[0];
         return ReturnCode.fromBuffer(returnCodeToken);
     }
+
 
     outputUntyped(): Buffer[] {
         return this.getDataTokens().slice(1);
