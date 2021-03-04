@@ -104,7 +104,7 @@ describe("test on devnet (local)", function () {
         // ++
         let transactionIncrementFirst = contract.call({
             func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(700000)
+            gasLimit: new GasLimit(2000000)
         });
 
         transactionIncrementFirst.setNonce(alice.nonce);
@@ -115,7 +115,7 @@ describe("test on devnet (local)", function () {
         // ++
         let transactionIncrementSecond = contract.call({
             func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(700000)
+            gasLimit: new GasLimit(2000000)
         });
 
         transactionIncrementSecond.setNonce(alice.nonce);
@@ -163,13 +163,13 @@ describe("test on devnet (local)", function () {
         // Minting
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
-            gasLimit: new GasLimit(5000000),
+            gasLimit: new GasLimit(9000000),
             args: [typedAddress(wallets.bob.address), typedNumber(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
-            gasLimit: new GasLimit(5000000),
+            gasLimit: new GasLimit(9000000),
             args: [typedAddress(wallets.carol.address), typedNumber(1500)]
         });
 
@@ -242,7 +242,7 @@ describe("test on devnet (local)", function () {
         // Start
         let transactionStart = contract.call({
             func: new ContractFunction("start"),
-            gasLimit: new GasLimit(5000000),
+            gasLimit: new GasLimit(15000000),
             args: [
                 typedUTF8("foobar"), 
                 typedBigInt(Balance.eGLD(1).valueOf()),

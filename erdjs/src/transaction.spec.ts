@@ -19,7 +19,7 @@ describe("test transaction", () => {
         assert.throw(() => new Transaction({ gasLimit: <any>8, receiver: new Address() }), errors.ErrBadType);
         assert.throw(() => new Transaction({ gasPrice: <any>9, receiver: new Address() }), errors.ErrBadType);
 
-        assert.doesNotThrow(() => new Transaction({}));
+        assert.doesNotThrow(() => new Transaction({ receiver: new Address() }));
         assert.doesNotThrow(() => new Transaction({
             nonce: new Nonce(42),
             gasLimit: new GasLimit(42),
@@ -44,8 +44,8 @@ describe("test transaction construction", async () => {
         });
 
         await wallets.alice.signer.sign(transaction);
-        assert.equal("c83e69b853a891bf2130c1839362fe2a7a8db327dcc0c9f130497a4f24b0236140b394801bb2e04ce061a6f873cb432bf1bb1e6072e295610904662ac427a30a", transaction.getSignature().hex());
-        assert.equal(transaction.getHash().valueOf(), "3e204088f93109ed855ffe1e5619c96c0c5f9ab7d75d3690c296792451b4d1ab");
+        assert.equal("b56769014f2bdc5cf9fc4a05356807d71fcf8775c819b0f1b0964625b679c918ffa64862313bfef86f99b38cb84fcdb16fa33ad6eb565276616723405cd8f109", transaction.getSignature().hex());
+        assert.equal(transaction.getHash().valueOf(), "eb30c50c8831885ebcfac986d27e949ec02cf25676e22a009b7a486e5431ec2e");
     });
 
     it("with data, no value", async () => {

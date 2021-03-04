@@ -15,6 +15,7 @@ import { Nonce } from "../../nonce";
 import { TransactionStatus } from "../../transaction";
 import { ReturnCode } from "../returnCode";
 import { Balance } from "../../balance";
+import BigNumber from "bignumber.js";
 
 describe("test smart contract interactor", function () {
     let wallets = new TestWallets();
@@ -43,7 +44,7 @@ describe("test smart contract interactor", function () {
         // Query
         let { values: queryValues, firstValue: queryAnwser, returnCode: queryCode } = await interaction.query();
         assert.lengthOf(queryValues, 1);
-        assert.equal(queryAnwser.valueOf(), BigInt(42));
+        assert.deepEqual(queryAnwser.valueOf(), new BigNumber(42));
         assert.isTrue(queryCode.equals(ReturnCode.Ok));
 
         // Execute, do not wait for execution
@@ -66,7 +67,7 @@ describe("test smart contract interactor", function () {
         ]);
 
         assert.lengthOf(executionValues, 1);
-        assert.equal(executionAnswer.valueOf(), BigInt(43));
+        assert.deepEqual(executionAnswer.valueOf(), new BigNumber(43));
         assert.isTrue(executionCode.equals(ReturnCode.Ok));
     });
 
@@ -88,7 +89,7 @@ describe("test smart contract interactor", function () {
         // Query "get()"
         let { firstValue: counterValue } = await getInteraction.query();
 
-        assert.equal(counterValue.valueOf(), BigInt(7));
+        assert.deepEqual(counterValue.valueOf(), new BigNumber(7));
 
         // Increment, wait for execution. Return fake 8
         let [, { firstValue: valueAfterIncrement }] = await Promise.all([
@@ -99,7 +100,7 @@ describe("test smart contract interactor", function () {
             await incrementInteraction.withNonce(new Nonce(14)).broadcastAwaitExecution()
         ]);
 
-        assert.equal(valueAfterIncrement.valueOf(), BigInt(8));
+        assert.deepEqual(valueAfterIncrement.valueOf(), new BigNumber(8));
 
         // Decrement three times (simulate three parallel broadcasts). Wait for execution of the latter (third transaction). Return fake "5".
         await decrementInteraction.withNonce(new Nonce(15)).broadcast();
@@ -115,7 +116,7 @@ describe("test smart contract interactor", function () {
             }()
         ]);
 
-        assert.equal(valueAfterDecrement.valueOf(), BigInt(5));
+        assert.deepEqual(valueAfterDecrement.valueOf(), new BigNumber(5));
     });
 
     it("should interact with 'lottery_egld'", async function () {
@@ -185,14 +186,14 @@ describe("test smart contract interactor", function () {
         assert.lengthOf(infoReturnvalues, 1);
 
         assert.deepEqual(infoFirstValue.valueOf(), {
-            ticket_price: BigInt("1000000000000000000"),
-            tickets_left: BigInt(800),
-            deadline: BigInt("1611835398"),
-            max_entries_per_user: BigInt(1),
+            ticket_price: new BigNumber("1000000000000000000"),
+            tickets_left: new BigNumber(800),
+            deadline: new BigNumber("1611835398"),
+            max_entries_per_user: new BigNumber(1),
             prize_distribution: Buffer.from([0x64]),
             whitelist: [],
-            current_ticket_number: BigInt(0),
-            prize_pool: BigInt("0")
+            current_ticket_number: new BigNumber(0),
+            prize_pool: new BigNumber("0")
         });
     });
 });

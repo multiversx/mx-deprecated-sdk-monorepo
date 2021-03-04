@@ -3,13 +3,14 @@ import { SmartContractInteractor } from "./interactor";
 import { StrictChecker as StrictInteractionChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
-import { AbiRegistry, missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "../typesystem";
+import { missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "../typesystem";
 import { loadAbiRegistry, MockProvider, TestWallets } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
 import { assert } from "chai";
 import { Interaction } from "./interaction";
 import { Balance } from "../../balance";
+import BigNumber from "bignumber.js";
 
 describe("integration tests: test checker within interactor", function () {
     let wallets = new TestWallets();
@@ -51,7 +52,7 @@ describe("integration tests: test checker within interactor", function () {
             typedBigInt(Balance.eGLD(1).valueOf()),
             missingOption(),
             missingOption(),
-            providedOption(new U64Value(BigInt(1))),
+            providedOption(new U64Value(new BigNumber(1))),
             missingOption(),
             missingOption()
         ]), errors.ErrContractInteraction, "type mismatch at index 4, expected: Option<u32>, got: Option<u64>");

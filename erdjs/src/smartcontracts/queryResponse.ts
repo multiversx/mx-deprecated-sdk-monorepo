@@ -5,6 +5,7 @@ import { MaxUint64 } from "./query";
 import { ReturnCode } from "./returnCode";
 import { guardValueIsSet } from "../utils";
 import { Serializer } from "./serializer";
+import BigNumber from "bignumber.js";
 
 export class QueryResponse {
     /**
@@ -31,8 +32,8 @@ export class QueryResponse {
         let returnData = <string[]>payload["returnData"] || payload["ReturnData"];
         let returnCode = payload["returnCode"] || payload["ReturnCode"];
         let returnMessage = payload["returnMessage"] || payload["ReturnMessage"];
-        let gasRemaining = BigInt(payload["gasRemaining"] || payload["GasRemaining"] || 0);
-        let gasUsed = new GasLimit(Number(MaxUint64 - gasRemaining));
+        let gasRemaining = new BigNumber(payload["gasRemaining"] || payload["GasRemaining"] || 0);
+        let gasUsed = new GasLimit(MaxUint64.minus(gasRemaining).toNumber());
 
         return new QueryResponse({
             returnData: returnData,

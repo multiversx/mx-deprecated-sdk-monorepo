@@ -54,7 +54,7 @@ describe("test transaction", function () {
         await bob.sync(devnet);
         let newBalanceOfBob = bob.balance;
 
-        assert.equal(Balance.eGLD(85).valueOf(), newBalanceOfBob.valueOf() - initialBalanceOfBob.valueOf());
+        assert.deepEqual(Balance.eGLD(85).valueOf(), newBalanceOfBob.valueOf().minus(initialBalanceOfBob.valueOf()));
     });
 
     it("should simulate transactions", async function() {

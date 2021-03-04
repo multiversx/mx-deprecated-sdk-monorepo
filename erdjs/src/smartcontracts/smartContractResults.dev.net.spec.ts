@@ -37,7 +37,7 @@ describe("fetch transactions from devnet", function () {
         // ++
         let transactionIncrement = contract.call({
             func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(700000)
+            gasLimit: new GasLimit(3000000)
         });
 
         transactionIncrement.setNonce(alice.nonce);
@@ -62,12 +62,12 @@ describe("fetch transactions from devnet", function () {
 
         assert.lengthOf(deployImmediateResult.getDataTokens(), 1);
         // There is some refund
-        assert.isTrue(deployImmediateResult.value.valueOf() > 0);
+        assert.isTrue(deployImmediateResult.value.valueOf().gt(0));
         assert.lengthOf(deployResultingCalls, 0);
 
         assert.lengthOf(incrementImmediateResult.outputUntyped(), 1);
         // There is some refund
-        assert.isTrue(incrementImmediateResult.value.valueOf() > 0);
+        assert.isTrue(incrementImmediateResult.value.valueOf().gt(0));
         assert.lengthOf(incrementResultingCalls, 0);
     });
 
