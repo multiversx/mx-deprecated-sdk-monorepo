@@ -11,18 +11,28 @@ export const ArgumentsSeparator = "@";
 const Codec = new BinaryCodec();
 
 export class Serializer {
+    /**
+     * Reads typed values from an arguments string (e.g. aa@bb@@cc), given parameter definitions.
+     */
     stringToValues(joinedString: string, parameters: EndpointParameterDefinition[]): TypedValue[] {
         let buffers = this.stringToBuffers(joinedString);
         let values = this.buffersToValues(buffers, parameters);
         return values;
     }
 
+    /**
+     * Reads raw buffers from an arguments string (e.g. aa@bb@@cc).
+     */
     stringToBuffers(joinedString: string): Buffer[] {
         return joinedString.split(ArgumentsSeparator).map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
     }
 
-    // TODO: Refactor, split (function is quite complex).
+    /**
+     * Decodes a set of buffers into a set of typed values, given parameter definitions.
+     */
     buffersToValues(buffers: Buffer[], parameters: EndpointParameterDefinition[]): TypedValue[] {
+        // TODO: Refactor, split (function is quite complex).
+
         buffers = buffers || [];
         
         let values: TypedValue[] = [];
@@ -84,22 +94,33 @@ export class Serializer {
         return values;
     }
 
+    /**
+     * Serializes a set of typed values into an arguments string (e.g. aa@bb@@cc).
+     */
     valuesToString(values: TypedValue[]): string {
         let strings = this.valuesToStrings(values);
         let joinedString = strings.join(ArgumentsSeparator);
         return joinedString;
     }
 
+    /**
+     * Serializes a set of typed values into a set of strings.
+     */
     valuesToStrings(values: TypedValue[]): string[] {
         let buffers = this.valuesToBuffers(values);
         let strings = buffers.map(buffer => buffer.toString("hex"));
         return strings;
     }
 
+    /**
+     * Serializes a set of typed values into a set of strings buffers.
+     * Variadic types and composite types might result into none, one or more buffers.
+     */
     valuesToBuffers(values: TypedValue[]): Buffer[] {
         let buffers = [];
 
         // TODO: Fix naive serialization, handle variadic types and composite types!
+        // Note for reviewers - this was not implemented by mistake. Will be added in this PR (along with some tests).
         for (const value of values) {
             let buffer = Codec.encodeTopLevel(value);
             buffers.push(buffer);

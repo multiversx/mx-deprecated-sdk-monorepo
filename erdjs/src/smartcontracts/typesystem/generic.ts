@@ -53,6 +53,7 @@ export class OptionValue extends TypedValue {
 }
 
 // TODO: Rename to ListValue, for consistency (though the term is slighly unfortunate).
+// Question for review: or not?
 export class List extends TypedValue {
     private readonly items: TypedValue[];
 

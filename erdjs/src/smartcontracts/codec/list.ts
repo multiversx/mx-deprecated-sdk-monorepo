@@ -1,4 +1,4 @@
-import { Type, TypedValue, List as List } from "../typesystem";
+import { Type, TypedValue, List } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
 export class ListBinaryCodec {

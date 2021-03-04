@@ -3,6 +3,10 @@ import { EndpointDefinition } from "../typesystem";
 import { Interaction } from "./interaction";
 import { IInteractionChecker } from "./interface";
 
+/**
+ * An interaction checker that aims to be as strict as possible.
+ * It is designed to catch programmer errors such as incorrect types of contract call arguments.
+ */
 export class StrictChecker implements IInteractionChecker {
     checkInteraction(interaction: Interaction): void {
         let definition = interaction.getEndpointDefinition();
@@ -11,6 +15,7 @@ export class StrictChecker implements IInteractionChecker {
         this.checkArguments(interaction, definition);
     }
 
+    // Question for review: I think this is not correct. Is it?
     private checkPayable(interaction: Interaction, definition: EndpointDefinition) {
         let hasValue = interaction.getValue().isSet();
         let isPayableInEGLD = definition.modifiers.isPayableInEGLD();
@@ -34,6 +39,7 @@ export class StrictChecker implements IInteractionChecker {
             let expectedType = formalArguments[i].type;
             let argument = actualArguments[i];
             let actualType = argument.getType();
+            // isAssignableFrom() is responsible to handle covariance and contravariance (depending on the class that overrides it).
             let ok = expectedType.isAssignableFrom(actualType);
             
             if (!ok) {

@@ -99,6 +99,9 @@ export class Type {
         };
     }
 
+    // Question for review: though nice and might help us in the future, this concept (assigning a fixed or variable value-cardinality to each type) 
+    // isn't extremly useful at this moment (except for some checks in the codecs - e.g. "only types with <singular> cardinality are directly encodable" - non-composite, non-variadic).
+    // Keep it or remove it?
     getCardinality(): TypeCardinality {
         return this.cardinality;
     }

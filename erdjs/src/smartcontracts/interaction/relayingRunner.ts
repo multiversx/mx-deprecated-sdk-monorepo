@@ -6,6 +6,11 @@ import { QueryResponse } from "../queryResponse";
 import { Interaction } from "./interaction";
 import { IInteractionRunner } from "./interface";
 
+
+/**
+ * Not yet supported.
+ * Will wrap transactions and broadcast them as relayed transactions.
+ */
 export class RelayingInteractionRunner implements IInteractionRunner {
     checkInteraction(_interaction: Interaction): void {
         throw new Error("Method not implemented.");

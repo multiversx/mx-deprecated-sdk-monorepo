@@ -196,6 +196,3 @@ export class Interaction {
         return endpoint;
     }
 }
-
-
-

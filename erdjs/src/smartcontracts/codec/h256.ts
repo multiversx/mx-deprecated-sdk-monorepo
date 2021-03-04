@@ -7,7 +7,7 @@ export class H256BinaryCodec {
      * @param buffer the input buffer
      */
     decodeNested(buffer: Buffer): [H256Value, number] {
-        // We don't not check the size of the buffer, we just read 32 bytes.
+        // We don't check the size of the buffer, we just read 32 bytes.
         let slice = buffer.slice(0, 32);
         return [new H256Value(slice), 32];
     }
