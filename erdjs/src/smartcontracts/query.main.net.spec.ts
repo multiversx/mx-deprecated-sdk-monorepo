@@ -26,12 +26,12 @@ describe("test queries on mainnet", function () {
 
         assert.isTrue(response.isSuccess());
         assert.lengthOf(response.returnData, 1);
-        assert.isAtLeast(response.gasUsed.valueOf(), 25000000);
-        assert.isAtMost(response.gasUsed.valueOf(), 35000000);
+        assert.isAtLeast(response.gasUsed.valueOf(), 20000000);
+        assert.isAtMost(response.gasUsed.valueOf(), 50000000);
     });
 
     it("delegation: should getFullWaitingList", async function() {
-        this.timeout(5000);
+        this.timeout(20000);
 
         let response = await delegationContract.runQuery(provider, {
             func: new ContractFunction("getFullWaitingList")

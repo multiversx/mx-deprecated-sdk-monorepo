@@ -13,7 +13,7 @@ export function getTestnetProvider(): ProxyProvider {
 }
 
 export function getMainnetProvider(): ProxyProvider {
-    return new ProxyProvider("https://gateway.elrond.com", 5000);
+    return new ProxyProvider("https://gateway.elrond.com", 20000);
 }
 
 export async function loadContractCode(path: PathLike): Promise<Code> {
