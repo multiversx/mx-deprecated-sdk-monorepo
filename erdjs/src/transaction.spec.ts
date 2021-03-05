@@ -2,7 +2,7 @@ import { assert } from "chai";
 import { Transaction } from "./transaction";
 import * as errors from "./errors";
 import { Nonce } from "./nonce";
-import { ChainID, GasLimit, GasPrice, GasPriceModifier } from "./networkParams";
+import { ChainID, GasLimit, GasPrice, GasPriceModifier, TransactionOptions, TransactionVersion } from "./networkParams";
 import { TransactionPayload } from "./transactionPayload";
 import { Balance } from "./balance";
 import { TestWallets } from "./testutils";
@@ -62,6 +62,23 @@ describe("test transaction construction", async () => {
         await wallets.alice.signer.sign(transaction);
         assert.equal("e47fd437fc17ac9a69f7bf5f85bafa9e7628d851c4f69bd9fedc7e36029708b2e6d168d5cd652ea78beedd06d4440974ca46c403b14071a1a148d4188f6f2c0d", transaction.getSignature().hex());
         assert.equal(transaction.getHash().valueOf(), "95ed9ac933712d7d77721d75eecfc7896873bb0d746417153812132521636872");
+    });
+
+    it("with data, with opaque, unused options (the protocol ignores the options when version == 1)", async () => {
+        let transaction = new Transaction({
+            nonce: new Nonce(89),
+            value: Balance.Zero(),
+            receiver: wallets.bob.address,
+            gasPrice: GasPrice.min(),
+            gasLimit: GasLimit.min(),
+            chainID: new ChainID("local-testnet"),
+            version: new TransactionVersion(1),
+            options: new TransactionOptions(1)
+        });
+
+        await wallets.alice.signer.sign(transaction);
+        assert.equal("c83e69b853a891bf2130c1839362fe2a7a8db327dcc0c9f130497a4f24b0236140b394801bb2e04ce061a6f873cb432bf1bb1e6072e295610904662ac427a30a", transaction.getSignature().hex());
+        assert.equal(transaction.getHash().valueOf(), "3e204088f93109ed855ffe1e5619c96c0c5f9ab7d75d3690c296792451b4d1ab");
     });
 
     it("with data, with value", async () => {

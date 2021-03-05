@@ -106,8 +106,8 @@ export class Transaction implements ISignable {
      * Creates a new Transaction object.
      */
     public constructor(
-        { nonce, value, receiver, gasPrice, gasLimit, data, chainID }:
-            { nonce?: Nonce, value?: Balance, receiver: Address, gasPrice?: GasPrice, gasLimit?: GasLimit, data?: TransactionPayload, chainID?: ChainID }) {
+        { nonce, value, receiver, gasPrice, gasLimit, data, chainID, version, options }:
+            { nonce?: Nonce, value?: Balance, receiver: Address, gasPrice?: GasPrice, gasLimit?: GasLimit, data?: TransactionPayload, chainID?: ChainID, version?: TransactionVersion, options?: TransactionOptions }) {
         this.nonce = nonce || new Nonce(0);
         this.value = value || Balance.Zero();
         this.sender = Address.Zero();
@@ -116,8 +116,8 @@ export class Transaction implements ISignable {
         this.gasLimit = gasLimit || NetworkConfig.getDefault().MinGasLimit;
         this.data = data || new TransactionPayload();
         this.chainID = chainID || NetworkConfig.getDefault().ChainID;
-        this.version = DEFAULT_TRANSACTION_VERSION;
-        this.options = DEFAULT_TRANSACTION_OPTIONS;
+        this.version = version || DEFAULT_TRANSACTION_VERSION;
+        this.options = options || DEFAULT_TRANSACTION_OPTIONS;
 
         this.signature = Signature.empty();
         this.hash = TransactionHash.empty();
@@ -232,6 +232,7 @@ export class Transaction implements ISignable {
      * @param signedBy The address of the future signer
      */
     serializeForSigning(signedBy: Address): Buffer {
+        // TODO: for appropriate tx.version, interpret tx.options accordingly and sign using the content / data hash
         let plain = this.toPlainObject(signedBy);
         let serialized = JSON.stringify(plain);
 
