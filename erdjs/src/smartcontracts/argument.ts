@@ -2,6 +2,7 @@ import { Buffer } from "buffer";
 import { Address } from "../address";
 import { BinaryCodec } from "./codec";
 import { OptionalValue, TypedValue } from "./typesystem";
+import BigNumber from "bignumber.js";
 
 /**
  * The Argument abstraction allows one to prepare arguments for Smart Contract calls (and deployments).
@@ -42,13 +43,13 @@ export class Argument {
      * Creates an Argument object from a number.
      */
     static fromNumber(value: number): Argument {
-        return Argument.fromBigInt(BigInt(value));
+        return Argument.fromBigInt(new BigNumber(value));
     }
 
     /**
      * Creates an Argument object from a big integer.
      */
-    static fromBigInt(value: BigInt): Argument {
+    static fromBigInt(value: BigNumber): Argument {
         let hex = value.toString(16);
         return new Argument(hex);
     }

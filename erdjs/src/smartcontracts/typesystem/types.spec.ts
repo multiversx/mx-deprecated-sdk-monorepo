@@ -5,10 +5,11 @@ import { NumericalType, U16Type, U32Type, U32Value } from "./numerical";
 import { PrimitiveType, Type } from "./types";
 import { BooleanType } from "./boolean";
 import { AddressType } from "./address";
+import BigNumber from "bignumber.js";
 
 describe("test types", () => {
     it("for numeric values, should throw error when invalid input", () => {
-        assert.throw(() => new U32Value(BigInt(-42)), errors.ErrInvalidArgument);
+        assert.throw(() => new U32Value(new BigNumber(-42)), errors.ErrInvalidArgument);
         assert.throw(() => new NumericalValue(<any>Number(42), U16Type.One), errors.ErrInvalidArgument);
     });
 
