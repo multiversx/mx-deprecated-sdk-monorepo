@@ -103,6 +103,24 @@ describe("test transaction construction", async () => {
         assert.equal(transaction.hash.valueOf(), "e4a6048d92409cfe50f12e81218cb92f39966c618979a693b8d16320a06061c1");
     });
 
+    it("with nonce = 0", async () => {
+        let transaction = new Transaction({
+            nonce: new Nonce(0),
+            value: Balance.fromString("0"),
+            receiver: wallets.bob.address,
+            sender: wallets.alice.address,
+            gasPrice: GasPrice.min(),
+            gasLimit: new GasLimit(80000),
+            data: new TransactionPayload("hello"),
+            chainID: new ChainID("local-testnet"),
+            version: new TransactionVersion(1)
+        });
+
+        await wallets.alice.signer.sign(transaction);
+        assert.equal("dfa3e9f2fdec60dcb353bac3b3435b4a2ff251e7e98eaf8620f46c731fc70c8ba5615fd4e208b05e75fe0f7dc44b7a99567e29f94fcd91efac7e67b182cd2a04", transaction.signature.hex());
+        assert.equal(transaction.hash.valueOf(), "6ffa1a75f98aaf336bfb87ef13b9b5a477a017158285d34ee2a503668767e69e");
+    });
+
     it("without options field, should be omitted", async () => {
         let transaction = new Transaction({
             nonce: new Nonce(89),
