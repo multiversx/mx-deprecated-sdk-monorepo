@@ -1,5 +1,5 @@
 import { guardValueIsSet } from "../../utils";
-import { Type, isTyped, TypedValue, NullType } from "./types";
+import { Type, TypedValue, NullType } from "./types";
 
 export class OptionType extends Type {
     constructor(typeParameter: Type) {

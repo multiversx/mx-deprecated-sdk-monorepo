@@ -23,6 +23,10 @@ export class BytesValue extends PrimitiveValue {
      * Returns whether two objects have the same value.
      */
     equals(other: BytesValue): boolean {
+        if (this.getLength() != other.getLength()) {
+            return false;
+        }
+
         return this.value.equals(other.value);
     }
 

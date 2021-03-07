@@ -23,6 +23,10 @@ export class TokenIdentifierValue extends PrimitiveValue {
      * Returns whether two objects have the same value.
      */
     equals(other: TokenIdentifierValue): boolean {
+        if (this.getLength() != other.getLength()) {
+            return false;
+        }
+        
         return this.value.equals(other.value);
     }
 

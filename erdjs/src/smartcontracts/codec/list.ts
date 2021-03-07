@@ -1,5 +1,6 @@
 import { Type, TypedValue, List } from "../typesystem";
 import { BinaryCodec } from "./binary";
+import { SizeOfU32 } from "./constants";
 
 export class ListBinaryCodec {
     private readonly parentCodec: BinaryCodec;
@@ -19,7 +20,7 @@ export class ListBinaryCodec {
         this.parentCodec.constraints.checkListLength(numItems);
 
         let originalBuffer = buffer;
-        let offset = 4;
+        let offset = SizeOfU32;
 
         buffer = originalBuffer.slice(offset);
 
@@ -59,7 +60,7 @@ export class ListBinaryCodec {
     encodeNested(list: List): Buffer {
         this.parentCodec.constraints.checkListLength(list.getLength());
 
-        let lengthBuffer = Buffer.alloc(4);
+        let lengthBuffer = Buffer.alloc(SizeOfU32);
         lengthBuffer.writeUInt32BE(list.getLength());
 
         let itemsBuffers: Buffer[] = [];

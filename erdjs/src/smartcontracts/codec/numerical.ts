@@ -1,6 +1,7 @@
 import { NumericalType, NumericalValue } from "../typesystem";
 import { isMsbZero, isMsbOne, bigIntToBuffer, bufferToBigInt, cloneBuffer, flipBufferBitsInPlace, prependByteToBuffer } from "./utils";
 import BigNumber from "bignumber.js";
+import { SizeOfU32 } from "./constants";
 
 export class NumericalBinaryCodec {
     /**
@@ -17,7 +18,7 @@ export class NumericalBinaryCodec {
         if (!length) {
             // Size of type is not known: arbitrary-size big integer.
             // Therefore, we must read the length from the header.
-            offset = 4;
+            offset = SizeOfU32;
             length = buffer.readUInt32BE();
         }
 
@@ -68,7 +69,7 @@ export class NumericalBinaryCodec {
 
         // Size is not known: arbitrary-size big integer. Therefore, we must emit the length (as U32) before the actual payload.
         let buffer = this.encodeTopLevel(primitive);
-        let length = Buffer.alloc(4);
+        let length = Buffer.alloc(SizeOfU32);
         length.writeUInt32BE(buffer.length);
         return Buffer.concat([length, buffer]);
     }

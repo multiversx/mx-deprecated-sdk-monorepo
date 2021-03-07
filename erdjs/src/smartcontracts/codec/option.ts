@@ -18,6 +18,10 @@ export class OptionValueBinaryCodec {
             return [new OptionValue(type), 1];
         }
 
+        if (buffer[0] != 0x01) {
+            throw new errors.ErrCodec("invalid buffer for optional value");
+        }
+
         let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer.slice(1), type);
         return [new OptionValue(type, decoded), decodedLength + 1];
     }
