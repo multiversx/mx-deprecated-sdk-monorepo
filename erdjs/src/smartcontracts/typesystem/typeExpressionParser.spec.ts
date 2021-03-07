@@ -101,6 +101,34 @@ describe("test parser", () => {
                 }
             ]
         });
+
+        // TODO: In a future PR, replace the JSON-based parsing logic with a better one and enable this test,
+        // which currently fails.
+        
+        // type = parser.parse("MultiArg<Option<u8>, List<u16>>");
+        // assert.deepEqual(type.toJSON(), {
+        //     "name": "MultiArg",
+        //     "typeParameters": [
+        //         {
+        //             "name": "Option",
+        //             "typeParameters": [
+        //                 {
+        //                     "name": "u8",
+        //                     "typeParameters": []
+        //                 }
+        //             ]
+        //         },
+        //         {
+        //             "name": "List",
+        //             "typeParameters": [
+        //                 {
+        //                     "name": "u16",
+        //                     "typeParameters": []
+        //                 }
+        //             ]
+        //         }
+        //     ]
+        // });
     });
 
     it("should not parse expression", () => {

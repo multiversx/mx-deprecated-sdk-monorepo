@@ -22,7 +22,7 @@ export class TypeExpressionParser {
         try {
             return JSON.parse(jsoned);
         } catch (error) {
-            throw new errors.ErrTypingSystem(`cannot parse type expression: ${expression}`);
+            throw new errors.ErrTypingSystem(`cannot parse type expression: ${expression}. internal json: ${jsoned}.`);
         }
     }
 

@@ -1,10 +1,12 @@
 import { Address } from "../../address";
 import { AddressValue } from "./address";
 import { BytesValue } from "./bytes";
-import { OptionType, OptionValue } from "./generic";
+import { List, OptionType, OptionValue } from "./generic";
 import { BigUIntValue } from "./numerical";
-import { NullType, TypedValue } from "./types";
+import { NullType, TypedValue, TypePlaceholder } from "./types";
 import BigNumber from "bignumber.js";
+import { CompositeType, CompositeValue } from "./composite";
+import { VariadicType, VariadicValue } from "./variadic";
 
 /**
  * Creates a TypedValue, as a missing option argument.
@@ -54,4 +56,28 @@ export function typedUTF8(value: string): BytesValue {
 export function typedBytesFromHex(value: string): BytesValue {
     let buffer = Buffer.from(value, "hex");
     return new BytesValue(buffer);
+}
+
+export function typedComposite(...values: TypedValue[]): CompositeValue {
+    let typeParameters = values.map(value => value.getType());
+    let type = new CompositeType(...typeParameters);
+    return new CompositeValue(type, values);
+}
+
+export function typedList(items: TypedValue[]): List {
+    if (items.length == 0) {
+        return new List(new TypePlaceholder(), []);
+    }
+    
+    let typeParameter = items[0].getType();
+    return new List(typeParameter, items);
+}
+
+export function typedVariadic(...values: TypedValue[]): VariadicValue {
+    if (values.length == 0) {
+        return new VariadicValue(new VariadicType(new TypePlaceholder()), []);
+    }
+
+    let typeParameter = values[0].getType();
+    return new VariadicValue(new VariadicType(typeParameter), values);
 }

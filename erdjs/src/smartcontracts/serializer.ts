@@ -24,7 +24,8 @@ export class Serializer {
      * Reads raw buffers from an arguments string (e.g. aa@bb@@cc).
      */
     stringToBuffers(joinedString: string): Buffer[] {
-        return joinedString.split(ArgumentsSeparator).map(item => Buffer.from(item, "hex")).filter(item => item.length > 0);
+        // We also keep the zero-length buffers (they could encode missing options, Option<T>).
+        return joinedString.split(ArgumentsSeparator).map(item => Buffer.from(item, "hex"));
     }
 
     /**
@@ -117,13 +118,36 @@ export class Serializer {
      * Variadic types and composite types might result into none, one or more buffers.
      */
     valuesToBuffers(values: TypedValue[]): Buffer[] {
-        let buffers = [];
+        // TODO: Refactor, split (function is quite complex).
 
-        // TODO: Fix naive serialization, handle variadic types and composite types!
-        // Note for reviewers - this was not implemented by mistake. Will be added in this PR (along with some tests).
+        let buffers: Buffer[] = [];
+
         for (const value of values) {
-            let buffer = Codec.encodeTopLevel(value);
-            buffers.push(buffer);
+            handleValue(value);
+        }
+
+        // This is a recursive function. It appends to the "buffers" variable.
+        function handleValue(value: TypedValue): void {
+            // TODO: Use matchers.
+            
+            if (value instanceof OptionalValue) {
+                if (value.isSet()) {
+                    handleValue(value.getTypedValue());
+                }
+            } else if (value instanceof VariadicValue) {
+                for (const item of value.getItems()) {
+                    handleValue(item);
+                }
+            } else if (value instanceof CompositeValue) {
+                for (const item of value.getItems()) {
+                    handleValue(item);
+                }
+            } else {
+                // Non-composite (singular), non-variadic (fixed) type.
+                // The only branching without a recursive call.
+                let buffer: Buffer = Codec.encodeTopLevel(value);
+                buffers.push(buffer);
+            }
         }
 
         return buffers;

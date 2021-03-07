@@ -131,13 +131,15 @@ export class ImmediateResult extends SmartContractResultItem {
     }
 
     getReturnCode(): ReturnCode {
-        let returnCodeToken = this.getDataTokens()[0];
+        // Question for review: is this correct? Is the first parameter of a SCR always void and unused? E.g.: @6f6b@2b.
+        let returnCodeToken = this.getDataTokens()[1];
         return ReturnCode.fromBuffer(returnCodeToken);
     }
 
 
     outputUntyped(): Buffer[] {
-        return this.getDataTokens().slice(1);
+        // Question for review: is this correct? Is the first parameter of a SCR always void and unused? E.g.: @6f6b@2b.
+        return this.getDataTokens().slice(2);
     }
 
     outputTyped(): TypedValue[] {
