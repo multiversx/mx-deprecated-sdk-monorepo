@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [4.?.? TBD] - TBA
+ - [ABI-based contract interaction. Redesigned typing system #107](https://github.com/ElrondNetwork/elrond-sdk/pull/107)
+
 ## [3.0.0] - 03.03.2021
  - [Switched from nativ BigInt to bignumber.js #218](https://github.com/ElrondNetwork/elrond-sdk/pull/218)
 
