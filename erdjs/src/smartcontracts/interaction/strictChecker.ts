@@ -15,13 +15,12 @@ export class StrictChecker implements IInteractionChecker {
         this.checkArguments(interaction, definition);
     }
 
-    // Question for review: I think this is not correct. Is it?
     private checkPayable(interaction: Interaction, definition: EndpointDefinition) {
         let hasValue = interaction.getValue().isSet();
         let isPayableInEGLD = definition.modifiers.isPayableInEGLD();
 
         if (hasValue && !isPayableInEGLD) {
-            throw new errors.ErrContractInteraction("cannot send eGLD value to non-payable");
+            throw new errors.ErrContractInteraction("cannot send EGLD value to non-payable");
         }
     }
 

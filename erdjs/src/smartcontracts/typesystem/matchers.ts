@@ -2,7 +2,7 @@ import * as errors from "../../errors";
 import { AddressType, AddressValue } from "./address";
 import { BooleanType, BooleanValue } from "./boolean";
 import { BytesType, BytesValue } from "./bytes";
-import { EnumType } from "./enum";
+import { EnumType, EnumValue } from "./enum";
 import { OptionType, OptionValue, List, ListType } from "./generic";
 import { H256Type, H256Value } from "./h256";
 import { NumericalType, NumericalValue } from "./numerical";
@@ -52,6 +52,7 @@ export function onTypedValueSelect<TResult>(
         onOption: () => TResult;
         onList: () => TResult;
         onStruct: () => TResult;
+        onEnum: () => TResult;
         onOther?: () => TResult;
     }
 ): TResult {
@@ -67,7 +68,9 @@ export function onTypedValueSelect<TResult>(
     if (value instanceof Struct) {
         return selectors.onStruct();
     }
-
+    if (value instanceof EnumValue) {
+        return selectors.onEnum();
+    }
     if (selectors.onOther) {
         return selectors.onOther();
     }

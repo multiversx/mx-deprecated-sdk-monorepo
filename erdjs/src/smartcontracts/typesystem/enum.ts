@@ -1,5 +1,7 @@
-import { guardValueIsSet } from "../../utils";
+import { guardTrue, guardValueIsSet } from "../../utils";
 import { CustomType, TypedValue } from "./types";
+
+const SimpleEnumMaxDiscriminant = 256;
 
 export class EnumType extends CustomType {
     readonly variants: EnumVariantDefinition[] = [];
@@ -32,6 +34,8 @@ export class EnumVariantDefinition {
     readonly discriminant: number;
 
     constructor(name: string, discriminant: number) {
+        guardTrue(discriminant < SimpleEnumMaxDiscriminant, `discriminant for simple enum should be less than ${SimpleEnumMaxDiscriminant}`);
+
         this.name = name;
         this.discriminant = discriminant;
     }

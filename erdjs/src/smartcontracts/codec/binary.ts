@@ -1,5 +1,5 @@
 import * as errors from "../../errors";
-import { Type, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue } from "../typesystem";
+import { Type, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue, EnumValue } from "../typesystem";
 import { guardTrue, guardType } from "../../utils";
 import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
@@ -59,7 +59,8 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeNested(<PrimitiveValue>typedValue),
             onOption: () => this.optionCodec.encodeNested(<OptionValue>typedValue),
             onList: () => this.listCodec.encodeNested(<List>typedValue),
-            onStruct: () => this.structCodec.encodeNested(<Struct>typedValue)
+            onStruct: () => this.structCodec.encodeNested(<Struct>typedValue),
+            onEnum: () => this.enumCodec.encodeNested(<EnumValue>typedValue)
         });
     }
 
@@ -71,7 +72,8 @@ export class BinaryCodec {
             onPrimitive: () => this.primitiveCodec.encodeTopLevel(<PrimitiveValue>typedValue),
             onOption: () => this.optionCodec.encodeTopLevel(<OptionValue>typedValue),
             onList: () => this.listCodec.encodeTopLevel(<List>typedValue),
-            onStruct: () => this.structCodec.encodeTopLevel(<Struct>typedValue)
+            onStruct: () => this.structCodec.encodeTopLevel(<Struct>typedValue),
+            onEnum: () => this.enumCodec.encodeTopLevel(<EnumValue>typedValue)
         });
     }
 }

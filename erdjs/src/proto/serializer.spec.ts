@@ -48,7 +48,7 @@ describe("serialize transactions", () => {
     it("with data, with value", async () => {
         let transaction = new Transaction({
             nonce: new Nonce(91),
-            value: Balance.eGLD(10),
+            value: Balance.egld(10),
             receiver: wallets.bob.address,
             gasPrice: GasPrice.min(),
             gasLimit: new GasLimit(100000),

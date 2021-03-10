@@ -129,7 +129,7 @@ describe("test smart contract interactor", function () {
 
         let startInteraction = <Interaction>interactor.prepare().start([
             typedUTF8("lucky"),
-            typedBigInt(Balance.eGLD(1).valueOf()),
+            typedBigInt(Balance.egld(1).valueOf()),
             missingOption(),
             missingOption(),
             providedOption(new U32Value(1)),

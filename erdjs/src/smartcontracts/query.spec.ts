@@ -12,7 +12,7 @@ describe("test smart contract queries", () => {
         let query = new Query({
             func: new ContractFunction("foo"),
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
-            value: Balance.eGLD(42)
+            value: Balance.egld(42)
         });
 
         let request = query.toHttpRequest();

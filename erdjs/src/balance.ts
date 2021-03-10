@@ -7,12 +7,12 @@ import { BigNumber } from "bignumber.js";
 const BASE_10 = 10;
 
 /**
- * The number of decimals handled when working with eGLD values.
+ * The number of decimals handled when working with EGLD values.
  */
 const DENOMINATION = 18;
 
 /**
- * One eGLD, in its big-integer form (as a string).
+ * One EGLD, in its big-integer form (as a string).
  */
 const OneEGLDString = "1000000000000000000";
 
@@ -36,9 +36,9 @@ export class Balance {
     }
 
     /**
-     * Creates a balance object from an eGLD value (denomination will be applied).
+     * Creates a balance object from an EGLD value (denomination will be applied).
      */
-    static eGLD(value: any): Balance {
+    static egld(value: any): Balance {
         let bigGold = new BigNumber(value);
         let bigUnits = bigGold.multipliedBy(new BigNumber(OneEGLDString));
         let bigUnitsString = bigUnits.integerValue().toString(BASE_10);
@@ -69,11 +69,11 @@ export class Balance {
     }
 
     /**
-     * Returns the string representation of the value (as eGLD currency).
+     * Returns the string representation of the value (as EGLD currency).
      */
     toCurrencyString(): string {
         let denominated = this.toDenominated();
-        return `${denominated} eGLD`;
+        return `${denominated} EGLD`;
     }
 
     toDenominated(): string {

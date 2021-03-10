@@ -48,7 +48,7 @@ export class EndpointModifiers {
     }
 
     isPayableInEGLD(): boolean {
-        return this.isPayableInToken("eGLD");
+        return this.isPayableInToken("EGLD");
     }
 
     isPayableInToken(token: string) {

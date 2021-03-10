@@ -146,7 +146,7 @@ export class Transaction implements ISignable {
      * await alice.sync(provider);
      *
      * let tx = new Transaction({
-     *      value: Balance.eGLD(1),
+     *      value: Balance.egld(1),
      *      receiver: bob.address
      * });
      *

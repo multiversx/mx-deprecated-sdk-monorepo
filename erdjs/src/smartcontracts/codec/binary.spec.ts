@@ -1,6 +1,6 @@
 import { assert } from "chai";
 import { BinaryCodec, BinaryCodecConstraints } from "./binary";
-import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I32Type, I64Type, I8Type, NumericalType, NumericalValue, Struct, StructField, StructFieldDefinition, StructType, TypedValue, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, List, ListType } from "../typesystem";
+import { AddressType, AddressValue, BigIntType, BigUIntType, BigUIntValue, BooleanType, BooleanValue, I16Type, I32Type, I64Type, I8Type, NumericalType, NumericalValue, Struct, StructField, StructFieldDefinition, StructType, TypedValue, U16Type, U32Type, U32Value, U64Type, U64Value, U8Type, U8Value, List, ListType, EnumType, EnumVariantDefinition, EnumValue } from "../typesystem";
 import { discardSuperfluousBytesInTwosComplement, discardSuperfluousZeroBytes, isMsbOne } from "./utils";
 import { Address } from "../../address";
 import { Balance } from "../../balance";
@@ -155,7 +155,7 @@ describe("test binary codec (advanced)", () => {
         );
 
         let fooStruct = new Struct(fooType, [
-            new StructField(new BigUIntValue(Balance.eGLD(10).valueOf()), "ticket_price"),
+            new StructField(new BigUIntValue(Balance.egld(10).valueOf()), "ticket_price"),
             new StructField(new U32Value(0), "tickets_left"),
             new StructField(new U64Value(new BigNumber("0x000000005fc2b9db")), "deadline"),
             new StructField(new U32Value(0xffffffff), "max_entries_per_user"),
@@ -184,6 +184,37 @@ describe("test binary codec (advanced)", () => {
             current_ticket_number: new BigNumber(9472),
             prize_pool: new BigNumber("94720000000000000000000")
         });
+    });
+
+    it("should encode / decode enums", async () => {
+        let codec = new BinaryCodec();
+        let enumType = new EnumType("Colour", [
+            new EnumVariantDefinition("Orange", 0),
+            new EnumVariantDefinition("Green", 1),
+            new EnumVariantDefinition("Blue", 255)
+        ]);
+
+        let orange = EnumValue.fromName(enumType, "Orange");
+        let green = EnumValue.fromName(enumType, "Green");
+        let blue = EnumValue.fromName(enumType, "Blue")
+
+        assert.deepEqual(codec.encodeNested(orange), Buffer.from([0x00]));
+        assert.deepEqual(codec.encodeTopLevel(orange), Buffer.from([]));
+        assert.deepEqual(codec.encodeNested(green), Buffer.from([0x01]));
+        assert.deepEqual(codec.encodeTopLevel(green), Buffer.from([0x01]));
+        assert.deepEqual(codec.encodeNested(blue), Buffer.from([0xFF]));
+        assert.deepEqual(codec.encodeTopLevel(blue), Buffer.from([0xFF]));
+
+        assert.isTrue(orange.equals(<EnumValue>codec.decodeTopLevel(Buffer.from([]), enumType)));
+        assert.isTrue(green.equals(<EnumValue>codec.decodeTopLevel(Buffer.from([0x01]), enumType)));
+        assert.isTrue(blue.equals(<EnumValue>codec.decodeTopLevel(Buffer.from([0xFF]), enumType)));
+
+        let [decoded] = codec.decodeNested(Buffer.from([0x00]), enumType);
+        assert.deepEqual(decoded, orange);
+        [decoded] = codec.decodeNested(Buffer.from([0x01]), enumType);
+        assert.deepEqual(decoded, green);
+        [decoded] = codec.decodeNested(Buffer.from([0xFF]), enumType);
+        assert.deepEqual(decoded, blue);
     });
 });
 

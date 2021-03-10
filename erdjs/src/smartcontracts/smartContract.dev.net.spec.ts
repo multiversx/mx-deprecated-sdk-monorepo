@@ -245,7 +245,7 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(15000000),
             args: [
                 typedUTF8("foobar"), 
-                typedBigInt(Balance.eGLD(1).valueOf()),
+                typedBigInt(Balance.egld(1).valueOf()),
                 missingOption(),
                 missingOption(),
                 providedOption(new U32Value(1)),

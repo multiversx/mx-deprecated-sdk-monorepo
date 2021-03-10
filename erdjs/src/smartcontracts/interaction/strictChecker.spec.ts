@@ -27,7 +27,7 @@ describe("integration tests: test checker within interactor", function () {
         let interactor = new SmartContractInteractor(contract, runner);
 
         // Send value to non-payable
-        assert.throw(() => (<Interaction>interactor.prepare().getUltimateAnswer()).withValue(Balance.eGLD(1)), errors.ErrContractInteraction, "cannot send eGLD value to non-payable");
+        assert.throw(() => (<Interaction>interactor.prepare().getUltimateAnswer()).withValue(Balance.egld(1)), errors.ErrContractInteraction, "cannot send EGLD value to non-payable");
 
         // Bad arguments
         assert.throw(() => (<Interaction>interactor.prepare().getUltimateAnswer([typedBytesFromHex("abba")])), errors.ErrContractInteraction, "bad arguments, expected: 0, got: 1");
@@ -42,14 +42,14 @@ describe("integration tests: test checker within interactor", function () {
         // Bad number of arguments
         assert.throw(() => interactor.prepare().start([
             typedUTF8("lucky"),
-            typedBigInt(Balance.eGLD(1).valueOf()),
+            typedBigInt(Balance.egld(1).valueOf()),
             missingOption(),
         ]), errors.ErrContractInteraction, "bad arguments, expected: 7, got: 3");
 
         // Bad types (U64 instead of U32)
         assert.throw(() => interactor.prepare().start([
             typedUTF8("lucky"),
-            typedBigInt(Balance.eGLD(1).valueOf()),
+            typedBigInt(Balance.egld(1).valueOf()),
             missingOption(),
             missingOption(),
             providedOption(new U64Value(new BigNumber(1))),
