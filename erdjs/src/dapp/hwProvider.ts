@@ -10,7 +10,7 @@ import {IProvider} from "../interface";
 import {Transaction} from "../transaction";
 import {Address} from "../address";
 import {Signature} from "../signature";
-import {shouldUseHashSigning} from "./common";
+import {isLedgerVersionForSigningUsingHash} from "./common";
 
 export class HWProvider implements IDappProvider {
     provider: IProvider;
@@ -91,8 +91,8 @@ export class HWProvider implements IDappProvider {
 
         const address = await this.getCurrentAddress();
         transaction.sender = new Address(address);
-        let signWithHash = await this.shouldSignWithHash();
-        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)), signWithHash);
+        let signUsingHash = await this.shouldSignUsingHash();
+        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)), signUsingHash);
         transaction.signature = new Signature(sig);
 
         await transaction.send(this.provider);
@@ -100,14 +100,14 @@ export class HWProvider implements IDappProvider {
         return transaction;
     }
 
-    private async shouldSignWithHash(): Promise<boolean> {
+    private async shouldSignUsingHash(): Promise<boolean> {
         if (!this.hwApp) {
             throw new Error("HWApp not initialised, call init() first");
         }
 
         const config = await this.hwApp.getAppConfiguration();
 
-        return shouldUseHashSigning(config.version);
+        return isLedgerVersionForSigningUsingHash(config.version);
     }
 
     private async getCurrentAddress(): Promise<string> {

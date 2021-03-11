@@ -24,7 +24,7 @@ export interface IHWElrondApp {
         address: string,
         chainCode?: string,
     }>;
-    signTransaction(rawTx: Buffer, withHash: boolean): Promise<string>;
+    signTransaction(rawTx: Buffer, usingHash: boolean): Promise<string>;
     getAppConfiguration(): Promise<{
         version: string,
         contractData: number,

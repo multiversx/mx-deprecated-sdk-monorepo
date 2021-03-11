@@ -1,6 +1,6 @@
 import {LEDGER_TX_HASH_SIGN_MIN_VERSION} from './constants';
 
-export function shouldUseHashSigning(version: string) : boolean {
+export function isLedgerVersionForSigningUsingHash(version: string) : boolean {
     let i, diff;
     const regExStrip0 = /(\.0+)+$/;
     const segmentsA = version.replace(regExStrip0, '').split('.');
