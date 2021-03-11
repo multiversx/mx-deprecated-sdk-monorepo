@@ -10,7 +10,8 @@ import {IProvider} from "../interface";
 import {Transaction} from "../transaction";
 import {Address} from "../address";
 import {Signature} from "../signature";
-import {isLedgerVersionForSigningUsingHash} from "./common";
+import {compareVersions} from "../versioning";
+import {LEDGER_TX_HASH_SIGN_MIN_VERSION} from "./constants";
 
 export class HWProvider implements IDappProvider {
     provider: IProvider;
@@ -107,7 +108,8 @@ export class HWProvider implements IDappProvider {
 
         const config = await this.hwApp.getAppConfiguration();
 
-        return isLedgerVersionForSigningUsingHash(config.version);
+        let diff = compareVersions(config.version, LEDGER_TX_HASH_SIGN_MIN_VERSION);
+        return diff >= 0;
     }
 
     private async getCurrentAddress(): Promise<string> {
