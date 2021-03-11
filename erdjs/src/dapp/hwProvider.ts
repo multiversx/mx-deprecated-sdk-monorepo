@@ -10,10 +10,7 @@ import {IProvider} from "../interface";
 import {Transaction} from "../transaction";
 import {Address} from "../address";
 import {Signature} from "../signature";
-
-// This constant represents the minimum version in which the Elrond Ledger App doesn't support anymore regular
-// transactions' signing, and uses transaction's hash signing instead
-const LEDGER_TX_HASH_SIGN_MIN_VERSION = 1011;
+import {shouldUseHashSigning} from "./common";
 
 export class HWProvider implements IDappProvider {
     provider: IProvider;
@@ -109,9 +106,8 @@ export class HWProvider implements IDappProvider {
         }
 
         const config = await this.hwApp.getAppConfiguration();
-        const numericVersion = parseInt(config.version.split('.').join(''));
 
-        return numericVersion >= LEDGER_TX_HASH_SIGN_MIN_VERSION;
+        return shouldUseHashSigning(config.version);
     }
 
     private async getCurrentAddress(): Promise<string> {
