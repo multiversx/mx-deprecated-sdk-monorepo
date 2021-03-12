@@ -15,7 +15,8 @@ export class ProtoSerializer {
      */
     serializeTransaction(transaction: Transaction): Buffer {
         let protoTransaction = new proto.Transaction({
-            Nonce: transaction.nonce.valueOf(),
+            // elrond-go's serializer handles nonce == 0 differently, thus we treat 0 as "undefined".
+            Nonce: transaction.nonce.valueOf() ? transaction.nonce.valueOf() : undefined,
             Value: this.serializeBalance(transaction.value),
             RcvAddr: transaction.receiver.pubkey(),
             RcvUserName: null,
@@ -39,7 +40,7 @@ export class ProtoSerializer {
      */
     private serializeBalance(balance: Balance): Buffer {
         let value = balance.valueOf();
-        if (value == BigInt(0)) {
+        if (value.isZero()) {
             return Buffer.from([0, 0]);
         }
 

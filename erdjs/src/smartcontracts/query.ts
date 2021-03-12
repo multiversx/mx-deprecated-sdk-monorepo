@@ -5,8 +5,9 @@ import { Address } from "../address";
 import { guardValueIsSet } from "../utils";
 import { GasLimit } from "../networkParams";
 import * as errors from "../errors";
+import BigNumber from "bignumber.js";
 
-const MaxUint64 = BigInt("18446744073709551615");
+const MaxUint64 = new BigNumber("18446744073709551615");
 
 export class Query {
     caller: Address;
@@ -35,14 +36,14 @@ export class Query {
 
     toHttpRequest() {
         let request: any = {
-            "ScAddress": this.address.bech32(),
-            "FuncName": this.func.toString(),
-            "Args": this.args.map(arg => arg.valueOf()),
-            "CallValue": this.value.toString()
+            "scAddress": this.address.bech32(),
+            "funcName": this.func.toString(),
+            "args": this.args.map(arg => arg.valueOf()),
+            "value": this.value.toString()
         };
 
         if (!this.caller.isEmpty()) {
-            request["CallerAddr"] = this.caller.bech32();
+            request["caller"] = this.caller.bech32();
         }
 
         return request;
@@ -68,9 +69,9 @@ export class QueryResponse {
         result.returnCode = payload["returnCode"] || (payload["ReturnCode"]).toString() || "";
         result.returnMessage = payload["returnMessage"] || payload["ReturnMessage"] || "";
 
-        let gasRemaining = BigInt(payload["gasRemaining"] || payload["GasRemaining"] || 0);
-        let gasUsed = MaxUint64 - gasRemaining;
-        result.gasUsed = new GasLimit(Number(gasUsed));
+        let gasRemaining = new BigNumber(payload["gasRemaining"] || payload["GasRemaining"] || 0);
+        let gasUsed = MaxUint64.minus(gasRemaining);
+        result.gasUsed = new GasLimit(Number(gasUsed.toString(10)));
 
         return result;
     }
@@ -118,16 +119,16 @@ export class ContractReturnData {
     asHex: string;
     asNumber: number;
     asBool: boolean;
-    asBigInt: BigInt;
+    asBigInt: BigNumber;
     asString: string;
 
     constructor(asBase64: any) {
-        this.asBase64 = asBase64;
-        this.asBuffer = Buffer.from(asBase64, "base64");
+        this.asBase64 = asBase64 || "";
+        this.asBuffer = Buffer.from(this.asBase64, "base64");
         this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
         this.asBool = this.asNumber != 0;
-        this.asBigInt = BigInt(`0x${this.asHex || "00"}`);
+        this.asBigInt = new BigNumber(`0x${this.asHex || "00"}`, 16);
         this.asString = this.asBuffer.toString();
     }
 

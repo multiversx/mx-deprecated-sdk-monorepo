@@ -12,11 +12,11 @@ Features:
 
 The most comprehensive usage examples are captured within the unit and the integration tests. Specifically, in the `*.spec.ts` files of the source code. For example:
 
- - [transaction.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/transaction.localTestnet.spec.ts)
+ - [transaction.devnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/transaction.devnet.spec.ts)
  - [address.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/address.spec.ts)
  - [transactionPayloadBuilders.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/transactionPayloadBuilders.spec.ts)
  - [smartContract.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.spec.ts)
- - [smartContract.localTestnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.localTestnet.spec.ts)
+ - [smartContract.devnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.devnet.spec.ts)
  - [query.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.spec.ts)
  - [query.mainnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.mainnet.spec.ts)
 
@@ -72,7 +72,7 @@ let addressOfCarol = new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arnc
 let tx = contract.call({
     func: new ContractFunction("transferToken"),
     gasLimit: new GasLimit(5000000),
-    args: [Argument.pubkey(addressOfCarol), Argument.number(1000)]
+    args: [Argument.fromPubkey(addressOfCarol), Argument.number(1000)]
 });
 
 tx.setNonce(alice.nonce);
@@ -88,7 +88,7 @@ let addressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3h
 
 let response = await contract.runQuery(provider, {
     func: new ContractFunction("getClaimableRewards"),
-    args: [Argument.pubkey(addressOfAlice)]
+    args: [Argument.fromPubkey(addressOfAlice)]
 });
 
 console.log(response.isSuccess());
@@ -162,13 +162,31 @@ npm run compile-browser-min
 
 ### Running the tests
 
-In order to run the tests, do as follows:
+#### On NodeJS
+
+In order to run the tests **on NodeJS**, do as follows:
 
 ```
-npm run test
-npm run test-local-testnet
-npm run test-testnet
-npm run test-mainnet
+npm run tests-unit
+npm run tests-devnet
+npm run tests-testnet
+npm run tests-mainnet
 ```
 
-For the `local-testnet` tests, make sure you have a Testnet running locally. A local Testnet can be started from the Elrond IDE or from [erdpy](https://docs.elrond.com/developers/setup-a-local-testnet-erdpy).
+#### In the browser
+
+Make sure you have the package `http-server` installed globally.
+
+```
+npm install --global http-server
+```
+
+In order to run the tests **in the browser**, do as follows:
+
+```
+make clean && npm run browser-tests
+```
+
+#### Notes
+
+For the `devnet` tests, make sure you have a *devnet* running locally. A local *devnet* can be started from the Elrond IDE or from [erdpy](https://docs.elrond.com/developers/setup-a-local-testnet-erdpy).

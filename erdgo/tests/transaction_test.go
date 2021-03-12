@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ElrondNetwork/elrond-sdk/erdgo"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +15,7 @@ func TestTransaction_Sign(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	tx := &erdgo.Transaction{
+	tx := &data.Transaction{
 		Nonce:    0,
 		Value:    "0",
 		RcvAddr:  "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",
@@ -37,7 +38,7 @@ func TestTransaction_SignHash(t *testing.T) {
 
 	assert.Nil(t, err)
 
-	tx := &erdgo.Transaction{
+	tx := &data.Transaction{
 		Nonce:    0,
 		Value:    "0",
 		RcvAddr:  "erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th",

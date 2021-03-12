@@ -16,12 +16,19 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/ElrondNetwork/elrond-go/core/pubkeyConverter"
 	"github.com/ElrondNetwork/elrond-go/crypto/signing"
 	"github.com/ElrondNetwork/elrond-go/crypto/signing/ed25519"
 	"github.com/pborman/uuid"
 	"github.com/tyler-smith/go-bip39"
 	"golang.org/x/crypto/scrypt"
 )
+
+//TODO: refactor this file
+
+const addressLen = 32
+
+var addrPkConv, _ = pubkeyConverter.NewBech32PubkeyConverter(addressLen)
 
 const (
 	egldCoinType = uint32(508)
@@ -107,7 +114,7 @@ func GetAddressFromPrivateKey(privateKeyBytes []byte) (string, error) {
 		return "", err
 	}
 
-	return PubkeyToBech32(publicKeyBytes)
+	return addrPkConv.Encode(publicKeyBytes), nil
 }
 
 // LoadPrivateKeyFromPemFile loads a private key from a .pem file
@@ -130,8 +137,8 @@ func SavePrivateKeyToPemFile(privateKey []byte, filename string) error {
 	if err != nil {
 		return err
 	}
-	if len(privateKey) <= pubkeyLen {
-		pubkey, err := Bech32ToPubkey(address)
+	if len(privateKey) <= addressLen {
+		pubkey, err := addrPkConv.Decode(address)
 		if err != nil {
 			return err
 		}
@@ -219,7 +226,7 @@ func LoadPrivateKeyFromJsonFile(filename string, password string) ([]byte, error
 		return nil, err
 	}
 
-	publicKey, err := Bech32ToPubkey(address)
+	publicKey, err := addrPkConv.Decode(address)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +281,7 @@ func SavePrivateKeyToJsonFile(privateKey []byte, password string, filename strin
 		return err
 	}
 
-	publicKey, err := Bech32ToPubkey(address)
+	publicKey, err := addrPkConv.Decode(address)
 	if err != nil {
 		return err
 	}

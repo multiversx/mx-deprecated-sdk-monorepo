@@ -2,6 +2,11 @@ import * as errors from "./errors";
 import { BigNumber } from "bignumber.js";
 
 /**
+ * The base used for toString methods to avoid exponential notation
+ */
+const BASE_10 = 10;
+
+/**
  * The number of decimals handled when working with eGLD values.
  */
 const DENOMINATION = 18;
@@ -17,16 +22,16 @@ BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 1 });
  * Balance, as an immutable object.
  */
 export class Balance {
-    private readonly value: bigint = BigInt(0);
+    private readonly value: BigNumber = new BigNumber(0);
 
     /**
      * Creates a Balance object.
      */
-    public constructor(value: bigint) {
-        this.value = value;
+    public constructor(value: string) {
+        this.value = new BigNumber(value);
 
-        if (value < 0) {
-            throw new errors.ErrBalanceInvalid(value);
+        if (this.value.isNegative()) {
+            throw new errors.ErrBalanceInvalid(this.value);
         }
     }
 
@@ -36,41 +41,45 @@ export class Balance {
     static eGLD(value: any): Balance {
         let bigGold = new BigNumber(value);
         let bigUnits = bigGold.multipliedBy(new BigNumber(OneEGLDString));
-        let bigUnitsString = bigUnits.integerValue().toString(10);
-        let bigIntUnits = BigInt(bigUnitsString);
+        let bigUnitsString = bigUnits.integerValue().toString(BASE_10);
 
-        return new Balance(bigIntUnits);
+        return new Balance(bigUnitsString);
     }
 
     /**
      * Creates a balance object from a string (with denomination included).
      */
     static fromString(value: string): Balance {
-        return new Balance(BigInt(value));
+        return new Balance(value);
     }
 
     /**
      * Creates a zero-valued balance object.
      */
     static Zero(): Balance {
-        return new Balance(BigInt(0));
+        return new Balance('0');
     }
 
     /**
      * Returns the string representation of the value (as eGLD currency).
      */
     toCurrencyString(): string {
+        let denominated = this.toDenominated();
+        return `${denominated} eGLD`;
+    }
+
+    toDenominated(): string {
         let padded = this.toString().padStart(DENOMINATION, "0");
         let decimals = padded.slice(-DENOMINATION);
-        let integer = padded.slice(0, padded.length - DENOMINATION);
-        return `${integer}.${decimals} eGLD`;
+        let integer = padded.slice(0, padded.length - DENOMINATION) || 0;
+        return `${integer}.${decimals}`;
     }
 
     /**
      * Returns the string representation of the value (its big-integer form).
      */
     toString(): string {
-        return this.value.toString();
+        return this.value.toString(BASE_10);
     }
 
     /**
@@ -83,7 +92,7 @@ export class Balance {
         };
     }
 
-    valueOf(): bigint {
+    valueOf(): BigNumber {
         return this.value;
     }
 }

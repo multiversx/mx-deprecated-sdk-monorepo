@@ -4,8 +4,6 @@
 name: Build and Test erdpy
 
 on:
-  push:
-    branches: [ master, development ]
   pull_request:
     branches: [ master, development ]
   workflow_dispatch:
@@ -40,3 +38,4 @@ jobs:
         cd ./erdpy/tests
         source ./test_cli_contracts.sh && testAll || return 1
         source ./test_cli_wallet.sh && testAll || return 1
+        source ./test_cli_dns.sh && testOffline || return 1

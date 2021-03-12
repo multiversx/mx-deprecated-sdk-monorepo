@@ -229,3 +229,6 @@ local.properties
 #.project
 /erdgo/tests/test.pem
 /erdgo/tests/test.json
+
+.idea/
+.DS_Store

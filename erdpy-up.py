@@ -5,6 +5,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import json
 from argparse import ArgumentParser
 
 logger = logging.getLogger("installer")
@@ -165,6 +166,9 @@ def install_erdpy():
     if return_code != 0:
         raise InstallError("Could not install erdpy.")
 
+    logger.info("Checking and upgrading configuration file")
+    upgrade_erdpy_config()
+
     # Create symlink to "bin/erdpy"
     link_path = os.path.join(elrondsdk_path, "erdpy")
     if os.path.exists(link_path):
@@ -228,6 +232,29 @@ def get_profile_file():
             file = "~/.bash_profile"
 
     return os.path.expanduser(file)
+
+
+def upgrade_erdpy_config():
+    config_path = os.path.expanduser("~/elrondsdk/erdpy.json")
+
+    if not os.path.exists(config_path):
+        return
+
+    with open(config_path) as f:
+        data = json.load(f)
+
+    if "active" in data:
+        return
+
+    new_data = {
+        "active": "default",
+        "configurations": {
+            "default": data
+        }
+    }
+
+    with open(config_path, "w") as f:
+        json.dump(new_data, f, indent=4)
 
 
 class InstallError(Exception):
