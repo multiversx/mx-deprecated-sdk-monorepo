@@ -40,6 +40,9 @@ export namespace proto {
 
         /** Transaction Signature */
         Signature?: (Uint8Array|null);
+
+        /** Transaction Options */
+        Options?: (number|null);
     }
 
     /** Represents a Transaction. */
@@ -86,6 +89,9 @@ export namespace proto {
 
         /** Transaction Signature. */
         public Signature: Uint8Array;
+
+        /** Transaction Options. */
+        public Options: number;
 
         /**
          * Creates a new Transaction instance using the specified properties.
