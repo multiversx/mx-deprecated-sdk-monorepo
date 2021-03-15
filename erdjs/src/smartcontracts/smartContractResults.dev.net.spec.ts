@@ -60,7 +60,10 @@ describe("fetch transactions from devnet", function () {
         let incrementImmediateResult = transactionIncrement.getAsOnNetworkCached().getSmartContractResults().getImmediate();
         let incrementResultingCalls = transactionIncrement.getAsOnNetworkCached().getSmartContractResults().getResultingCalls();
 
-        assert.lengthOf(deployImmediateResult.getDataTokens(), 1);
+        deployImmediateResult.assertSuccess();
+        incrementImmediateResult.assertSuccess();
+
+        assert.lengthOf(deployImmediateResult.outputUntyped(), 0);
         // There is some refund
         assert.isTrue(deployImmediateResult.value.valueOf().gt(0));
         assert.lengthOf(deployResultingCalls, 0);
