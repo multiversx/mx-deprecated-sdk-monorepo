@@ -11,10 +11,10 @@ describe("test binary codec (basic)", () => {
     let codec = new BinaryCodec();
 
     it("should create boolean values, encode and decode", async () => {
-        check(true, [0x01], [0x01]);
-        check(false, [0x00], []);
+        checkBoolean(true, [0x01], [0x01]);
+        checkBoolean(false, [0x00], []);
 
-        function check(asBoolean: boolean, nested: number[], topLevel: number[]) {
+        function checkBoolean(asBoolean: boolean, nested: number[], topLevel: number[]) {
             let value = new BooleanValue(asBoolean);
             let type = new BooleanType();
 
@@ -36,38 +36,38 @@ describe("test binary codec (basic)", () => {
 
         // Small int
 
-        check(BigInt(42), new U8Type(), [0x2A], [0x2A]);
-        check(BigInt(42), new U16Type(), [0x00, 0x2A], [0x2A]);
-        check(BigInt(42), new U64Type(), [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A], [0x2A]);
-        check(BigInt(-10), new I8Type(), [0xF6], [0xF6]);
-        check(BigInt(-10), new I16Type(), [0xFF, 0xF6], [0xF6]);
+        checkNumerical(BigInt(42), new U8Type(), [0x2A], [0x2A]);
+        checkNumerical(BigInt(42), new U16Type(), [0x00, 0x2A], [0x2A]);
+        checkNumerical(BigInt(42), new U64Type(), [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2A], [0x2A]);
+        checkNumerical(BigInt(-10), new I8Type(), [0xF6], [0xF6]);
+        checkNumerical(BigInt(-10), new I16Type(), [0xFF, 0xF6], [0xF6]);
 
         // BigInt
 
-        check(BigInt(0), new BigIntType(), [0, 0, 0, 0], []);
-        check(BigInt(1), new BigIntType(), [0, 0, 0, 1, 0x01], [0x01]);
-        check(BigInt(-1), new BigIntType(), [0, 0, 0, 1, 0xFF], [0xFF]);
-        check(BigInt(-2), new BigIntType(), [0, 0, 0, 1, 0xFE], [0xFE]);
-        check(BigInt(127), new BigIntType(), [0, 0, 0, 1, 0x7F], [0x7F]);
-        check(BigInt(128), new BigIntType(), [0, 0, 0, 2, 0x00, 0x80], [0x00, 0x80]);
-        check(BigInt(255), new BigIntType(), [0, 0, 0, 2, 0x00, 0xFF], [0x00, 0xFF]);
-        check(BigInt(256), new BigIntType(), [0, 0, 0, 2, 0x01, 0x00], [0x01, 0x00]);
-        check(BigInt(-255), new BigIntType(), [0, 0, 0, 2, 0xFF, 0x01], [0xFF, 0x01]);
-        check(BigInt(-257), new BigIntType(), [0, 0, 0, 2, 0xFE, 0xFF], [0xFE, 0xFF]);
+        checkNumerical(BigInt(0), new BigIntType(), [0, 0, 0, 0], []);
+        checkNumerical(BigInt(1), new BigIntType(), [0, 0, 0, 1, 0x01], [0x01]);
+        checkNumerical(BigInt(-1), new BigIntType(), [0, 0, 0, 1, 0xFF], [0xFF]);
+        checkNumerical(BigInt(-2), new BigIntType(), [0, 0, 0, 1, 0xFE], [0xFE]);
+        checkNumerical(BigInt(127), new BigIntType(), [0, 0, 0, 1, 0x7F], [0x7F]);
+        checkNumerical(BigInt(128), new BigIntType(), [0, 0, 0, 2, 0x00, 0x80], [0x00, 0x80]);
+        checkNumerical(BigInt(255), new BigIntType(), [0, 0, 0, 2, 0x00, 0xFF], [0x00, 0xFF]);
+        checkNumerical(BigInt(256), new BigIntType(), [0, 0, 0, 2, 0x01, 0x00], [0x01, 0x00]);
+        checkNumerical(BigInt(-255), new BigIntType(), [0, 0, 0, 2, 0xFF, 0x01], [0xFF, 0x01]);
+        checkNumerical(BigInt(-257), new BigIntType(), [0, 0, 0, 2, 0xFE, 0xFF], [0xFE, 0xFF]);
 
         // Zero, fixed-size
 
         [new U8Type(), new I8Type(), new U16Type(), new I16Type(), new U32Type(), new I32Type(), new U64Type(), new I64Type()].forEach(type => {
-            check(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
+            checkNumerical(BigInt(0), type, Array(type.sizeInBytes!).fill(0), []);
         });
 
         // Zero, arbitrary-size (big)
 
         [new BigIntType(), new BigUIntType()].forEach(type => {
-            check(BigInt(0), type, [0, 0, 0, 0], []);
+            checkNumerical(BigInt(0), type, [0, 0, 0, 0], []);
         });
 
-        function check(asBigInt: bigint, type: NumericalType, nested: number[], topLevel: number[]) {
+        function checkNumerical(asBigInt: bigint, type: NumericalType, nested: number[], topLevel: number[]) {
             let value = new NumericalValue(type, new BigNumber(asBigInt.toString(10)));
 
             assert.deepEqual(codec.encodeNested(value), Buffer.from(nested));

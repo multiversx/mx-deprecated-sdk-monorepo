@@ -75,15 +75,14 @@ export class ProxyProvider implements IProvider {
   /**
    * Fetches the state of a {@link Transaction}.
    */
-  async getTransaction(txHash: TransactionHash, hintSender?: Address, includeOutcome?: boolean): Promise<TransactionOnNetwork> {
+  async getTransaction(txHash: TransactionHash, hintSender?: Address, withResults?: boolean): Promise<TransactionOnNetwork> {
     let url = this.buildUrlWithQueryParameters(`transaction/${txHash.toString()}`, {
       "withSender": hintSender ? hintSender.bech32() : "",
-      "withResults": includeOutcome ? "true" : ""
+      "withResults": withResults ? "true" : ""
     });
 
-    let response = await this.doGet(url);
-    let payload = response.transaction;
-    return TransactionOnNetwork.fromHttpResponse(payload);
+    let { transaction } = await this.doGet(url);
+    return TransactionOnNetwork.fromHttpResponse(transaction);
   }
 
   /**

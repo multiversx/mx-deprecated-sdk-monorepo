@@ -13,7 +13,7 @@ describe("test serializer", () => {
         let typeParser = new TypeExpressionParser();
         let typeMapper = new TypeMapper();
 
-        check(
+        serializeThenDeserialize(
             ["u32", "i64", "bytes"],
             [
                 new U32Value(100),
@@ -23,7 +23,7 @@ describe("test serializer", () => {
             "64@ff@abba"
         );
 
-        check(
+        serializeThenDeserialize(
             ["Option<u32>", "Option<u8>", "MultiArg<u8, bytes>"],
             [
                 providedOption(new U32Value(100)),
@@ -33,7 +33,7 @@ describe("test serializer", () => {
             "0100000064@@03@abba"
         );
 
-        check(
+        serializeThenDeserialize(
             ["MultiArg<List<u16>>", "VarArgs<bytes>"],
             [
                 typedComposite(typedList([new U16Value(8), new U16Value(9)])),
@@ -44,7 +44,7 @@ describe("test serializer", () => {
 
         // TODO: In a future PR, improve the types expression parser and enable this test, which currently fails.
         
-        // check(
+        // serializeThenDeserialize(
         //     ["MultiArg<Option<u8>, List<u16>>", "VarArgs<bytes>"],
         //     [
         //         typedComposite(providedOption(new U8Value(7)), typedList([new U16Value(8), new U16Value(9)])),
@@ -53,7 +53,7 @@ describe("test serializer", () => {
         //     "0107@0000000200080009@abba@abba@abba"
         // );
 
-        function check(typeExpressions: string[], values: TypedValue[], joinedString: string) {
+        function serializeThenDeserialize(typeExpressions: string[], values: TypedValue[], joinedString: string) {
             let types = typeExpressions.map(expression => typeParser.parse(expression)).map(type => typeMapper.mapType(type));
             let endpointDefinitions = types.map(type => new EndpointParameterDefinition("foo", "bar", type));
 

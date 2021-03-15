@@ -23,11 +23,11 @@ export class BooleanValue extends PrimitiveValue {
      * @param other another BooleanValue
      */
     equals(other: BooleanValue): boolean {
-        return this.value == other.value;
+        return this.value === other.value;
     }
 
     isTrue(): boolean {
-        return this.value == true;
+        return this.value === true;
     }
 
     isFalse(): boolean {

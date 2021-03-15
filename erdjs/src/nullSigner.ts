@@ -23,7 +23,7 @@ export class NullSigner implements ISigner {
     }
 
     /**
-     * Applies an invalid signature.
+     * Applies a mock signature.
      */
     async sign(signable: ISignable): Promise<void> {
         signable.applySignature(new Signature("0".repeat(128)), this.address);

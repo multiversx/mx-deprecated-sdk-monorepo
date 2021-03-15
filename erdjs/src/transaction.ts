@@ -331,8 +331,8 @@ export class Transaction implements ISignable {
             await this.awaitNotarized(provider);
         }
 
-        let includeOutcome = isSmartContractTransaction;
-        let response = await provider.getTransaction(this.hash, this.sender, includeOutcome);
+        let withResults = isSmartContractTransaction;
+        let response = await provider.getTransaction(this.hash, this.sender, withResults);
 
         if (cacheLocally) {
             this.asOnNetwork = response;

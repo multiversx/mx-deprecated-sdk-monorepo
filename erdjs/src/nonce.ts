@@ -38,7 +38,7 @@ export class Nonce {
             return false;
         }
 
-        return this.value == other.value;
+        return this.value === other.value;
     }
 }
 
