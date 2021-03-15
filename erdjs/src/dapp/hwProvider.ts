@@ -10,6 +10,8 @@ import {IProvider} from "../interface";
 import {Transaction} from "../transaction";
 import {Address} from "../address";
 import {Signature} from "../signature";
+import {compareVersions} from "../versioning";
+import {LEDGER_TX_HASH_SIGN_MIN_VERSION} from "./constants";
 
 export class HWProvider implements IDappProvider {
     provider: IProvider;
@@ -34,7 +36,7 @@ export class HWProvider implements IDappProvider {
     }
 
     /**
-     * Returns true if init() was previously called succesfully
+     * Returns true if init() was previously called successfully
      */
     isInitialized(): boolean {
         return !!this.hwApp;
@@ -89,12 +91,24 @@ export class HWProvider implements IDappProvider {
         }
 
         const address = await this.getCurrentAddress();
-        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)));
+        let signUsingHash = await this.shouldSignUsingHash();
+        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)), signUsingHash);
         transaction.applySignature(new Signature(sig), new Address(address));
 
         await transaction.send(this.provider);
 
         return transaction;
+    }
+
+    private async shouldSignUsingHash(): Promise<boolean> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+
+        const config = await this.hwApp.getAppConfiguration();
+
+        let diff = compareVersions(config.version, LEDGER_TX_HASH_SIGN_MIN_VERSION);
+        return diff >= 0;
     }
 
     private async getCurrentAddress(): Promise<string> {
