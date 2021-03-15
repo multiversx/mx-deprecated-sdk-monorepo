@@ -122,6 +122,7 @@ export class ProxyProvider implements IProvider {
 
     private async doPost(resourceUrl: string, payload: any): Promise<any> {
         try {
+            console.log("url ", this.url, resourceUrl);
             let url = `${this.url}/${resourceUrl}`;
             let response = await axios.post(url, payload, {
                 timeout: this.timeoutLimit,

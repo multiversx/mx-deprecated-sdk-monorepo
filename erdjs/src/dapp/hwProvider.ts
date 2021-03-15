@@ -16,9 +16,11 @@ import {LEDGER_TX_HASH_SIGN_MIN_VERSION} from "./constants";
 export class HWProvider implements IDappProvider {
     provider: IProvider;
     hwApp?: IHWElrondApp;
+    addressIndex: number = 0;
 
-    constructor(httpProvider: IProvider) {
+    constructor(httpProvider: IProvider, addressIndex: number = 0) {
         this.provider = httpProvider;
+        this.addressIndex = addressIndex;
     }
 
     /**
@@ -56,11 +58,32 @@ export class HWProvider implements IDappProvider {
         if (!this.hwApp) {
             throw new Error("HWApp not initialised, call init() first");
         }
-
-        const config = await this.hwApp.getAppConfiguration();
-        const { address } =  await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
+        const { address } = await this.hwApp.getAddress(0, this.addressIndex, true);
 
         return address;
+    }
+
+    async getAccounts(startIndex: number = 0, length: number = 10): Promise<string[]> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+        const addresses = [];
+
+        const indexesArray = this.generateArray(startIndex, length);
+
+        for await (const index of indexesArray) {
+            const { address } = await this.hwApp.getAddress(0, index);
+            addresses.push(address);
+        }
+        return addresses;
+    }
+
+    generateArray(startIndex = 0, length = 10) {
+        var data = [];
+        for (var i = length * startIndex; i < length * startIndex + length; i++) {
+            data.push(i);
+        }
+        return data;
     }
 
     /**
@@ -118,7 +141,7 @@ export class HWProvider implements IDappProvider {
         }
 
         const config = await this.hwApp.getAppConfiguration();
-        const { address } =  await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
+        const { address } = await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
 
         return address;
     }
