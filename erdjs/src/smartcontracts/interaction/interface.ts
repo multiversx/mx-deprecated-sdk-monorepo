@@ -1,18 +1,37 @@
 import { Address } from "../../address";
-import { Transaction, TransactionHash } from "../../transaction";
+import { Transaction } from "../../transaction";
 import { TransactionOnNetwork } from "../../transactionOnNetwork";
-import { Query } from "../query";
 import { QueryResponse } from "../queryResponse";
+import { ReturnCode } from "../returnCode";
+import { ImmediateResult, SmartContractResults } from "../smartContractResults";
+import { TypedValue } from "../typesystem";
 import { Interaction } from "./interaction";
 
 export interface IInteractionRunner {
-    checkInteraction(interaction: Interaction): void;
-    broadcast(transaction: Transaction): Promise<Transaction>;
-    broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork>;
-    query(query: Query, caller?: Address): Promise<QueryResponse>;
-    simulate(transaction: Transaction): Promise<any>;
+    run(interaction: Interaction): Promise<Transaction>;
+    runAwaitExecution(interaction: Interaction): Promise<ExecutionResultsBundle>;
+    runQuery(interaction: Interaction, caller?: Address): Promise<QueryResponseBundle>;
+    // TODO: Fix method signature (underspecified at this moment).
+    runSimulation(interaction: Interaction): Promise<any>;
 }
 
 export interface IInteractionChecker {
     checkInteraction(interaction: Interaction): void;
 }
+
+export interface ExecutionResultsBundle {
+    transactionOnNetwork: TransactionOnNetwork;
+    smartContractResults: SmartContractResults;
+    immediateResult: ImmediateResult;
+    values: TypedValue[];
+    firstValue: TypedValue;
+    returnCode: ReturnCode;
+}
+
+export interface QueryResponseBundle {
+    queryResponse: QueryResponse;
+    firstValue: TypedValue;
+    values: TypedValue[];
+    returnCode: ReturnCode;
+}
+

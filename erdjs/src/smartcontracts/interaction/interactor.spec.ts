@@ -2,7 +2,7 @@ import { SmartContractInteractor } from "./interactor";
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
-import { AbiRegistry, missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "../typesystem";
+import { missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "../typesystem";
 import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets, Wait } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
@@ -31,7 +31,7 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
-        let interactor = new SmartContractInteractor(contract, runner);
+        let interactor = new SmartContractInteractor(contract);
 
         let interaction = <Interaction>interactor.prepare().getUltimateAnswer().withGasLimit(new GasLimit(543210));
         assert.equal(interaction.getContract().getAddress(), dummyAddress);
@@ -42,18 +42,18 @@ describe("test smart contract interactor", function () {
         provider.mockQueryResponseOnFunction("getUltimateAnswer", new QueryResponse({ returnData: ["Kg=="], returnCode: ReturnCode.Ok }));
 
         // Query
-        let { values: queryValues, firstValue: queryAnwser, returnCode: queryCode } = await interaction.query();
+        let { values: queryValues, firstValue: queryAnwser, returnCode: queryCode } = await runner.runQuery(interaction);
         assert.lengthOf(queryValues, 1);
         assert.deepEqual(queryAnwser.valueOf(), new BigNumber(42));
         assert.isTrue(queryCode.equals(ReturnCode.Ok));
 
         // Execute, do not wait for execution
-        let transaction = await interaction.withNonce(new Nonce(0)).broadcast();
+        let transaction = await runner.run(interaction.withNonce(new Nonce(0)));
         assert.equal(transaction.getNonce().valueOf(), 0);
         assert.equal(transaction.getData().toString(), "getUltimateAnswer");
         assert.equal(transaction.getHash().toString(), "60d0956a8902c1179dce92d91bd9670e31b9a9cd07c1d620edb7754a315b4818");
 
-        transaction = await interaction.withNonce(new Nonce(1)).broadcast();
+        transaction = await runner.run(interaction.withNonce(new Nonce(1)));
         assert.equal(transaction.getNonce().valueOf(), 1);
         assert.equal(transaction.getHash().toString(), "acd207c38f6c3341b18d8ef331fa07ba49615fa12d7610aad5d8495293049f24");
 
@@ -63,7 +63,7 @@ describe("test smart contract interactor", function () {
                 interaction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@2b"), new MarkNotarized()]
             ),
-            await interaction.withNonce(new Nonce(2)).broadcastAwaitExecution()
+            await runner.runAwaitExecution(interaction.withNonce(new Nonce(2)))
         ]);
 
         assert.lengthOf(executionValues, 1);
@@ -77,7 +77,7 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/counter.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["counter"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
-        let interactor = new SmartContractInteractor(contract, runner);
+        let interactor = new SmartContractInteractor(contract);
 
         let getInteraction = <Interaction>interactor.prepare().get();
         let incrementInteraction = (<Interaction>interactor.prepare().increment()).withGasLimit(new GasLimit(543210));
@@ -87,7 +87,7 @@ describe("test smart contract interactor", function () {
         provider.mockQueryResponseOnFunction("get", new QueryResponse({ returnData: ["Bw=="], returnCode: ReturnCode.Ok }));
 
         // Query "get()"
-        let { firstValue: counterValue } = await getInteraction.query();
+        let { firstValue: counterValue } = await runner.runQuery(getInteraction);
 
         assert.deepEqual(counterValue.valueOf(), new BigNumber(7));
 
@@ -97,23 +97,21 @@ describe("test smart contract interactor", function () {
                 incrementInteraction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@08"), new MarkNotarized()]
             ),
-            await incrementInteraction.withNonce(new Nonce(14)).broadcastAwaitExecution()
+            await runner.runAwaitExecution(incrementInteraction.withNonce(new Nonce(14)))
         ]);
 
         assert.deepEqual(valueAfterIncrement.valueOf(), new BigNumber(8));
 
         // Decrement three times (simulate three parallel broadcasts). Wait for execution of the latter (third transaction). Return fake "5".
-        await decrementInteraction.withNonce(new Nonce(15)).broadcast();
-        await decrementInteraction.withNonce(new Nonce(16)).broadcast();
+        await runner.run(decrementInteraction.withNonce(new Nonce(15)));
+        await runner.run(decrementInteraction.withNonce(new Nonce(16)));
 
         let [, { firstValue: valueAfterDecrement }] = await Promise.all([
             provider.mockTransactionTimeline(
                 decrementInteraction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]
             ),
-            async function () {
-                return await decrementInteraction.withNonce(new Nonce(17)).broadcastAwaitExecution();
-            }()
+            await runner.runAwaitExecution(decrementInteraction.withNonce(new Nonce(17)))
         ]);
 
         assert.deepEqual(valueAfterDecrement.valueOf(), new BigNumber(5));
@@ -125,7 +123,7 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
-        let interactor = new SmartContractInteractor(contract, runner);
+        let interactor = new SmartContractInteractor(contract);
 
         let startInteraction = <Interaction>interactor.prepare().start([
             typedUTF8("lucky"),
@@ -151,7 +149,7 @@ describe("test smart contract interactor", function () {
                 startInteraction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b"), new MarkNotarized()]
             ),
-            await startInteraction.withNonce(new Nonce(14)).broadcastAwaitExecution()
+            await runner.runAwaitExecution(startInteraction.withNonce(new Nonce(14)))
         ]);
 
         assert.equal(startInteraction.getTransaction().getData().toString(), "start@6c75636b79@0de0b6b3a7640000@@@0100000001@@");
@@ -164,7 +162,7 @@ describe("test smart contract interactor", function () {
                 lotteryStatusInteraction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@01"), new MarkNotarized()]
             ),
-            await lotteryStatusInteraction.withNonce(new Nonce(15)).broadcastAwaitExecution()
+            await runner.runAwaitExecution(lotteryStatusInteraction.withNonce(new Nonce(15)))
         ]);
 
         assert.equal(lotteryStatusInteraction.getTransaction().getData().toString(), "status@6c75636b79");
@@ -178,7 +176,7 @@ describe("test smart contract interactor", function () {
                 getLotteryInfoInteraction.getTransaction(),
                 [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@000000080de0b6b3a764000000000320000000006012a806000000010000000164000000000000000000000000"), new MarkNotarized()]
             ),
-            await getLotteryInfoInteraction.withNonce(new Nonce(16)).broadcastAwaitExecution()
+            await runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(new Nonce(16)))
         ]);
 
         assert.equal(getLotteryInfoInteraction.getTransaction().getData().toString(), "lotteryInfo@6c75636b79");

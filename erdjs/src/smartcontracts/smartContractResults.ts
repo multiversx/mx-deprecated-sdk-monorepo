@@ -9,7 +9,6 @@ import { Serializer } from "./serializer";
 import { EndpointDefinition, TypedValue } from "./typesystem";
 import { guardValueIsSet } from "../utils";
 import { ReturnCode } from "./returnCode";
-import { TransactionOnNetwork } from "../transactionOnNetwork";
 
 export class SmartContractResults {
     private readonly items: SmartContractResultItem[] = [];
@@ -138,11 +137,15 @@ export class ImmediateResult extends SmartContractResultItem {
 
 
     outputUntyped(): Buffer[] {
+        this.assertSuccess();
+
         // Question for review: is this correct? Is the first parameter of a SCR always void and unused? E.g.: @6f6b@2b.
         return this.getDataTokens().slice(2);
     }
 
     outputTyped(): TypedValue[] {
+        this.assertSuccess();
+
         guardValueIsSet("endpointDefinition", this.endpointDefinition);
 
         let buffers = this.outputUntyped();

@@ -16,10 +16,13 @@ const DENOMINATION = 18;
  */
 const OneEGLDString = "1000000000000000000";
 
+const EGLDTicker = "EGLD";
+
 BigNumber.set({ DECIMAL_PLACES: DENOMINATION, ROUNDING_MODE: 1 });
 
 /**
  * Balance, as an immutable object.
+ * TODO: Re-design, perhaps as new Money(value, currency), with new Currency(denomination, ticker). 
  */
 export class Balance {
     private readonly value: BigNumber = new BigNumber(0);
@@ -73,7 +76,7 @@ export class Balance {
      */
     toCurrencyString(): string {
         let denominated = this.toDenominated();
-        return `${denominated} EGLD`;
+        return `${denominated} ${EGLDTicker}`;
     }
 
     toDenominated(): string {

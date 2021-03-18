@@ -4,6 +4,7 @@ import { Code } from "../smartcontracts/code";
 import { AbiRegistry } from "../smartcontracts/typesystem";
 import { TransactionWatcher } from "../transactionWatcher";
 
+// TODO: Adjust with respect to current terminology (localnet instead of devnet).
 export function getDevnetProvider(): ProxyProvider {
     return new ProxyProvider("http://localhost:7950", 5000);
 }

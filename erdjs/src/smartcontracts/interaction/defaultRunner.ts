@@ -1,12 +1,13 @@
 import { IProvider, ISigner } from "../../interface";
-import { IInteractionChecker, IInteractionRunner } from "./interface";
+import { ExecutionResultsBundle, IInteractionChecker, IInteractionRunner, QueryResponseBundle } from "./interface";
 import { Interaction } from "./interaction";
 import { Transaction } from "../../transaction";
-import { TransactionOnNetwork } from "../../transactionOnNetwork";
 import { Address } from "../../address";
-import { Query } from "../query";
-import { QueryResponse } from "../queryResponse";
 
+/**
+ * An interaction runner suitable for backends or wallets.
+ * Not suitable for dapps, which depend on external signers (wallets, ledger etc.).
+ */
 export class DefaultInteractionRunner implements IInteractionRunner {
     private readonly checker: IInteractionChecker;
     private readonly signer: ISigner;
@@ -18,31 +19,52 @@ export class DefaultInteractionRunner implements IInteractionRunner {
         this.provider = provider;
     }
 
-    async broadcast(transaction: Transaction): Promise<Transaction> {
+    /**
+     * Given an interaction, broadcasts its compiled transaction.
+     */
+    async run(interaction: Interaction): Promise<Transaction> {
+        this.checkInteraction(interaction);
+
+        let transaction = interaction.getTransaction();
         await this.signer.sign(transaction);
         await transaction.send(this.provider);
         return transaction;
     }
 
-    async broadcastAwaitExecution(transaction: Transaction): Promise<TransactionOnNetwork> {
-        await this.broadcast(transaction);
+    /**
+     * Given an interaction, broadcasts its compiled transaction (and also waits for its execution on the Network).
+     */
+    async runAwaitExecution(interaction: Interaction): Promise<ExecutionResultsBundle> {
+        this.checkInteraction(interaction);
+
+        let transaction = interaction.getTransaction();
+        await this.run(interaction);
         await transaction.awaitExecuted(this.provider);
         // This will wait until the transaction is notarized, as well (so that SCRs are returned by the API).
-        return await transaction.getAsOnNetwork(this.provider);
+        let transactionOnNetwork = await transaction.getAsOnNetwork(this.provider);
+        let bundle = interaction.interpretExecutionResults(transactionOnNetwork);
+        return bundle;
     }
 
-    async query(query: Query, caller?: Address): Promise<QueryResponse> {
+    async runQuery(interaction: Interaction, caller?: Address): Promise<QueryResponseBundle> {
+        this.checkInteraction(interaction);
+
+        let query = interaction.getQuery();
         query.caller = caller || this.signer.getAddress();
         let response = await this.provider.queryContract(query);
-        return response;
+        let bundle = interaction.interpretQueryResponse(response);
+        return bundle;
     }
 
-    async simulate(transaction: Transaction): Promise<any> {
+    async runSimulation(interaction: Interaction): Promise<any> {
+        this.checkInteraction(interaction);
+
+        let transaction = interaction.getTransaction();
         await this.signer.sign(transaction);
         return await transaction.simulate(this.provider);
     }
 
-    checkInteraction(interaction: Interaction) {
+    private checkInteraction(interaction: Interaction) {
         this.checker.checkInteraction(interaction);
     }
 }

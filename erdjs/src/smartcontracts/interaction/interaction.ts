@@ -7,11 +7,11 @@ import { QueryResponse } from "../queryResponse";
 import { ContractFunction } from "../function";
 import { Address } from "../../address";
 import { SmartContract } from "../smartContract";
-import { IInteractionRunner } from "./interface";
 import { EndpointDefinition, TypedValue } from "../typesystem";
 import { Nonce } from "../../nonce";
 import { ImmediateResult, SmartContractResults } from "../smartContractResults";
 import { ReturnCode } from "../returnCode";
+import { ExecutionResultsBundle, QueryResponseBundle } from "./interface";
 
 /**
  * Interactions are mutable (the interaction runner mutates their content: transaction, query).
@@ -22,7 +22,6 @@ export class Interaction {
     private readonly contract: SmartContract;
     private readonly func: ContractFunction;
     private readonly args: TypedValue[];
-    private readonly runner: IInteractionRunner;
 
     private value: Balance = Balance.Zero();
     private gasLimit: GasLimit = GasLimit.min();
@@ -33,16 +32,11 @@ export class Interaction {
     constructor(
         contract: SmartContract,
         func: ContractFunction,
-        args: TypedValue[],
-        runner: IInteractionRunner
+        args: TypedValue[]
     ) {
         this.contract = contract;
         this.func = func;
         this.args = args;
-        this.runner = runner;
-
-        // Reason: catch badly-typed arguments.
-        this.check();
 
         this.asTransaction = this.contract.call({
             func: func,
@@ -92,31 +86,14 @@ export class Interaction {
         return this.asQuery;
     }
 
-    private check() {
-        this.runner.checkInteraction(this);
-    }
-
-    async broadcast(): Promise<Transaction> {
-        return await this.runner.broadcast(this.asTransaction);
-    }
-
     /**
-     * Broadcasts the transaction and awaits for its execution.
+     * Interprets the results of a previously broadcasted (and fully executed) smart contract transaction.
      * The outcome is structured such that it allows quick access to each level of detail.
      */
-    async broadcastAwaitExecution(): Promise<
-        {
-            asOnNetwork: TransactionOnNetwork,
-            smartContractResults: SmartContractResults,
-            immediateResult: ImmediateResult,
-            values: TypedValue[],
-            firstValue: TypedValue,
-            returnCode: ReturnCode
-        }> {
-        let asOnNetwork = await this.runner.broadcastAwaitExecution(this.asTransaction);
-        let endpoint = this.getEndpointDefinition();
-        let smartContractResults = asOnNetwork.getSmartContractResults();
+    interpretExecutionResults(transactionOnNetwork: TransactionOnNetwork): ExecutionResultsBundle {
+        let smartContractResults = transactionOnNetwork.getSmartContractResults();
         let immediateResult = smartContractResults.getImmediate();
+        let endpoint = this.getEndpointDefinition();
 
         immediateResult.setEndpointDefinition(endpoint);
 
@@ -124,7 +101,7 @@ export class Interaction {
         let returnCode = immediateResult.getReturnCode();
 
         return {
-            asOnNetwork: asOnNetwork,
+            transactionOnNetwork: transactionOnNetwork,
             smartContractResults: smartContractResults,
             immediateResult: immediateResult,
             values: values,
@@ -134,32 +111,22 @@ export class Interaction {
     }
 
     /**
-     * Runs a query against the Smart Contract.
+     * Interprets the raw outcome of a Smart Contract query.
      * The outcome is structured such that it allows quick access to each level of detail.
      */
-    async query(caller?: Address): Promise<{
-        response: QueryResponse,
-        firstValue: TypedValue,
-        values: TypedValue[],
-        returnCode: ReturnCode
-    }> {
-        let response = await this.runner.query(this.asQuery, caller);
+    interpretQueryResponse(queryResponse: QueryResponse): QueryResponseBundle {
         let endpoint = this.getEndpointDefinition();
-        response.setEndpointDefinition(endpoint);
+        queryResponse.setEndpointDefinition(endpoint);
 
-        let values = response.outputTyped();
-        let returnCode = response.returnCode;
+        let values = queryResponse.outputTyped();
+        let returnCode = queryResponse.returnCode;
 
         return {
-            response: response,
+            queryResponse: queryResponse,
             values: values,
             firstValue: values[0],
             returnCode: returnCode
         };
-    }
-
-    async simulate(): Promise<any> {
-        return await this.runner.simulate(this.asTransaction);
     }
 
     withValue(value: Balance): Interaction {
@@ -167,18 +134,12 @@ export class Interaction {
         this.asTransaction.setValue(value);
         this.asQuery.value = value;
 
-        // Reason: catch errors related to calling "non-payable" functions with some value provided.
-        this.check();
-
         return this;
     }
 
     withGasLimit(gasLimit: GasLimit): Interaction {
         this.gasLimit = gasLimit;
         this.asTransaction.setGasLimit(gasLimit);
-
-        // Reason: catch gas estimation errors - if the checker implementation is smart enough and aware of gas estimations.
-        this.check();
 
         return this;
     }
@@ -191,7 +152,7 @@ export class Interaction {
     getEndpointDefinition(): EndpointDefinition {
         let abi = this.getContract().getAbi();
         let name = this.getFunction().toString();
-        let endpoint = abi.findEndpoint(name);
+        let endpoint = abi.getEndpoint(name);
 
         return endpoint;
     }

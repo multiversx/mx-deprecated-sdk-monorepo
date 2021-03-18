@@ -76,6 +76,15 @@ export class Account {
   }
 
   /**
+   * Gets then increments (locally) the nonce (the account sequence number).
+   */
+  getThenIncrementNonce(): Nonce {
+    let nonce = this.nonce;
+    this.nonce = this.nonce.increment();
+    return nonce;
+  }
+
+  /**
    * Converts the account to a pretty, plain JavaScript object.
    */
   toJSON(): any {
