@@ -17,6 +17,7 @@ import { guardValueIsSet } from "../utils";
 import { TypedValue } from "./typesystem";
 import { bigIntToBuffer } from "./codec/utils";
 import BigNumber from "bignumber.js";
+import { Interaction } from "./interaction";
 const createKeccakHash = require("keccak");
 
 /**
@@ -31,11 +32,40 @@ export class SmartContract implements ISmartContract {
     private readonly trackOfTransactions: Transaction[] = [];
 
     /**
+     * This object contains a function for each endpoint defined by the contract.
+     * (a bit similar to web3js's "contract.methods").
+     */
+    public readonly methods: any = {};
+
+    /**
      * Create a SmartContract object by providing its address on the Network.
      */
     constructor({ address, abi }: { address?: Address, abi?: SmartContractAbi }) {
         this.address = address || new Address();
         this.abi = abi;
+        this.methods = {};
+
+        if (abi) {
+            this.setupMethods();
+        }
+    }
+
+    private setupMethods() {
+        let contract = this;
+        let abi = this.getAbi();
+
+        for (const definition of abi.getAllEndpoints()) {
+            let functionName = definition.name;
+
+            // For each endpoint defined by the ABI, we attach a function to the "methods" object,
+            // a function that receives typed values as arguments
+            // and returns a prepared contract interaction.
+            this.methods[functionName] = function (args: TypedValue[]) {
+                let func = new ContractFunction(functionName);
+                let interaction = new Interaction(contract, func, args || []);
+                return interaction;
+            };
+        }
     }
 
     /**

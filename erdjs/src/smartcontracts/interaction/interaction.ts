@@ -9,8 +9,6 @@ import { Address } from "../../address";
 import { SmartContract } from "../smartContract";
 import { EndpointDefinition, TypedValue } from "../typesystem";
 import { Nonce } from "../../nonce";
-import { ImmediateResult, SmartContractResults } from "../smartContractResults";
-import { ReturnCode } from "../returnCode";
 import { ExecutionResultsBundle, QueryResponseBundle } from "./interface";
 
 /**
@@ -38,6 +36,7 @@ export class Interaction {
         this.func = func;
         this.args = args;
 
+        // TODO: create as "deploy" transaction if the function is "init" (or find a better pattern for deployments).
         this.asTransaction = this.contract.call({
             func: func,
             // GasLimit will be set using "withGasLimit()".

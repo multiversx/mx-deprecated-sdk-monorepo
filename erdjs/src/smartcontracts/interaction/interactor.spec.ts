@@ -1,9 +1,8 @@
-import { SmartContractInteractor } from "./interactor";
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
 import { missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "../typesystem";
-import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets, Wait } from "../../testutils";
+import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../../testutils";
 import { SmartContractAbi } from "../abi";
 import { Address } from "../../address";
 import { assert } from "chai";
@@ -31,9 +30,8 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
-        let interactor = new SmartContractInteractor(contract);
 
-        let interaction = <Interaction>interactor.prepare().getUltimateAnswer().withGasLimit(new GasLimit(543210));
+        let interaction = <Interaction>contract.methods.getUltimateAnswer().withGasLimit(new GasLimit(543210));
         assert.equal(interaction.getContract().getAddress(), dummyAddress);
         assert.deepEqual(interaction.getFunction(), new ContractFunction("getUltimateAnswer"));
         assert.lengthOf(interaction.getArguments(), 0);
@@ -77,11 +75,10 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/counter.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["counter"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
-        let interactor = new SmartContractInteractor(contract);
 
-        let getInteraction = <Interaction>interactor.prepare().get();
-        let incrementInteraction = (<Interaction>interactor.prepare().increment()).withGasLimit(new GasLimit(543210));
-        let decrementInteraction = (<Interaction>interactor.prepare().decrement()).withGasLimit(new GasLimit(987654));
+        let getInteraction = <Interaction>contract.methods.get();
+        let incrementInteraction = (<Interaction>contract.methods.increment()).withGasLimit(new GasLimit(543210));
+        let decrementInteraction = (<Interaction>contract.methods.decrement()).withGasLimit(new GasLimit(987654));
 
         // For "get()", return fake 7
         provider.mockQueryResponseOnFunction("get", new QueryResponse({ returnData: ["Bw=="], returnCode: ReturnCode.Ok }));
@@ -123,9 +120,8 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
-        let interactor = new SmartContractInteractor(contract);
 
-        let startInteraction = <Interaction>interactor.prepare().start([
+        let startInteraction = <Interaction>contract.methods.start([
             typedUTF8("lucky"),
             typedBigInt(Balance.egld(1).valueOf()),
             missingOption(),
@@ -135,11 +131,11 @@ describe("test smart contract interactor", function () {
             missingOption()
         ]).withGasLimit(new GasLimit(5000000));
 
-        let lotteryStatusInteraction = <Interaction>interactor.prepare().status([
+        let lotteryStatusInteraction = <Interaction>contract.methods.status([
             typedUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 
-        let getLotteryInfoInteraction = <Interaction>interactor.prepare().lotteryInfo([
+        let getLotteryInfoInteraction = <Interaction>contract.methods.lotteryInfo([
             typedUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 

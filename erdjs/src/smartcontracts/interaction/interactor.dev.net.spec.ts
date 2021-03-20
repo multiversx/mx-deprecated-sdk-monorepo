@@ -1,4 +1,3 @@
-import { SmartContractInteractor } from "./interactor";
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "../smartContract";
@@ -29,7 +28,6 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["answer"]);
         let contract = new SmartContract({ abi: abi });
-        let interactor = new SmartContractInteractor(contract);
 
         // Currently, this has to be called before creating any Interaction objects, 
         // because the Transaction objects created under the hood point to the "default" NetworkConfig.
@@ -37,7 +35,7 @@ describe("test smart contract interactor", function () {
         await alice.sync(provider);
         await deploy(contract, "src/testdata/answer.wasm", new GasLimit(3000000), []);
 
-        let interaction = <Interaction>interactor.prepare().getUltimateAnswer().withGasLimit(new GasLimit(3000000));
+        let interaction = <Interaction>contract.methods.getUltimateAnswer().withGasLimit(new GasLimit(3000000));
 
         // Query
         let queryResponseBundle = await runner.runQuery(interaction);
@@ -61,7 +59,6 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/counter.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["counter"]);
         let contract = new SmartContract({ abi: abi });
-        let interactor = new SmartContractInteractor(contract);
 
         // Currently, this has to be called before creating any Interaction objects, 
         // because the Transaction objects created under the hood point to the "default" NetworkConfig.
@@ -69,9 +66,9 @@ describe("test smart contract interactor", function () {
         await alice.sync(provider);
         await deploy(contract, "src/testdata/counter.wasm", new GasLimit(3000000), []);
 
-        let getInteraction = <Interaction>interactor.prepare().get();
-        let incrementInteraction = (<Interaction>interactor.prepare().increment()).withGasLimit(new GasLimit(3000000));
-        let decrementInteraction = (<Interaction>interactor.prepare().decrement()).withGasLimit(new GasLimit(3000000));
+        let getInteraction = <Interaction>contract.methods.get();
+        let incrementInteraction = (<Interaction>contract.methods.increment()).withGasLimit(new GasLimit(3000000));
+        let decrementInteraction = (<Interaction>contract.methods.decrement()).withGasLimit(new GasLimit(3000000));
 
         // Query "get()"
         let { firstValue: counterValue } = await runner.runQuery(getInteraction);
@@ -93,7 +90,6 @@ describe("test smart contract interactor", function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);
         let abi = new SmartContractAbi(abiRegistry, ["Lottery"]);
         let contract = new SmartContract({ abi: abi });
-        let interactor = new SmartContractInteractor(contract);
 
         // Currently, this has to be called before creating any Interaction objects, 
         // because the Transaction objects created under the hood point to the "default" NetworkConfig.
@@ -101,7 +97,7 @@ describe("test smart contract interactor", function () {
         await alice.sync(provider);
         await deploy(contract, "src/testdata/lottery_egld.wasm", new GasLimit(100000000), []);
 
-        let startInteraction = <Interaction>interactor.prepare().start([
+        let startInteraction = <Interaction>contract.methods.start([
             typedUTF8("lucky"),
             typedBigInt(Balance.egld(1).valueOf()),
             missingOption(),
@@ -111,11 +107,11 @@ describe("test smart contract interactor", function () {
             missingOption()
         ]).withGasLimit(new GasLimit(15000000));
 
-        let lotteryStatusInteraction = <Interaction>interactor.prepare().status([
+        let lotteryStatusInteraction = <Interaction>contract.methods.status([
             typedUTF8("lucky")
         ]).withGasLimit(new GasLimit(15000000));
 
-        let getLotteryInfoInteraction = <Interaction>interactor.prepare().lotteryInfo([
+        let getLotteryInfoInteraction = <Interaction>contract.methods.lotteryInfo([
             typedUTF8("lucky")
         ]).withGasLimit(new GasLimit(15000000));
 
