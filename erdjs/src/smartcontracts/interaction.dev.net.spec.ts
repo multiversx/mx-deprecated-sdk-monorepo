@@ -1,17 +1,17 @@
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
-import { SmartContract } from "../smartContract";
-import { missingOption, providedOption, typedBigInt, typedUTF8, TypedValue, U32Value } from "../typesystem";
-import { getDevnetProvider, loadAbiRegistry, loadContractCode, TestWallets } from "../../testutils";
-import { SmartContractAbi } from "../abi";
+import { SmartContract } from "./smartContract";
+import { missingOption, providedOption, typedBigInt, typedUTF8, TypedValue, U32Value } from "./typesystem";
+import { getDevnetProvider, loadAbiRegistry, loadContractCode, TestWallets } from "../testutils";
+import { SmartContractAbi } from "./abi";
 import { assert } from "chai";
 import { Interaction } from "./interaction";
-import { GasLimit } from "../../networkParams";
-import { ReturnCode } from "../returnCode";
-import { Balance } from "../../balance";
+import { GasLimit } from "../networkParams";
+import { ReturnCode } from "./returnCode";
+import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
-import { NetworkConfig } from "../../networkConfig";
-import { Account } from "../../account";
+import { NetworkConfig } from "../networkConfig";
+import { Account } from "../account";
 
 
 describe("test smart contract interactor", function () {

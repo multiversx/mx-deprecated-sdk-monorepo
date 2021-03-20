@@ -1,14 +1,14 @@
-import { Balance } from "../../balance";
-import { GasLimit } from "../../networkParams";
-import { Transaction } from "../../transaction";
-import { TransactionOnNetwork } from "../../transactionOnNetwork";
-import { Query } from "../query";
-import { QueryResponse } from "../queryResponse";
-import { ContractFunction } from "../function";
-import { Address } from "../../address";
-import { SmartContract } from "../smartContract";
-import { EndpointDefinition, TypedValue } from "../typesystem";
-import { Nonce } from "../../nonce";
+import { Balance } from "../balance";
+import { GasLimit } from "../networkParams";
+import { Transaction } from "../transaction";
+import { TransactionOnNetwork } from "../transactionOnNetwork";
+import { Query } from "./query";
+import { QueryResponse } from "./queryResponse";
+import { ContractFunction } from "./function";
+import { Address } from "../address";
+import { SmartContract } from "./smartContract";
+import { EndpointDefinition, TypedValue } from "./typesystem";
+import { Nonce } from "../nonce";
 import { ExecutionResultsBundle, QueryResponseBundle } from "./interface";
 
 /**
@@ -35,7 +35,7 @@ export class Interaction {
         this.contract = contract;
         this.func = func;
         this.args = args;
-
+    
         // TODO: create as "deploy" transaction if the function is "init" (or find a better pattern for deployments).
         this.asTransaction = this.contract.call({
             func: func,

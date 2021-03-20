@@ -1,8 +1,8 @@
-import { IProvider, ISigner } from "../../interface";
+import { IProvider, ISigner } from "../interface";
 import { ExecutionResultsBundle, IInteractionChecker, IInteractionRunner, QueryResponseBundle } from "./interface";
 import { Interaction } from "./interaction";
-import { Transaction } from "../../transaction";
-import { Address } from "../../address";
+import { Transaction } from "../transaction";
+import { Address } from "../address";
 
 /**
  * An interaction runner suitable for backends or wallets.

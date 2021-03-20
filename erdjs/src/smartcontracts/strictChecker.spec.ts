@@ -1,13 +1,13 @@
-import * as errors from "../../errors";
+import * as errors from "../errors";
 import { StrictChecker as StrictInteractionChecker } from "./strictChecker";
-import { SmartContract } from "../smartContract";
-import { missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "../typesystem";
-import { loadAbiRegistry, MockProvider, TestWallets } from "../../testutils";
-import { SmartContractAbi } from "../abi";
-import { Address } from "../../address";
+import { SmartContract } from "./smartContract";
+import { missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "./typesystem";
+import { loadAbiRegistry, MockProvider, TestWallets } from "../testutils";
+import { SmartContractAbi } from "./abi";
+import { Address } from "../address";
 import { assert } from "chai";
 import { Interaction } from "./interaction";
-import { Balance } from "../../balance";
+import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
 
 describe("integration tests: test checker within interactor", function () {

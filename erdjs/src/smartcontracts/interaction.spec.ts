@@ -1,19 +1,19 @@
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
-import { SmartContract } from "../smartContract";
-import { missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "../typesystem";
-import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../../testutils";
-import { SmartContractAbi } from "../abi";
-import { Address } from "../../address";
+import { SmartContract } from "./smartContract";
+import { missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "./typesystem";
+import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../testutils";
+import { SmartContractAbi } from "./abi";
+import { Address } from "../address";
 import { assert } from "chai";
 import { Interaction } from "./interaction";
-import { GasLimit } from "../../networkParams";
-import { ContractFunction } from "../function";
-import { QueryResponse } from "../queryResponse";
-import { Nonce } from "../../nonce";
-import { TransactionStatus } from "../../transaction";
-import { ReturnCode } from "../returnCode";
-import { Balance } from "../../balance";
+import { GasLimit } from "../networkParams";
+import { ContractFunction } from "./function";
+import { QueryResponse } from "./queryResponse";
+import { Nonce } from "../nonce";
+import { TransactionStatus } from "../transaction";
+import { ReturnCode } from "./returnCode";
+import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
 
 describe("test smart contract interactor", function () {

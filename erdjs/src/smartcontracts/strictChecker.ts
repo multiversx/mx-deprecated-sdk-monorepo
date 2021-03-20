@@ -1,5 +1,5 @@
-import * as errors from "../../errors";
-import { EndpointDefinition } from "../typesystem";
+import * as errors from "../errors";
+import { EndpointDefinition } from "./typesystem";
 import { Interaction } from "./interaction";
 import { IInteractionChecker } from "./interface";
 
