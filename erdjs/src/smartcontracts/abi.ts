@@ -6,7 +6,7 @@ export class SmartContractAbi {
     private readonly interfaces: ContractInterface[] = [];
 
     constructor(registry: AbiRegistry, implementsInterfaces: string[]) {
-        this.interfaces.push(...registry.findInterfaces(implementsInterfaces));
+        this.interfaces.push(...registry.getInterfaces(implementsInterfaces));
     }
 
     getAllEndpoints(): EndpointDefinition[] {

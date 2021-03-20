@@ -83,34 +83,34 @@ export class AbiRegistry {
         throw new errors.ErrTypingSystem(`Unknown type discriminant: ${typeDiscriminant}`);
     }
 
-    findInterface(name: string): ContractInterface {
+    getInterface(name: string): ContractInterface {
         let result = this.interfaces.find(e => e.name == name);
         guardValueIsSetWithMessage(`interface [${name}] not found`, result);
         return result!;
     }
 
-    findInterfaces(names: string[]): ContractInterface[] {
-        return names.map(name => this.findInterface(name));
+    getInterfaces(names: string[]): ContractInterface[] {
+        return names.map(name => this.getInterface(name));
     }
     
-    findStruct(name: string): StructType {
+    getStruct(name: string): StructType {
         let result = this.customTypes.find(e => e.getName() == name && e instanceof StructType);
         guardValueIsSetWithMessage(`struct [${name}] not found`, result);
         return <StructType>result!;
     }
 
-    findStructs(names: string[]): StructType[] {
-        return names.map(name => this.findStruct(name));
+    getStructs(names: string[]): StructType[] {
+        return names.map(name => this.getStruct(name));
     }  
 
-    findEnum(name: string): EnumType {
+    getEnum(name: string): EnumType {
         let result = this.customTypes.find(e => e.getName() == name && e instanceof EnumType);
         guardValueIsSetWithMessage(`enum [${name}] not found`, result);
         return <EnumType>result!;
     }
 
-    findEnums(names: string[]): EnumType[] {
-        return names.map(name => this.findEnum(name));
+    getEnums(names: string[]): EnumType[] {
+        return names.map(name => this.getEnum(name));
     }
 
     /**

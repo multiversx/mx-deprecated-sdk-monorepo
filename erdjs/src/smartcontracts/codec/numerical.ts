@@ -3,14 +3,11 @@ import { isMsbZero, isMsbOne, bigIntToBuffer, bufferToBigInt, cloneBuffer, flipB
 import BigNumber from "bignumber.js";
 import { SizeOfU32 } from "./constants";
 
+/**
+ * Encodes and decodes "NumericalValue" objects
+ * with respect to: {@link https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/ | The Elrond Serialization Format}. 
+ */
 export class NumericalBinaryCodec {
-    /**
-     * Reads and decodes a NumericalValue from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}.
-     *
-     * @param buffer the input buffer
-     * @param type the primitive type
-     */
     decodeNested(buffer: Buffer, type: NumericalType): [NumericalValue, number] {
         let offset = 0;
         let length = type.sizeInBytes;
@@ -28,13 +25,6 @@ export class NumericalBinaryCodec {
         return [result, decodedLength];
     }
 
-    /**
-     * Reads and decodes a NumericalValue from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}.
-     *
-     * @param buffer the input buffer
-     * @param type the primitive type
-     */
     decodeTopLevel(buffer: Buffer, type: NumericalType): NumericalValue {
         let payload = cloneBuffer(buffer);
 
@@ -58,10 +48,6 @@ export class NumericalBinaryCodec {
         return new NumericalValue(type, negativeValueMinusOne);
     }
 
-    /**
-     * Encodes a NumericalValue to a buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
     encodeNested(primitive: NumericalValue): Buffer {
         if (primitive.sizeInBytes) {
             return this.encodeNestedFixedSize(primitive, primitive.sizeInBytes);
@@ -113,10 +99,6 @@ export class NumericalBinaryCodec {
         return Buffer.concat([paddingBytes, buffer]);
     }
 
-    /**
-     * Encodes a NumericalValue to a buffer, 
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}.
-     */
     encodeTopLevel(primitive: NumericalValue): Buffer {
         let withSign = primitive.withSign;
 
@@ -133,10 +115,6 @@ export class NumericalBinaryCodec {
         return this.encodePrimitive(primitive);
     }
 
-    /**
-     * Encodes a NumericalValue to a buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}.
-     */
     encodePrimitive(primitive: NumericalValue): Buffer {
         // Positive:
         if (primitive.value.isPositive()) {

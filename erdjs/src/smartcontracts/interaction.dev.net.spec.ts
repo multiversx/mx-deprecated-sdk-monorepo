@@ -22,7 +22,7 @@ describe("test smart contract interactor", function () {
     let aliceSigner = wallets.alice.signer;
     let runner = new DefaultInteractionRunner(checker, aliceSigner, provider);
 
-    it("should interact with 'answer'", async function () {
+    it("should interact with 'answer' (local testnet)", async function () {
         this.timeout(60000);
 
         let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);
@@ -53,7 +53,7 @@ describe("test smart contract interactor", function () {
         assert.isTrue(executionResultsBundle.returnCode.equals(ReturnCode.Ok));
     });
 
-    it("should interact with 'counter'", async function () {
+    it("should interact with 'counter' (local testnet)", async function () {
         this.timeout(120000);
 
         let abiRegistry = await loadAbiRegistry(["src/testdata/counter.abi.json"]);
@@ -84,7 +84,7 @@ describe("test smart contract interactor", function () {
         assert.deepEqual(valueAfterDecrement.valueOf(), new BigNumber(0));
     });
 
-    it("should interact with 'lottery_egld'", async function () {
+    it("should interact with 'lottery_egld' (local testnet)", async function () {
         this.timeout(120000);
 
         let abiRegistry = await loadAbiRegistry(["src/testdata/lottery_egld.abi.json"]);

@@ -20,7 +20,7 @@ import { TokenIdentifierCodec } from "./tokenIdentifier";
 import { TokenIdentifierValue } from "../typesystem/tokenIdentifier";
 
 export class PrimitiveBinaryCodec {
-    private readonly parentCodec: BinaryCodec;
+    private readonly binaryCodec: BinaryCodec;
 
     private readonly booleanCodec: BooleanBinaryCodec;
     private readonly numericalCodec: NumericalBinaryCodec;
@@ -29,8 +29,8 @@ export class PrimitiveBinaryCodec {
     private readonly bytesCodec: BytesBinaryCodec;
     private readonly tokenIdentifierCodec: TokenIdentifierCodec;
 
-    constructor(parentCodec: BinaryCodec) {
-        this.parentCodec = parentCodec;
+    constructor(binaryCodec: BinaryCodec) {
+        this.binaryCodec = binaryCodec;
 
         this.booleanCodec = new BooleanBinaryCodec();
         this.numericalCodec = new NumericalBinaryCodec();

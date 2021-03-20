@@ -1,11 +1,11 @@
 import { BytesValue } from "../typesystem/bytes";
 import { SizeOfU32 } from "./constants";
 
+/**
+ * Encodes and decodes "BytesValue" objects
+ * with respect to: {@link https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/ | The Elrond Serialization Format}. 
+ */
 export class BytesBinaryCodec {
-    /**
-     * Reads and decodes a Bytes object from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
     decodeNested(buffer: Buffer): [BytesValue, number] {
         let length = buffer.readUInt32BE();
         let payload = buffer.slice(SizeOfU32, SizeOfU32 + length);
@@ -13,10 +13,6 @@ export class BytesBinaryCodec {
         return [result, SizeOfU32 + length];
     }
 
-    /**
-     * Reads and decodes a Bytes object from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
     decodeTopLevel(buffer: Buffer): BytesValue {
         return new BytesValue(buffer);
     }

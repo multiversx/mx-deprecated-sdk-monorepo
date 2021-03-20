@@ -34,9 +34,12 @@ export class Type {
         return this.typeParameters[0];
     }
 
+
+    /**
+     * Generates type expressions similar to elrond-wasm-rs. 
+     * Involves recursive calls to toString().
+     */
     toString() {
-        // Naive implementation for generating type expressions similar to elrond-wasm-rs. 
-        // Involves recursive calls to toString().
         let typeParameters: string = this.getTypeParameters().map(type => type.toString()).join(", ");
         let typeParametersExpression = typeParameters ? `<${typeParameters}>` : "";
         return `${this.name}${typeParametersExpression}`;

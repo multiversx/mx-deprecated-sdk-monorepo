@@ -4,7 +4,7 @@ import { guardValueIsSet } from "../utils";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ContractFunction } from "./function";
-import { Serializer } from "./serializer";
+import { ArgSerializer } from "./argSerializer";
 import { TypedValue } from "./typesystem";
 
 export const ArwenVirtualMachine = "0500";
@@ -168,7 +168,7 @@ function appendArgumentsToString(to: string, values: TypedValue[]) {
         return to;
     }
 
-    let serializer = new Serializer();
+    let serializer = new ArgSerializer();
     let argumentsString = serializer.valuesToString(values);
     return `${to}@${argumentsString}`;
 }

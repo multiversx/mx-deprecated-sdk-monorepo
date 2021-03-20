@@ -1,7 +1,7 @@
 
 import { assert } from "chai";
 import { U8Value, EndpointParameterDefinition, TypedValue, U32Value, I64Value, providedOption, missingOption, typedComposite, typedList, U16Value, typedVariadic } from "./typesystem";
-import { Serializer } from "./serializer";
+import { ArgSerializer } from "./argSerializer";
 import BigNumber from "bignumber.js";
 import { BytesValue } from "./typesystem/bytes";
 import { TypeMapper } from "./typesystem/typeMapper";
@@ -9,7 +9,7 @@ import { TypeExpressionParser } from "./typesystem/typeExpressionParser";
 
 describe("test serializer", () => {
     it("should serialize <valuesToString> then back <stringToValues>", async () => {
-        let serializer = new Serializer();
+        let serializer = new ArgSerializer();
         let typeParser = new TypeExpressionParser();
         let typeMapper = new TypeMapper();
 

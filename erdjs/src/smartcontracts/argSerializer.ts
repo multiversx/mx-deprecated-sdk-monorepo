@@ -10,7 +10,7 @@ export const ArgumentsSeparator = "@";
  */
 const Codec = new BinaryCodec();
 
-export class Serializer {
+export class ArgSerializer {
     /**
      * Reads typed values from an arguments string (e.g. aa@bb@@cc), given parameter definitions.
      */

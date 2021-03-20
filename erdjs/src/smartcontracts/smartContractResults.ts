@@ -5,7 +5,7 @@ import { Hash } from "../hash";
 import { GasLimit, GasPrice } from "../networkParams";
 import { Nonce } from "../nonce";
 import { TransactionHash } from "../transaction";
-import { Serializer } from "./serializer";
+import { ArgSerializer } from "./argSerializer";
 import { EndpointDefinition, TypedValue } from "./typesystem";
 import { guardValueIsSet } from "../utils";
 import { ReturnCode } from "./returnCode";
@@ -101,7 +101,7 @@ export class SmartContractResultItem {
     }
 
     getDataTokens(): Buffer[] {
-        let serializer = new Serializer();
+        let serializer = new ArgSerializer();
         return serializer.stringToBuffers(this.data);
     }
 }
@@ -149,7 +149,7 @@ export class ImmediateResult extends SmartContractResultItem {
         guardValueIsSet("endpointDefinition", this.endpointDefinition);
 
         let buffers = this.outputUntyped();
-        let values = new Serializer().buffersToValues(buffers, this.endpointDefinition!.output);
+        let values = new ArgSerializer().buffersToValues(buffers, this.endpointDefinition!.output);
         return values;
     }
 

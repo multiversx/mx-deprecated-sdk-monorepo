@@ -2,17 +2,17 @@ import * as errors from "../../errors";
 import { Type, OptionValue } from "../typesystem";
 import { BinaryCodec } from "./binary";
 
+/**
+ * Encodes and decodes "OptionValue" objects
+ * with respect to: {@link https://docs.elrond.com/developers/developer-reference/elrond-serialization-format/ | The Elrond Serialization Format}. 
+ */
 export class OptionValueBinaryCodec {
-    private readonly parentCodec: BinaryCodec;
+    private readonly binaryCodec: BinaryCodec;
 
-    constructor(parentCodec: BinaryCodec) {
-        this.parentCodec = parentCodec;
+    constructor(binaryCodec: BinaryCodec) {
+        this.binaryCodec = binaryCodec;
     }
 
-    /**
-     * Reads and decodes an OptionValue from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
     decodeNested(buffer: Buffer, type: Type): [OptionValue, number] {
         if (buffer[0] == 0x00) {
             return [new OptionValue(type), 1];
@@ -22,14 +22,10 @@ export class OptionValueBinaryCodec {
             throw new errors.ErrCodec("invalid buffer for optional value");
         }
 
-        let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer.slice(1), type);
+        let [decoded, decodedLength] = this.binaryCodec.decodeNested(buffer.slice(1), type);
         return [new OptionValue(type, decoded), decodedLength + 1];
     }
 
-    /**
-     * Reads and decodes an OptionValue from a given buffer,
-     * with respect to: {@link https://docs.elrond.com/developers/developer-reference/the-elrond-serialization-format | The Elrond Serialization Format}. 
-     */
     decodeTopLevel(buffer: Buffer, type: Type): OptionValue {
         if (buffer.length == 0) {
             return new OptionValue(type);
@@ -39,13 +35,13 @@ export class OptionValueBinaryCodec {
             throw new errors.ErrCodec("invalid buffer for optional value");
         }
 
-        let [decoded, decodedLength] = this.parentCodec.decodeNested(buffer.slice(1), type);
+        let [decoded, decodedLength] = this.binaryCodec.decodeNested(buffer.slice(1), type);
         return new OptionValue(type, decoded);
     }
 
     encodeNested(optionValue: OptionValue): Buffer {
         if (optionValue.isSet()) {
-            return Buffer.concat([Buffer.from([1]), this.parentCodec.encodeNested(optionValue.getTypedValue())]);
+            return Buffer.concat([Buffer.from([1]), this.binaryCodec.encodeNested(optionValue.getTypedValue())]);
         }
 
         return Buffer.from([0]);
@@ -53,7 +49,7 @@ export class OptionValueBinaryCodec {
 
     encodeTopLevel(optionValue: OptionValue): Buffer {
         if (optionValue.isSet()) {
-            return Buffer.concat([Buffer.from([1]), this.parentCodec.encodeNested(optionValue.getTypedValue())]);
+            return Buffer.concat([Buffer.from([1]), this.binaryCodec.encodeNested(optionValue.getTypedValue())]);
         }
 
         return Buffer.from([]);

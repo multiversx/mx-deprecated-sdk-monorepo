@@ -15,20 +15,20 @@ describe("test abi registry", () => {
         await extendAbiRegistry(registry, "src/testdata/answer.abi.json");
         assert.lengthOf(registry.interfaces, 1);
         assert.lengthOf(registry.customTypes, 0);
-        assert.lengthOf(registry.findInterface("answer").endpoints, 1);
+        assert.lengthOf(registry.getInterface("answer").endpoints, 1);
 
         await extendAbiRegistry(registry, "src/testdata/counter.abi.json");
         assert.lengthOf(registry.interfaces, 2);
         assert.lengthOf(registry.customTypes, 0);
-        assert.lengthOf(registry.findInterface("counter").endpoints, 3);
+        assert.lengthOf(registry.getInterface("counter").endpoints, 3);
 
         await extendAbiRegistry(registry, "src/testdata/lottery_egld.abi.json");
         assert.lengthOf(registry.interfaces, 3);
         assert.lengthOf(registry.customTypes, 2);
 
-        assert.lengthOf(registry.findInterface("Lottery").endpoints, 7);
-        assert.lengthOf(registry.findStruct("LotteryInfo").fields, 8);
-        assert.lengthOf(registry.findEnum("Status").variants, 3);
+        assert.lengthOf(registry.getInterface("Lottery").endpoints, 7);
+        assert.lengthOf(registry.getStruct("LotteryInfo").fields, 8);
+        assert.lengthOf(registry.getEnum("Status").variants, 3);
     });
 
     it("load should also remap known to types", async () => {
@@ -39,20 +39,20 @@ describe("test abi registry", () => {
         ]);
 
         // Ultimate answer
-        let answer = registry.findInterface("answer");
-        let getUltimateAnswer = answer.findEndpoint("getUltimateAnswer");
+        let answer = registry.getInterface("answer");
+        let getUltimateAnswer = answer.getEndpoint("getUltimateAnswer");
         assert.instanceOf(getUltimateAnswer.output[0].type, I64Type);
 
         // Counter
-        let counter = registry.findInterface("counter");
-        let getCounter = counter.findEndpoint("get");
+        let counter = registry.getInterface("counter");
+        let getCounter = counter.getEndpoint("get");
         assert.instanceOf(getCounter.output[0].type, I64Type);
 
         // Lottery
-        let lottery = registry.findInterface("Lottery");
-        let start = lottery.findEndpoint("start");
-        let getStatus = lottery.findEndpoint("status");
-        let getLotteryInfo = lottery.findEndpoint("lotteryInfo");
+        let lottery = registry.getInterface("Lottery");
+        let start = lottery.getEndpoint("start");
+        let getStatus = lottery.getEndpoint("status");
+        let getLotteryInfo = lottery.getEndpoint("lotteryInfo");
         assert.instanceOf(start.input[0].type, BytesType);
         assert.instanceOf(start.input[1].type, BigUIntType);
         assert.instanceOf(start.input[2].type, OptionType);

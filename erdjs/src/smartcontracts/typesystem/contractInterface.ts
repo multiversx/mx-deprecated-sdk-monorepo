@@ -23,7 +23,7 @@ export class ContractInterface {
         return new ContractInterface(json.name, endpoints);
     }
 
-    findEndpoint(name: string): EndpointDefinition {
+    getEndpoint(name: string): EndpointDefinition {
         let result = this.endpoints.find(e => e.name == name);
         guardValueIsSet("result", result);
         return result!;

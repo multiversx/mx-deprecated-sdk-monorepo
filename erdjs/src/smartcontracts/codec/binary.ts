@@ -20,7 +20,7 @@ export class BinaryCodec {
         this.optionCodec = new OptionValueBinaryCodec(this);
         this.listCodec = new ListBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
-        this.structCodec = new  StructBinaryCodec(this);
+        this.structCodec = new StructBinaryCodec(this);
         this.enumCodec = new EnumBinaryCodec(this);
     }
 

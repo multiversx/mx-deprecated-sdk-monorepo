@@ -4,7 +4,7 @@ import { EndpointDefinition, TypedValue } from "./typesystem";
 import { MaxUint64 } from "./query";
 import { ReturnCode } from "./returnCode";
 import { guardValueIsSet } from "../utils";
-import { Serializer } from "./serializer";
+import { ArgSerializer } from "./argSerializer";
 import BigNumber from "bignumber.js";
 
 export class QueryResponse {
@@ -71,7 +71,7 @@ export class QueryResponse {
         guardValueIsSet("endpointDefinition", this.endpointDefinition);
 
         let buffers = this.outputUntyped();
-        let values = new Serializer().buffersToValues(buffers, this.endpointDefinition!.output);
+        let values = new ArgSerializer().buffersToValues(buffers, this.endpointDefinition!.output);
         return values;
     }
 
