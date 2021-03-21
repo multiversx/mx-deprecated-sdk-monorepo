@@ -4,4 +4,4 @@
  */
 
 export * from "./binary";
-export * from "./sugar";
+export * from "./binaryCodecUtils";

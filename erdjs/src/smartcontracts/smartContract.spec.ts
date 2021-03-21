@@ -9,7 +9,8 @@ import { TransactionStatus } from "../transaction";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { TestWallets } from "../testutils";
-import { typedBytesFromHex, typedNumber } from "./typesystem";
+import { U32Value } from "./typesystem";
+import { BytesValue } from "./typesystem/bytes";
 
 
 describe("test contract", () => {
@@ -76,13 +77,13 @@ describe("test contract", () => {
 
         let callTransactionOne = contract.call({
             func: new ContractFunction("helloEarth"),
-            args: [typedNumber(5), typedBytesFromHex("0123")],
+            args: [new U32Value(5), BytesValue.fromHex("0123")],
             gasLimit: new GasLimit(150000)
         });
 
         let callTransactionTwo = contract.call({
             func: new ContractFunction("helloMars"),
-            args: [typedNumber(5), typedBytesFromHex("0123")],
+            args: [new U32Value(5), BytesValue.fromHex("0123")],
             gasLimit: new GasLimit(1500000)
         });
 

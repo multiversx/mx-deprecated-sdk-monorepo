@@ -1,7 +1,7 @@
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "./smartContract";
-import { missingOption, providedOption, typedBigInt, typedUTF8, U32Value } from "./typesystem";
+import { BigUIntValue, OptionValue, U32Value } from "./typesystem";
 import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../testutils";
 import { SmartContractAbi } from "./abi";
 import { Address } from "../address";
@@ -15,6 +15,7 @@ import { TransactionStatus } from "../transaction";
 import { ReturnCode } from "./returnCode";
 import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
+import { BytesValue } from "./typesystem/bytes";
 
 describe("test smart contract interactor", function () {
     let wallets = new TestWallets();
@@ -113,21 +114,21 @@ describe("test smart contract interactor", function () {
         let contract = new SmartContract({ address: dummyAddress, abi: abi });
 
         let startInteraction = <Interaction>contract.methods.start([
-            typedUTF8("lucky"),
-            typedBigInt(Balance.egld(1).valueOf()),
-            missingOption(),
-            missingOption(),
-            providedOption(new U32Value(1)),
-            missingOption(),
-            missingOption()
+            BytesValue.fromUTF8("lucky"),
+            new BigUIntValue(Balance.egld(1).valueOf()),
+            OptionValue.newMissingOption(),
+            OptionValue.newMissingOption(),
+            OptionValue.newProvidedOption(new U32Value(1)),
+            OptionValue.newMissingOption(),
+            OptionValue.newMissingOption(),
         ]).withGasLimit(new GasLimit(5000000));
 
         let lotteryStatusInteraction = <Interaction>contract.methods.status([
-            typedUTF8("lucky")
+            BytesValue.fromUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 
         let getLotteryInfoInteraction = <Interaction>contract.methods.lotteryInfo([
-            typedUTF8("lucky")
+            BytesValue.fromUTF8("lucky")
         ]).withGasLimit(new GasLimit(5000000));
 
         // start()

@@ -79,7 +79,7 @@ let addressOfCarol = new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arnc
 let tx = contract.call({
     func: new ContractFunction("transferToken"),
     gasLimit: new GasLimit(5000000),
-    args: [typedAddress(addressOfCarol), typedNumber(1000)]
+    args: [new AddressValue(addressOfCarol), new U64Value(1000)]
 });
 
 tx.setNonce(alice.nonce);
@@ -95,7 +95,7 @@ let addressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3h
 
 let response = await contract.runQuery(provider, {
     func: new ContractFunction("getClaimableRewards"),
-    args: [typedAddress(addressOfAlice)]
+    args: [new AddressValue(addressOfAlice)]
 });
 
 console.log(response.isSuccess());

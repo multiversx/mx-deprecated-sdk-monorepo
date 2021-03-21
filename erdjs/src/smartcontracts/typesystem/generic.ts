@@ -1,5 +1,5 @@
 import { guardValueIsSet } from "../../utils";
-import { Type, TypedValue, NullType } from "./types";
+import { Type, TypedValue, NullType, TypePlaceholder } from "./types";
 
 export class OptionType extends Type {
     constructor(typeParameter: Type) {
@@ -32,6 +32,22 @@ export class OptionValue extends TypedValue {
         // TODO: assert value is of type type.getFirstTypeParameter()
 
         this.value = value;
+    }
+
+    /**
+     * Creates an OptionValue, as a missing option argument.
+     */
+    static newMissingOption(): OptionValue {
+        let type = new OptionType(new NullType());
+        return new OptionValue(type);
+    }
+
+    /**
+     * Creates an OptionValue, as a provided option argument.
+     */
+    static newProvidedOption(typedValue: TypedValue): OptionValue {
+        let type = new OptionType(typedValue.getType());
+        return new OptionValue(type, typedValue);
     }
 
     isSet(): boolean {
@@ -68,6 +84,15 @@ export class List extends TypedValue {
         // TODO: assert items are of type type.getFirstTypeParameter()
 
         this.items = items;
+    }
+
+    static fromItems(items: TypedValue[]): List {
+        if (items.length == 0) {
+            return new List(new TypePlaceholder(), []);
+        }
+        
+        let typeParameter = items[0].getType();
+        return new List(typeParameter, items);
     }
 
     getLength(): number {

@@ -1,11 +1,13 @@
 
 import { assert } from "chai";
-import { U8Value, EndpointParameterDefinition, TypedValue, U32Value, I64Value, providedOption, missingOption, typedComposite, typedList, U16Value, typedVariadic } from "./typesystem";
+import { U8Value, EndpointParameterDefinition, TypedValue, U32Value, I64Value, U16Value, OptionValue, List } from "./typesystem";
 import { ArgSerializer } from "./argSerializer";
 import BigNumber from "bignumber.js";
 import { BytesValue } from "./typesystem/bytes";
 import { TypeMapper } from "./typesystem/typeMapper";
 import { TypeExpressionParser } from "./typesystem/typeExpressionParser";
+import { CompositeValue } from "./typesystem/composite";
+import { VariadicValue } from "./typesystem/variadic";
 
 describe("test serializer", () => {
     it("should serialize <valuesToString> then back <stringToValues>", async () => {
@@ -26,9 +28,9 @@ describe("test serializer", () => {
         serializeThenDeserialize(
             ["Option<u32>", "Option<u8>", "MultiArg<u8, bytes>"],
             [
-                providedOption(new U32Value(100)),
-                missingOption(),
-                typedComposite(new U8Value(3), new BytesValue(Buffer.from("abba", "hex")))
+                OptionValue.newProvidedOption(new U32Value(100)),
+                OptionValue.newMissingOption(),
+                CompositeValue.fromItems(new U8Value(3), new BytesValue(Buffer.from("abba", "hex")))
             ],
             "0100000064@@03@abba"
         );
@@ -36,8 +38,8 @@ describe("test serializer", () => {
         serializeThenDeserialize(
             ["MultiArg<List<u16>>", "VarArgs<bytes>"],
             [
-                typedComposite(typedList([new U16Value(8), new U16Value(9)])),
-                typedVariadic(new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")))
+                CompositeValue.fromItems(List.fromItems([new U16Value(8), new U16Value(9)])),
+                VariadicValue.fromItems(new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")))
             ],
             "00080009@abba@abba@abba"
         );
@@ -47,8 +49,8 @@ describe("test serializer", () => {
         // serializeThenDeserialize(
         //     ["MultiArg<Option<u8>, List<u16>>", "VarArgs<bytes>"],
         //     [
-        //         typedComposite(providedOption(new U8Value(7)), typedList([new U16Value(8), new U16Value(9)])),
-        //         typedVariadic(new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")))
+        //         CompositeValue.fromItems(providedOption(new U8Value(7)), List.fromItems([new U16Value(8), new U16Value(9)])),
+        //         VariadicValue.fromItems(new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")), new BytesValue(Buffer.from("abba", "hex")))
         //     ],
         //     "0107@0000000200080009@abba@abba@abba"
         // );

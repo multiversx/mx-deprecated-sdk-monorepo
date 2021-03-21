@@ -1,7 +1,7 @@
 import * as errors from "../errors";
 import { StrictChecker as StrictInteractionChecker } from "./strictChecker";
 import { SmartContract } from "./smartContract";
-import { missingOption, providedOption, typedBigInt, typedBytesFromHex, typedUTF8, U64Value } from "./typesystem";
+import { BigUIntValue, OptionValue, U64Value } from "./typesystem";
 import { loadAbiRegistry, MockProvider, TestWallets } from "../testutils";
 import { SmartContractAbi } from "./abi";
 import { Address } from "../address";
@@ -9,6 +9,7 @@ import { assert } from "chai";
 import { Interaction } from "./interaction";
 import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
+import { BytesValue } from "./typesystem/bytes";
 
 describe("integration tests: test checker within interactor", function () {
     let wallets = new TestWallets();
@@ -30,7 +31,7 @@ describe("integration tests: test checker within interactor", function () {
 
         // Bad arguments
         assert.throw(() => {
-            let interaction = (<Interaction>contract.methods.getUltimateAnswer([typedBytesFromHex("abba")]));
+            let interaction = (<Interaction>contract.methods.getUltimateAnswer([BytesValue.fromHex("abba")]));
             checker.checkInteraction(interaction);
         }, errors.ErrContractInteraction, "bad arguments, expected: 0, got: 1");
     });
@@ -43,9 +44,9 @@ describe("integration tests: test checker within interactor", function () {
         // Bad number of arguments
         assert.throw(() => {
             let interaction = contract.methods.start([
-                typedUTF8("lucky"),
-                typedBigInt(Balance.egld(1).valueOf()),
-                missingOption(),
+                BytesValue.fromUTF8("lucky"),
+                new BigUIntValue(Balance.egld(1).valueOf()),
+                OptionValue.newMissingOption()
             ]);
             checker.checkInteraction(interaction);
         }, errors.ErrContractInteraction, "bad arguments, expected: 7, got: 3");
@@ -53,13 +54,13 @@ describe("integration tests: test checker within interactor", function () {
         // Bad types (U64 instead of U32)
         assert.throw(() => {
             let interaction = contract.methods.start([
-                typedUTF8("lucky"),
-                typedBigInt(Balance.egld(1).valueOf()),
-                missingOption(),
-                missingOption(),
-                providedOption(new U64Value(new BigNumber(1))),
-                missingOption(),
-                missingOption()
+                BytesValue.fromUTF8("lucky"),
+                new BigUIntValue(Balance.egld(1).valueOf()),
+                OptionValue.newMissingOption(),
+                OptionValue.newMissingOption(),
+                OptionValue.newProvidedOption(new U64Value(new BigNumber(1))),
+                OptionValue.newMissingOption(),
+                OptionValue.newMissingOption(),
             ]);
             checker.checkInteraction(interaction);
         }, errors.ErrContractInteraction, "type mismatch at index 4, expected: Option<u32>, got: Option<u64>");

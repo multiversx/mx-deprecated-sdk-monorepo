@@ -15,6 +15,22 @@ export class BytesValue extends PrimitiveValue {
         this.value = value;
     }
 
+    /**
+     * Creates a BytesValue from a utf-8 string.
+     */
+    static fromUTF8(value: string): BytesValue {
+        let buffer = Buffer.from(value, "utf-8");
+        return new BytesValue(buffer);
+    }
+
+    /**
+     * Creates a BytesValue from a hex-encoded string.
+     */
+    static fromHex(value: string): BytesValue {
+        let buffer = Buffer.from(value, "hex");
+        return new BytesValue(buffer);
+    }
+
     getLength(): number {
         return this.value.length;
     }

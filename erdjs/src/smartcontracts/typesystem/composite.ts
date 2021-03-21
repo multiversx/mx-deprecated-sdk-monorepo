@@ -20,6 +20,12 @@ export class CompositeValue extends TypedValue {
         this.items = items;
     }
 
+    static fromItems(...items: TypedValue[]): CompositeValue {
+        let typeParameters = items.map(value => value.getType());
+        let type = new CompositeType(...typeParameters);
+        return new CompositeValue(type, items);
+    }
+
     getItems(): ReadonlyArray<TypedValue> {
         return this.items;
     }

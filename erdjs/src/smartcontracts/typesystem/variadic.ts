@@ -1,4 +1,4 @@
-import { Type, TypeCardinality, TypedValue } from "./types";
+import { Type, TypeCardinality, TypedValue, TypePlaceholder } from "./types";
 
 export class VariadicType extends Type {
     constructor(typeParameter: Type) {
@@ -28,6 +28,15 @@ export class VariadicValue extends TypedValue {
         this.items = items;
     }
 
+    static fromItems(...items: TypedValue[]): VariadicValue {
+        if (items.length == 0) {
+            return new VariadicValue(new VariadicType(new TypePlaceholder()), []);
+        }
+    
+        let typeParameter = items[0].getType();
+        return new VariadicValue(new VariadicType(typeParameter), items);
+    }
+    
     getItems(): ReadonlyArray<TypedValue> {
         return this.items;
     }

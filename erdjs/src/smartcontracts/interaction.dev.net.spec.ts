@@ -1,7 +1,7 @@
 import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "./smartContract";
-import { missingOption, providedOption, typedBigInt, typedUTF8, TypedValue, U32Value } from "./typesystem";
+import { BigUIntValue, OptionValue, TypedValue, U32Value } from "./typesystem";
 import { getDevnetProvider, loadAbiRegistry, loadContractCode, TestWallets } from "../testutils";
 import { SmartContractAbi } from "./abi";
 import { assert } from "chai";
@@ -12,6 +12,7 @@ import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
 import { NetworkConfig } from "../networkConfig";
 import { Account } from "../account";
+import { BytesValue } from "./typesystem/bytes";
 
 
 describe("test smart contract interactor", function () {
@@ -98,21 +99,21 @@ describe("test smart contract interactor", function () {
         await deploy(contract, "src/testdata/lottery_egld.wasm", new GasLimit(100000000), []);
 
         let startInteraction = <Interaction>contract.methods.start([
-            typedUTF8("lucky"),
-            typedBigInt(Balance.egld(1).valueOf()),
-            missingOption(),
-            missingOption(),
-            providedOption(new U32Value(1)),
-            missingOption(),
-            missingOption()
+            BytesValue.fromUTF8("lucky"),
+            new BigUIntValue(Balance.egld(1).valueOf()),
+            OptionValue.newMissingOption(),
+            OptionValue.newMissingOption(),
+            OptionValue.newProvidedOption(new U32Value(1)),
+            OptionValue.newMissingOption(),
+            OptionValue.newMissingOption(),
         ]).withGasLimit(new GasLimit(15000000));
 
         let lotteryStatusInteraction = <Interaction>contract.methods.status([
-            typedUTF8("lucky")
+            BytesValue.fromUTF8("lucky")
         ]).withGasLimit(new GasLimit(15000000));
 
         let getLotteryInfoInteraction = <Interaction>contract.methods.lotteryInfo([
-            typedUTF8("lucky")
+            BytesValue.fromUTF8("lucky")
         ]).withGasLimit(new GasLimit(15000000));
 
         // start()

@@ -4,7 +4,7 @@ import { ContractFunction } from "./function";
 import { getMainnetProvider } from "../testutils";
 import { SmartContract } from "./smartContract";
 import * as errors from "../errors";
-import { typedAddress, typedBigInt } from "./typesystem";
+import { AddressValue } from "./typesystem";
 
 describe("test queries on mainnet", function () {
     let provider = getMainnetProvider();
@@ -59,7 +59,7 @@ describe("test queries on mainnet", function () {
         // Then do a successful query:
         let response = await delegationContract.runQuery(provider, {
             func: new ContractFunction("getClaimableRewards"),
-            args: [typedAddress(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"))]
+            args: [new AddressValue(new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3hypefsdd8ssycr6th"))]
         });
 
         assert.isTrue(response.isSuccess());

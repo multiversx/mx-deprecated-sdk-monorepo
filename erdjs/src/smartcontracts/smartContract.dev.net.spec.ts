@@ -9,8 +9,9 @@ import { getDevnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
 import { assert } from "chai";
 import { Balance } from "../balance";
-import { missingOption, providedOption, typedAddress, typedBigInt, typedNumber, typedUTF8, U32Value } from "./typesystem";
-import { decodeBool, decodeUnsignedNumber } from "./codec";
+import { AddressValue, BigUIntValue, OptionValue, U32Value } from "./typesystem";
+import { decodeUnsignedNumber } from "./codec";
+import { BytesValue } from "./typesystem/bytes";
 
 describe("test on devnet (local)", function () {
     let devnet = getDevnetProvider();
@@ -151,7 +152,7 @@ describe("test on devnet (local)", function () {
         let transactionDeploy = contract.deploy({
             code: await loadContractCode("src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
-            initArguments: [typedNumber(10000)]
+            initArguments: [new U32Value(10000)]
         });
 
         // The deploy transaction should be signed, so that the address of the contract
@@ -164,13 +165,13 @@ describe("test on devnet (local)", function () {
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(9000000),
-            args: [typedAddress(wallets.bob.address), typedNumber(1000)]
+            args: [new AddressValue(wallets.bob.address), new U32Value(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(9000000),
-            args: [typedAddress(wallets.carol.address), typedNumber(1500)]
+            args: [new AddressValue(wallets.carol.address), new U32Value(1000)]
         });
 
         // Apply nonces and sign the remaining transactions
@@ -199,19 +200,19 @@ describe("test on devnet (local)", function () {
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [typedAddress(wallets.alice.address)]
+            args: [new AddressValue(wallets.alice.address)]
         });
         assert.equal(7500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
         
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [typedAddress(wallets.bob.address)]
+            args: [new AddressValue(wallets.bob.address)]
         });
         assert.equal(1000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
         
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [typedAddress(wallets.carol.address)]
+            args: [new AddressValue(wallets.carol.address)]
         });
         assert.equal(1500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
@@ -244,13 +245,13 @@ describe("test on devnet (local)", function () {
             func: new ContractFunction("start"),
             gasLimit: new GasLimit(15000000),
             args: [
-                typedUTF8("foobar"), 
-                typedBigInt(Balance.egld(1).valueOf()),
-                missingOption(),
-                missingOption(),
-                providedOption(new U32Value(1)),
-                missingOption(),
-                missingOption()
+                BytesValue.fromUTF8("foobar"),
+                new BigUIntValue(Balance.egld(1).valueOf()),
+                OptionValue.newMissingOption(),
+                OptionValue.newMissingOption(),
+                OptionValue.newProvidedOption(new U32Value(1)),
+                OptionValue.newMissingOption(),
+                OptionValue.newMissingOption(),
             ]
         });
 
@@ -277,7 +278,7 @@ describe("test on devnet (local)", function () {
         let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("status"),
             args: [
-                typedUTF8("foobar")
+                BytesValue.fromUTF8("foobar")
             ]
         });
         assert.equal(decodeUnsignedNumber(queryResponse.outputUntyped()[0]), 1);
@@ -285,7 +286,7 @@ describe("test on devnet (local)", function () {
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("status"),
             args: [
-                typedUTF8("missingLottery")
+                BytesValue.fromUTF8("missingLottery")
             ]
         });
         assert.equal(decodeUnsignedNumber(queryResponse.outputUntyped()[0]), 0);

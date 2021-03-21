@@ -4,8 +4,9 @@ import { ContractFunction } from "./function";
 import { Query } from "./query";
 import { Balance } from "../balance";
 import * as errors from "../errors";
-import { typedBigInt, typedBytesFromHex, typedNumber, typedUTF8 } from "./typesystem";
+import { BigUIntValue, U32Value } from "./typesystem";
 import BigNumber from "bignumber.js";
+import { BytesValue } from "./typesystem/bytes";
 
 describe("test smart contract queries", () => {
     it("should prepare query", async () => {
@@ -27,10 +28,10 @@ describe("test smart contract queries", () => {
             func: new ContractFunction("foo"),
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
             args: [
-                typedNumber(100),
-                typedUTF8("!"),
-                typedBytesFromHex("abba"),
-                typedBigInt(new BigNumber("1000000000000000000000000000000000"))
+                new U32Value(100),
+                BytesValue.fromUTF8("!"),
+                BytesValue.fromHex("abba"),
+                new BigUIntValue(new BigNumber("1000000000000000000000000000000000"))
             ]
         });
 
