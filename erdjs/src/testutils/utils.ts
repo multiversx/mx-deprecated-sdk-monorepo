@@ -26,11 +26,13 @@ export async function loadContractCode(path: PathLike): Promise<Code> {
 }
 
 export async function loadAbiRegistry(paths: PathLike[]): Promise<AbiRegistry> {
+    let sources = paths.map(e => e.toString());
+    
     if (isBrowser()) {
-        return AbiRegistry.load({ urls: paths.map(e => e.toString()) });
+        return AbiRegistry.load({ urls: sources });
     }
 
-    return AbiRegistry.load({ files: paths.map(e => e.toString()) });
+    return AbiRegistry.load({ files: sources });
 }
 
 export async function extendAbiRegistry(registry: AbiRegistry, path: PathLike): Promise<AbiRegistry> {
