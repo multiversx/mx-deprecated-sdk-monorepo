@@ -19,10 +19,12 @@ export function guardType(name: string, type: any, value?: any, allowUndefined: 
     throw new errors.ErrBadType(name, type, value);
 }
 
+// TODO: merge with guardValueIsSetWithMessage
 export function guardValueIsSet(name: string, value?: any | null | undefined) {
     guardValueIsSetWithMessage(`${name} isn't set (null or undefined)`, value);
 }
 
+// TODO: merge with guardValueIsSet
 export function guardValueIsSetWithMessage(message: string, value?: any | null | undefined) {
     if (value == null || value === undefined) {
         throw new errors.ErrInvariantFailed(message);

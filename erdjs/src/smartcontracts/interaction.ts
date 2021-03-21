@@ -12,20 +12,19 @@ import { Nonce } from "../nonce";
 import { ExecutionResultsBundle, QueryResponseBundle } from "./interface";
 
 /**
- * Interactions are mutable (the interaction runner mutates their content: transaction, query).
- * But they aren't really reusable, therfore their mutability should not cause erroneous usage (generally speaking).
+ * Interactions can be seen as mutable transaction & query builders.
+ * 
+ * Aside from building transactions and queries, the interactors are also responsible for interpreting
+ * the execution outcome for the objects they've built.
  */
-
 export class Interaction {
     private readonly contract: SmartContract;
     private readonly func: ContractFunction;
     private readonly args: TypedValue[];
 
+    private nonce: Nonce = new Nonce(0);
     private value: Balance = Balance.Zero();
     private gasLimit: GasLimit = GasLimit.min();
-
-    private readonly asTransaction: Transaction;
-    private readonly asQuery: Query;
 
     constructor(
         contract: SmartContract,
@@ -35,26 +34,6 @@ export class Interaction {
         this.contract = contract;
         this.func = func;
         this.args = args;
-    
-        // TODO: create as "deploy" transaction if the function is "init" (or find a better pattern for deployments).
-        this.asTransaction = this.contract.call({
-            func: func,
-            // GasLimit will be set using "withGasLimit()".
-            gasLimit: this.gasLimit,
-            args: args,
-            // Value will be set using "withValue()".
-            value: Balance.Zero()
-        });
-
-        this.asQuery = new Query({
-            address: this.contract.getAddress(),
-            func: func,
-            args: args,
-            // Value will be set using "withValue()".
-            value: this.value,
-            // Caller will be set by the InteractionRunner.
-            caller: new Address()
-        });
     }
 
     getContract(): SmartContract {
@@ -77,12 +56,31 @@ export class Interaction {
         return this.gasLimit;
     }
 
-    getTransaction(): Transaction {
-        return this.asTransaction;
+    buildTransaction(): Transaction {
+        // TODO: create as "deploy" transaction if the function is "init" (or find a better pattern for deployments).
+        let transaction = this.contract.call({
+            func: this.func,
+            // GasLimit will be set using "withGasLimit()".
+            gasLimit: this.gasLimit,
+            args: this.args,
+            // Value will be set using "withValue()".
+            value: this.value
+        });
+
+        transaction.setNonce(this.nonce);
+        return transaction;
     }
 
-    getQuery(): Query {
-        return this.asQuery;
+    buildQuery(): Query {
+        return new Query({
+            address: this.contract.getAddress(),
+            func: this.func,
+            args: this.args,
+            // Value will be set using "withValue()".
+            value: this.value,
+            // Caller will be set by the InteractionRunner.
+            caller: new Address()
+        });
     }
 
     /**
@@ -130,21 +128,16 @@ export class Interaction {
 
     withValue(value: Balance): Interaction {
         this.value = value;
-        this.asTransaction.setValue(value);
-        this.asQuery.value = value;
-
         return this;
     }
 
     withGasLimit(gasLimit: GasLimit): Interaction {
         this.gasLimit = gasLimit;
-        this.asTransaction.setGasLimit(gasLimit);
-
         return this;
     }
 
     withNonce(nonce: Nonce): Interaction {
-        this.asTransaction.setNonce(nonce);
+        this.nonce = nonce;
         return this;
     }
 

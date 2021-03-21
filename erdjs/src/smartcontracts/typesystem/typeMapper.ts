@@ -21,7 +21,8 @@ import {
 import { StructFieldDefinition, StructType } from "./struct";
 import { TokenIdentifierType } from "./tokenIdentifier";
 import { Type, CustomType } from "./types";
-import { OptionalType, VariadicType } from "./variadic";
+import { VariadicType } from "./variadic";
+import { OptionalType } from "./algebraic";
 
 type TypeConstructor = new (...typeParameters: Type[]) => Type;
 

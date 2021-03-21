@@ -57,11 +57,8 @@ describe("test smart contract interactor", function () {
 
         // Execute, and wait for execution
         let [, { values: executionValues, firstValue: executionAnswer, returnCode: executionCode }] = await Promise.all([
-            provider.mockTransactionTimeline(
-                interaction.getTransaction(),
-                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@2b"), new MarkNotarized()]
-            ),
-            await runner.runAwaitExecution(interaction.withNonce(new Nonce(2)))
+            provider.mockNextTransactionTimeline([new TransactionStatus("executed"), new AddImmediateResult("@6f6b@2b"), new MarkNotarized()]),
+            runner.runAwaitExecution(interaction.withNonce(new Nonce(2)))
         ]);
 
         assert.lengthOf(executionValues, 1);
@@ -90,11 +87,8 @@ describe("test smart contract interactor", function () {
 
         // Increment, wait for execution. Return fake 8
         let [, { firstValue: valueAfterIncrement }] = await Promise.all([
-            provider.mockTransactionTimeline(
-                incrementInteraction.getTransaction(),
-                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@08"), new MarkNotarized()]
-            ),
-            await runner.runAwaitExecution(incrementInteraction.withNonce(new Nonce(14)))
+            provider.mockNextTransactionTimeline([new TransactionStatus("executed"), new AddImmediateResult("@6f6b@08"), new MarkNotarized()]),
+            runner.runAwaitExecution(incrementInteraction.withNonce(new Nonce(14)))
         ]);
 
         assert.deepEqual(valueAfterIncrement.valueOf(), new BigNumber(8));
@@ -104,11 +98,8 @@ describe("test smart contract interactor", function () {
         await runner.run(decrementInteraction.withNonce(new Nonce(16)));
 
         let [, { firstValue: valueAfterDecrement }] = await Promise.all([
-            provider.mockTransactionTimeline(
-                decrementInteraction.getTransaction(),
-                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]
-            ),
-            await runner.runAwaitExecution(decrementInteraction.withNonce(new Nonce(17)))
+            provider.mockNextTransactionTimeline([new TransactionStatus("executed"), new AddImmediateResult("@6f6b@05"), new MarkNotarized()]),
+            runner.runAwaitExecution(decrementInteraction.withNonce(new Nonce(17)))
         ]);
 
         assert.deepEqual(valueAfterDecrement.valueOf(), new BigNumber(5));
@@ -141,41 +132,32 @@ describe("test smart contract interactor", function () {
 
         // start()
         let [, { returnCode: startReturnCode, values: startReturnvalues }] = await Promise.all([
-            provider.mockTransactionTimeline(
-                startInteraction.getTransaction(),
-                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b"), new MarkNotarized()]
-            ),
-            await runner.runAwaitExecution(startInteraction.withNonce(new Nonce(14)))
+            provider.mockNextTransactionTimeline([new TransactionStatus("executed"), new AddImmediateResult("@6f6b"), new MarkNotarized()]),
+            runner.runAwaitExecution(startInteraction.withNonce(new Nonce(14)))
         ]);
 
-        assert.equal(startInteraction.getTransaction().getData().toString(), "start@6c75636b79@0de0b6b3a7640000@@@0100000001@@");
+        assert.equal(startInteraction.buildTransaction().getData().toString(), "start@6c75636b79@0de0b6b3a7640000@@@0100000001@@");
         assert.isTrue(startReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(startReturnvalues, 0);
 
         // lotteryExists() (this is a view function, but for the sake of the test, we'll execute it)
         let [, { returnCode: statusReturnCode, values: statusReturnvalues, firstValue: statusFirstValue }] = await Promise.all([
-            provider.mockTransactionTimeline(
-                lotteryStatusInteraction.getTransaction(),
-                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@01"), new MarkNotarized()]
-            ),
-            await runner.runAwaitExecution(lotteryStatusInteraction.withNonce(new Nonce(15)))
+            provider.mockNextTransactionTimeline([new TransactionStatus("executed"), new AddImmediateResult("@6f6b@01"), new MarkNotarized()]),
+            runner.runAwaitExecution(lotteryStatusInteraction.withNonce(new Nonce(15)))
         ]);
 
-        assert.equal(lotteryStatusInteraction.getTransaction().getData().toString(), "status@6c75636b79");
+        assert.equal(lotteryStatusInteraction.buildTransaction().getData().toString(), "status@6c75636b79");
         assert.isTrue(statusReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(statusReturnvalues, 1);
         assert.equal(statusFirstValue.valueOf(), "Running");
 
         // lotteryInfo() (this is a view function, but for the sake of the test, we'll execute it)
         let [, { returnCode: infoReturnCode, values: infoReturnvalues, firstValue: infoFirstValue }] = await Promise.all([
-            provider.mockTransactionTimeline(
-                getLotteryInfoInteraction.getTransaction(),
-                [new TransactionStatus("executed"), new AddImmediateResult("@6f6b@000000080de0b6b3a764000000000320000000006012a806000000010000000164000000000000000000000000"), new MarkNotarized()]
-            ),
-            await runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(new Nonce(16)))
+            provider.mockNextTransactionTimeline([new TransactionStatus("executed"), new AddImmediateResult("@6f6b@000000080de0b6b3a764000000000320000000006012a806000000010000000164000000000000000000000000"), new MarkNotarized()]),
+            runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(new Nonce(16)))
         ]);
 
-        assert.equal(getLotteryInfoInteraction.getTransaction().getData().toString(), "lotteryInfo@6c75636b79");
+        assert.equal(getLotteryInfoInteraction.buildTransaction().getData().toString(), "lotteryInfo@6c75636b79");
         assert.isTrue(infoReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(infoReturnvalues, 1);
 

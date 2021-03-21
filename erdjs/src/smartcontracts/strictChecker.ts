@@ -37,6 +37,8 @@ export class StrictChecker implements IInteractionChecker {
             throw new errors.ErrContractInteraction(`bad arguments, expected: ${numFormalArguments}, got: ${numActualArguments}`);
         }
 
+        // TODO: discuss again, possibly redesign the handling of covariance / contravariance.
+
         for (let i = 0; i < numFormalArguments; i++) {
             let expectedType = formalArguments[i].type;
             let argument = actualArguments[i];

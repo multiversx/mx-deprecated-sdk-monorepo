@@ -25,7 +25,7 @@ export class DefaultInteractionRunner implements IInteractionRunner {
     async run(interaction: Interaction): Promise<Transaction> {
         this.checkInteraction(interaction);
 
-        let transaction = interaction.getTransaction();
+        let transaction = interaction.buildTransaction();
         await this.signer.sign(transaction);
         await transaction.send(this.provider);
         return transaction;
@@ -37,8 +37,7 @@ export class DefaultInteractionRunner implements IInteractionRunner {
     async runAwaitExecution(interaction: Interaction): Promise<ExecutionResultsBundle> {
         this.checkInteraction(interaction);
 
-        let transaction = interaction.getTransaction();
-        await this.run(interaction);
+        let transaction = await this.run(interaction);
         await transaction.awaitExecuted(this.provider);
         // This will wait until the transaction is notarized, as well (so that SCRs are returned by the API).
         let transactionOnNetwork = await transaction.getAsOnNetwork(this.provider);
@@ -49,7 +48,7 @@ export class DefaultInteractionRunner implements IInteractionRunner {
     async runQuery(interaction: Interaction, caller?: Address): Promise<QueryResponseBundle> {
         this.checkInteraction(interaction);
 
-        let query = interaction.getQuery();
+        let query = interaction.buildQuery();
         query.caller = caller || this.signer.getAddress();
         let response = await this.provider.queryContract(query);
         let bundle = interaction.interpretQueryResponse(response);
@@ -59,7 +58,7 @@ export class DefaultInteractionRunner implements IInteractionRunner {
     async runSimulation(interaction: Interaction): Promise<any> {
         this.checkInteraction(interaction);
 
-        let transaction = interaction.getTransaction();
+        let transaction = interaction.buildTransaction();
         await this.signer.sign(transaction);
         return await transaction.simulate(this.provider);
     }

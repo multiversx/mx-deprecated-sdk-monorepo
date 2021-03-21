@@ -1,7 +1,8 @@
 import { BinaryCodec } from "./codec";
 import { Type, EndpointParameterDefinition, TypedValue } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
-import { OptionalType, OptionalValue, VariadicType, VariadicValue } from "./typesystem/variadic";
+import { VariadicType, VariadicValue } from "./typesystem/variadic";
+import { OptionalType, OptionalValue } from "./typesystem/algebraic";
 
 export const ArgumentsSeparator = "@";
 

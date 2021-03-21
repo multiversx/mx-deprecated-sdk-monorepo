@@ -1,4 +1,3 @@
-import * as errors from "../../errors";
 import { assert } from "chai";
 import { Type } from "./types";
 import { TypeExpressionParser } from "./typeExpressionParser";
@@ -6,7 +5,8 @@ import { TypeMapper } from "./typeMapper";
 import { BigUIntType, I32Type, U16Type, U32Type, U64Type, U8Type } from "./numerical";
 import { BytesType } from "./bytes";
 import { AddressType } from "./address";
-import { OptionalType, VariadicType } from "./variadic";
+import { VariadicType } from "./variadic";
+import { OptionalType } from "./algebraic";
 import { CompositeType } from "./composite";
 import { ListType, OptionType } from "./generic";
 

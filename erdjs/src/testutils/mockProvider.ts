@@ -12,6 +12,7 @@ import { Query } from "../smartcontracts/query";
 import { QueryResponse } from "../smartcontracts/queryResponse";
 import { Hash } from "../hash";
 import { NetworkStatus } from "../networkStatus";
+import { TypedEvent } from "../events";
 
 /**
  * A mock {@link IProvider}, used for tests only.
@@ -21,13 +22,15 @@ export class MockProvider implements IProvider {
     static AddressOfBob = new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx");
     static AddressOfCarol = new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arncc6xecg3xaq6mjse8");
 
-    private readonly accounts: Map<string, AccountOnNetwork>;
     private readonly transactions: Map<string, TransactionOnNetwork>;
+    private readonly onTransactionSent: TypedEvent<{ transaction: Transaction }>;
+    private readonly accounts: Map<string, AccountOnNetwork>;
     private readonly queryResponders: QueryResponder[] = [];
 
     constructor() {
-        this.accounts = new Map<string, AccountOnNetwork>();
         this.transactions = new Map<string, TransactionOnNetwork>();
+        this.onTransactionSent = new TypedEvent();
+        this.accounts = new Map<string, AccountOnNetwork>();
 
         this.accounts.set(
             MockProvider.AddressOfAlice.bech32(),
@@ -75,6 +78,17 @@ export class MockProvider implements IProvider {
         return this.mockTransactionTimelineByHash(transaction.getHash(), timelinePoints);
     }
 
+    async mockNextTransactionTimeline(timelinePoints: any[]): Promise<void> {
+        let transaction = await this.nextTransactionSent();
+        return this.mockTransactionTimelineByHash(transaction.getHash(), timelinePoints);
+    }
+
+    async nextTransactionSent(): Promise<Transaction> {
+        return new Promise<Transaction>((resolve, _reject) => {
+            this.onTransactionSent.on((eventArgs) => resolve(eventArgs.transaction));
+        });
+    }
+
     async mockTransactionTimelineByHash(hash: TransactionHash, timelinePoints: any[]): Promise<void> {
         let timeline = new AsyncTimer(`mock timeline of ${hash}`);
 
@@ -120,6 +134,8 @@ export class MockProvider implements IProvider {
                 status: new TransactionStatus("pending")
             })
         );
+
+        this.onTransactionSent.emit({ transaction: transaction });
 
         return transaction.getHash();
     }

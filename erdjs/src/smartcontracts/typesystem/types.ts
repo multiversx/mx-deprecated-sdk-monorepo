@@ -13,7 +13,7 @@ export class Type {
         guardValueIsSet("name", name);
 
         this.name = name;
-        this.typeParameters = typeParameters || [];
+        this.typeParameters = typeParameters;
         this.cardinality = cardinality;
     }
 
