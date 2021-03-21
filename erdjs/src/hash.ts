@@ -4,7 +4,7 @@ export class Hash {
     /**
      * The hash, as a hex-encoded string.
      */
-    readonly hash: Buffer = Buffer.from([]);
+    readonly hash: Buffer;
 
     /**
      * Creates a new Hash object.
@@ -12,7 +12,9 @@ export class Hash {
      * @param hash The hash, as a Buffer or a hex-encoded string.
      */
     constructor(hash: Buffer | string) {
-        if (hash instanceof Buffer) {
+        if (!hash) {
+            this.hash = Buffer.from([]);
+        } else if (hash instanceof Buffer) {
             this.hash = hash;
         } else if (typeof hash === "string") {
             this.hash = Buffer.from(hash, "hex");

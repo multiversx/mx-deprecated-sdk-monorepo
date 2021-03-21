@@ -171,7 +171,7 @@ describe("test on devnet (local)", function () {
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(9000000),
-            args: [new AddressValue(wallets.carol.address), new U32Value(1000)]
+            args: [new AddressValue(wallets.carol.address), new U32Value(1500)]
         });
 
         // Apply nonces and sign the remaining transactions

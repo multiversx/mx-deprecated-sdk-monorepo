@@ -117,7 +117,7 @@ export class TransactionWatcher {
                     throw error;
                 }
 
-                Logger.debug("cannot (yet) fetch data");
+                Logger.info("cannot (yet) fetch data");
             }
 
             await periodicTimer.start(this.pollingInterval);
