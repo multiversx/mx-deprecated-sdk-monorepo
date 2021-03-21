@@ -36,11 +36,13 @@ export async function loadAbiRegistry(paths: PathLike[]): Promise<AbiRegistry> {
 }
 
 export async function extendAbiRegistry(registry: AbiRegistry, path: PathLike): Promise<AbiRegistry> {
+    let source = path.toString();
+    
     if (isBrowser()) {
-        return registry.extendFromUrl(path.toString());
+        return registry.extendFromUrl(source);
     }
 
-    return registry.extendFromFile(path.toString());
+    return registry.extendFromFile(source);
 }
 
 function isBrowser() {
