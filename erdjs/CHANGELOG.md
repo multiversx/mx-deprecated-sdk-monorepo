@@ -4,8 +4,12 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.1.0] - 03.03.2021
+- [Added network status endpoint #229](https://github.com/ElrondNetwork/elrond-sdk/pull/229)
+- [Sign tx with hash functionality #217](https://github.com/ElrondNetwork/elrond-sdk/pull/217)
+
 ## [3.0.0] - 03.03.2021
- - [Switched from nativ BigInt to bignumber.js #218](https://github.com/ElrondNetwork/elrond-sdk/pull/218)
+ - [Switched from native BigInt to bignumber.js #218](https://github.com/ElrondNetwork/elrond-sdk/pull/218)
 
 ## [2.3.0] - 16.02.2021
  - [Minor bugfixes and new getNetworkStats function #203](https://github.com/ElrondNetwork/elrond-sdk/pull/203)

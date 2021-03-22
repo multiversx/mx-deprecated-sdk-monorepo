@@ -1,4 +1,3 @@
-
 import { IProvider } from "../interface";
 import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "../transaction";
 import { NetworkConfig } from "../networkConfig";
@@ -9,6 +8,7 @@ import { AccountOnNetwork } from "../account";
 import { Balance } from "../balance";
 import * as errors from "../errors";
 import { Query, QueryResponse } from "../smartcontracts/query";
+import { NetworkStatus } from "../networkStatus";
 
 /**
  * A mock {@link IProvider}, used for tests only.
@@ -25,9 +25,18 @@ export class MockProvider implements IProvider {
         this.accounts = new Map<string, AccountOnNetwork>();
         this.transactions = new Map<string, TransactionOnNetwork>();
 
-        this.accounts.set(MockProvider.AddressOfAlice.bech32(), new AccountOnNetwork({ nonce: new Nonce(0), balance: Balance.eGLD(1000) }));
-        this.accounts.set(MockProvider.AddressOfBob.bech32(), new AccountOnNetwork({ nonce: new Nonce(5), balance: Balance.eGLD(500) }));
-        this.accounts.set(MockProvider.AddressOfCarol.bech32(), new AccountOnNetwork({ nonce: new Nonce(42), balance: Balance.eGLD(300) }));
+        this.accounts.set(
+            MockProvider.AddressOfAlice.bech32(),
+            new AccountOnNetwork({ nonce: new Nonce(0), balance: Balance.eGLD(1000) })
+        );
+        this.accounts.set(
+            MockProvider.AddressOfBob.bech32(),
+            new AccountOnNetwork({ nonce: new Nonce(5), balance: Balance.eGLD(500) })
+        );
+        this.accounts.set(
+            MockProvider.AddressOfCarol.bech32(),
+            new AccountOnNetwork({ nonce: new Nonce(42), balance: Balance.eGLD(300) })
+        );
     }
 
     mockUpdateAccount(address: Address, mutate: (item: AccountOnNetwork) => void) {
@@ -48,15 +57,18 @@ export class MockProvider implements IProvider {
         this.transactions.set(hash.toString(), item);
     }
 
-    async mockTransactionTimeline(transactionOrHash: Transaction | TransactionHash, timelinePoints: any[]): Promise<void> {
+    async mockTransactionTimeline(
+        transactionOrHash: Transaction | TransactionHash,
+        timelinePoints: any[]
+    ): Promise<void> {
         let hash = transactionOrHash instanceof TransactionHash ? transactionOrHash : transactionOrHash.hash;
         let timeline = new AsyncTimer(`mock timeline of ${hash}`);
-        
+
         await timeline.start(0);
 
         for (const point of timelinePoints) {
             if (point instanceof TransactionStatus) {
-                this.mockUpdateTransaction(hash, transaction => {
+                this.mockUpdateTransaction(hash, (transaction) => {
                     transaction.status = point;
                 });
             } else if (point instanceof Wait) {
@@ -75,13 +87,16 @@ export class MockProvider implements IProvider {
     }
 
     async sendTransaction(transaction: Transaction): Promise<TransactionHash> {
-        this.mockPutTransaction(transaction.hash, new TransactionOnNetwork({
-            nonce: transaction.nonce,
-            sender: transaction.sender,
-            receiver: transaction.receiver,
-            data: transaction.data,
-            status: new TransactionStatus("pending")
-        }));
+        this.mockPutTransaction(
+            transaction.hash,
+            new TransactionOnNetwork({
+                nonce: transaction.nonce,
+                sender: transaction.sender,
+                receiver: transaction.receiver,
+                data: transaction.data,
+                status: new TransactionStatus("pending"),
+            })
+        );
 
         return transaction.hash;
     }
@@ -111,7 +126,9 @@ export class MockProvider implements IProvider {
     async getNetworkConfig(): Promise<NetworkConfig> {
         return new NetworkConfig();
     }
-
+    async getNetworkStatus(): Promise<NetworkStatus> {
+        return new NetworkStatus();
+    }
 
     async queryContract(_query: Query): Promise<QueryResponse> {
         return new QueryResponse();
