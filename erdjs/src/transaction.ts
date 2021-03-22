@@ -430,10 +430,10 @@ export class TransactionOnNetwork {
     static fromHttpResponse(payload: any): TransactionOnNetwork {
         let result = new TransactionOnNetwork();
 
-        result.type = new TransactionOnNetworkType(payload["type"]);
+        result.type = new TransactionOnNetworkType(payload["type"] || "");
         result.nonce = new Nonce(payload["nonce"] || 0);
         result.round = payload["round"];
-        result.epoch = payload["epoch"];
+        result.epoch = payload["epoch"] || 0;
         result.value = Balance.fromString(payload["value"]);
         result.sender = Address.fromBech32(payload["sender"]);
         result.receiver = Address.fromBech32(payload["receiver"]);
