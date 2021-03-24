@@ -127,9 +127,9 @@ export class ContractReturnData {
         this.asBuffer = Buffer.from(this.asBase64, "base64");
         this.asHex = this.asBuffer.toString("hex");
         this.asNumber = parseInt(this.asHex, 16) || 0;
-        this.asBool = this.asNumber != 0;
         this.asBigInt = new BigNumber(`0x${this.asHex || "00"}`, 16);
         this.asString = this.asBuffer.toString();
+        this.asBool = this.asNumber != 0 && this.asString !== "false" && this.asString !== "" && !this.asBigInt.eq(0, 10);
     }
 
     static fromArray(raw: any[]): ContractReturnData[] {
