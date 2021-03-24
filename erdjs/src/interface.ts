@@ -65,6 +65,10 @@ export interface IApiProvider {
      * Fetches the Network Stats.
      */
     getNetworkStats(): Promise<Stats>;
+    /**
+     * Fetches the state of a {@link Transaction}.
+     */
+    getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
 }
 
 /**
