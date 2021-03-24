@@ -45,7 +45,6 @@ export class ApiProvider implements IApiProvider {
      */
     async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
         let response = await this.doGet(`transactions/${txHash.toString()}`);
-        console.log("transaction ", response);
         return TransactionOnNetwork.fromHttpResponse(response);
     }
 

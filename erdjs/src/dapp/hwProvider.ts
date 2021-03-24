@@ -62,10 +62,8 @@ export class HWProvider implements IHWProvider {
         if (!this.hwApp) {
             throw new Error("HWApp not initialised, call init() first");
         }
-        console.log("address index", this.addressIndex);
         const { address } = await this.hwApp.getAddress(0, this.addressIndex, true);
 
-        console.log("address", address);
         return address;
     }
 

@@ -78,7 +78,7 @@ export class Transaction implements ISignable {
     /**
      * The signature.
      */
-    signature: any;
+    signature: Signature;
 
     /**
      * The transaction hash, also used as a transaction identifier.
