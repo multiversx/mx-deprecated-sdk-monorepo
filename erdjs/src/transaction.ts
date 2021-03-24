@@ -25,7 +25,7 @@ const TRANSACTION_HASH_LENGTH = 32;
  * An abstraction for creating, signing and broadcasting Elrond transactions.
  */
 export class Transaction implements ISignable {
-    readonly onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
+    readonly onSigned: TypedEvent<{ transaction: Transaction; signedBy: Address }>;
     readonly onSent: TypedEvent<{ transaction: Transaction }>;
     readonly onStatusUpdated: TypedEvent<{ transaction: Transaction }>;
     readonly onStatusChanged: TypedEvent<{ transaction: Transaction }>;
@@ -257,7 +257,7 @@ export class Transaction implements ISignable {
             chainID: this.chainID.valueOf(),
             version: this.version.valueOf(),
             options: this.options.valueOf() == 0 ? undefined : this.options.valueOf(),
-            signature: this.signature.isEmpty() ? undefined : this.signature.hex()
+            signature: this.signature.isEmpty() ? undefined : this.signature.hex(),
         };
     }
 
@@ -373,13 +373,14 @@ export class Transaction implements ISignable {
      * @param networkConfig {@link NetworkConfig}
      */
     computeFee(networkConfig: NetworkConfig): BigNumber {
-        let moveBalanceGas = networkConfig.MinGasLimit.valueOf() + this.data.length() * networkConfig.GasPerDataByte.valueOf();
+        let moveBalanceGas =
+            networkConfig.MinGasLimit.valueOf() + this.data.length() * networkConfig.GasPerDataByte.valueOf();
         if (moveBalanceGas > this.gasLimit.valueOf()) {
             throw new errors.ErrNotEnoughGas(this.gasLimit.valueOf());
         }
 
         let gasPrice = new BigNumber(this.gasPrice.valueOf());
-        let feeForMove = (new BigNumber(moveBalanceGas)).multipliedBy(gasPrice);
+        let feeForMove = new BigNumber(moveBalanceGas).multipliedBy(gasPrice);
         if (moveBalanceGas === this.gasLimit.valueOf()) {
             return feeForMove;
         }
@@ -441,7 +442,9 @@ export class TransactionHash extends Hash {
     static compute(transaction: Transaction): TransactionHash {
         let serializer = new ProtoSerializer();
         let buffer = serializer.serializeTransaction(transaction);
-        let hash = createTransactionHasher(TRANSACTION_HASH_LENGTH).update(buffer).digest("hex");
+        let hash = createTransactionHasher(TRANSACTION_HASH_LENGTH)
+            .update(buffer)
+            .digest("hex");
         return new TransactionHash(hash);
     }
 }

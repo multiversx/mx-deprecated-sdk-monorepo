@@ -54,10 +54,10 @@ export class TransactionOnNetwork {
     }): TransactionOnNetwork {
         let transactionOnNetwork = new TransactionOnNetwork();
 
-        transactionOnNetwork.type = new TransactionOnNetworkType(response.type);
+        transactionOnNetwork.type = new TransactionOnNetworkType(response.type || "");
         transactionOnNetwork.nonce = new Nonce(response.nonce || 0);
         transactionOnNetwork.round = response.round;
-        transactionOnNetwork.epoch = response.epoch;
+        transactionOnNetwork.epoch = response.epoch || 0;
         transactionOnNetwork.value = Balance.fromString(response.value);
         transactionOnNetwork.sender = Address.fromBech32(response.sender);
         transactionOnNetwork.receiver = Address.fromBech32(response.receiver);

@@ -7,6 +7,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## [4.?.? TBD] - TBA
  - [ABI-based contract interaction. Redesigned typing system #107](https://github.com/ElrondNetwork/elrond-sdk/pull/107)
 
+## [3.1.2] - 24.03.2021
+- [Fixed ledger login feature #240](https://github.com/ElrondNetwork/elrond-sdk/pull/240)
+- [Fixed asBool value for contract query response #241](https://github.com/ElrondNetwork/elrond-sdk/pull/241)
+
+## [3.1.1] - 22.03.2021
+- [Fixed a bug on account query regarding usernames #235](https://github.com/ElrondNetwork/elrond-sdk/pull/235)
+
 ## [3.1.0] - 03.03.2021
 - [Added network status endpoint #229](https://github.com/ElrondNetwork/elrond-sdk/pull/229)
 - [Sign tx with hash functionality #217](https://github.com/ElrondNetwork/elrond-sdk/pull/217)
