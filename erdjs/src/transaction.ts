@@ -1,17 +1,17 @@
-import {BigNumber} from "bignumber.js";
-import {IProvider, ISignable} from "./interface";
-import {Address} from "./address";
-import {Balance} from "./balance";
-import {ChainID, GasLimit, GasPrice, TransactionOptions, TransactionVersion} from "./networkParams";
-import {NetworkConfig} from "./networkConfig";
-import {Nonce} from "./nonce";
-import {Signature} from "./signature";
-import {guardType} from "./utils";
-import {TransactionPayload} from "./transactionPayload";
+import { BigNumber } from "bignumber.js";
+import { IProvider, ISignable } from "./interface";
+import { Address } from "./address";
+import { Balance } from "./balance";
+import { ChainID, GasLimit, GasPrice, TransactionOptions, TransactionVersion } from "./networkParams";
+import { NetworkConfig } from "./networkConfig";
+import { Nonce } from "./nonce";
+import { Signature } from "./signature";
+import { guardType } from "./utils";
+import { TransactionPayload } from "./transactionPayload";
 import * as errors from "./errors";
-import {TypedEvent} from "./events";
-import {TransactionWatcher} from "./transactionWatcher";
-import {ProtoSerializer} from "./proto";
+import { TypedEvent } from "./events";
+import { TransactionWatcher } from "./transactionWatcher";
+import { ProtoSerializer } from "./proto";
 
 const createTransactionHasher = require("blake2b");
 
@@ -23,7 +23,7 @@ const TRANSACTION_HASH_LENGTH = 32;
  * An abstraction for creating, signing and broadcasting Elrond transactions.
  */
 export class Transaction implements ISignable {
-    onSigned: TypedEvent<{ transaction: Transaction, signedBy: Address }>;
+    onSigned: TypedEvent<{ transaction: Transaction; signedBy: Address }>;
 
     /**
      * The nonce of the transaction (the account sequence number of the sender).
@@ -164,7 +164,7 @@ export class Transaction implements ISignable {
             chainID: this.chainID.valueOf(),
             version: this.version.valueOf(),
             options: this.options.valueOf() == 0 ? undefined : this.options.valueOf(),
-            signature: this.signature.isEmpty() ? undefined : this.signature.hex()
+            signature: this.signature.isEmpty() ? undefined : this.signature.hex(),
         };
     }
 
@@ -178,7 +178,7 @@ export class Transaction implements ISignable {
         this.signature = signature;
         this.sender = signedBy;
 
-        this.onSigned.emit({transaction: this, signedBy: signedBy});
+        this.onSigned.emit({ transaction: this, signedBy: signedBy });
         this.hash = TransactionHash.compute(this);
     }
 
@@ -256,13 +256,14 @@ export class Transaction implements ISignable {
      * @param networkConfig {@link NetworkConfig}
      */
     computeFee(networkConfig: NetworkConfig): BigNumber {
-        let moveBalanceGas = networkConfig.MinGasLimit.valueOf() + this.data.length() * networkConfig.GasPerDataByte.valueOf();
+        let moveBalanceGas =
+            networkConfig.MinGasLimit.valueOf() + this.data.length() * networkConfig.GasPerDataByte.valueOf();
         if (moveBalanceGas > this.gasLimit.valueOf()) {
             throw new errors.ErrNotEnoughGas(this.gasLimit.valueOf());
         }
 
         let gasPrice = new BigNumber(this.gasPrice.valueOf());
-        let feeForMove = (new BigNumber(moveBalanceGas)).multipliedBy(gasPrice);
+        let feeForMove = new BigNumber(moveBalanceGas).multipliedBy(gasPrice);
         if (moveBalanceGas === this.gasLimit.valueOf()) {
             return feeForMove;
         }
@@ -333,7 +334,9 @@ export class TransactionHash {
     static compute(transaction: Transaction): TransactionHash {
         let serializer = new ProtoSerializer();
         let buffer = serializer.serializeTransaction(transaction);
-        let hash = createTransactionHasher(TRANSACTION_HASH_LENGTH).update(buffer).digest("hex");
+        let hash = createTransactionHasher(TRANSACTION_HASH_LENGTH)
+            .update(buffer)
+            .digest("hex");
         return new TransactionHash(hash);
     }
 }
@@ -427,10 +430,10 @@ export class TransactionOnNetwork {
     static fromHttpResponse(payload: any): TransactionOnNetwork {
         let result = new TransactionOnNetwork();
 
-        result.type = new TransactionOnNetworkType(payload["type"]);
+        result.type = new TransactionOnNetworkType(payload["type"] || "");
         result.nonce = new Nonce(payload["nonce"] || 0);
         result.round = payload["round"];
-        result.epoch = payload["epoch"];
+        result.epoch = payload["epoch"] || 0;
         result.value = Balance.fromString(payload["value"]);
         result.sender = Address.fromBech32(payload["sender"]);
         result.receiver = Address.fromBech32(payload["receiver"]);
