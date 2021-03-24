@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.1.1] - 22.03.2021
+- [Fixed a bug on account query regarding usernames #235](https://github.com/ElrondNetwork/elrond-sdk/pull/235)
+
 ## [3.1.0] - 03.03.2021
 - [Added network status endpoint #229](https://github.com/ElrondNetwork/elrond-sdk/pull/229)
 - [Sign tx with hash functionality #217](https://github.com/ElrondNetwork/elrond-sdk/pull/217)
