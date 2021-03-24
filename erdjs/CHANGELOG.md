@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.1.2] - 24.03.2021
+- [Fixed ledger login feature #240](https://github.com/ElrondNetwork/elrond-sdk/pull/240)
+- [Fixed asBool value for contract query response #241](https://github.com/ElrondNetwork/elrond-sdk/pull/241)
+
 ## [3.1.1] - 22.03.2021
 - [Fixed a bug on account query regarding usernames #235](https://github.com/ElrondNetwork/elrond-sdk/pull/235)
 
