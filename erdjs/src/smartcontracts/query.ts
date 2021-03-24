@@ -129,7 +129,7 @@ export class ContractReturnData {
         this.asNumber = parseInt(this.asHex, 16) || 0;
         this.asBigInt = new BigNumber(`0x${this.asHex || "00"}`, 16);
         this.asString = this.asBuffer.toString();
-        this.asBool = this.asNumber != 0 && this.asString !== "false" && this.asString !== "" && !this.asBigInt.eq(0, 10);
+        this.asBool = this.asNumber != 0 && this.asString.toLowerCase() !== "false" && this.asString.toLowerCase() !== "no" && !this.asBigInt.eq(0, 10);
     }
 
     static fromArray(raw: any[]): ContractReturnData[] {
