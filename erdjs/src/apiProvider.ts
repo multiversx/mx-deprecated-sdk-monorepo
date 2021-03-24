@@ -4,6 +4,7 @@ import * as errors from "./errors";
 import { Logger } from "./logger";
 import { NetworkStake } from "./networkStake";
 import { Stats } from "./stats";
+import { TransactionHash, TransactionOnNetwork } from ".";
 const JSONbig = require("json-bigint");
 
 /**
@@ -39,6 +40,14 @@ export class ApiProvider implements IApiProvider {
         return Stats.fromHttpResponse(response);
     }
 
+    /**
+     * Fetches the state of a {@link Transaction}.
+     */
+    async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
+        let response = await this.doGet(`transactions/${txHash.toString()}`);
+        return TransactionOnNetwork.fromHttpResponse(response);
+    }
+
     private async doGet(resourceUrl: string): Promise<any> {
         try {
             let url = `${this.url}/${resourceUrl}`;
@@ -53,21 +62,12 @@ export class ApiProvider implements IApiProvider {
     private handleApiError(error: any, resourceUrl: string) {
         if (!error.response) {
             Logger.warn(error);
-            throw new errors.ErrApiProviderGet(
-                resourceUrl,
-                error.toString(),
-                error
-            );
+            throw new errors.ErrApiProviderGet(resourceUrl, error.toString(), error);
         }
 
         let errorData = error.response.data;
-        let originalErrorMessage =
-            errorData.error || errorData.message || JSON.stringify(errorData);
-        throw new errors.ErrApiProviderGet(
-            resourceUrl,
-            originalErrorMessage,
-            error
-        );
+        let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
+        throw new errors.ErrApiProviderGet(resourceUrl, originalErrorMessage, error);
     }
 }
 
