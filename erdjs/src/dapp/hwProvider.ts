@@ -27,14 +27,18 @@ export class HWProvider implements IHWProvider {
      * Creates transport and initialises ledger app.
      */
     async init(): Promise<boolean> {
-        let webUSBSupported = await TransportWebUSB.isSupported();
-        webUSBSupported =
-            webUSBSupported && !!platform.os && platform.os.family !== "Windows" && platform.name !== "Opera";
+        try {
+            let webUSBSupported = await TransportWebUSB.isSupported();
+            webUSBSupported =
+                webUSBSupported && !!platform.os && platform.os.family !== "Windows" && platform.name !== "Opera";
 
-        const transport = webUSBSupported ? await TransportWebUSB.create() : await TransportU2f.create();
-        this.hwApp = new AppElrond(transport);
+            const transport = webUSBSupported ? await TransportWebUSB.create() : await TransportU2f.create();
+            this.hwApp = new AppElrond(transport);
 
-        return true;
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
