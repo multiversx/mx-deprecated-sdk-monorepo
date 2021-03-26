@@ -12,6 +12,7 @@ import { Address } from "../address";
 import { Signature } from "../signature";
 import { compareVersions } from "../versioning";
 import { LEDGER_TX_HASH_SIGN_MIN_VERSION } from "./constants";
+import {TransactionOptions, TransactionVersion} from "../networkParams";
 
 export class HWProvider implements IHWProvider {
     provider: IProvider;
@@ -120,6 +121,10 @@ export class HWProvider implements IHWProvider {
         const address = await this.getCurrentAddress();
         transaction.sender = new Address(address);
         let signUsingHash = await this.shouldSignUsingHash();
+        if(signUsingHash) {
+            transaction.options = TransactionOptions.withTxHashSignOptions();
+            transaction.version = TransactionVersion.withTxHashSignVersion();
+        }
         const sig = await this.hwApp.signTransaction(
             transaction.serializeForSigning(new Address(address)),
             signUsingHash
