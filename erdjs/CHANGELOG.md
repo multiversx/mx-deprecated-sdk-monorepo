@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.1.3] - 26.03.2021
+- [Fixed ledger signing using hash fields #245](https://github.com/ElrondNetwork/elrond-sdk/pull/245)
+
 ## [3.1.2] - 24.03.2021
 - [Fixed ledger login feature #240](https://github.com/ElrondNetwork/elrond-sdk/pull/240)
 - [Fixed asBool value for contract query response #241](https://github.com/ElrondNetwork/elrond-sdk/pull/241)
