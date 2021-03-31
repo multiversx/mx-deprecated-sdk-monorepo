@@ -73,7 +73,7 @@ export class Transaction implements ISignable {
     /**
      * The version, required by the Network in order to correctly interpret the contents of the transaction.
      */
-    private readonly version: TransactionVersion;
+    version: TransactionVersion;
 
     /**
      * The options field, useful for describing different settings available for transactions
