@@ -2,8 +2,7 @@ import { guardValueIsSet } from "../../utils";
 import { Type, TypeCardinality, TypedValue } from "./types";
 
 /**
- * For simpler design, we chose not to subclass {@link VariadicType}, but create a different type instead for optionals,
- * even though an optional is conceptually variadic: it holds zero or one values.
+ * An optional is an algebraic type. It holds zero or one values.
  */
 export class OptionalType extends Type {
     constructor(typeParameter: Type) {

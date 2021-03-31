@@ -75,7 +75,7 @@ export class Account {
   /**
    * Gets then increments (locally) the nonce (the account sequence number).
    */
-  getThenIncrementNonce(): Nonce {
+  getNonceThenIncrement(): Nonce {
     let nonce = this.nonce;
     this.nonce = this.nonce.increment();
     return nonce;

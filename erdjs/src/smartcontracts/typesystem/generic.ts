@@ -37,7 +37,7 @@ export class OptionValue extends TypedValue {
     /**
      * Creates an OptionValue, as a missing option argument.
      */
-    static newMissingOption(): OptionValue {
+    static newMissing(): OptionValue {
         let type = new OptionType(new NullType());
         return new OptionValue(type);
     }
@@ -45,7 +45,7 @@ export class OptionValue extends TypedValue {
     /**
      * Creates an OptionValue, as a provided option argument.
      */
-    static newProvidedOption(typedValue: TypedValue): OptionValue {
+    static newProvided(typedValue: TypedValue): OptionValue {
         let type = new OptionType(typedValue.getType());
         return new OptionValue(type, typedValue);
     }

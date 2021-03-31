@@ -247,11 +247,11 @@ describe("test on devnet (local)", function () {
             args: [
                 BytesValue.fromUTF8("foobar"),
                 new BigUIntValue(Balance.egld(1).valueOf()),
-                OptionValue.newMissingOption(),
-                OptionValue.newMissingOption(),
-                OptionValue.newProvidedOption(new U32Value(1)),
-                OptionValue.newMissingOption(),
-                OptionValue.newMissingOption(),
+                OptionValue.newMissing(),
+                OptionValue.newMissing(),
+                OptionValue.newProvided(new U32Value(1)),
+                OptionValue.newMissing(),
+                OptionValue.newMissing(),
             ]
         });
 

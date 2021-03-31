@@ -28,8 +28,8 @@ describe("test serializer", () => {
         serializeThenDeserialize(
             ["Option<u32>", "Option<u8>", "MultiArg<u8, bytes>"],
             [
-                OptionValue.newProvidedOption(new U32Value(100)),
-                OptionValue.newMissingOption(),
+                OptionValue.newProvided(new U32Value(100)),
+                OptionValue.newMissing(),
                 CompositeValue.fromItems(new U8Value(3), new BytesValue(Buffer.from("abba", "hex")))
             ],
             "0100000064@@03@abba"

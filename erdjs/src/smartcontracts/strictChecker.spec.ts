@@ -46,7 +46,7 @@ describe("integration tests: test checker within interactor", function () {
             let interaction = contract.methods.start([
                 BytesValue.fromUTF8("lucky"),
                 new BigUIntValue(Balance.egld(1).valueOf()),
-                OptionValue.newMissingOption()
+                OptionValue.newMissing()
             ]);
             checker.checkInteraction(interaction);
         }, errors.ErrContractInteraction, "bad arguments, expected: 7, got: 3");
@@ -56,11 +56,11 @@ describe("integration tests: test checker within interactor", function () {
             let interaction = contract.methods.start([
                 BytesValue.fromUTF8("lucky"),
                 new BigUIntValue(Balance.egld(1).valueOf()),
-                OptionValue.newMissingOption(),
-                OptionValue.newMissingOption(),
-                OptionValue.newProvidedOption(new U64Value(new BigNumber(1))),
-                OptionValue.newMissingOption(),
-                OptionValue.newMissingOption(),
+                OptionValue.newMissing(),
+                OptionValue.newMissing(),
+                OptionValue.newProvided(new U64Value(new BigNumber(1))),
+                OptionValue.newMissing(),
+                OptionValue.newMissing(),
             ]);
             checker.checkInteraction(interaction);
         }, errors.ErrContractInteraction, "type mismatch at index 4, expected: Option<u32>, got: Option<u64>");

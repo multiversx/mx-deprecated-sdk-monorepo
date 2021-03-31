@@ -45,9 +45,9 @@ describe("test smart contract interactor", function () {
         assert.isTrue(queryResponseBundle.returnCode.equals(ReturnCode.Ok));
 
         // Execute, do not wait for execution
-        await runner.run(interaction.withNonce(alice.getThenIncrementNonce()));
+        await runner.run(interaction.withNonce(alice.getNonceThenIncrement()));
         // Execute, and wait for execution
-        let executionResultsBundle = await runner.runAwaitExecution(interaction.withNonce(alice.getThenIncrementNonce()));
+        let executionResultsBundle = await runner.runAwaitExecution(interaction.withNonce(alice.getNonceThenIncrement()));
 
         assert.lengthOf(executionResultsBundle.values, 1);
         assert.deepEqual(executionResultsBundle.firstValue.valueOf(), new BigNumber(42));
@@ -76,12 +76,12 @@ describe("test smart contract interactor", function () {
         assert.deepEqual(counterValue.valueOf(), new BigNumber(1));
 
         // Increment, wait for execution.
-        let { firstValue: valueAfterIncrement } = await runner.runAwaitExecution(incrementInteraction.withNonce(alice.getThenIncrementNonce()));
+        let { firstValue: valueAfterIncrement } = await runner.runAwaitExecution(incrementInteraction.withNonce(alice.getNonceThenIncrement()));
         assert.deepEqual(valueAfterIncrement.valueOf(), new BigNumber(2));
 
         // Decrement. Wait for execution of the second transaction.
-        await runner.run(decrementInteraction.withNonce(alice.getThenIncrementNonce()));
-        let { firstValue: valueAfterDecrement } = await runner.runAwaitExecution(decrementInteraction.withNonce(alice.getThenIncrementNonce()))
+        await runner.run(decrementInteraction.withNonce(alice.getNonceThenIncrement()));
+        let { firstValue: valueAfterDecrement } = await runner.runAwaitExecution(decrementInteraction.withNonce(alice.getNonceThenIncrement()))
         assert.deepEqual(valueAfterDecrement.valueOf(), new BigNumber(0));
     });
 
@@ -101,11 +101,11 @@ describe("test smart contract interactor", function () {
         let startInteraction = <Interaction>contract.methods.start([
             BytesValue.fromUTF8("lucky"),
             new BigUIntValue(Balance.egld(1).valueOf()),
-            OptionValue.newMissingOption(),
-            OptionValue.newMissingOption(),
-            OptionValue.newProvidedOption(new U32Value(1)),
-            OptionValue.newMissingOption(),
-            OptionValue.newMissingOption(),
+            OptionValue.newMissing(),
+            OptionValue.newMissing(),
+            OptionValue.newProvided(new U32Value(1)),
+            OptionValue.newMissing(),
+            OptionValue.newMissing(),
         ]).withGasLimit(new GasLimit(15000000));
 
         let lotteryStatusInteraction = <Interaction>contract.methods.status([
@@ -117,18 +117,18 @@ describe("test smart contract interactor", function () {
         ]).withGasLimit(new GasLimit(15000000));
 
         // start()
-        let { returnCode: startReturnCode, values: startReturnvalues } = await runner.runAwaitExecution(startInteraction.withNonce(alice.getThenIncrementNonce()))
+        let { returnCode: startReturnCode, values: startReturnvalues } = await runner.runAwaitExecution(startInteraction.withNonce(alice.getNonceThenIncrement()))
         assert.isTrue(startReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(startReturnvalues, 0);
 
         // status()
-        let { returnCode: statusReturnCode, values: statusReturnValues, firstValue: statusFirstValue } = await runner.runAwaitExecution(lotteryStatusInteraction.withNonce(alice.getThenIncrementNonce()))
+        let { returnCode: statusReturnCode, values: statusReturnValues, firstValue: statusFirstValue } = await runner.runAwaitExecution(lotteryStatusInteraction.withNonce(alice.getNonceThenIncrement()))
         assert.isTrue(statusReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(statusReturnValues, 1);
         assert.equal(statusFirstValue.valueOf(), "Running");
 
         // lotteryInfo() (this is a view function, but for the sake of the test, we'll execute it)
-        let { returnCode: infoReturnCode, values: infoReturnValues, firstValue: infoFirstValue } = await runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(alice.getThenIncrementNonce()))
+        let { returnCode: infoReturnCode, values: infoReturnValues, firstValue: infoFirstValue } = await runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(alice.getNonceThenIncrement()))
         assert.isTrue(infoReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(infoReturnValues, 1);
 
@@ -159,7 +159,7 @@ describe("test smart contract interactor", function () {
         });
 
         // In these tests, all contracts are deployed by Alice.
-        transactionDeploy.setNonce(alice.getThenIncrementNonce());
+        transactionDeploy.setNonce(alice.getNonceThenIncrement());
         await aliceSigner.sign(transactionDeploy);
         await transactionDeploy.send(provider);
         await transactionDeploy.awaitExecuted(provider);

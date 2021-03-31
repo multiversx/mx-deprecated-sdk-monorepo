@@ -116,11 +116,11 @@ describe("test smart contract interactor", function () {
         let startInteraction = <Interaction>contract.methods.start([
             BytesValue.fromUTF8("lucky"),
             new BigUIntValue(Balance.egld(1).valueOf()),
-            OptionValue.newMissingOption(),
-            OptionValue.newMissingOption(),
-            OptionValue.newProvidedOption(new U32Value(1)),
-            OptionValue.newMissingOption(),
-            OptionValue.newMissingOption(),
+            OptionValue.newMissing(),
+            OptionValue.newMissing(),
+            OptionValue.newProvided(new U32Value(1)),
+            OptionValue.newMissing(),
+            OptionValue.newMissing(),
         ]).withGasLimit(new GasLimit(5000000));
 
         let lotteryStatusInteraction = <Interaction>contract.methods.status([

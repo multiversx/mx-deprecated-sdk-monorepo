@@ -37,7 +37,6 @@ export class Type {
 
     /**
      * Generates type expressions similar to elrond-wasm-rs. 
-     * Involves recursive calls to toString().
      */
     toString() {
         let typeParameters: string = this.getTypeParameters().map(type => type.toString()).join(", ");
