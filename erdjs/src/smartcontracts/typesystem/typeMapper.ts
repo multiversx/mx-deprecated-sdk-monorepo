@@ -37,6 +37,7 @@ export class TypeMapper {
             // For the following open generics, we use a slightly different typing than the one defined by elrond-wasm-rs (temporary workaround).
             ["VarArgs", VariadicType],
             ["MultiResultVec", VariadicType],
+            ["variadic", VariadicType],
             ["OptionalArg", OptionalType],
             ["OptionalResult", OptionalType],
             ["MultiArg", CompositeType],
