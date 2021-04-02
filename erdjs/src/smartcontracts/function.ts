@@ -35,4 +35,16 @@ export class ContractFunction {
     toString() {
         return this.name;
     }
+
+    valueOf(): string {
+        return this.name;
+    }
+
+    equals(other: ContractFunction | null): boolean {
+        if (!other) {
+            return false;
+        }
+
+        return this.name == other.name;
+    }
 }

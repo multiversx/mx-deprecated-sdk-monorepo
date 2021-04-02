@@ -4,6 +4,9 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [4.?.? TBD] - TBA
+ - [ABI-based contract interaction. Redesigned typing system #107](https://github.com/ElrondNetwork/elrond-sdk/pull/107)
+
 ## [3.1.3] - 26.03.2021
 - [Fixed ledger signing using hash fields #245](https://github.com/ElrondNetwork/elrond-sdk/pull/245)
 

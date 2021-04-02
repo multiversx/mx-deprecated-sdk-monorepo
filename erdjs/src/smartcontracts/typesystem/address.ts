@@ -1,11 +1,9 @@
 import * as errors from "../../errors";
 import { Address } from "../../address";
-import { Type, PrimitiveType, PrimitiveValue } from "./types";
+import { PrimitiveType, PrimitiveValue } from "./types";
 
 export class AddressType extends PrimitiveType {
-    static One = new AddressType();
-
-    private constructor() {
+    constructor() {
         super("Address");
     }
 }
@@ -17,7 +15,7 @@ export class AddressValue extends PrimitiveValue {
     private readonly value: Address;
 
     constructor(value: Address) {
-        super();
+        super(new AddressType());
         this.value = value;
     }
 
@@ -32,9 +30,5 @@ export class AddressValue extends PrimitiveValue {
 
     valueOf(): Address {
         return this.value;
-    }
-
-    getType(): Type {
-        return AddressType.One;
     }
 }

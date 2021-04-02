@@ -91,8 +91,6 @@ export class UserWallet {
      *  - 350-360 ms in browser (Firefox), on a i3-8100 CPU @ 3.60GHz
      */
     private static generateDerivedKey(password: Buffer, salt: Buffer, kdfparams: ScryptKeyDerivationParams): Buffer {
-        // Question for review: @ccorcoveanu, why not this implementation?
-        // https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback
         const derivedKey = scryptsy(password, salt, kdfparams.n, kdfparams.r, kdfparams.p, kdfparams.dklen);
         return derivedKey;
     }
