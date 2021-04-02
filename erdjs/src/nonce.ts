@@ -1,4 +1,4 @@
-import  * as errors from "./errors";
+import * as errors from "./errors";
 
 /**
  * The nonce, as an immutable object.
@@ -14,7 +14,7 @@ export class Nonce {
      */
     constructor(value: number) {
         value = Number(value);
-        
+
         if (Number.isNaN(value) || value < 0) {
             throw new errors.ErrNonceInvalid(value);
         }
@@ -32,4 +32,13 @@ export class Nonce {
     valueOf(): number {
         return this.value;
     }
+
+    equals(other: Nonce): boolean {
+        if (!other) {
+            return false;
+        }
+
+        return this.value === other.value;
+    }
 }
+
