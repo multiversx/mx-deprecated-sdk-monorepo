@@ -1,0 +1,32 @@
+{
+    "name": "counter",
+    "endpoints": [
+        {
+            "name": "increment",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "i64"
+                }
+            ]
+        },
+        {
+            "name": "decrement",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "i64"
+                }
+            ]
+        },
+        {
+            "name": "get",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "i64"
+                }
+            ]
+        }
+    ]
+}

@@ -5,7 +5,6 @@ import BigNumber from "bignumber.js";
  * @param buffer the buffer to test
  * @param byteIndex the index of the byte to test
  */
-
 export function isMsbOne(buffer: Buffer, byteIndex: number = 0): boolean {
     let byte = buffer[byteIndex];
     let bit = byte >> 7;

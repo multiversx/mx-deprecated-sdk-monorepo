@@ -1,18 +1,19 @@
 import { assert } from "chai";
 import { Address } from "../address";
-import { Argument } from "./argument";
 import { ContractFunction } from "./function";
 import { Query } from "./query";
 import { Balance } from "../balance";
 import * as errors from "../errors";
+import { BigUIntValue, U32Value } from "./typesystem";
 import BigNumber from "bignumber.js";
+import { BytesValue } from "./typesystem/bytes";
 
 describe("test smart contract queries", () => {
     it("should prepare query", async () => {
         let query = new Query({
             func: new ContractFunction("foo"),
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
-            value: Balance.eGLD(42)
+            value: Balance.egld(42)
         });
 
         let request = query.toHttpRequest();
@@ -27,10 +28,10 @@ describe("test smart contract queries", () => {
             func: new ContractFunction("foo"),
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
             args: [
-                Argument.fromNumber(100),
-                Argument.fromUTF8("!"),
-                Argument.fromHex("abba"),
-                Argument.fromBigInt(new BigNumber("1000000000000000000000000000000000"))
+                new U32Value(100),
+                BytesValue.fromUTF8("!"),
+                BytesValue.fromHex("abba"),
+                new BigUIntValue(new BigNumber("1000000000000000000000000000000000"))
             ]
         });
 
@@ -47,6 +48,6 @@ describe("test smart contract queries", () => {
         assert.throw(() => new Query({
             address: new Address("erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q"),
             func: undefined
-        }), errors.ErrMissingValue);
+        }), errors.ErrInvariantFailed);
     });
 });
