@@ -1,6 +1,6 @@
 {
   "name": "@elrondnetwork/erdjs",
-  "version": "4.0.0-beta.2",
+  "version": "4.0.3",
   "description": "Smart Contracts interaction framework",
   "main": "out/index.js",
   "types": "out/index.d.js",
