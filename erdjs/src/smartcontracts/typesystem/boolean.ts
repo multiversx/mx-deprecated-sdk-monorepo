@@ -1,10 +1,8 @@
-import { Type, PrimitiveType, PrimitiveValue } from "./types";
+import { PrimitiveType, PrimitiveValue } from "./types";
 
 export class BooleanType extends PrimitiveType {
-    static One = new BooleanType();
-
-    private constructor() {
-        super("Boolean");
+    constructor() {
+        super("bool");
     }
 }
 
@@ -15,7 +13,7 @@ export class BooleanValue extends PrimitiveValue {
     private readonly value: boolean;
 
     constructor(value: boolean) {
-        super();
+        super(new BooleanType());
         this.value = value;
     }
 
@@ -25,11 +23,11 @@ export class BooleanValue extends PrimitiveValue {
      * @param other another BooleanValue
      */
     equals(other: BooleanValue): boolean {
-        return this.value == other.value;
+        return this.value === other.value;
     }
 
     isTrue(): boolean {
-        return this.value == true;
+        return this.value === true;
     }
 
     isFalse(): boolean {
@@ -38,9 +36,5 @@ export class BooleanValue extends PrimitiveValue {
 
     valueOf(): boolean {
         return this.value;
-    }
-
-    getType(): Type {
-        return BooleanType.One;
     }
 }

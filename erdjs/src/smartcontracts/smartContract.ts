@@ -3,18 +3,21 @@ import { Address } from "../address";
 import { GasLimit } from "../networkParams";
 import { Transaction } from "../transaction";
 import { TransactionPayload } from "../transactionPayload";
-import { AbiRegistry } from "./typesystem/abiRegistry";
-import { Argument } from "./argument";
 import { Code } from "./code";
 import { CodeMetadata } from "./codeMetadata";
 import { ISmartContract as ISmartContract } from "./interface";
 import { ArwenVirtualMachine } from "./transactionPayloadBuilders";
 import { Nonce } from "../nonce";
 import { ContractFunction } from "./function";
-import { Query, QueryResponse } from "./query";
+import { Query } from "./query";
+import { QueryResponse } from "./queryResponse";
 import { IProvider } from "../interface";
+import { SmartContractAbi } from "./abi";
+import { guardValueIsSet } from "../utils";
+import { TypedValue } from "./typesystem";
+import { bigIntToBuffer } from "./codec/utils";
 import BigNumber from "bignumber.js";
-import {bigIntToBuffer} from "./codec/utils";
+import { Interaction } from "./interaction";
 const createKeccakHash = require("keccak");
 
 /**
@@ -23,17 +26,45 @@ const createKeccakHash = require("keccak");
 export class SmartContract implements ISmartContract {
     private owner: Address = new Address();
     private address: Address = new Address();
-    private abi: AbiRegistry = new AbiRegistry();
     private code: Code = Code.nothing();
     private codeMetadata: CodeMetadata = new CodeMetadata();
+    private abi?: SmartContractAbi;
     private readonly trackOfTransactions: Transaction[] = [];
+
+    /**
+     * This object contains a function for each endpoint defined by the contract.
+     * (a bit similar to web3js's "contract.methods").
+     */
+    public readonly methods: any = {};
 
     /**
      * Create a SmartContract object by providing its address on the Network.
      */
-    constructor({ address }: { address?: Address }) {
-        if (address) {
-            this.address = address;
+    constructor({ address, abi }: { address?: Address, abi?: SmartContractAbi }) {
+        this.address = address || new Address();
+        this.abi = abi;
+        this.methods = {};
+
+        if (abi) {
+            this.setupMethods();
+        }
+    }
+
+    private setupMethods() {
+        let contract = this;
+        let abi = this.getAbi();
+
+        for (const definition of abi.getAllEndpoints()) {
+            let functionName = definition.name;
+
+            // For each endpoint defined by the ABI, we attach a function to the "methods" object,
+            // a function that receives typed values as arguments
+            // and returns a prepared contract interaction.
+            this.methods[functionName] = function (args: TypedValue[]) {
+                let func = new ContractFunction(functionName);
+                let interaction = new Interaction(contract, func, args || []);
+                return interaction;
+            };
         }
     }
 
@@ -64,20 +95,6 @@ export class SmartContract implements ISmartContract {
     }
 
     /**
-     * ABIs aren't currently supported by `erdjs`. They will be supported in a future version.
-     */
-    setAbi(abi: AbiRegistry) {
-        this.abi = abi;
-    }
-
-    /**
-     * ABIs aren't currently supported by `erdjs`. They will be supported in a future version.
-     */
-    getAbi(): AbiRegistry {
-        return this.abi;
-    }
-
-    /**
      * Gets the {@link Code} of the Smart Contract. Does not query the Network.
      */
     getCode(): Code {
@@ -91,11 +108,20 @@ export class SmartContract implements ISmartContract {
         return this.codeMetadata;
     }
 
+    setAbi(abi: SmartContractAbi) {
+        this.abi = abi;
+    }
+
+    getAbi(): SmartContractAbi {
+        guardValueIsSet("abi", this.abi);
+        return this.abi!;
+    }
+
     /**
      * Creates a {@link Transaction} for deploying the Smart Contract to the Network.
      */
     deploy({ code, codeMetadata, initArguments, value, gasLimit }
-        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: Argument[], value?: Balance, gasLimit: GasLimit }
+        : { code: Code, codeMetadata?: CodeMetadata, initArguments?: TypedValue[], value?: Balance, gasLimit: GasLimit }
     ): Transaction {
         codeMetadata = codeMetadata || new CodeMetadata();
         initArguments = initArguments || [];
@@ -123,7 +149,7 @@ export class SmartContract implements ISmartContract {
 
     private onDeploySigned({ transaction, signedBy }: { transaction: Transaction, signedBy: Address }) {
         this.owner = signedBy;
-        let nonce = transaction.nonce;
+        let nonce = transaction.getNonce();
         let address = SmartContract.computeAddress(this.owner, nonce);
         this.setAddress(address);
 
@@ -134,7 +160,7 @@ export class SmartContract implements ISmartContract {
      * Creates a {@link Transaction} for upgrading the Smart Contract on the Network.
      */
     upgrade({ code, codeMetadata, initArgs, value, gasLimit }
-        : { code: Code, codeMetadata?: CodeMetadata, initArgs?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction {
+        : { code: Code, codeMetadata?: CodeMetadata, initArgs?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction {
         codeMetadata = codeMetadata || new CodeMetadata();
         initArgs = initArgs || [];
         value = value || Balance.Zero();
@@ -167,7 +193,7 @@ export class SmartContract implements ISmartContract {
      * Creates a {@link Transaction} for calling (a function of) the Smart Contract.
      */
     call({ func, args, value, gasLimit }
-        : { func: ContractFunction, args?: Argument[], value?: Balance, gasLimit: GasLimit }): Transaction {
+        : { func: ContractFunction, args?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction {
         args = args || [];
         value = value || Balance.Zero();
 
@@ -194,7 +220,7 @@ export class SmartContract implements ISmartContract {
 
     async runQuery(
         provider: IProvider,
-        { func, args, value, caller }: { func: ContractFunction, args?: Argument[], value?: Balance, caller?: Address })
+        { func, args, value, caller }: { func: ContractFunction, args?: TypedValue[], value?: Balance, caller?: Address })
         : Promise<QueryResponse> {
         let query = new Query({
             address: this.address,

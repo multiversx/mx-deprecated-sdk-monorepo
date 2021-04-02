@@ -1,105 +1,90 @@
 import * as errors from "../../errors";
-import { FunctionDefinition, onTypedValueSelect, onTypeSelect, PrimitiveType, StructureType, TypeDescriptor, TypedValue, U8Type } from "../typesystem";
-import { guardSameLength } from "../../utils";
-import { OptionalValueBinaryCodec } from "./optional";
+import { Type, EnumType, List, onTypedValueSelect, onTypeSelect, OptionValue, PrimitiveType, PrimitiveValue, Struct, StructType, TypedValue, EnumValue } from "../typesystem";
+import { guardTrue, guardType } from "../../utils";
+import { OptionValueBinaryCodec } from "./option";
 import { PrimitiveBinaryCodec } from "./primitive";
-import { VectorBinaryCodec } from "./vector";
-import { StructureBinaryCodec } from "./structure";
+import { ListBinaryCodec } from "./list";
+import { StructBinaryCodec } from "./struct";
+import { EnumBinaryCodec } from "./enum";
 
 export class BinaryCodec {
     readonly constraints: BinaryCodecConstraints;
-    private readonly optionalCodec: OptionalValueBinaryCodec;
-    private readonly vectorCodec: VectorBinaryCodec;
+    private readonly optionCodec: OptionValueBinaryCodec;
+    private readonly listCodec: ListBinaryCodec;
     private readonly primitiveCodec: PrimitiveBinaryCodec;
-    private readonly structureCodec: StructureBinaryCodec;
+    private readonly structCodec: StructBinaryCodec;
+    private readonly enumCodec: EnumBinaryCodec;
     
     constructor(constraints: BinaryCodecConstraints | null = null) {
         this.constraints = constraints || new BinaryCodecConstraints();
-        this.optionalCodec = new OptionalValueBinaryCodec(this);
-        this.vectorCodec = new VectorBinaryCodec(this);
+        this.optionCodec = new OptionValueBinaryCodec(this);
+        this.listCodec = new ListBinaryCodec(this);
         this.primitiveCodec = new PrimitiveBinaryCodec(this);
-        this.structureCodec = new  StructureBinaryCodec(this);
+        this.structCodec = new StructBinaryCodec(this);
+        this.enumCodec = new EnumBinaryCodec(this);
     }
 
-    decodeFunctionOutput(outputItems: Buffer[], definition: FunctionDefinition): TypedValue[] {
-        guardSameLength(outputItems, definition.output);
-
-        let result: TypedValue[] = [];
-
-        // For output parameters, top-level decoding is normally used.
-        // TODO: Question for review - is this assumption correct?
-        for (let i = 0; i < outputItems.length; i++) {
-            let buffer = outputItems[i];
-            let parameterDefinition = definition.output[i];
-            let typeDescriptor = parameterDefinition.getTypeDescriptor();
-
-            let decoded = this.decodeTopLevel(buffer, typeDescriptor);
-            result.push(decoded);
-        }
-
-        return result;
-    }
-
-    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): TResult {
+    decodeTopLevel<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: Type): TResult {
         this.constraints.checkBufferLength(buffer);
 
-        let type = typeDescriptor.getOutmostType();
-        // Open types (generics) will require the scoped type descriptor as well.
-        let scoped = typeDescriptor.scopeInto();
-
         let typedValue = onTypeSelect<TypedValue>(type, {
-            onOptional: () => this.optionalCodec.decodeTopLevel(buffer, scoped),
-            onVector: () => this.vectorCodec.decodeTopLevel(buffer, scoped),
+            onOption: () => this.optionCodec.decodeTopLevel(buffer, type.getFirstTypeParameter()),
+            onList: () => this.listCodec.decodeTopLevel(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeTopLevel(buffer, <PrimitiveType>type),
-            onStructure: () => this.structureCodec.decodeTopLevel(buffer, <StructureType>type)
+            onStruct: () => this.structCodec.decodeTopLevel(buffer, <StructType>type),
+            onEnum: () => this.enumCodec.decodeTopLevel(buffer, <EnumType>type)
         });
 
         return <TResult>typedValue;
     }
 
-    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, typeDescriptor: TypeDescriptor): [TResult, number] {
+    decodeNested<TResult extends TypedValue = TypedValue>(buffer: Buffer, type: Type): [TResult, number] {
         this.constraints.checkBufferLength(buffer);
 
-        let type = typeDescriptor.getOutmostType();
-        // Open types (generics) will require the scoped type descriptor as well.
-        let scoped = typeDescriptor.scopeInto();
-
         let [typedResult, decodedLength] = onTypeSelect<[TypedValue, number]>(type, {
-            onOptional: () => this.optionalCodec.decodeNested(buffer, scoped),
-            onVector: () => this.vectorCodec.decodeNested(buffer, scoped),
+            onOption: () => this.optionCodec.decodeNested(buffer, type.getFirstTypeParameter()),
+            onList: () => this.listCodec.decodeNested(buffer, type),
             onPrimitive: () => this.primitiveCodec.decodeNested(buffer, <PrimitiveType>type),
-            onStructure: () => this.structureCodec.decodeNested(buffer, <StructureType>type)
+            onStruct: () => this.structCodec.decodeNested(buffer, <StructType>type),
+            onEnum: () => this.enumCodec.decodeNested(buffer, <EnumType>type)
         });
 
         return [<TResult>typedResult, decodedLength];
     }
 
-    encodeNested(typedValue: any): Buffer {
+    encodeNested(typedValue: TypedValue): Buffer {
+        guardTrue(typedValue.getType().getCardinality().isSingular(), "singular cardinality, thus encodable type");
+        
         return onTypedValueSelect(typedValue, {
-            onPrimitive: () => this.primitiveCodec.encodeNested(typedValue),
-            onOptional: () => this.optionalCodec.encodeNested(typedValue),
-            onVector: () => this.vectorCodec.encodeNested(typedValue),
-            onStructure: () => this.structureCodec.encodeNested(typedValue)
+            onPrimitive: () => this.primitiveCodec.encodeNested(<PrimitiveValue>typedValue),
+            onOption: () => this.optionCodec.encodeNested(<OptionValue>typedValue),
+            onList: () => this.listCodec.encodeNested(<List>typedValue),
+            onStruct: () => this.structCodec.encodeNested(<Struct>typedValue),
+            onEnum: () => this.enumCodec.encodeNested(<EnumValue>typedValue)
         });
     }
 
-    encodeTopLevel(typedValue: any): Buffer {
+    encodeTopLevel(typedValue: TypedValue): Buffer {
+        guardType("value", TypedValue, typedValue, false);
+        guardTrue(typedValue.getType().getCardinality().isSingular(), "singular cardinality, thus encodable type");
+
         return onTypedValueSelect(typedValue, {
-            onPrimitive: () => this.primitiveCodec.encodeTopLevel(typedValue),
-            onOptional: () => this.optionalCodec.encodeTopLevel(typedValue),
-            onVector: () => this.vectorCodec.encodeTopLevel(typedValue),
-            onStructure: () => this.structureCodec.encodeTopLevel(typedValue)
+            onPrimitive: () => this.primitiveCodec.encodeTopLevel(<PrimitiveValue>typedValue),
+            onOption: () => this.optionCodec.encodeTopLevel(<OptionValue>typedValue),
+            onList: () => this.listCodec.encodeTopLevel(<List>typedValue),
+            onStruct: () => this.structCodec.encodeTopLevel(<Struct>typedValue),
+            onEnum: () => this.enumCodec.encodeTopLevel(<EnumValue>typedValue)
         });
     }
 }
 
 export class BinaryCodecConstraints {
     maxBufferLength: number;
-    maxVectorLength: number;
+    maxListLength: number;
 
     constructor(init?: Partial<BinaryCodecConstraints>) {
         this.maxBufferLength = init?.maxBufferLength || 4096;
-        this.maxVectorLength = init?.maxVectorLength || 1024;
+        this.maxListLength = init?.maxListLength || 1024;
     }
 
     checkBufferLength(buffer: Buffer) {
@@ -109,11 +94,11 @@ export class BinaryCodecConstraints {
     }
 
     /**
-     * This constraint avoids computer-freezing decode bugs (e.g. due to invalid ABI or structure definitions).
+     * This constraint avoids computer-freezing decode bugs (e.g. due to invalid ABI or struct definitions).
      */
-    checkVectorLength(length: number) {
-        if (length > this.maxVectorLength) {
-            throw new errors.ErrCodec(`Vector too large: ${length} > ${this.maxVectorLength}`);
+    checkListLength(length: number) {
+        if (length > this.maxListLength) {
+            throw new errors.ErrCodec(`List too large: ${length} > ${this.maxListLength}`);
         }
     }
 }

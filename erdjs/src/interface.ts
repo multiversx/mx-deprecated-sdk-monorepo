@@ -1,12 +1,14 @@
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
+import { Transaction, TransactionHash, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Signature } from "./signature";
 import { Address } from "./address";
 import { AccountOnNetwork } from "./account";
-import { Query, QueryResponse } from "./smartcontracts/query";
+import { Query } from "./smartcontracts/query";
+import { QueryResponse } from "./smartcontracts/queryResponse";
 import { NetworkStake } from "./networkStake";
 import { Stats } from "./stats";
 import { NetworkStatus } from "./networkStatus";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 
 /**
  * An interface that defines the endpoints of an HTTP API Provider.
@@ -45,7 +47,7 @@ export interface IProvider {
     /**
      * Fetches the state of a {@link Transaction}.
      */
-    getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
+    getTransaction(txHash: TransactionHash, hintSender?: Address, withResults?: boolean): Promise<TransactionOnNetwork>;
 
     /**
      * Queries the status of a {@link Transaction}.

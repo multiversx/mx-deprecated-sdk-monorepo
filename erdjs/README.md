@@ -12,13 +12,20 @@ Features:
 
 The most comprehensive usage examples are captured within the unit and the integration tests. Specifically, in the `*.spec.ts` files of the source code. For example:
 
- - [transaction.devnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/transaction.devnet.spec.ts)
+ - [transaction.dev.net.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/transaction.dev.net.spec.ts)
  - [address.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/address.spec.ts)
  - [transactionPayloadBuilders.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/transactionPayloadBuilders.spec.ts)
  - [smartContract.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.spec.ts)
- - [smartContract.devnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.devnet.spec.ts)
+ - [smartContract.dev.net.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/smartContract.dev.net.spec.ts)
  - [query.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.spec.ts)
- - [query.mainnet.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.mainnet.spec.ts)
+ - [query.main.net.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.main.net.spec.ts)
+
+For advanced smart contract interaction, using ABIs, please see the following test files:
+ - [interactor.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/interaction/interactor.spec.ts) 
+ - [abiRegistry.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/typesystem/abiRegistry.spec.ts)
+ - [serializer.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/serializer.spec.ts) 
+
+**More examples and documentation on writing ABI-aware custom interactors for smart contracts is coming soon!**
 
 Additional examples (please note that they are slighly _out-of-date_ though) can be found here:
 
@@ -55,7 +62,7 @@ let tx = new Transaction({
     data: new TransactionPayload("helloWorld"),
     gasLimit: new GasLimit(70000),
     receiver: new Address("erd1spyavw0956vq68xj8y4tenjpq2wd5a9p2c6j8gsz7ztyrnpxrruqzu66jx"),
-    value: Balance.eGLD(1)
+    value: Balance.egld(1)
 });
 
 tx.setNonce(alice.nonce);
@@ -72,7 +79,7 @@ let addressOfCarol = new Address("erd1k2s324ww2g0yj38qn2ch2jwctdy8mnfxep94q9arnc
 let tx = contract.call({
     func: new ContractFunction("transferToken"),
     gasLimit: new GasLimit(5000000),
-    args: [Argument.fromPubkey(addressOfCarol), Argument.number(1000)]
+    args: [new AddressValue(addressOfCarol), new U64Value(1000)]
 });
 
 tx.setNonce(alice.nonce);
@@ -88,7 +95,7 @@ let addressOfAlice = new Address("erd1qyu5wthldzr8wx5c9ucg8kjagg0jfs53s8nr3zpz3h
 
 let response = await contract.runQuery(provider, {
     func: new ContractFunction("getClaimableRewards"),
-    args: [Argument.fromPubkey(addressOfAlice)]
+    args: [new AddressValue(addressOfAlice)]
 });
 
 console.log(response.isSuccess());
