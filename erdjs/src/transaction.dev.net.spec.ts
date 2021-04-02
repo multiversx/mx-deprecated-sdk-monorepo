@@ -30,12 +30,12 @@ describe("test transaction", function () {
 
         let transactionOne = new Transaction({
             receiver: bob.address,
-            value: Balance.eGLD(42)
+            value: Balance.egld(42)
         });
 
         let transactionTwo = new Transaction({
             receiver: bob.address,
-            value: Balance.eGLD(43)
+            value: Balance.egld(43)
         });
 
         transactionOne.setNonce(alice.nonce);
@@ -54,7 +54,7 @@ describe("test transaction", function () {
         await bob.sync(devnet);
         let newBalanceOfBob = bob.balance;
 
-        assert.equal(Balance.eGLD(85).valueOf(), newBalanceOfBob.valueOf().minus(initialBalanceOfBob.valueOf()));
+        assert.deepEqual(Balance.egld(85).valueOf(), newBalanceOfBob.valueOf().minus(initialBalanceOfBob.valueOf()));
     });
 
     it("should simulate transactions", async function() {
@@ -69,14 +69,14 @@ describe("test transaction", function () {
             data: new TransactionPayload("helloWorld"),
             gasLimit: new GasLimit(70000),
             receiver: alice.address,
-            value: Balance.eGLD(1000)
+            value: Balance.egld(1000)
         });
 
         let transactionTwo = new Transaction({
             data: new TransactionPayload("helloWorld"),
             gasLimit: new GasLimit(70000),
             receiver: alice.address,
-            value: Balance.eGLD(1000000)
+            value: Balance.egld(1000000)
         });
 
         transactionOne.setNonce(alice.nonce);

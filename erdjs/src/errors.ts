@@ -100,15 +100,6 @@ export class ErrBadType extends Err {
 }
 
 /**
- * Signals a missing required value.
- */
-export class ErrMissingValue extends Err {
-  public constructor(name: string) {
-    super(`"${name} is required, but missing.`);
-  }
-}
-
-/**
  * Signals that an invariant failed.
  */
 export class ErrInvariantFailed extends Err {
@@ -324,6 +315,15 @@ export class ErrAsyncTimerAborted extends Err {
 }
 
 /**
+ * Signals a timout for a {@link TransactioWatcher}.
+ */
+export class ErrTransactionWatcherTimeout extends Err {
+    public constructor() {
+        super(`TransactionWatcher has timed out`);
+    }
+}
+
+/**
  * Signals an issue related to waiting for a specific {@link TransactionStatus}.
  */
 export class ErrExpectedTransactionStatusNotReached extends Err {
@@ -400,21 +400,12 @@ export class ErrTypingSystem extends Err {
 }
 
 /**
- * Signals a generic structure typing error.
+ * Signals a generic struct typing error.
  */
-export class ErrStructureTyping extends Err {
-  public constructor(reason: string) {
-    super(`Incorrect structure typing: ${reason}`);
-  }
-}
-
-/**
- * Signals an unknown type.
- */
-export class ErrUnknownType extends ErrTypingSystem {
-  public constructor(typeName: string) {
-    super(`Unknown type: ${typeName}`);
-  }
+export class ErrStructTyping extends Err {
+    public constructor(reason: string) {
+        super(`Incorrect struct typing: ${reason}`);
+    }
 }
 
 /**
@@ -442,6 +433,15 @@ export class ErrWrongMnemonic extends ErrWallet {
   public constructor() {
     super("Wrong mnemonic format");
   }
+}
+
+/**
+ * Signals a generic contract interaction error.
+ */
+export class ErrContractInteraction extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
 }
 
 /**

@@ -1,13 +1,15 @@
 import axios from "axios";
 import { IProvider } from "./interface";
-import { Transaction, TransactionHash, TransactionOnNetwork, TransactionStatus } from "./transaction";
+import { Transaction, TransactionHash, TransactionStatus } from "./transaction";
 import { NetworkConfig } from "./networkConfig";
 import { Address } from "./address";
 import * as errors from "./errors";
 import { AccountOnNetwork } from "./account";
-import { Query, QueryResponse } from "./smartcontracts/query";
+import { Query } from "./smartcontracts/query";
+import { QueryResponse } from "./smartcontracts/queryResponse";
 import { Logger } from "./logger";
 import { NetworkStatus } from "./networkStatus";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 const JSONbig = require("json-bigint");
 
 /**
@@ -70,10 +72,14 @@ export class ProxyProvider implements IProvider {
     /**
      * Fetches the state of a {@link Transaction}.
      */
-    async getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork> {
-        let response = await this.doGet(`transaction/${txHash.toString()}`);
-        let payload = response.transaction;
-        return TransactionOnNetwork.fromHttpResponse(payload);
+    async getTransaction(txHash: TransactionHash, hintSender?: Address, withResults?: boolean): Promise<TransactionOnNetwork> {
+        let url = this.buildUrlWithQueryParameters(`transaction/${txHash.toString()}`, {
+            "withSender": hintSender ? hintSender.bech32() : "",
+            "withResults": withResults ? "true" : ""
+        });
+
+        let { transaction } = await this.doGet(url);
+        return TransactionOnNetwork.fromHttpResponse(transaction);
     }
 
     /**
@@ -142,11 +148,23 @@ export class ProxyProvider implements IProvider {
             throw new errors.ErrApiProviderPost(resourceUrl, originalErrorMessage, error);
         }
     }
+
+    private buildUrlWithQueryParameters(endpoint: string, params: Record<string, string>): string {
+        let searchParams = new URLSearchParams();
+
+        for (let [key, value] of Object.entries(params)) {
+            if (value) {
+                searchParams.append(key, value);
+            }
+        }
+
+        return `${endpoint}?${searchParams.toString()}`;
+    }
 }
 
 // See: https://github.com/axios/axios/issues/983
 axios.defaults.transformResponse = [
-    function(data) {
+    function (data) {
         return JSONbig.parse(data);
     },
 ];

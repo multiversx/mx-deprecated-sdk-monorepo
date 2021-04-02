@@ -119,7 +119,6 @@ export class HWProvider implements IHWProvider {
         }
 
         const address = await this.getCurrentAddress();
-        transaction.sender = new Address(address);
         let signUsingHash = await this.shouldSignUsingHash();
         if(signUsingHash) {
             transaction.options = TransactionOptions.withTxHashSignOptions();
@@ -129,7 +128,7 @@ export class HWProvider implements IHWProvider {
             transaction.serializeForSigning(new Address(address)),
             signUsingHash
         );
-        transaction.signature = new Signature(sig);
+        transaction.applySignature(new Signature(sig), new Address(address));
 
         await transaction.send(this.provider);
 

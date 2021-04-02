@@ -4,7 +4,8 @@ import * as errors from "./errors";
 import { Logger } from "./logger";
 import { NetworkStake } from "./networkStake";
 import { Stats } from "./stats";
-import { TransactionHash, TransactionOnNetwork } from ".";
+import { TransactionHash } from "./transaction";
+import { TransactionOnNetwork } from "./transactionOnNetwork";
 const JSONbig = require("json-bigint");
 
 /**
