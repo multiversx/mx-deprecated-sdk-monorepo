@@ -5,6 +5,7 @@ from os import path
 from typing import Any, Union
 
 from erdpy import constants, errors, utils
+from erdpy.errors import LedgerError
 from erdpy.interfaces import IAccount, IAddress
 from erdpy.wallet import bech32, generate_pair, pem
 from erdpy.wallet.keyfile import get_password, load_from_key_file
@@ -44,11 +45,15 @@ class AccountsRepository:
 
 
 class Account(IAccount):
-    def __init__(self, address: Any = None, pem_file: Union[str, None] = None, pem_index: int = 0, key_file: str = "", pass_file: str = ""):
+    def __init__(self, address: Any = None, pem_file: Union[str, None] = None, pem_index: int = 0, key_file: str = "", pass_file: str = "",
+                 ledger: bool = False, ledger_account_index: int = 0, ledger_address_index: int = 0):
         self.address = Address(address)
         self.pem_file = pem_file
         self.pem_index = int(pem_index)
         self.nonce: int = 0
+        self.ledger = ledger
+        self.ledger_account_index = ledger_account_index
+        self.ledger_address_index = ledger_address_index
 
         if pem_file:
             seed, pubkey = pem.parse(self.pem_file, self.pem_index)
@@ -59,6 +64,10 @@ class Account(IAccount):
             address_from_key_file, seed = load_from_key_file(key_file, password)
             self.private_key_seed = seed.hex()
             self.address = Address(address_from_key_file)
+        elif ledger:
+            from erdpy.ledger.ledger_functions import do_get_ledger_address
+            address = do_get_ledger_address(ledger_account_index, ledger_address_index)
+            self.address = Address(address)
 
     def sync_nonce(self, proxy: Any):
         logger.info("Account.sync_nonce()")
@@ -66,6 +75,8 @@ class Account(IAccount):
         logger.info(f"Account.sync_nonce() done: {self.nonce}")
 
     def get_seed(self) -> bytes:
+        if self.ledger:
+            raise LedgerError("cannot get seed from a Ledger account")
         return unhexlify(self.private_key_seed)
 
 

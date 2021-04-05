@@ -1,5 +1,6 @@
 import argparse
 import ast
+import string
 import sys
 from argparse import FileType
 from typing import Any, List, Text
@@ -72,15 +73,18 @@ def add_tx_args(sub: Any, with_nonce: bool = True, with_receiver: bool = True, w
 
 
 def add_wallet_args(sub: Any):
-    sub.add_argument("--pem", required=not (utils.is_arg_present("--keyfile", sys.argv)), help="🔑 the PEM file, if keyfile not provided")
+    sub.add_argument("--pem", required=check_if_sign_method_required("--pem"), help="🔑 the PEM file, if keyfile not provided")
     sub.add_argument("--pem-index", default=0, help="🔑 the index in the PEM file (default: %(default)s)")
-    sub.add_argument("--keyfile", required=not (utils.is_arg_present("--pem", sys.argv)), help="🔑 a JSON keyfile, if PEM not provided")
-    sub.add_argument("--passfile", required=not (utils.is_arg_present("--pem", sys.argv)), help="🔑 a file containing keyfile's password, if keyfile provided")
+    sub.add_argument("--keyfile", required=check_if_sign_method_required("--keyfile"), help="🔑 a JSON keyfile, if PEM not provided")
+    sub.add_argument("--passfile", required=(utils.is_arg_present("--keyfile", sys.argv)), help="🔑 a file containing keyfile's password, if keyfile provided")
+    sub.add_argument("--ledger", action="store_true", required=check_if_sign_method_required("--ledger"), default=False, help="🔐 bool flag for signing transaction using ledger")
+    sub.add_argument("--ledger-account-index", default=0, help="🔐 the index of the account")
+    sub.add_argument("--ledger-address-index", default=0, help="🔐 the index of the address")
     sub.add_argument("--sender-username", required=False, help="🖄 the username of the sender")
 
 
 def add_proxy_arg(sub: Any):
-    sub.add_argument("--proxy", default=scope.get_proxy(), help="🖧 the URL of the proxy (default: %(default)s)")
+    sub.add_argument("--proxy", default=scope.get_proxy(), help="🔗 the URL of the proxy (default: %(default)s)")
 
 
 def add_outfile_arg(sub: Any, what: str = ""):
@@ -109,6 +113,8 @@ def prepare_nonce_in_args(args: Any):
             account = Account(pem_file=args.pem, pem_index=args.pem_index)
         elif args.keyfile and args.passfile:
             account = Account(key_file=args.keyfile, pass_file=args.passfile)
+        elif args.ledger:
+            account = Account(ledger=args.ledger, ledger_account_index=args.ledger_account_index, ledger_address_index=args.ledger_address_index)
         else:
             raise errors.NoWalletProvided()
 
@@ -138,3 +144,17 @@ def send_or_simulate(tx: Transaction, args: Any):
     elif args.simulate:
         response = tx.simulate(ElrondProxy(args.proxy))
         utils.dump_out_json(response)
+
+
+def check_if_sign_method_required(checked_method: string) -> bool:
+    methods = ["--pem", "--keyfile", "--ledger"]
+    rest_of_methods = []
+    for method in methods:
+        if method != checked_method:
+            rest_of_methods.append(method)
+
+    for method in rest_of_methods:
+        if utils.is_arg_present(method, sys.argv):
+            return False
+
+    return True

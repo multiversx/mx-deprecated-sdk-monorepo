@@ -26,6 +26,7 @@ class Transaction(ITransaction):
         self.data = ""
         self.chainID = ""
         self.version = 0
+        self.options = 0
         self.signature = ""
 
     # The data field is base64-encoded. erdpy only supports utf-8 "data" at this moment.
@@ -147,7 +148,12 @@ class Transaction(ITransaction):
             dictionary["data"] = self.data_encoded()
 
         dictionary["chainID"] = self.chainID
-        dictionary["version"] = int(self.version)
+
+        if self.version:
+            dictionary["version"] = int(self.version)
+
+        if self.options:
+            dictionary["options"] = int(self.options)
 
         if self.signature:
             dictionary["signature"] = self.signature
@@ -176,7 +182,8 @@ class BunchOfTransactions:
     def add_prepared(self, transaction: Transaction):
         self.transactions.append(transaction)
 
-    def add(self, sender: Account, receiver_address: str, nonce: Any, value: Any, data: str, gas_price: int, gas_limit: int, chain: str, version: int):
+    def add(self, sender: Account, receiver_address: str, nonce: Any, value: Any, data: str, gas_price: int,
+            gas_limit: int, chain: str, version: int, options: int):
         tx = Transaction()
         tx.nonce = int(nonce)
         tx.value = str(value)
@@ -187,6 +194,7 @@ class BunchOfTransactions:
         tx.data = data
         tx.chainID = chain
         tx.version = version
+        tx.options = options
 
         tx.sign(sender)
         self.transactions.append(tx)
@@ -205,6 +213,8 @@ class BunchOfTransactions:
 
 def do_prepare_transaction(args: Any) -> Transaction:
     account = Account()
+    if args.ledger:
+        return do_prepare_transaction_ledger(args)
     if args.pem:
         account = Account(pem_file=args.pem, pem_index=args.pem_index)
     elif args.keyfile and args.passfile:
@@ -222,6 +232,33 @@ def do_prepare_transaction(args: Any) -> Transaction:
     tx.data = args.data
     tx.chainID = args.chain
     tx.version = int(args.version)
+    tx.options = int(args.options)
 
     tx.sign(account)
+    return tx
+
+
+def do_prepare_transaction_ledger(args: Any) -> Transaction:
+    import erdpy.ledger.ledger_functions
+
+    account_index = 0
+    address_index = 0
+    if args.ledger_account_index:
+        account_index = args.ledger_account_index
+    if args.ledger_address_index:
+        address_index = args.ledger_address_index
+
+    tx = Transaction()
+    tx.nonce = int(args.nonce)
+    tx.value = args.value
+    tx.receiver = args.receiver
+    tx.senderUsername = getattr(args, "sender_username", None)
+    tx.receiverUsername = getattr(args, "receiver_username", None)
+    tx.gasPrice = int(args.gas_price)
+    tx.gasLimit = int(args.gas_limit)
+    tx.data = args.data
+    tx.chainID = args.chain
+
+    tx = erdpy.ledger.ledger_functions.sign_transaction_with_ledger(tx, account_index, address_index)
+
     return tx
