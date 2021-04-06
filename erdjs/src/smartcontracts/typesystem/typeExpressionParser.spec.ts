@@ -131,6 +131,66 @@ describe("test parser", () => {
         // });
     });
 
+    it("should parse expression: tuples", () => {
+        let type: Type;
+
+        type = parser.parse("tuple2<i32, bytes>");
+        assert.deepEqual(type.toJSON(), {
+            "name": "tuple2",
+            "typeParameters": [
+                {
+                    "name": "i32",
+                    "typeParameters": []
+                },
+                {
+                    "name": "bytes",
+                    "typeParameters": []
+                }
+            ]
+        });
+
+        type = parser.parse("tuple3<i32, bytes, Option<i64>>");
+        assert.deepEqual(type.toJSON(), {
+            "name": "tuple3",
+            "typeParameters": [
+                {
+                    "name": "i32",
+                    "typeParameters": []
+                },
+                {
+                    "name": "bytes",
+                    "typeParameters": []
+                },
+                {
+                    "name": "Option",
+                    "typeParameters": [
+                        {
+                            "name": "i64",
+                            "typeParameters": []
+                        }
+                    ]
+                }
+            ]
+        });
+
+        // TODO: In a future PR, replace the JSON-based parsing logic with a better one and enable this test.
+        // This test currently fails because JSON key de-duplication takes place: i32 is incorrectly de-duplicated by the parser.
+        // type = parser.parse("tuple2<i32, i32>");
+        // assert.deepEqual(type.toJSON(), {
+        //     "name": "tuple2",
+        //     "typeParameters": [
+        //         {
+        //             "name": "i32",
+        //             "typeParameters": []
+        //         },
+        //         {
+        //             "name": "i32",
+        //             "typeParameters": []
+        //         }
+        //     ]
+        // });
+    });
+
     it("should not parse expression", () => {
         assert.throw(() => parser.parse("<>"), errors.ErrTypingSystem);
         assert.throw(() => parser.parse("<"), errors.ErrTypingSystem);

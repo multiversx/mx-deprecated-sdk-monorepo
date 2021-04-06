@@ -1,6 +1,5 @@
 import * as errors from "../../errors";
 import { TypeExpressionParser } from "./typeExpressionParser";
-import { TypeMapper } from "./typeMapper";
 import { Type, CustomType, TypedValue } from "./types";
 
 export class StructType extends CustomType {
@@ -17,6 +16,7 @@ export class StructType extends CustomType {
     }
 }
 
+// TODO: Perhaps rename to FieldDefinition and extract to separate file, fields.ts?
 export class StructFieldDefinition {
     readonly name: string;
     readonly description: string;
@@ -112,6 +112,8 @@ export class Struct extends TypedValue {
     }
 }
 
+
+// TODO: Perhaps rename to Field and extract to separate file, fields.ts?
 export class StructField {
     readonly value: TypedValue;
     readonly name: string;

@@ -7,7 +7,6 @@ export class TypeExpressionParser {
         let rootKeys = Object.keys(root);
 
         if (rootKeys.length != 1) {
-            // TODO: Handle tuples, in a future PR.
             throw new errors.ErrTypingSystem(`bad type expression: ${expression}`);
         }
 
@@ -37,7 +36,6 @@ export class TypeExpressionParser {
      *  - VarArgs<MultiArg2<bytes, Address>>
      *  - MultiResultVec<MultiResult2<Address, u64>
      * ```
-     * TODO: Handle tuples, in a future PR.
      */
     private getJsonedString(expression: string) {
         let jsoned = "";

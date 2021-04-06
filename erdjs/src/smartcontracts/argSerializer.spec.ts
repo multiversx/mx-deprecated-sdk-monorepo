@@ -1,6 +1,6 @@
 
 import { assert } from "chai";
-import { U8Value, EndpointParameterDefinition, TypedValue, U32Value, I64Value, U16Value, OptionValue, List } from "./typesystem";
+import { U8Value, EndpointParameterDefinition, TypedValue, U32Value, I64Value, U16Value, OptionValue, List, Tuple, I32Value, I16Value } from "./typesystem";
 import { ArgSerializer } from "./argSerializer";
 import BigNumber from "bignumber.js";
 import { BytesValue } from "./typesystem/bytes";
@@ -10,11 +10,11 @@ import { CompositeValue } from "./typesystem/composite";
 import { VariadicValue } from "./typesystem/variadic";
 
 describe("test serializer", () => {
-    it("should serialize <valuesToString> then back <stringToValues>", async () => {
-        let serializer = new ArgSerializer();
-        let typeParser = new TypeExpressionParser();
-        let typeMapper = new TypeMapper();
+    let serializer = new ArgSerializer();
+    let typeParser = new TypeExpressionParser();
+    let typeMapper = new TypeMapper();
 
+    it("should serialize <valuesToString> then back <stringToValues>", async () => {
         serializeThenDeserialize(
             ["u32", "i64", "bytes"],
             [
@@ -54,27 +54,37 @@ describe("test serializer", () => {
         //     ],
         //     "0107@0000000200080009@abba@abba@abba"
         // );
-
-        function serializeThenDeserialize(typeExpressions: string[], values: TypedValue[], joinedString: string) {
-            let types = typeExpressions.map(expression => typeParser.parse(expression)).map(type => typeMapper.mapType(type));
-            let endpointDefinitions = types.map(type => new EndpointParameterDefinition("foo", "bar", type));
-
-            // values => joined string
-            let actualJoinedString = serializer.valuesToString(values);
-            assert.equal(actualJoinedString, joinedString);
-
-            // joined string => values
-            let decodedValues = serializer.stringToValues(actualJoinedString, endpointDefinitions);
-
-            // Now let's check for equality
-            assert.lengthOf(decodedValues, values.length);
-
-            for (let i = 0; i < values.length; i++) {
-                let value = values[i];
-                let decoded = decodedValues[i];
-
-                assert.deepEqual(decoded.valueOf(), value.valueOf(), `index = ${i}`);
-            }
-        }
     });
+
+    it("should serialize <valuesToString> then back <stringToValues>: tuples", async () => {
+        serializeThenDeserialize(
+            ["tuple2<i32, i16>"],
+            [
+                Tuple.fromItems([new I32Value(100), new I16Value(10)])
+            ],
+            "00000064000a"
+        );
+    });
+
+    function serializeThenDeserialize(typeExpressions: string[], values: TypedValue[], joinedString: string) {
+        let types = typeExpressions.map(expression => typeParser.parse(expression)).map(type => typeMapper.mapType(type));
+        let endpointDefinitions = types.map(type => new EndpointParameterDefinition("foo", "bar", type));
+
+        // values => joined string
+        let actualJoinedString = serializer.valuesToString(values);
+        assert.equal(actualJoinedString, joinedString);
+
+        // joined string => values
+        let decodedValues = serializer.stringToValues(actualJoinedString, endpointDefinitions);
+
+        // Now let's check for equality
+        assert.lengthOf(decodedValues, values.length);
+
+        for (let i = 0; i < values.length; i++) {
+            let value = values[i];
+            let decoded = decodedValues[i];
+
+            assert.deepEqual(decoded.valueOf(), value.valueOf(), `index = ${i}`);
+        }
+    }
 });

@@ -9,6 +9,7 @@ import { VariadicType } from "./variadic";
 import { OptionalType } from "./algebraic";
 import { CompositeType } from "./composite";
 import { ListType, OptionType } from "./generic";
+import { TupleType } from "./tuple";
 
 type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
@@ -40,6 +41,11 @@ describe("test mapper", () => {
         testMapping("MultiResultVec<MultiResult<i32,bytes,>>", VariadicType, [new CompositeType(new I32Type(), new BytesType())]);
         testMapping("VarArgs<MultiArg<i32,bytes,>>", VariadicType, [new CompositeType(new I32Type(), new BytesType())]);
         testMapping("OptionalResult<Address>", OptionalType, [new AddressType()]);
+    });
+
+    it("should map tuples", () => {
+        testMapping("tuple2<u32,bytes>", TupleType, [new U32Type(), new BytesType()]);
+        testMapping("tuple2<Address,BigUint>", TupleType, [new AddressType(), new BigUIntType()]);
     });
 
     function testMapping(expression: string, constructor: TypeConstructor, typeParameters: Type[] = []) {

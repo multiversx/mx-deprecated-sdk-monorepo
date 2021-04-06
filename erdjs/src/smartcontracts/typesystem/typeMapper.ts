@@ -44,6 +44,15 @@ export class TypeMapper {
             ["OptionalResult", OptionalType],
             ["MultiArg", CompositeType],
             ["MultiResult", CompositeType],
+            // Perhaps we can adjust the ABI generator to only output "tuple", instead of "tupleN"?
+            ["tuple", TupleType],
+            ["tuple2", TupleType],
+            ["tuple3", TupleType],
+            ["tuple4", TupleType],
+            ["tuple5", TupleType],
+            ["tuple6", TupleType],
+            ["tuple7", TupleType],
+            ["tuple8", TupleType]
         ]);
 
         // For closed types, we hold actual type instances instead of type constructors (no type parameters needed).
@@ -72,7 +81,7 @@ export class TypeMapper {
 
     mapType(type: Type): Type {
         let isGeneric = type.isGenericType();
-        console.log("map type ", type);
+        
         if (type instanceof EnumType) {
             return type;
         }
@@ -80,11 +89,6 @@ export class TypeMapper {
         if (type instanceof StructType) {
             // This will call mapType() recursively, for all the struct's fields.
             return this.mapStructType(type);
-        }
-
-        if (type instanceof TupleType) {
-            // This will call mapType() recursively, for all the struct's fields.
-            return this.mapTupleType(type);
         }
 
         if (isGeneric) {
@@ -106,15 +110,6 @@ export class TypeMapper {
         );
         let mappedStruct = new StructType(type.getName(), mappedFields);
         return mappedStruct;
-    }
-
-    private mapTupleType(type: TupleType): TupleType {
-        console.log("mapTupleType", type);
-        let mappedFields = type.fields.map(
-            (item) => new StructFieldDefinition(item.name, item.description, this.mapType(item.type))
-        );
-        let mappedTuple = new TupleType(type.getName(), mappedFields);
-        return mappedTuple;
     }
 
     private mapGenericType(type: Type): Type {

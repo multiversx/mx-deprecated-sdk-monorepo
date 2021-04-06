@@ -8,7 +8,6 @@ import { CustomType } from "./types";
 import { EnumType } from "./enum";
 import { TypeMapper } from "./typeMapper";
 import { EndpointDefinition, EndpointParameterDefinition } from "./endpoint";
-import { TupleType } from ".";
 
 export class AbiRegistry {
     readonly interfaces: ContractInterface[] = [];
@@ -77,9 +76,6 @@ export class AbiRegistry {
         if (typeDiscriminant == "struct") {
             return StructType.fromJSON(json);
         }
-        if (typeDiscriminant == "tuple2") {
-            return TupleType.fromJSON(json);
-        }
         if (typeDiscriminant == "enum") {
             return EnumType.fromJSON(json);
         }
@@ -103,11 +99,6 @@ export class AbiRegistry {
         return <StructType>result!;
     }
 
-    getTuple(name: string): TupleType {
-        let result = this.customTypes.find((e) => e.getName() == name && e instanceof TupleType);
-        guardValueIsSetWithMessage(`tuple2 [${name}] not found`, result);
-        return <TupleType>result!;
-    }
 
     getStructs(names: string[]): StructType[] {
         return names.map((name) => this.getStruct(name));
