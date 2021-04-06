@@ -18,3 +18,4 @@ export * from "./smartContract";
 export * from "./smartContractResults";
 export * from "./strictChecker";
 export * from "./transactionPayloadBuilders";
+export * from "./typesystem";

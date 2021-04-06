@@ -8,6 +8,7 @@ import { CustomType } from "./types";
 import { EnumType } from "./enum";
 import { TypeMapper } from "./typeMapper";
 import { EndpointDefinition, EndpointParameterDefinition } from "./endpoint";
+import { TupleType } from ".";
 
 export class AbiRegistry {
     readonly interfaces: ContractInterface[] = [];
@@ -17,7 +18,7 @@ export class AbiRegistry {
      * Convenience factory function to load ABIs (from files or URLs).
      * This function will also remap ABI types to know types (on best-efforts basis).
      */
-    static async load(json: { files?: string[], urls?: string[] }) {
+    static async load(json: { files?: string[]; urls?: string[] }) {
         let registry = new AbiRegistry();
 
         for (const file of json.files || []) {
@@ -38,7 +39,7 @@ export class AbiRegistry {
     async extendFromFile(file: string): Promise<AbiRegistry> {
         let jsonContent: string = await fs.promises.readFile(file, { encoding: "utf8" });
         let json = JSON.parse(jsonContent);
-        
+
         return this.extend(json);
     }
 
@@ -51,7 +52,7 @@ export class AbiRegistry {
         return this.extend(json);
     }
 
-    extend(json: { name: string, endpoints: any[], types: any[] }): AbiRegistry {
+    extend(json: { name: string; endpoints: any[]; types: any[] }): AbiRegistry {
         json.types = json.types || {};
 
         // The "endpoints" collection is interpreted by "ContractInterface".
@@ -76,6 +77,9 @@ export class AbiRegistry {
         if (typeDiscriminant == "struct") {
             return StructType.fromJSON(json);
         }
+        if (typeDiscriminant == "tuple2") {
+            return TupleType.fromJSON(json);
+        }
         if (typeDiscriminant == "enum") {
             return EnumType.fromJSON(json);
         }
@@ -84,41 +88,47 @@ export class AbiRegistry {
     }
 
     getInterface(name: string): ContractInterface {
-        let result = this.interfaces.find(e => e.name == name);
+        let result = this.interfaces.find((e) => e.name == name);
         guardValueIsSetWithMessage(`interface [${name}] not found`, result);
         return result!;
     }
 
     getInterfaces(names: string[]): ContractInterface[] {
-        return names.map(name => this.getInterface(name));
+        return names.map((name) => this.getInterface(name));
     }
-    
+
     getStruct(name: string): StructType {
-        let result = this.customTypes.find(e => e.getName() == name && e instanceof StructType);
+        let result = this.customTypes.find((e) => e.getName() == name && e instanceof StructType);
         guardValueIsSetWithMessage(`struct [${name}] not found`, result);
         return <StructType>result!;
     }
 
+    getTuple(name: string): TupleType {
+        let result = this.customTypes.find((e) => e.getName() == name && e instanceof TupleType);
+        guardValueIsSetWithMessage(`tuple2 [${name}] not found`, result);
+        return <TupleType>result!;
+    }
+
     getStructs(names: string[]): StructType[] {
-        return names.map(name => this.getStruct(name));
-    }  
+        return names.map((name) => this.getStruct(name));
+    }
 
     getEnum(name: string): EnumType {
-        let result = this.customTypes.find(e => e.getName() == name && e instanceof EnumType);
+        let result = this.customTypes.find((e) => e.getName() == name && e instanceof EnumType);
         guardValueIsSetWithMessage(`enum [${name}] not found`, result);
         return <EnumType>result!;
     }
 
     getEnums(names: string[]): EnumType[] {
-        return names.map(name => this.getEnum(name));
+        return names.map((name) => this.getEnum(name));
     }
 
     /**
      * Right after loading ABI definitions into a registry (e.g. from a file), the endpoints and the custom types (structs, enums)
      * use raw types for their I/O parameters (in the case of endpoints), or for their fields (in the case of structs).
-     * 
+     *
      * A raw type is merely an instance of {@link Type}, with a given name and type parameters (if it's a generic type).
-     * 
+     *
      * Though, for most (development) purposes, we'd like to operate using known, specific types (e.g. {@link List}, {@link U8Type} etc.).
      * This function increases the specificity of the types used by parameter / field definitions within a registry (on best-efforts basis).
      * The result is an equivalent, more explicit ABI registry.
@@ -128,13 +138,13 @@ export class AbiRegistry {
 
         let newCustomTypes: CustomType[] = [];
         let newInterfaces: ContractInterface[] = [];
-        
+
         // First, remap custom types (actually, under the hood, this will remap types of struct fields)
         for (const type of this.customTypes) {
             newCustomTypes.push(mapper.mapType(type));
         }
 
-        // Then, remap types of all endpoint parameters. 
+        // Then, remap types of all endpoint parameters.
         // But we'll use an enhanced mapper, that takes into account the results from the previous step.
         mapper = new TypeMapper(newCustomTypes);
 
@@ -142,8 +152,12 @@ export class AbiRegistry {
             let newEndpoints: EndpointDefinition[] = [];
 
             for (const endpoint of iface.endpoints) {
-                let newInput = endpoint.input.map(e => new EndpointParameterDefinition(e.name, e.description, mapper.mapType(e.type)));
-                let newOutput = endpoint.output.map(e => new EndpointParameterDefinition(e.name, e.description, mapper.mapType(e.type)));
+                let newInput = endpoint.input.map(
+                    (e) => new EndpointParameterDefinition(e.name, e.description, mapper.mapType(e.type))
+                );
+                let newOutput = endpoint.output.map(
+                    (e) => new EndpointParameterDefinition(e.name, e.description, mapper.mapType(e.type))
+                );
                 newEndpoints.push(new EndpointDefinition(endpoint.name, newInput, newOutput, endpoint.modifiers));
             }
 
@@ -155,7 +169,7 @@ export class AbiRegistry {
 
         newRegistry.customTypes.push(...newCustomTypes);
         newRegistry.interfaces.push(...newInterfaces);
-        
+
         return newRegistry;
     }
 }

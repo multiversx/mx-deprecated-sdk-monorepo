@@ -23,6 +23,7 @@ import { TokenIdentifierType } from "./tokenIdentifier";
 import { Type, CustomType } from "./types";
 import { VariadicType } from "./variadic";
 import { OptionalType } from "./algebraic";
+import { TupleType } from ".";
 
 type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
@@ -39,6 +40,7 @@ export class TypeMapper {
             ["MultiResultVec", VariadicType],
             ["variadic", VariadicType],
             ["OptionalArg", OptionalType],
+            ["optional", OptionalType],
             ["OptionalResult", OptionalType],
             ["MultiArg", CompositeType],
             ["MultiResult", CompositeType],
@@ -70,7 +72,7 @@ export class TypeMapper {
 
     mapType(type: Type): Type {
         let isGeneric = type.isGenericType();
-
+        console.log("map type ", type);
         if (type instanceof EnumType) {
             return type;
         }
@@ -78,6 +80,11 @@ export class TypeMapper {
         if (type instanceof StructType) {
             // This will call mapType() recursively, for all the struct's fields.
             return this.mapStructType(type);
+        }
+
+        if (type instanceof TupleType) {
+            // This will call mapType() recursively, for all the struct's fields.
+            return this.mapTupleType(type);
         }
 
         if (isGeneric) {
@@ -99,6 +106,15 @@ export class TypeMapper {
         );
         let mappedStruct = new StructType(type.getName(), mappedFields);
         return mappedStruct;
+    }
+
+    private mapTupleType(type: TupleType): TupleType {
+        console.log("mapTupleType", type);
+        let mappedFields = type.fields.map(
+            (item) => new StructFieldDefinition(item.name, item.description, this.mapType(item.type))
+        );
+        let mappedTuple = new TupleType(type.getName(), mappedFields);
+        return mappedTuple;
     }
 
     private mapGenericType(type: Type): Type {
