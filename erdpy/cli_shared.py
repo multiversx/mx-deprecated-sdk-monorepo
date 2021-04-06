@@ -70,6 +70,7 @@ def add_tx_args(sub: Any, with_nonce: bool = True, with_receiver: bool = True, w
 
     sub.add_argument("--chain", default=scope.get_chain_id(), help="the chain identifier (default: %(default)s)")
     sub.add_argument("--version", type=int, default=scope.get_tx_version(), help="the transaction version (default: %(default)s)")
+    sub.add_argument("--options", type=int, default=0,  help="the transaction options (default: 0)")
 
 
 def add_wallet_args(sub: Any):
