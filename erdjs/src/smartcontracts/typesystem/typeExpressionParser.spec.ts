@@ -11,100 +11,100 @@ describe("test parser", () => {
 
         type = parser.parse("u32");
         assert.deepEqual(type.toJSON(), {
-            "name": "u32",
-            "typeParameters": []
+            name: "u32",
+            typeParameters: [],
         });
 
         type = parser.parse("List<u32>");
         assert.deepEqual(type.toJSON(), {
-            "name": "List",
-            "typeParameters": [
+            name: "List",
+            typeParameters: [
                 {
-                    "name": "u32",
-                    "typeParameters": []
-                }
-            ]
+                    name: "u32",
+                    typeParameters: [],
+                },
+            ],
         });
 
         type = parser.parse("Option<List<Address>>");
         assert.deepEqual(type.toJSON(), {
-            "name": "Option",
-            "typeParameters": [
+            name: "Option",
+            typeParameters: [
                 {
-                    "name": "List",
-                    "typeParameters": [
+                    name: "List",
+                    typeParameters: [
                         {
-                            "name": "Address",
-                            "typeParameters": []
-                        }
-                    ]
-                }
-            ]
+                            name: "Address",
+                            typeParameters: [],
+                        },
+                    ],
+                },
+            ],
         });
 
         type = parser.parse("VarArgs<MultiArg<bytes, Address>>");
         assert.deepEqual(type.toJSON(), {
-            "name": "VarArgs",
-            "typeParameters": [
+            name: "VarArgs",
+            typeParameters: [
                 {
-                    "name": "MultiArg",
-                    "typeParameters": [
+                    name: "MultiArg",
+                    typeParameters: [
                         {
-                            "name": "bytes",
-                            "typeParameters": []
+                            name: "bytes",
+                            typeParameters: [],
                         },
                         {
-                            "name": "Address",
-                            "typeParameters": []
-                        }
-                    ]
-                }
-            ]
+                            name: "Address",
+                            typeParameters: [],
+                        },
+                    ],
+                },
+            ],
         });
 
         type = parser.parse("MultiResultVec<MultiResult<Address, u64>>");
         assert.deepEqual(type.toJSON(), {
-            "name": "MultiResultVec",
-            "typeParameters": [
+            name: "MultiResultVec",
+            typeParameters: [
                 {
-                    "name": "MultiResult",
-                    "typeParameters": [
+                    name: "MultiResult",
+                    typeParameters: [
                         {
-                            "name": "Address",
-                            "typeParameters": []
+                            name: "Address",
+                            typeParameters: [],
                         },
                         {
-                            "name": "u64",
-                            "typeParameters": []
-                        }
-                    ]
-                }
-            ]
+                            name: "u64",
+                            typeParameters: [],
+                        },
+                    ],
+                },
+            ],
         });
 
         type = parser.parse("MultiResultVec<MultiResult<i32,bytes,>>");
         assert.deepEqual(type.toJSON(), {
-            "name": "MultiResultVec",
-            "typeParameters": [
+            name: "MultiResultVec",
+            typeParameters: [
                 {
-                    "name": "MultiResult",
-                    "typeParameters": [
+                    name: "MultiResult",
+                    typeParameters: [
                         {
-                            "name": "i32",
-                            "typeParameters": []
+                            name: "i32",
+                            typeParameters: [],
                         },
                         {
-                            "name": "bytes",
-                            "typeParameters": []
-                        }
-                    ]
-                }
-            ]
+                            name: "bytes",
+                            typeParameters: [],
+                        },
+                    ],
+                },
+            ],
         });
 
         // TODO: In a future PR, replace the JSON-based parsing logic with a better one and enable this test,
         // which currently fails.
-        
+
         // type = parser.parse("MultiArg<Option<u8>, List<u16>>");
         // assert.deepEqual(type.toJSON(), {
         //     "name": "MultiArg",
@@ -136,59 +136,59 @@ describe("test parser", () => {
 
         type = parser.parse("tuple2<i32, bytes>");
         assert.deepEqual(type.toJSON(), {
-            "name": "tuple2",
-            "typeParameters": [
+            name: "tuple2",
+            typeParameters: [
                 {
-                    "name": "i32",
-                    "typeParameters": []
+                    name: "i32",
+                    typeParameters: [],
                 },
                 {
-                    "name": "bytes",
-                    "typeParameters": []
-                }
-            ]
+                    name: "bytes",
+                    typeParameters: [],
+                },
+            ],
         });
 
         type = parser.parse("tuple3<i32, bytes, Option<i64>>");
         assert.deepEqual(type.toJSON(), {
-            "name": "tuple3",
-            "typeParameters": [
+            name: "tuple3",
+            typeParameters: [
                 {
-                    "name": "i32",
-                    "typeParameters": []
+                    name: "i32",
+                    typeParameters: [],
                 },
                 {
-                    "name": "bytes",
-                    "typeParameters": []
+                    name: "bytes",
+                    typeParameters: [],
                 },
                 {
-                    "name": "Option",
-                    "typeParameters": [
+                    name: "Option",
+                    typeParameters: [
                         {
-                            "name": "i64",
-                            "typeParameters": []
-                        }
-                    ]
-                }
-            ]
+                            name: "i64",
+                            typeParameters: [],
+                        },
+                    ],
+                },
+            ],
         });
 
         // TODO: In a future PR, replace the JSON-based parsing logic with a better one and enable this test.
         // This test currently fails because JSON key de-duplication takes place: i32 is incorrectly de-duplicated by the parser.
-        // type = parser.parse("tuple2<i32, i32>");
-        // assert.deepEqual(type.toJSON(), {
-        //     "name": "tuple2",
-        //     "typeParameters": [
-        //         {
-        //             "name": "i32",
-        //             "typeParameters": []
-        //         },
-        //         {
-        //             "name": "i32",
-        //             "typeParameters": []
-        //         }
-        //     ]
-        // });
+        type = parser.parse("tuple2<i32, i32>");
+        assert.deepEqual(type.toJSON(), {
+            name: "tuple2",
+            typeParameters: [
+                {
+                    name: "i32",
+                    typeParameters: [],
+                },
+                {
+                    name: "i32",
+                    typeParameters: [],
+                },
+            ],
+        });
     });
 
     it("should not parse expression", () => {
@@ -198,4 +198,3 @@ describe("test parser", () => {
         assert.throw(() => parser.parse("a, b"), errors.ErrTypingSystem);
     });
 });
-
