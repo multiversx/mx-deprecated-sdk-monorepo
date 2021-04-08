@@ -49,7 +49,7 @@ class ElrondProxy:
     def get_account_tokens(self, address: Address):
         url = f"{self.url}/address/{address.bech32()}/esdt"
         response = do_get(url)
-        tokens = response.get("tokens", dict())
+        tokens = response.get("esdts", dict())
         return tokens
 
     def get_num_shards(self):
