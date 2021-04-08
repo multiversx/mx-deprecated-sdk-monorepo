@@ -46,6 +46,12 @@ class ElrondProxy:
             transaction["data"] = data
         return transactions
 
+    def get_account_tokens(self, address: Address):
+        url = f"{self.url}/address/{address.bech32()}/esdt"
+        response = do_get(url)
+        tokens = response.get("tokens", dict())
+        return tokens
+
     def get_num_shards(self):
         network_config = self.get_network_config()
         return network_config.num_shards
