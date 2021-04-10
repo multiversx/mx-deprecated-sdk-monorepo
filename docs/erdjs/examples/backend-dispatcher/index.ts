@@ -1,7 +1,7 @@
-const os = require("os");
-const fs = require("fs");
-const { Command } = require("commander");
-const { ProxyProvider, BackendSigner, Account, GasLimit, TransactionHash, TransactionPayload, NetworkConfig, Transaction, Address, Balance } = require("@elrondnetwork/erdjs");
+import os from "os";
+import fs from "fs";
+import commander, { Command } from "commander";
+import { ProxyProvider, UserSigner, Account, GasLimit, TransactionHash, TransactionPayload, NetworkConfig, Transaction, Address, Balance, ISigner } from "@elrondnetwork/erdjs";
 
 var PROXY_URL = "https://testnet-api.elrond.com";
 
@@ -21,7 +21,7 @@ async function main() {
     }
 }
 
-function setupCli(program) {
+function setupCli(program: commander.Command) {
     program.name("backend-dispatcher")
 
     program
@@ -56,7 +56,7 @@ function setupCli(program) {
         .action(getBalance);
 }
 
-async function sendTransaction(cmdObj) {
+async function sendTransaction(cmdObj: { keyFile: string; passwordFile: string; receiver: string; value: number }) {
     let provider = new ProxyProvider(PROXY_URL);
     NetworkConfig.getDefault().sync(provider);
 
@@ -66,24 +66,24 @@ async function sendTransaction(cmdObj) {
     await sendOneTransaction(provider, signer, sender, cmdObj.receiver, cmdObj.value);
 }
 
-function createSigner(keyFile, passwordFile) {
+function createSigner(keyFile: string, passwordFile: string) {
     keyFile = asUserPath(keyFile);
     passwordFile = asUserPath(passwordFile);
 
     let keyFileJson = readText(keyFile);
     let keyFileObject = JSON.parse(keyFileJson);
     let password = readText(passwordFile);
-    let signer = BackendSigner.fromWalletKey(keyFileObject, password);
+    let signer = UserSigner.fromWallet(keyFileObject, password);
     return signer;
 }
 
-async function sendOneTransaction(provider, signer, sender, receiverAddress, valueInEGLD) {
+async function sendOneTransaction(provider: ProxyProvider, signer: ISigner, sender: Account, receiverAddress: string, valueInEGLD: number) {
     let nonce = sender.nonce;
     let receiver = new Address(receiverAddress);
-    let value = Balance.eGLD(valueInEGLD);
+    let value = Balance.egld(valueInEGLD);
     let payload = new TransactionPayload("");
     let gasLimit = GasLimit.forTransfer(payload);
-    
+
     let transaction = new Transaction({
         nonce: nonce,
         receiver: receiver,
@@ -97,7 +97,7 @@ async function sendOneTransaction(provider, signer, sender, receiverAddress, val
     console.log(transaction);
 }
 
-async function sendMoreTransactions(cmdObj) {
+async function sendMoreTransactions(cmdObj: { keyFile: string; passwordFile: string; receiver: string; value: number; num: number; }) {
     let provider = new ProxyProvider(PROXY_URL);
     NetworkConfig.getDefault().sync(provider);
 
@@ -113,7 +113,7 @@ async function sendMoreTransactions(cmdObj) {
     }
 }
 
-async function getTransaction(cmdObj) {
+async function getTransaction(cmdObj: { hash: string }) {
     let provider = new ProxyProvider(PROXY_URL);
     let hash = new TransactionHash(cmdObj.hash);
     let transaction = await provider.getTransaction(hash);
@@ -123,20 +123,21 @@ async function getTransaction(cmdObj) {
     console.log(transaction.status.isSuccessful());
 }
 
-async function getBalance(cmdObj) {
+async function getBalance(cmdObj: { address: string }) {
     let provider = new ProxyProvider(PROXY_URL);
-    let address = new Address(cmdObj.address)
-    let balance = await provider.getBalance(address)
+    let address = new Address(cmdObj.address);
+    let account = await provider.getAccount(address);
+    let balance = account.balance;
 
     console.log(balance);
-    console.log(balance.raw());
-    console.log(balance.formatted());
+    console.log(balance.toJSON());
+    console.log(balance.toCurrencyString());
 }
 
-function asUserPath(userPath) {
+function asUserPath(userPath: string | undefined) {
     return (userPath || "").replace("~", os.homedir);
 }
 
-function readText(filePath) {
+function readText(filePath: string) {
     return fs.readFileSync(filePath, { encoding: "utf8" }).trim();
 }
