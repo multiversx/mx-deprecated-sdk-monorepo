@@ -17,6 +17,7 @@ export * from "./h256";
 export * from "./matchers";
 export * from "./numerical";
 export * from "./struct";
+export * from "./tuple";
 export * from "./tokenIdentifier";
 export * from "./typeExpressionParser";
 export * from "./typeMapper";
