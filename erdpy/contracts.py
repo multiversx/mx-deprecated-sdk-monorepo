@@ -5,7 +5,7 @@ from typing import Any, List
 from Cryptodome.Hash import keccak
 
 from erdpy import config, constants, errors, utils
-from erdpy.accounts import Address
+from erdpy.accounts import Account, Address
 from erdpy.transactions import Transaction
 
 logger = logging.getLogger("contracts")
@@ -59,17 +59,17 @@ class SmartContract:
         address = bytes([0] * 8) + bytes([5, 0]) + address[10:30] + owner_bytes[30:]
         self.address = Address(address)
 
-    def execute(self, caller, function, arguments, gas_price, gas_limit, value, chain, version) -> Transaction:
+    def execute(self, caller: Account, function: str, arguments: List[str], gas_price: int, gas_limit: int, value: int, chain: str, version: int) -> Transaction:
         self.caller = caller
 
         arguments = arguments or []
         gas_price = int(gas_price)
         gas_limit = int(gas_limit)
-        value = str(value or "0")
+        value = value or 0
 
         tx = Transaction()
         tx.nonce = caller.nonce
-        tx.value = value
+        tx.value = str(value)
         tx.sender = caller.address.bech32()
         tx.receiver = self.address.bech32()
         tx.gasPrice = gas_price
@@ -81,7 +81,7 @@ class SmartContract:
         tx.sign(caller)
         return tx
 
-    def prepare_execute_transaction_data(self, function, arguments):
+    def prepare_execute_transaction_data(self, function: str, arguments: List[Any]):
         tx_data = function
 
         for arg in arguments:
