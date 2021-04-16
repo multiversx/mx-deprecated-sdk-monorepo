@@ -232,7 +232,12 @@ func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 
 func (ep *elrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
-	response, err := http.Post(url, "", strings.NewReader(string(data)))
+	request, err := http.NewRequest("POST", url, strings.NewReader(string(data)))
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("Content-Type", "")
+	response, err := Client.Do(request)
 	if err != nil {
 		return nil, err
 	}
