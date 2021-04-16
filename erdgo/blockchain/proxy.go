@@ -25,6 +25,14 @@ const (
 	getNetworkStatusEndpoint     = "network/status/%v"
 )
 
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
+var (
+	Client HTTPClient
+)
+
 // elrondProxy implements basic functions for interacting with an Elrond Proxy
 type elrondProxy struct {
 	proxyURL string
@@ -32,6 +40,8 @@ type elrondProxy struct {
 
 // NewElrondProxy initializes and returns an ElrondProxy object
 func NewElrondProxy(url string) *elrondProxy {
+	Client = http.DefaultClient
+
 	ep := &elrondProxy{
 		proxyURL: url,
 	}
@@ -66,7 +76,7 @@ func (ep *elrondProxy) GetAccount(address addressHandler) (*data.Account, error)
 	if !address.IsValid() {
 		return nil, ErrInvalidAddress
 	}
-	endpoint := fmt.Sprintf(accountEndpoint, address)
+	endpoint := fmt.Sprintf(accountEndpoint, address.AddressAsBech32String())
 
 	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
@@ -205,8 +215,7 @@ func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	client := http.DefaultClient
-	response, err := client.Do(request)
+	response, err := Client.Do(request)
 	if err != nil {
 		return nil, err
 	}
