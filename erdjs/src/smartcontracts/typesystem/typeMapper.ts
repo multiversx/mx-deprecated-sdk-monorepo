@@ -23,6 +23,7 @@ import { TokenIdentifierType } from "./tokenIdentifier";
 import { Type, CustomType } from "./types";
 import { VariadicType } from "./variadic";
 import { OptionalType } from "./algebraic";
+import { TupleType } from ".";
 
 type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
@@ -39,9 +40,19 @@ export class TypeMapper {
             ["MultiResultVec", VariadicType],
             ["variadic", VariadicType],
             ["OptionalArg", OptionalType],
+            ["optional", OptionalType],
             ["OptionalResult", OptionalType],
             ["MultiArg", CompositeType],
             ["MultiResult", CompositeType],
+            // Perhaps we can adjust the ABI generator to only output "tuple", instead of "tupleN"?
+            ["tuple", TupleType],
+            ["tuple2", TupleType],
+            ["tuple3", TupleType],
+            ["tuple4", TupleType],
+            ["tuple5", TupleType],
+            ["tuple6", TupleType],
+            ["tuple7", TupleType],
+            ["tuple8", TupleType]
         ]);
 
         // For closed types, we hold actual type instances instead of type constructors (no type parameters needed).
@@ -70,7 +81,7 @@ export class TypeMapper {
 
     mapType(type: Type): Type {
         let isGeneric = type.isGenericType();
-
+        
         if (type instanceof EnumType) {
             return type;
         }
