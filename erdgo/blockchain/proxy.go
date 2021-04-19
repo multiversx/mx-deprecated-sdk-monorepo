@@ -1,16 +1,15 @@
 package blockchain
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
-	"net/http"
-	"strings"
-
 	"github.com/ElrondNetwork/elrond-go/core"
 	"github.com/ElrondNetwork/elrond-go/core/check"
 	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
+	"io/ioutil"
+	"net/http"
 )
 
 const (
@@ -233,7 +232,7 @@ func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 
 func (ep *elrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
-	request, err := http.NewRequest("POST", url, strings.NewReader(string(data)))
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
