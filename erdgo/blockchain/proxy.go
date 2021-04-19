@@ -29,21 +29,21 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-var (
-	Client HTTPClient
-)
-
 // elrondProxy implements basic functions for interacting with an Elrond Proxy
 type elrondProxy struct {
 	proxyURL string
+	client   HTTPClient
 }
 
 // NewElrondProxy initializes and returns an ElrondProxy object
-func NewElrondProxy(url string) *elrondProxy {
-	Client = http.DefaultClient
+func NewElrondProxy(url string, client HTTPClient) *elrondProxy {
+	if client == nil {
+		client = http.DefaultClient
+	}
 
 	ep := &elrondProxy{
 		proxyURL: url,
+		client:   client,
 	}
 
 	return ep
@@ -215,7 +215,7 @@ func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	response, err := Client.Do(request)
+	response, err := ep.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +237,7 @@ func (ep *elrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
 		return nil, err
 	}
 	request.Header.Set("Content-Type", "")
-	response, err := Client.Do(request)
+	response, err := ep.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
