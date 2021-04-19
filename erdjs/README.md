@@ -21,9 +21,10 @@ The most comprehensive usage examples are captured within the unit and the integ
  - [query.main.net.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/query.main.net.spec.ts)
 
 For advanced smart contract interaction, using ABIs, please see the following test files:
- - [interactor.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/interaction/interactor.spec.ts) 
+
+ - [interaction.dev.net.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/interaction.dev.net.spec.ts) 
  - [abiRegistry.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/typesystem/abiRegistry.spec.ts)
- - [serializer.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/serializer.spec.ts) 
+ - [argSerializer.spec.ts](https://github.com/ElrondNetwork/elrond-sdk/tree/development/erdjs/src/smartcontracts/argSerializer.spec.ts) 
 
 **More examples and documentation on writing ABI-aware custom interactors for smart contracts is coming soon!**
 
