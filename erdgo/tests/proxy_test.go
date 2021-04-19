@@ -2,12 +2,13 @@ package tests
 
 import (
 	"bytes"
-	"github.com/ElrondNetwork/elrond-sdk/erdgo/blockchain"
-	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/blockchain"
+	"github.com/ElrondNetwork/elrond-sdk/erdgo/data"
+	"github.com/stretchr/testify/assert"
 )
 
 type mockHTTPClient struct {
