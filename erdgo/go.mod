@@ -3,7 +3,7 @@ module github.com/ElrondNetwork/elrond-sdk/erdgo
 go 1.14
 
 require (
-	github.com/ElrondNetwork/elrond-go v1.1.37
+	github.com/ElrondNetwork/elrond-go v1.1.50
 	github.com/btcsuite/btcutil v1.0.2 // indirect
 	github.com/pborman/uuid v1.2.1
 	github.com/stretchr/testify v1.7.0

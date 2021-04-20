@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"bytes"
+	"encoding/gob"
 	"sync"
 )
 
@@ -120,6 +122,24 @@ func (mc *mapCacher) Len() int {
 	defer mc.RUnlock()
 
 	return len(mc.dataMap)
+}
+
+// SizeInBytesContained returns the size in bytes of all contained elements
+func (mc *mapCacher) SizeInBytesContained() uint64 {
+	mc.RLock()
+	defer mc.RUnlock()
+
+	total := 0
+	b := new(bytes.Buffer)
+	for _, v := range mc.dataMap {
+		if err := gob.NewEncoder(b).Encode(v); err != nil {
+			total += 0
+		} else {
+			total += b.Len()
+		}
+	}
+
+	return uint64(total)
 }
 
 // MaxSize returns the maximum number of items which can be stored in cache.
