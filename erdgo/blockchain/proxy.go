@@ -219,6 +219,7 @@ func (ep *elrondProxy) getTransactionInfo(hash string, withResults bool) (*data.
 	return response, nil
 }
 
+// RequestTransactionCost retrieves how many gas a transaction will consume
 func (ep *elrondProxy) RequestTransactionCost(tx *data.Transaction) (*data.TxCostResponseData, error) {
 	jsonTx, err := json.Marshal(tx)
 	if err != nil {
@@ -322,6 +323,7 @@ func (ep *elrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	request.Header.Set("Content-Type", "")
 	response, err := ep.client.Do(request)
 	if err != nil {

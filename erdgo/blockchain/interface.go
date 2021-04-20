@@ -9,6 +9,7 @@ type addressHandler interface {
 	IsInterfaceNil() bool
 }
 
+// ProxyHandler will handle different implementations of proxy client
 type ProxyHandler interface {
 	ExecuteVMQuery(vmRequest *data.VmValueRequest) (*data.VmValuesResponseData, error)
 	GetNetworkConfig() (*data.NetworkConfig, error)
