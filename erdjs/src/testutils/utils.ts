@@ -4,16 +4,40 @@ import { Code } from "../smartcontracts/code";
 import { AbiRegistry } from "../smartcontracts/typesystem";
 import { TransactionWatcher } from "../transactionWatcher";
 
-// TODO: Adjust with respect to current terminology (localnet instead of devnet).
+/**
+ * @deprecated Use getLocalTestnetProvider instead
+ */
 export function getDevnetProvider(): ProxyProvider {
     return new ProxyProvider("http://localhost:7950", 5000);
 }
 
+export function getLocalTestnetProvider(): ProxyProvider {
+    return new ProxyProvider("http://localhost:7950", 5000);
+}
+
+export function getElrondDevnetProvider(): ProxyProvider {
+    return new ProxyProvider("https://devnet-gateway.elrond.com", 5000);
+}
+
+/**
+ * @deprecated Use getElrondTestnetProvider instead
+ */
 export function getTestnetProvider(): ProxyProvider {
     return new ProxyProvider("https://testnet-gateway.elrond.com", 5000);
 }
 
+export function getElrondTestnetProvider(): ProxyProvider {
+    return new ProxyProvider("https://testnet-gateway.elrond.com", 5000);
+}
+
+/**
+ * @deprecated Use getElrondMainnetProvider instead
+ */
 export function getMainnetProvider(): ProxyProvider {
+    return new ProxyProvider("https://gateway.elrond.com", 20000);
+}
+
+export function getElrondMainnetProvider(): ProxyProvider {
     return new ProxyProvider("https://gateway.elrond.com", 20000);
 }
 
@@ -27,7 +51,7 @@ export async function loadContractCode(path: PathLike): Promise<Code> {
 
 export async function loadAbiRegistry(paths: PathLike[]): Promise<AbiRegistry> {
     let sources = paths.map(e => e.toString());
-    
+
     if (isBrowser()) {
         return AbiRegistry.load({ urls: sources });
     }
@@ -37,7 +61,7 @@ export async function loadAbiRegistry(paths: PathLike[]): Promise<AbiRegistry> {
 
 export async function extendAbiRegistry(registry: AbiRegistry, path: PathLike): Promise<AbiRegistry> {
     let source = path.toString();
-    
+
     if (isBrowser()) {
         return registry.extendFromUrl(source);
     }

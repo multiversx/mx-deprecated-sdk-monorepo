@@ -159,7 +159,7 @@ export class ArgSerializer {
     /**
      * Interprets a set of native javascript values into a set of typed values, given parameter definitions.
      */
-    static nativeToValues(buffers: any[], parameters: EndpointParameterDefinition[]): TypedValue[] {
+    static nativeToTypedValues(buffers: any[], parameters: EndpointParameterDefinition[]): TypedValue[] {
         buffers = buffers || [];
 
         let values: TypedValue[] = [];

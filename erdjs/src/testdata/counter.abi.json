@@ -1,5 +1,9 @@
 {
     "name": "counter",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
     "endpoints": [
         {
             "name": "increment",

@@ -67,6 +67,7 @@ export class TypeMapper {
             ["i32", new I32Type()],
             ["i64", new I64Type()],
             ["Bigint", new BigIntType()],
+            ["BigInt", new BigIntType()],
             ["bool", new BooleanType()],
             ["bytes", new BytesType()],
             ["Address", new AddressType()],
@@ -81,7 +82,7 @@ export class TypeMapper {
 
     mapType(type: Type): Type {
         let isGeneric = type.isGenericType();
-        
+
         if (type instanceof EnumType) {
             return type;
         }

@@ -1,5 +1,6 @@
+import { Account } from "../account";
 import { Address } from "../address";
-import { ISigner } from "../interface";
+import { IProvider, ISigner } from "../interface";
 import { UserSecretKey } from "../walletcore";
 import { UserSigner } from "../walletcore/userSigner";
 
@@ -114,6 +115,7 @@ export class TestWallet {
     readonly signer: ISigner;
     readonly keyFileObject: any;
     readonly pemFileText: any;
+    readonly account: Account;
 
     constructor(address: Address, secretKeyHex: string, keyFileObject: any, pemFileText: any) {
         this.address = address;
@@ -122,5 +124,11 @@ export class TestWallet {
         this.signer = new UserSigner(UserSecretKey.fromString(secretKeyHex));
         this.keyFileObject = keyFileObject;
         this.pemFileText = pemFileText;
+        this.account = new Account(this.address);
+    }
+
+    sync(provider: IProvider) {
+        this.account.sync(provider);
+        return this;
     }
 }

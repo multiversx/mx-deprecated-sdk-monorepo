@@ -1,34 +1,22 @@
-import { StrictChecker } from "../strictChecker";
-import { DefaultInteractionRunner } from "../defaultRunner";
-import { SmartContract } from "../smartContract";
-import { BigUIntValue, OptionValue, U32Value } from "../typesystem";
-import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../../testutils";
-import { SmartContractAbi } from "../abi";
+import { AddImmediateResult, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../../testutils";
 import { Address } from "../../address";
 import { assert } from "chai";
-import { Interaction } from "../interaction";
-import { GasLimit } from "../../networkParams";
-import { ContractFunction } from "../function";
 import { QueryResponse } from "../queryResponse";
-import { Nonce } from "../../nonce";
 import { TransactionStatus } from "../../transaction";
 import { ReturnCode } from "../returnCode";
 import { Balance } from "../../balance";
 import BigNumber from "bignumber.js";
-import { BytesValue } from "../typesystem/bytes";
 import { ContractWrapper } from "./contractWrapper";
-import { WalletWrapper } from "./walletWrapper";
 
-describe("test smart contract wrapper", function () {
-    let wallets = new TestWallets();
+describe("test smart contract wrapper", async function () {
     let dummyAddress = new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
     let provider = new MockProvider();
-    let alice = WalletWrapper.use(wallets.alice, provider);
+    let alice = await new TestWallets().alice.sync(provider);
 
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let answer = await ContractWrapper.from_abi("answer", "src/testdata/answer.abi.json", provider);
+        let answer = await ContractWrapper.from_abi("answer", "src/testdata/answer.abi.json", null, provider);
         answer.address(dummyAddress).caller(alice).gas(500_000);
 
         mockQuery(provider, "getUltimateAnswer", "Kg==");
@@ -43,7 +31,7 @@ describe("test smart contract wrapper", function () {
     it("should interact with 'counter'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let counter = await ContractWrapper.from_abi("counter", "src/testdata/counter.abi.json", provider);
+        let counter = await ContractWrapper.from_abi("counter", "src/testdata/counter.abi.json", null, provider);
         counter.address(dummyAddress).caller(alice).gas(500_000);
 
         // For "get()", return fake 7
@@ -64,7 +52,7 @@ describe("test smart contract wrapper", function () {
     it("should interact with 'lottery_egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let lottery = await ContractWrapper.from_abi("Lottery", "src/testdata/lottery_egld.abi.json", provider);
+        let lottery = await ContractWrapper.from_abi("Lottery", "src/testdata/lottery_egld.abi.json", null, provider);
         lottery.address(dummyAddress).caller(alice).gas(5_000_000);
 
         await mockCall(provider, "@6f6b", lottery.start("lucky", Balance.egld(1), null, null, 1, null, null));

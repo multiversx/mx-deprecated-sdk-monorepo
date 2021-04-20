@@ -1,11 +1,10 @@
 {
     "name": "Lottery",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
     "endpoints": [
-        {
-            "name": "init",
-            "inputs": [],
-            "outputs": []
-        },
         {
             "name": "start",
             "inputs": [

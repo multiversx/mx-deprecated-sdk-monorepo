@@ -10,6 +10,7 @@ import { SmartContract } from "./smartContract";
 import { EndpointDefinition, TypedValue } from "./typesystem";
 import { Nonce } from "../nonce";
 import { ExecutionResultsBundle, QueryResponseBundle } from "./interface";
+import { ErrInvariantFailed } from "../errors";
 
 /**
  * Interactions can be seen as mutable transaction & query builders.
@@ -144,6 +145,12 @@ export class Interaction {
     getEndpointDefinition(): EndpointDefinition {
         let abi = this.getContract().getAbi();
         let name = this.getFunction().toString();
+        if (name == "constructor") {
+            let constructor_definition = abi.getConstructorDefinition();
+            if (constructor_definition == null) {
+                throw new ErrInvariantFailed("no constructor in abi");
+            }
+        }
         let endpoint = abi.getEndpoint(name);
 
         return endpoint;

@@ -26,7 +26,7 @@ describe("test abi registry", () => {
         assert.lengthOf(registry.interfaces, 3);
         assert.lengthOf(registry.customTypes, 2);
 
-        assert.lengthOf(registry.getInterface("Lottery").endpoints, 7);
+        assert.lengthOf(registry.getInterface("Lottery").endpoints, 6);
         assert.lengthOf(registry.getStruct("LotteryInfo").fields, 8);
         assert.lengthOf(registry.getEnum("Status").variants, 3);
     });

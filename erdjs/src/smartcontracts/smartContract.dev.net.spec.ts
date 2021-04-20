@@ -5,7 +5,7 @@ import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
-import { getDevnetProvider, loadContractCode } from "../testutils";
+import { getLocalTestnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
 import { assert } from "chai";
 import { Balance } from "../balance";
@@ -14,13 +14,13 @@ import { decodeUnsignedNumber } from "./codec";
 import { BytesValue } from "./typesystem/bytes";
 
 describe("test on devnet (local)", function () {
-    let devnet = getDevnetProvider();
+    let devnet = getLocalTestnetProvider();
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);
     let aliceSigner = aliceWallet.signer;
 
-    it("counter: should deploy, then simulate transactions", async function() {
+    it("counter: should deploy, then simulate transactions", async function () {
         this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
@@ -81,7 +81,7 @@ describe("test on devnet (local)", function () {
         Logger.trace(JSON.stringify(await simulateTwo.simulate(devnet), null, 4));
     });
 
-    it("counter: should deploy, call and query contract", async function() {
+    it("counter: should deploy, call and query contract", async function () {
         this.timeout(80000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
@@ -138,7 +138,7 @@ describe("test on devnet (local)", function () {
         assert.equal(3, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
 
-    it("erc20: should deploy, call and query contract", async function() {
+    it("erc20: should deploy, call and query contract", async function () {
         this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
@@ -203,13 +203,13 @@ describe("test on devnet (local)", function () {
             args: [new AddressValue(wallets.alice.address)]
         });
         assert.equal(7500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
-        
+
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [new AddressValue(wallets.bob.address)]
         });
         assert.equal(1000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
-        
+
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
             args: [new AddressValue(wallets.carol.address)]
@@ -217,7 +217,7 @@ describe("test on devnet (local)", function () {
         assert.equal(1500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
 
-    it("lottery: should deploy, call and query contract", async function() {
+    it("lottery: should deploy, call and query contract", async function () {
         this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;

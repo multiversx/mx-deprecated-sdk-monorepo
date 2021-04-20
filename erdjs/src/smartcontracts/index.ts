@@ -19,3 +19,6 @@ export * from "./smartContractResults";
 export * from "./strictChecker";
 export * from "./transactionPayloadBuilders";
 export * from "./typesystem";
+export * from "./wrapper/contractLogger";
+export * from "./wrapper/contractWrapper";
+export * from "./wrapper/sendContext";

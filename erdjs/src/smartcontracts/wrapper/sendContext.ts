@@ -1,19 +1,10 @@
-import { Balance } from "../../balance";
 import { GasLimit } from "../../networkParams";
-import { Transaction } from "../../transaction";
-import { TransactionOnNetwork } from "../../transactionOnNetwork";
-import { Query } from "../query";
-import { QueryResponse } from "../queryResponse";
-import { ContractFunction } from "../function";
-import { Account } from "../../account";
-import { SmartContract } from "../smartContract";
-import { EndpointDefinition, TypedValue } from "../typesystem";
-import { Nonce } from "../../nonce";
-import { ExecutionResultsBundle, IInteractionChecker, QueryResponseBundle } from "../interface";
-import { IProvider, ISigner } from "../../interface";
+import { IInteractionChecker } from "../interface";
+import { IProvider } from "../../interface";
 import { StrictChecker } from "../strictChecker";
-import { WalletWrapper } from "./walletWrapper";
 import * as errors from "../../errors";
+import { ContractLogger } from "./contractLogger";
+import { TestWallet } from "../../testutils";
 
 /**
  * SendContext stores contextual information which is needed when preparing a transaction.
@@ -21,16 +12,18 @@ import * as errors from "../../errors";
  * This information 
  */
 export class SendContext {
-    private caller_: WalletWrapper | null;
+    private caller_: TestWallet | null;
     private provider_: IProvider;
     private gas_: GasLimit | null;
-    checker: IInteractionChecker;
+    private logger_: ContractLogger | null;
+    readonly checker: IInteractionChecker;
 
     constructor(provider: IProvider) {
         this.caller_ = null;
         this.provider_ = provider;
         this.gas_ = null;
         this.checker = new StrictChecker();
+        this.logger_ = null;
     }
 
     provider(provider: IProvider) {
@@ -38,7 +31,7 @@ export class SendContext {
         return this;
     }
 
-    caller(caller: WalletWrapper) {
+    caller(caller: TestWallet) {
         this.caller_ = caller;
         return this;
     }
@@ -48,14 +41,19 @@ export class SendContext {
         return this;
     }
 
-    getCaller(): WalletWrapper {
+    logger(logger: ContractLogger | null) {
+        this.logger_ = logger;
+        return this;
+    }
+
+    getCaller(): TestWallet {
         if (this.caller_) {
             return this.caller_;
         }
         throw new errors.Err("caller not set");
     }
 
-    getSender(): WalletWrapper {
+    getSender(): TestWallet {
         return this.getCaller();
     }
 
@@ -68,5 +66,9 @@ export class SendContext {
             return this.gas_;
         }
         throw new errors.Err("gas limit not set");
+    }
+
+    getLogger(): ContractLogger | null {
+        return this.logger_;
     }
 }

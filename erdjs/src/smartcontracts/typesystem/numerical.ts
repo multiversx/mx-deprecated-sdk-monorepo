@@ -93,11 +93,11 @@ export class NumericalValue extends PrimitiveValue {
     constructor(type: NumericalType, value: BigNumber) {
         super(type);
         guardType("type", NumericalType, type, false);
-        
+
         if (!(value instanceof BigNumber)) {
             throw new errors.ErrInvalidArgument("value", value, "not a big number");
         }
-        
+
         this.value = value;
         this.sizeInBytes = type.sizeInBytes;
         this.withSign = type.withSign;

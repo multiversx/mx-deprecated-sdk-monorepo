@@ -1,13 +1,13 @@
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
-import { getDevnetProvider, loadContractCode, TestWallets } from "../testutils";
+import { getLocalTestnetProvider, loadContractCode, TestWallets } from "../testutils";
 import { TransactionWatcher } from "../transactionWatcher";
 import { ContractFunction, SmartContract } from ".";
 import { GasLimit } from "../networkParams";
 import { assert } from "chai";
 
 describe("fetch transactions from devnet", function () {
-    let devnet = getDevnetProvider();
+    let devnet = getLocalTestnetProvider();
     let wallets = new TestWallets();
     let aliceWallet = wallets.alice;
     let alice = new Account(aliceWallet.address);

@@ -4,8 +4,7 @@ import { Account } from "./account";
 import { TransactionPayload } from "./transactionPayload";
 import { NetworkConfig } from "./networkConfig";
 import { Balance } from "./balance";
-import { TestWallets } from "./testutils";
-import { getDevnetProvider } from "./testutils";
+import { getLocalTestnetProvider, TestWallets } from "./testutils";
 import { Logger } from "./logger";
 import { assert } from "chai";
 
@@ -17,10 +16,10 @@ describe("test transaction", function () {
     let bobWallet = wallets.bob;
     let bob = new Account(bobWallet.address);
 
-    it("should send transactions", async function() {
+    it("should send transactions", async function () {
         this.timeout(20000);
 
-        let devnet = getDevnetProvider();
+        let devnet = getLocalTestnetProvider();
 
         await NetworkConfig.getDefault().sync(devnet);
         await alice.sync(devnet);
@@ -57,10 +56,10 @@ describe("test transaction", function () {
         assert.deepEqual(Balance.egld(85).valueOf(), newBalanceOfBob.valueOf().minus(initialBalanceOfBob.valueOf()));
     });
 
-    it("should simulate transactions", async function() {
+    it("should simulate transactions", async function () {
         this.timeout(20000);
 
-        let devnet = getDevnetProvider();
+        let devnet = getLocalTestnetProvider();
 
         await NetworkConfig.getDefault().sync(devnet);
         await alice.sync(devnet);
