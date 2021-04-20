@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	ep := blockchain.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079", nil)
 
 	vmRequest := &data.VmValueRequest{
 		Address:    "erd1qqqqqqqqqqqqqpgqxwakt2g7u9atsnr03gqcgmhcv38pt7mkd94q6shuwt",
