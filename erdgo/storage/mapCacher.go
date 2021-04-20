@@ -3,9 +3,12 @@ package storage
 import (
 	"bytes"
 	"encoding/gob"
-	"github.com/prometheus/common/log"
 	"sync"
+
+	logger "github.com/ElrondNetwork/elrond-go-logger"
 )
+
+var log = logger.GetOrCreate("mapCacher")
 
 // mapCacher is the cacher implementation based on a map
 type mapCacher struct {

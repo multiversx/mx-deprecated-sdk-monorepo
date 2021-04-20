@@ -1,9 +1,10 @@
 package tests
 
 import (
+	"testing"
+
 	"github.com/ElrondNetwork/elrond-sdk/erdgo/storage"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestSizeInBytesContained(t *testing.T) {
