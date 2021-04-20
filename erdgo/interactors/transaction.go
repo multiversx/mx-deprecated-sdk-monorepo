@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/ElrondNetwork/elrond-go/core/check"
 	"github.com/ElrondNetwork/elrond-sdk/erdgo/core"
@@ -133,10 +134,10 @@ func (ti *transactionInteractor) SendTransactionsAsBunch(numberOfBunches int) ([
 	var err error
 	txIndex := 0
 
-	for bnchIndex := 0; bnchIndex < bnchSize; bnchIndex++ {
+	for bnchIndex := 0; bnchIndex < numberOfBunches; bnchIndex++ {
 		fmt.Println("Bunch index: ", bnchIndex)
 
-		for txIndex < bnchSize {
+		for index := 0; index < bnchSize; index++ {
 			bunch = append(bunch, ti.txAccumulator[txIndex])
 			txIndex++
 		}
@@ -145,6 +146,7 @@ func (ti *transactionInteractor) SendTransactionsAsBunch(numberOfBunches int) ([
 		if err != nil {
 			return nil, err
 		}
+		time.Sleep(10000 * time.Millisecond)
 	}
 	return msg, err
 }

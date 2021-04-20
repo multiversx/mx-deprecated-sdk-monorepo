@@ -68,7 +68,7 @@ func (ep *elrondProxy) GetAccount(address AddressHandler) (*data.Account, error)
 	if !address.IsValid() {
 		return nil, ErrInvalidAddress
 	}
-	endpoint := fmt.Sprintf(accountEndpoint, address)
+	endpoint := fmt.Sprintf(accountEndpoint, address.AddressAsBech32String())
 
 	buff, err := ep.GetHTTP(endpoint)
 	if err != nil {
