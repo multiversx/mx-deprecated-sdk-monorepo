@@ -6,6 +6,7 @@ import { NetworkStake } from "./networkStake";
 import { Stats } from "./stats";
 import { TransactionHash } from "./transaction";
 import { TransactionOnNetwork } from "./transactionOnNetwork";
+import { ESDTToken } from "./esdtToken";
 const JSONbig = require("json-bigint");
 
 /**
@@ -49,6 +50,11 @@ export class ApiProvider implements IApiProvider {
         return TransactionOnNetwork.fromHttpResponse(response);
     }
 
+    async getESDTToken(tokenIdentifier: string): Promise<ESDTToken> {
+        let response = await this.doGet(`tokens/${tokenIdentifier}`);
+        return ESDTToken.fromHttpResponse(response);
+    }
+
     private async doGet(resourceUrl: string): Promise<any> {
         try {
             let url = `${this.url}/${resourceUrl}`;
@@ -74,7 +80,7 @@ export class ApiProvider implements IApiProvider {
 
 // See: https://github.com/axios/axios/issues/983
 axios.defaults.transformResponse = [
-    function(data) {
+    function (data) {
         return JSONbig.parse(data);
     },
 ];
