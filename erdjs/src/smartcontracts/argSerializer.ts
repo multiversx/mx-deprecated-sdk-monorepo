@@ -1,8 +1,10 @@
 import { BinaryCodec } from "./codec";
-import { Type, EndpointParameterDefinition, TypedValue } from "./typesystem";
+import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
 import { VariadicType, VariadicValue } from "./typesystem/variadic";
 import { OptionalType, OptionalValue } from "./typesystem/algebraic";
+import BigNumber from "bignumber.js";
+import { ErrInvariantFailed } from "../errors";
 
 export const ArgumentsSeparator = "@";
 
@@ -36,7 +38,7 @@ export class ArgSerializer {
         // TODO: Refactor, split (function is quite complex).
 
         buffers = buffers || [];
-        
+
         let values: TypedValue[] = [];
         let bufferIndex = 0;
         let numBuffers = buffers.length;
@@ -130,7 +132,7 @@ export class ArgSerializer {
         // This is a recursive function. It appends to the "buffers" variable.
         function handleValue(value: TypedValue): void {
             // TODO: Use matchers.
-            
+
             if (value instanceof OptionalValue) {
                 if (value.isSet()) {
                     handleValue(value.getTypedValue());
@@ -153,4 +155,111 @@ export class ArgSerializer {
 
         return buffers;
     }
+
+    /**
+     * Interprets a set of native javascript values into a set of typed values, given parameter definitions.
+     */
+    static nativeToValues(buffers: any[], parameters: EndpointParameterDefinition[]): TypedValue[] {
+        buffers = buffers || [];
+
+        let values: TypedValue[] = [];
+        let bufferIndex = 0;
+        let numBuffers = buffers.length;
+
+        for (let i = 0; i < parameters.length; i++) {
+            let parameter = parameters[i];
+            let type = parameter.type;
+            let value = convertToTypedValue(buffers[i], type);
+            values.push(value);
+        }
+
+        return values;
+    }
+}
+
+function convertToTypedValue(native: any, type: Type): TypedValue {
+    if (type instanceof OptionType) {
+        return toOptionValue(native, type);
+    }
+    if (type instanceof VariadicType) {
+        return toVariadicValue(native, type);
+    }
+    if (type instanceof CompositeType) {
+        return toCompositeType(native, type);
+    }
+    if (type instanceof PrimitiveType) {
+        return toPrimitive(native, type);
+    }
+    throw new ErrInvariantFailed(`convertToTypedValue: unhandled type ${type}`);
+}
+
+function toOptionValue(native: any, type: Type): TypedValue {
+    if (native == null) {
+        return OptionValue.newMissing();
+    }
+    let converted = convertToTypedValue(native, type.getFirstTypeParameter());
+    return OptionValue.newProvided(converted);
+}
+
+function toVariadicValue(native: any, type: Type): TypedValue {
+    let converted = native.map(function (item: any) {
+        return convertToTypedValue(item, type.getFirstTypeParameter());
+    });
+    return new VariadicValue(type, converted);
+}
+
+function toCompositeType(native: any, type: Type): TypedValue {
+    let typedValues = [];
+    let i = 0;
+    for (const typeParameter of type.getTypeParameters()) {
+        typedValues.push(convertToTypedValue(native[i], typeParameter));
+        i += 1;
+    }
+
+    return new CompositeValue(type, typedValues);
+}
+
+function toPrimitive(native: any, type: Type): TypedValue {
+    if (type instanceof NumericalType) {
+        let number = new BigNumber(native);
+        return convertNumericalType(number, type);
+    }
+    if (type instanceof BytesType) {
+        return BytesValue.fromUTF8(native);
+    }
+    throw new ErrInvariantFailed(`unsupported type ${type}`);
+}
+
+function convertNumericalType(number: BigNumber, type: Type): TypedValue {
+    if (type instanceof U8Type) {
+        return new U8Value(number);
+    }
+    if (type instanceof I8Type) {
+        return new I8Value(number);
+    }
+    if (type instanceof U16Type) {
+        return new U16Value(number);
+    }
+    if (type instanceof I16Type) {
+        return new I16Value(number);
+    }
+    if (type instanceof U32Type) {
+        return new U32Value(number);
+    }
+    if (type instanceof I32Type) {
+        return new I32Value(number);
+    }
+    if (type instanceof U64Type) {
+        return new U64Value(number);
+    }
+    if (type instanceof I64Type) {
+        return new I64Value(number);
+    }
+    if (type instanceof BigUIntType) {
+        return new BigUIntValue(number);
+    }
+    if (type instanceof BigIntType) {
+        return new BigIntValue(number);
+    }
+    throw new ErrInvariantFailed(`convertNumericalType: unhandled type ${type}`);
 }
