@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"encoding/gob"
+	"github.com/prometheus/common/log"
 	"sync"
 )
 
@@ -132,7 +133,9 @@ func (mc *mapCacher) SizeInBytesContained() uint64 {
 	total := 0
 	b := new(bytes.Buffer)
 	for _, v := range mc.dataMap {
-		if err := gob.NewEncoder(b).Encode(v); err != nil {
+		var err = gob.NewEncoder(b).Encode(v)
+		if err != nil {
+			log.Error(err.Error())
 			total += 0
 		} else {
 			total += b.Len()
