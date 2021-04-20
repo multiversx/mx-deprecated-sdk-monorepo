@@ -9,6 +9,7 @@ import { NetworkStake } from "./networkStake";
 import { Stats } from "./stats";
 import { NetworkStatus } from "./networkStatus";
 import { TransactionOnNetwork } from "./transactionOnNetwork";
+import { ESDTToken } from "./esdtToken";
 
 /**
  * An interface that defines the endpoints of an HTTP API Provider.
@@ -71,6 +72,8 @@ export interface IApiProvider {
      * Fetches the state of a {@link Transaction}.
      */
     getTransaction(txHash: TransactionHash): Promise<TransactionOnNetwork>;
+
+    getESDTToken(tokenIdentifier: string): Promise<ESDTToken>;
 }
 
 /**
