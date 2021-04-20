@@ -1,12 +1,12 @@
 package blockchain
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 
 	"github.com/ElrondNetwork/elrond-go/core"
 	"github.com/ElrondNetwork/elrond-go/core/check"
@@ -25,15 +25,26 @@ const (
 	getNetworkStatusEndpoint     = "network/status/%v"
 )
 
+// HTTPClient is the interface we expect to call in order to do the HTTP requests
+type HTTPClient interface {
+	Do(req *http.Request) (*http.Response, error)
+}
+
 // elrondProxy implements basic functions for interacting with an Elrond Proxy
 type elrondProxy struct {
 	proxyURL string
+	client   HTTPClient
 }
 
 // NewElrondProxy initializes and returns an ElrondProxy object
-func NewElrondProxy(url string) *elrondProxy {
+func NewElrondProxy(url string, client HTTPClient) *elrondProxy {
+	if check.IfNilReflect(client) {
+		client = http.DefaultClient
+	}
+
 	ep := &elrondProxy{
 		proxyURL: url,
+		client:   client,
 	}
 
 	return ep
@@ -66,7 +77,7 @@ func (ep *elrondProxy) GetAccount(address addressHandler) (*data.Account, error)
 	if !address.IsValid() {
 		return nil, ErrInvalidAddress
 	}
-	endpoint := fmt.Sprintf(accountEndpoint, address)
+	endpoint := fmt.Sprintf(accountEndpoint, address.AddressAsBech32String())
 
 	buff, err := ep.getHTTP(endpoint)
 	if err != nil {
@@ -205,8 +216,7 @@ func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	client := http.DefaultClient
-	response, err := client.Do(request)
+	response, err := ep.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
@@ -223,7 +233,12 @@ func (ep *elrondProxy) getHTTP(endpoint string) ([]byte, error) {
 
 func (ep *elrondProxy) postHTTP(endpoint string, data []byte) ([]byte, error) {
 	url := fmt.Sprintf("%s/%s", ep.proxyURL, endpoint)
-	response, err := http.Post(url, "", strings.NewReader(string(data)))
+	request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
+	if err != nil {
+		return nil, err
+	}
+	request.Header.Set("Content-Type", "")
+	response, err := ep.client.Do(request)
 	if err != nil {
 		return nil, err
 	}
