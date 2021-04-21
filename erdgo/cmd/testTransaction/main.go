@@ -11,7 +11,7 @@ import (
 )
 
 func main() {
-	ep := blockchain.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079", nil)
 
 	// Load a wallet .PEM file
 	privateKey, err := erdgo.LoadPrivateKeyFromPemFile("../../tests/alice.pem")
