@@ -93,7 +93,7 @@ export class WalletProvider implements IDappProvider {
     /**
      * Fetches the login hook url and redirects the client to the wallet login.
      */
-    async login(callbackUrl?:string): Promise<string> {
+    async login(options?:{callbackUrl?:string}): Promise<string> {
         if (!this.mainFrame) {
             return '';
         }
@@ -131,7 +131,7 @@ export class WalletProvider implements IDappProvider {
 
             window.addEventListener('message', connectUrl);
         }).then((connectionUrl: string) => {
-            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${callbackUrl !== undefined ? callbackUrl : window.location.href}`;
+            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
             return window.location.href;
         }).catch(_ => {
             return '';
@@ -229,7 +229,7 @@ export class WalletProvider implements IDappProvider {
      *   the client to the send transaction hook
      * @param transaction
      */
-    async sendTransaction(transaction: Transaction, callbackUrl?: string): Promise<Transaction> {
+    async sendTransaction(transaction: Transaction, options?: {callbackUrl?: string}): Promise<Transaction> {
         if (!this.mainFrame) {
             throw new Error("Wallet provider is not initialised, call init() first");
         }
@@ -281,7 +281,7 @@ export class WalletProvider implements IDappProvider {
 
             window.addEventListener('message', sendTransactionUrl);
         }).then((url: any) => {
-            window.location.href = `${this.baseWalletUrl()}${url}&callbackUrl=${callbackUrl !== undefined ? callbackUrl : window.location.href}`;
+            window.location.href = `${this.baseWalletUrl()}${url}&callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
             return transaction;
         });
     }
