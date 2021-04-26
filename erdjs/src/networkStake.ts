@@ -1,4 +1,5 @@
 import { IApiProvider } from "./interface";
+import BigNumber from "bignumber.js";
 
 /**
  * An object holding Network stake parameters.
@@ -22,13 +23,13 @@ export class NetworkStake {
   /**
    * The Total Validators Number.
    */
-  public TotalStaked: bigint;
+  public TotalStaked: BigNumber;
 
   constructor() {
     this.TotalValidators = 0;
     this.ActiveValidators = 0;
     this.QueueSize = 0;
-    this.TotalStaked = BigInt(0);
+    this.TotalStaked = new BigNumber(0);
   }
 
   /**
@@ -60,7 +61,7 @@ export class NetworkStake {
     networkStake.TotalValidators = Number(payload["totalValidators"]);
     networkStake.ActiveValidators = Number(payload["activeValidators"]);
     networkStake.QueueSize = Number(payload["queueSize"]);
-    networkStake.TotalStaked = BigInt(payload["totalStaked"]);
+    networkStake.TotalStaked = new BigNumber(payload["totalStaked"]);
 
     return networkStake;
   }

@@ -1,0 +1,14 @@
+{
+    "name": "answer",
+    "endpoints": [
+        {
+            "name": "getUltimateAnswer",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "i64"
+                }
+            ]
+        }
+    ]
+}

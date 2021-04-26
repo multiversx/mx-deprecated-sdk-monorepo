@@ -1,6 +1,8 @@
 /**
  * The base class for `erdjs` exceptions (errors).
  */
+import BigNumber from "bignumber.js";
+
 export class Err extends Error {
   inner: Error | undefined = undefined;
 
@@ -98,15 +100,6 @@ export class ErrBadType extends Err {
 }
 
 /**
- * Signals a missing required value.
- */
-export class ErrMissingValue extends Err {
-  public constructor(name: string) {
-    super(`"${name} is required, but missing.`);
-  }
-}
-
-/**
  * Signals that an invariant failed.
  */
 export class ErrInvariantFailed extends Err {
@@ -156,8 +149,8 @@ export class ErrSignerCannotSign extends Err {
  * Signals an invalid value for {@link Balance} objects.
  */
 export class ErrBalanceInvalid extends Err {
-  public constructor(value: bigint) {
-    super(`Invalid balance: ${value}`);
+  public constructor(value: BigNumber) {
+    super(`Invalid balance: ${value.toString()}`);
   }
 }
 
@@ -212,6 +205,15 @@ export class ErrChainIDInvalid extends Err {
 export class ErrTransactionVersionInvalid extends Err {
   public constructor(value: number) {
     super(`Invalid transaction version: ${value}`);
+  }
+}
+
+/**
+ * Signals an invalid value for {@link TransactionOptions} objects.
+ */
+export class ErrTransactionOptionsInvalid extends Err {
+  public constructor(value: number) {
+    super(`Invalid transaction options: ${value}`);
   }
 }
 
@@ -313,6 +315,15 @@ export class ErrAsyncTimerAborted extends Err {
 }
 
 /**
+ * Signals a timout for a {@link TransactioWatcher}.
+ */
+export class ErrTransactionWatcherTimeout extends Err {
+    public constructor() {
+        super(`TransactionWatcher has timed out`);
+    }
+}
+
+/**
  * Signals an issue related to waiting for a specific {@link TransactionStatus}.
  */
 export class ErrExpectedTransactionStatusNotReached extends Err {
@@ -389,21 +400,12 @@ export class ErrTypingSystem extends Err {
 }
 
 /**
- * Signals a generic structure typing error.
+ * Signals a generic struct typing error.
  */
-export class ErrStructureTyping extends Err {
-  public constructor(reason: string) {
-    super(`Incorrect structure typing: ${reason}`);
-  }
-}
-
-/**
- * Signals an unknown type.
- */
-export class ErrUnknownType extends ErrTypingSystem {
-  public constructor(typeName: string) {
-    super(`Unknown type: ${typeName}`);
-  }
+export class ErrStructTyping extends Err {
+    public constructor(reason: string) {
+        super(`Incorrect struct typing: ${reason}`);
+    }
 }
 
 /**
@@ -431,6 +433,15 @@ export class ErrWrongMnemonic extends ErrWallet {
   public constructor() {
     super("Wrong mnemonic format");
   }
+}
+
+/**
+ * Signals a generic contract interaction error.
+ */
+export class ErrContractInteraction extends Err {
+    public constructor(message: string) {
+        super(message);
+    }
 }
 
 /**

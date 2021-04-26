@@ -40,10 +40,14 @@ export class TransactionPayload {
     }
 
     /**
-     * Returns the data as a utf-8 string.
+     * Returns the data as a buffer.
      */
     valueOf(): Buffer {
         return this.data;
+    }
+
+    toString() {
+        return this.data.toString();
     }
 
     /**

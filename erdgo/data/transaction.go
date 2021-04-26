@@ -1,5 +1,7 @@
 package data
 
+import "github.com/ElrondNetwork/elrond-go/data/transaction"
+
 // SendTransactionResponse holds the response received from the network when broadcasting a transaction
 type SendTransactionResponse struct {
 	Data struct {
@@ -44,21 +46,36 @@ type TransactionInfo struct {
 
 // TransactionOnNetwork holds a transaction's info entry in a hyperblock
 type TransactionOnNetwork struct {
-	Type             string `json:"type"`
-	Hash             string `json:"hash"`
-	Nonce            uint64 `json:"nonce"`
-	Value            string `json:"value"`
-	Receiver         string `json:"receiver"`
-	Sender           string `json:"sender"`
-	GasPrice         uint64 `json:"gasPrice"`
-	GasLimit         uint64 `json:"gasLimit"`
-	Data             []byte `json:"data"`
-	Signature        string `json:"signature"`
-	SourceShard      uint32 `json:"sourceShard"`
-	DestinationShard uint32 `json:"destinationShard"`
-	MiniblockType    string `json:"miniblockType"`
-	MiniblockHash    string `json:"miniblockHash"`
-	Status           string `json:"status"`
-	HyperblockNonce  uint64 `json:"hyperblockNonce"`
-	HyperblockHash   string `json:"hyperblockHash"`
+	Type             string                                `json:"type"`
+	Hash             string                                `json:"hash"`
+	Nonce            uint64                                `json:"nonce"`
+	Value            string                                `json:"value"`
+	Receiver         string                                `json:"receiver"`
+	Sender           string                                `json:"sender"`
+	GasPrice         uint64                                `json:"gasPrice"`
+	GasLimit         uint64                                `json:"gasLimit"`
+	Data             []byte                                `json:"data"`
+	Signature        string                                `json:"signature"`
+	SourceShard      uint32                                `json:"sourceShard"`
+	DestinationShard uint32                                `json:"destinationShard"`
+	MiniblockType    string                                `json:"miniblockType"`
+	MiniblockHash    string                                `json:"miniblockHash"`
+	Status           string                                `json:"status"`
+	HyperblockNonce  uint64                                `json:"hyperblockNonce"`
+	HyperblockHash   string                                `json:"hyperblockHash"`
+	Receipt          *transaction.ReceiptApi               `json:"receipt,omitempty"`
+	ScResults        []*transaction.ApiSmartContractResult `json:"smartContractResults,omitempty"`
+}
+
+// TxCostResponseData follows the format of the data field of a transaction cost request
+type TxCostResponseData struct {
+	TxCost     uint64 `json:"txGasUnits"`
+	RetMessage string `json:"returnMessage"`
+}
+
+// ResponseTxCost defines a response from the node holding the transaction cost
+type ResponseTxCost struct {
+	Data  TxCostResponseData `json:"data"`
+	Error string             `json:"error"`
+	Code  string             `json:"code"`
 }

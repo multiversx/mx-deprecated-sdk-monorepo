@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	ep := blockchain.NewElrondProxy("http://localhost:8079")
+	ep := blockchain.NewElrondProxy("http://localhost:8079", nil)
 
 	// Get latest hyperblock (metachain) nonce
 	nonce, err := ep.GetLatestHyperblockNonce()

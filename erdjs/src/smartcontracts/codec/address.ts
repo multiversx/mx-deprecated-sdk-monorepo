@@ -8,7 +8,7 @@ export class AddressBinaryCodec {
      * @param buffer the input buffer
      */
     decodeNested(buffer: Buffer): [AddressValue, number] {
-        // We don't not check the size of the buffer, we just read 32 bytes.
+        // We don't check the size of the buffer, we just read 32 bytes.
 
         let slice = buffer.slice(0, 32);
         let value = new Address(slice);
