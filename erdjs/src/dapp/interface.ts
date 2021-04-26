@@ -2,12 +2,12 @@ import {Transaction} from "../transaction";
 
 export interface IDappProvider {
     init(): Promise<boolean>;
-    login(): Promise<string>;
+    login(callbackUrl?: string): Promise<string>;
     logout(): Promise<boolean>;
     getAddress(): Promise<string>;
     isInitialized(): boolean;
     isConnected(): Promise<boolean>;
-    sendTransaction(transaction: Transaction): Promise<Transaction>;
+    sendTransaction(transaction: Transaction, callbackUrl?: string): Promise<Transaction>;
 }
 
 export interface IDappMessageEvent extends MessageEvent {
