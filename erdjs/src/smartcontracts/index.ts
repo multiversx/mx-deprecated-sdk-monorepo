@@ -22,3 +22,4 @@ export * from "./typesystem";
 export * from "./wrapper/contractLogger";
 export * from "./wrapper/contractWrapper";
 export * from "./wrapper/sendContext";
+export * from "./wrapper/utils";

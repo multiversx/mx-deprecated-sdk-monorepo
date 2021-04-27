@@ -2,7 +2,7 @@ import * as errors from "../errors";
 import { StrictChecker as StrictInteractionChecker } from "./strictChecker";
 import { SmartContract } from "./smartContract";
 import { BigUIntValue, OptionValue, U64Value } from "./typesystem";
-import { loadAbiRegistry, MockProvider, TestWallets } from "../testutils";
+import { loadAbiRegistry } from "../testutils";
 import { SmartContractAbi } from "./abi";
 import { Address } from "../address";
 import { assert } from "chai";
@@ -12,11 +12,8 @@ import BigNumber from "bignumber.js";
 import { BytesValue } from "./typesystem/bytes";
 
 describe("integration tests: test checker within interactor", function () {
-    let wallets = new TestWallets();
     let dummyAddress = new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
     let checker = new StrictInteractionChecker();
-    let provider = new MockProvider();
-    let signer = wallets.alice.signer;
 
     it("should detect errors for 'ultimate answer'", async function () {
         let abiRegistry = await loadAbiRegistry(["src/testdata/answer.abi.json"]);

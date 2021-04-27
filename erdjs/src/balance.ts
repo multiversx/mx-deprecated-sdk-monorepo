@@ -41,7 +41,7 @@ export class Balance {
     /**
      * Creates a balance object from an EGLD value (denomination will be applied).
      */
-    static egld(value: any): Balance {
+    static egld(value: BigNumber.Value): Balance {
         let bigGold = new BigNumber(value);
         let bigUnits = bigGold.multipliedBy(new BigNumber(OneEGLDString));
         let bigUnitsString = bigUnits.integerValue().toString(BASE_10);

@@ -2,7 +2,7 @@ import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "./smartContract";
 import { BigUIntValue, OptionValue, U32Value } from "./typesystem";
-import { AddImmediateResult, loadAbiRegistry, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../testutils";
+import { AddImmediateResult, loadAbiRegistry, loadAlice, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallet } from "../testutils";
 import { SmartContractAbi } from "./abi";
 import { Address } from "../address";
 import { assert } from "chai";
@@ -18,12 +18,15 @@ import BigNumber from "bignumber.js";
 import { BytesValue } from "./typesystem/bytes";
 
 describe("test smart contract interactor", function () {
-    let wallets = new TestWallets();
     let dummyAddress = new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
     let checker = new StrictChecker();
     let provider = new MockProvider();
-    let signer = wallets.alice.signer;
-    let runner = new DefaultInteractionRunner(checker, signer, provider);
+    let alice: TestWallet;
+    let runner: DefaultInteractionRunner;
+    before(async function () {
+        alice = await loadAlice();
+        runner = new DefaultInteractionRunner(checker, alice.signer, provider);
+    });
 
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();

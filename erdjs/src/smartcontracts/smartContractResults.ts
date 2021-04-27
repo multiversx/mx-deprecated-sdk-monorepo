@@ -34,13 +34,13 @@ export class SmartContractResults {
     }
 
     private findImmediateResult(): ImmediateResult {
-        let immediateItem = this.items[0];
+        let immediateItem = this.items.filter(item => item.nonce.valueOf() != 0)[0];
         guardValueIsSet("immediateItem", immediateItem);
         return new ImmediateResult(immediateItem);
     }
 
     private findResultingCalls(): ResultingCall[] {
-        let otherItems = this.items.slice(1);
+        let otherItems = this.items.filter(item => item.nonce.valueOf() == 0);
         let resultingCalls = otherItems.map(item => new ResultingCall(item));
         return resultingCalls;
     }

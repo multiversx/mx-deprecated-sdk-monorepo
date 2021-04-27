@@ -1,10 +1,13 @@
 import { BinaryCodec } from "./codec";
-import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType } from "./typesystem";
+import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType, AddressType, AddressValue } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
 import { VariadicType, VariadicValue } from "./typesystem/variadic";
 import { OptionalType, OptionalValue } from "./typesystem/algebraic";
 import BigNumber from "bignumber.js";
 import { ErrInvariantFailed } from "../errors";
+import { guardSameLength } from "../utils";
+import { Address } from "../address";
+import { TestWallet } from "..";
 
 export const ArgumentsSeparator = "@";
 
@@ -159,17 +162,14 @@ export class ArgSerializer {
     /**
      * Interprets a set of native javascript values into a set of typed values, given parameter definitions.
      */
-    static nativeToTypedValues(buffers: any[], parameters: EndpointParameterDefinition[]): TypedValue[] {
-        buffers = buffers || [];
+    static nativeToTypedValues(args: any[], parameters: EndpointParameterDefinition[]): TypedValue[] {
+        args = args || [];
+        guardSameLength(args, parameters);
 
         let values: TypedValue[] = [];
-        let bufferIndex = 0;
-        let numBuffers = buffers.length;
 
-        for (let i = 0; i < parameters.length; i++) {
-            let parameter = parameters[i];
-            let type = parameter.type;
-            let value = convertToTypedValue(buffers[i], type);
+        for (let i in parameters) {
+            let value = convertToTypedValue(args[i], parameters[i].type);
             values.push(value);
         }
 
@@ -180,6 +180,9 @@ export class ArgSerializer {
 function convertToTypedValue(native: any, type: Type): TypedValue {
     if (type instanceof OptionType) {
         return toOptionValue(native, type);
+    }
+    if (type instanceof OptionalType) {
+        return toOptionalValue(native, type);
     }
     if (type instanceof VariadicType) {
         return toVariadicValue(native, type);
@@ -201,6 +204,14 @@ function toOptionValue(native: any, type: Type): TypedValue {
     return OptionValue.newProvided(converted);
 }
 
+function toOptionalValue(native: any, type: Type): TypedValue {
+    if (native == null) {
+        return new OptionalValue(type);
+    }
+    let converted = convertToTypedValue(native, type.getFirstTypeParameter());
+    return new OptionalValue(type, converted);
+}
+
 function toVariadicValue(native: any, type: Type): TypedValue {
     let converted = native.map(function (item: any) {
         return convertToTypedValue(item, type.getFirstTypeParameter());
@@ -210,10 +221,10 @@ function toVariadicValue(native: any, type: Type): TypedValue {
 
 function toCompositeType(native: any, type: Type): TypedValue {
     let typedValues = [];
-    let i = 0;
-    for (const typeParameter of type.getTypeParameters()) {
-        typedValues.push(convertToTypedValue(native[i], typeParameter));
-        i += 1;
+    let typeParameters = type.getTypeParameters();
+    guardSameLength(native, typeParameters);
+    for (let i in typeParameters) {
+        typedValues.push(convertToTypedValue(native[i], typeParameters[i]));
     }
 
     return new CompositeValue(type, typedValues);
@@ -226,6 +237,12 @@ function toPrimitive(native: any, type: Type): TypedValue {
     }
     if (type instanceof BytesType) {
         return BytesValue.fromUTF8(native);
+    }
+    if (type instanceof AddressType) {
+        if (native instanceof TestWallet) {
+            native = native.address;
+        }
+        return new AddressValue(new Address(native));
     }
     throw new ErrInvariantFailed(`unsupported type ${type}`);
 }

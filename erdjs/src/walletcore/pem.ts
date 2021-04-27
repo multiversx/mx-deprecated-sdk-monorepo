@@ -38,7 +38,7 @@ export function parse(text: string, expectedLength: number): Buffer[] {
             let asBytes = Buffer.from(asHex, "hex");
 
             if (asBytes.length != expectedLength) {
-                throw new errors.ErrBadPEM("incorrect key length");
+                throw new errors.ErrBadPEM(`incorrect key length: expected ${expectedLength}, found ${asBytes.length}`);
             }
 
             buffers.push(asBytes);

@@ -1,6 +1,5 @@
-import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
-import { getLocalTestnetProvider, loadContractCode, TestWallets } from "../testutils";
+import { getLocalTestnetProvider, loadAlice, loadContractCode, TestWallet } from "../testutils";
 import { TransactionWatcher } from "../transactionWatcher";
 import { ContractFunction, SmartContract } from ".";
 import { GasLimit } from "../networkParams";
@@ -8,10 +7,10 @@ import { assert } from "chai";
 
 describe("fetch transactions from devnet", function () {
     let devnet = getLocalTestnetProvider();
-    let wallets = new TestWallets();
-    let aliceWallet = wallets.alice;
-    let alice = new Account(aliceWallet.address);
-    let aliceSigner = aliceWallet.signer;
+    let alice: TestWallet;
+    before(async function () {
+        alice = await loadAlice();
+    });
 
     it("counter smart contract", async function () {
         this.timeout(60000);
@@ -29,10 +28,10 @@ describe("fetch transactions from devnet", function () {
             gasLimit: new GasLimit(3000000)
         });
 
-        transactionDeploy.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionDeploy);
+        transactionDeploy.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionDeploy);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // ++
         let transactionIncrement = contract.call({
@@ -40,10 +39,10 @@ describe("fetch transactions from devnet", function () {
             gasLimit: new GasLimit(3000000)
         });
 
-        transactionIncrement.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionIncrement);
+        transactionIncrement.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionIncrement);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // Broadcast & execute
         await transactionDeploy.send(devnet);

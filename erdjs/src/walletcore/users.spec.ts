@@ -1,6 +1,6 @@
 import * as errors from "../errors";
 import { assert } from "chai";
-import { TestWallets } from "../testutils";
+import { loadMnemonic, loadPassword, loadTestWallets, TestWallet } from "../testutils";
 import { UserSecretKey } from "./userKeys";
 import { Mnemonic } from "./mnemonic";
 import { UserWallet, Randomness } from "./userWallet";
@@ -13,11 +13,12 @@ import { ChainID, GasLimit, GasPrice, TransactionVersion } from "../networkParam
 import { TransactionPayload } from "../transactionPayload";
 
 describe("test user wallets", () => {
-    let wallets = new TestWallets();
-    let alice = wallets.alice;
-    let bob = wallets.bob;
-    let carol = wallets.carol;
-    let password = wallets.password;
+    let alice: TestWallet, bob: TestWallet, carol: TestWallet;
+    let password: string;
+    before(async function () {
+        [alice, bob, carol] = await loadTestWallets(3);
+        password = await loadPassword();
+    });
 
     it("should generate mnemonic", () => {
         let mnemonic = Mnemonic.generate();
@@ -25,8 +26,8 @@ describe("test user wallets", () => {
         assert.lengthOf(words, 24);
     });
 
-    it("should derive keys", () => {
-        let mnemonic = Mnemonic.fromString(wallets.mnemonic);
+    it("should derive keys", async () => {
+        let mnemonic = Mnemonic.fromString(await loadMnemonic());
 
         assert.equal(mnemonic.deriveKey(0).hex(), alice.secretKeyHex);
         assert.equal(mnemonic.deriveKey(1).hex(), bob.secretKeyHex);
@@ -34,7 +35,7 @@ describe("test user wallets", () => {
     });
 
     it("should create secret key", () => {
-        let keyHex = wallets.alice.secretKeyHex;
+        let keyHex = alice.secretKeyHex;
         let fromBuffer = new UserSecretKey(Buffer.from(keyHex, "hex"));
         let fromHex = UserSecretKey.fromString(keyHex);
 
@@ -138,7 +139,7 @@ describe("test user wallets", () => {
 
         assert.equal(serialized, `{"nonce":0,"value":"0","receiver":"erd1cux02zersde0l7hhklzhywcxk4u9n4py5tdxyx7vrvhnza2r4gmq4vw35r","sender":"erd1l453hd0gt5gzdp7czpuall8ggt2dcv5zwmfdf3sd3lguxseux2fsmsgldz","gasPrice":1000000000,"gasLimit":50000,"data":"Zm9v","chainID":"1","version":1}`);
         assert.equal(transaction.getSignature().hex(), "b5fddb8c16fa7f6123cb32edc854f1e760a3eb62c6dc420b5a4c0473c58befd45b621b31a448c5b59e21428f2bc128c80d0ee1caa4f2bf05a12be857ad451b00");
-    
+
         // Without data field
         transaction = new Transaction({
             nonce: new Nonce(8),
@@ -158,7 +159,7 @@ describe("test user wallets", () => {
 
     it("should sign transactions using PEM files", async () => {
         let signer = UserSigner.fromPem(alice.pemFileText);
-        
+
         let transaction = new Transaction({
             nonce: new Nonce(0),
             value: Balance.Zero(),

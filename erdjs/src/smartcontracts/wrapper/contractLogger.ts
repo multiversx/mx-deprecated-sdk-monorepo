@@ -1,3 +1,5 @@
+import { Address } from "../../address";
+import { NetworkConfig } from "../../networkConfig";
 import { Transaction } from "../../transaction";
 import { Query } from "../query";
 import { QueryResponse } from "../queryResponse";
@@ -11,6 +13,10 @@ export class ContractLogger {
     constructor() {
     }
 
+    synchronizedNetworkConfig(networkConfig: NetworkConfig) {
+        console.log(`Synchronized network config - chainID: ${networkConfig.ChainID.valueOf()}`);
+    }
+
     transactionCreated(transaction: Transaction) {
         console.log(`Transaction created - tx: ${transaction.getHash()} data: ${transaction.getData().toString()}`);
     }
@@ -19,9 +25,9 @@ export class ContractLogger {
         console.log(`Deploy sent - tx: ${transaction.getHash()}`);
     }
 
-    deployComplete(transaction: Transaction, smartContractResults: SmartContractResults) {
+    deployComplete(transaction: Transaction, smartContractResults: SmartContractResults, smartContractAddress: Address) {
         logReturnMessages(transaction, smartContractResults);
-        console.log(`Deploy complete - tx: ${transaction.getHash()}`);
+        console.log(`Deploy complete - tx: ${transaction.getHash()} - smart contract at address: ${smartContractAddress.bech32()}`);
     }
 
     transactionSent(transaction: Transaction) {
@@ -54,6 +60,6 @@ function logReturnMessages(transaction: Transaction, smartContractResults: Smart
 
 function logSmartContractResultIfMessage(info: string, transaction: Transaction, smartContractResult: ResultingCall | ImmediateResult) {
     if (smartContractResult.returnMessage) {
-        console.log(`Return message ${info} for tx: ${transaction.getHash()} message: ${smartContractResult.returnMessage}`)
+        console.log(`Return message ${info} for tx: ${transaction.getHash()} message: ${smartContractResult.returnMessage}`);
     }
 }

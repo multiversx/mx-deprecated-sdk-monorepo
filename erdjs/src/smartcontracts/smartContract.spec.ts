@@ -4,21 +4,19 @@ import { Code } from "./code";
 import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
-import { MockProvider, setupUnitTestWatcherTimeouts, Wait } from "../testutils";
+import { loadAlice, MockProvider, setupUnitTestWatcherTimeouts, TestWallet, Wait } from "../testutils";
 import { TransactionStatus } from "../transaction";
 import { ContractFunction } from "./function";
-import { Account } from "../account";
-import { TestWallets } from "../testutils";
 import { U32Value } from "./typesystem";
 import { BytesValue } from "./typesystem/bytes";
 
 
 describe("test contract", () => {
     let provider = new MockProvider();
-    let wallets = new TestWallets();
-    let aliceWallet = wallets.alice;
-    let alice = new Account(aliceWallet.address);
-    let aliceSigner = aliceWallet.signer;
+    let alice: TestWallet;
+    before(async function () {
+        alice = await loadAlice();;
+    });
 
     it("should compute contract address", async () => {
         let owner = new Address("93ee6143cdc10ce79f15b2a6c2ad38e9b6021c72a1779051f47154fd54cfbd5e");
@@ -46,14 +44,14 @@ describe("test contract", () => {
         });
 
         await alice.sync(provider);
-        deployTransaction.setNonce(alice.nonce);
+        deployTransaction.setNonce(alice.account.nonce);
 
         assert.equal(deployTransaction.getData().valueOf().toString(), "01020304@0500@0100");
         assert.equal(deployTransaction.getGasLimit().valueOf(), 1000000);
         assert.equal(deployTransaction.getNonce().valueOf(), 42);
 
         // Sign transaction, then check contract address (should be computed upon signing)
-        aliceSigner.sign(deployTransaction);
+        alice.signer.sign(deployTransaction);
         assert.equal(contract.getOwner().bech32(), alice.address.bech32());
         assert.equal(contract.getAddress().bech32(), "erd1qqqqqqqqqqqqqpgq3ytm9m8dpeud35v3us20vsafp77smqghd8ss4jtm0q");
 
@@ -88,9 +86,9 @@ describe("test contract", () => {
         });
 
         await alice.sync(provider);
-        callTransactionOne.setNonce(alice.nonce);
-        alice.incrementNonce();
-        callTransactionTwo.setNonce(alice.nonce);
+        callTransactionOne.setNonce(alice.account.nonce);
+        alice.account.incrementNonce();
+        callTransactionTwo.setNonce(alice.account.nonce);
 
         assert.equal(callTransactionOne.getNonce().valueOf(), 42);
         assert.equal(callTransactionOne.getData().valueOf().toString(), "helloEarth@05@0123");
@@ -100,8 +98,8 @@ describe("test contract", () => {
         assert.equal(callTransactionTwo.getGasLimit().valueOf(), 1500000);
 
         // Sign transactions, broadcast them
-        aliceSigner.sign(callTransactionOne);
-        aliceSigner.sign(callTransactionTwo);
+        alice.signer.sign(callTransactionOne);
+        alice.signer.sign(callTransactionTwo);
 
         let hashOne = await callTransactionOne.send(provider);
         let hashTwo = await callTransactionTwo.send(provider);

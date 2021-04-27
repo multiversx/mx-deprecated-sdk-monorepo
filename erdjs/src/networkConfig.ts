@@ -56,6 +56,11 @@ export class NetworkConfig {
      */
     public MinTransactionVersion: TransactionVersion;
 
+    /**
+     * True if sync(provider) has been called.
+     */
+    public isSynchronized: boolean;
+
     constructor() {
         this.ChainID = new ChainID("T");
         this.GasPerDataByte = 1500;
@@ -67,6 +72,7 @@ export class NetworkConfig {
         this.MinGasPrice = new GasPrice(1000000000);
         this.GasPriceModifier = new GasPriceModifier(1);
         this.MinTransactionVersion = new TransactionVersion(1);
+        this.isSynchronized = false;
     }
 
     /**
@@ -87,6 +93,7 @@ export class NetworkConfig {
     async sync(provider: IProvider): Promise<void> {
         let fresh: NetworkConfig = await provider.getNetworkConfig();
         Object.assign(this, fresh);
+        this.isSynchronized = true;
     }
 
     /**

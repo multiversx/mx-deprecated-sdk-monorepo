@@ -1,4 +1,4 @@
-import { AddImmediateResult, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallets } from "../../testutils";
+import { AddImmediateResult, loadAndSyncAlice, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallet } from "../../testutils";
 import { Address } from "../../address";
 import { assert } from "chai";
 import { QueryResponse } from "../queryResponse";
@@ -11,12 +11,15 @@ import { ContractWrapper } from "./contractWrapper";
 describe("test smart contract wrapper", async function () {
     let dummyAddress = new Address("erd1qqqqqqqqqqqqqpgqak8zt22wl2ph4tswtyc39namqx6ysa2sd8ss4xmlj3");
     let provider = new MockProvider();
-    let alice = await new TestWallets().alice.sync(provider);
+    let alice: TestWallet;
+    before(async function () {
+        alice = await loadAndSyncAlice(provider);
+    });
 
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let answer = await ContractWrapper.from_abi("answer", "src/testdata/answer.abi.json", null, provider);
+        let answer = await ContractWrapper.fromAbi(provider, "answer", "src/testdata/answer.abi.json", null);
         answer.address(dummyAddress).caller(alice).gas(500_000);
 
         mockQuery(provider, "getUltimateAnswer", "Kg==");
@@ -31,7 +34,7 @@ describe("test smart contract wrapper", async function () {
     it("should interact with 'counter'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let counter = await ContractWrapper.from_abi("counter", "src/testdata/counter.abi.json", null, provider);
+        let counter = await ContractWrapper.fromAbi(provider, "counter", "src/testdata/counter.abi.json", null);
         counter.address(dummyAddress).caller(alice).gas(500_000);
 
         // For "get()", return fake 7
@@ -52,7 +55,7 @@ describe("test smart contract wrapper", async function () {
     it("should interact with 'lottery_egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let lottery = await ContractWrapper.from_abi("Lottery", "src/testdata/lottery_egld.abi.json", null, provider);
+        let lottery = await ContractWrapper.fromAbi(provider, "Lottery", "src/testdata/lottery_egld.abi.json", null);
         lottery.address(dummyAddress).caller(alice).gas(5_000_000);
 
         await mockCall(provider, "@6f6b", lottery.start("lucky", Balance.egld(1), null, null, 1, null, null));

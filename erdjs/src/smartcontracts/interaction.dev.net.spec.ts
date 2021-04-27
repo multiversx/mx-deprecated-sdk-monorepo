@@ -2,7 +2,7 @@ import { StrictChecker } from "./strictChecker";
 import { DefaultInteractionRunner } from "./defaultRunner";
 import { SmartContract } from "./smartContract";
 import { BigUIntValue, OptionValue, TypedValue, U32Value } from "./typesystem";
-import { getLocalTestnetProvider, loadAbiRegistry, loadContractCode, TestWallets } from "../testutils";
+import { getLocalTestnetProvider, loadAbiRegistry, loadAlice, loadContractCode, TestWallet } from "../testutils";
 import { SmartContractAbi } from "./abi";
 import { assert } from "chai";
 import { Interaction } from "./interaction";
@@ -11,17 +11,18 @@ import { ReturnCode } from "./returnCode";
 import { Balance } from "../balance";
 import BigNumber from "bignumber.js";
 import { NetworkConfig } from "../networkConfig";
-import { Account } from "../account";
 import { BytesValue } from "./typesystem/bytes";
 
 
 describe("test smart contract interactor", function () {
-    let wallets = new TestWallets();
     let checker = new StrictChecker();
     let provider = getLocalTestnetProvider();
-    let alice = new Account(wallets.alice.address);
-    let aliceSigner = wallets.alice.signer;
-    let runner = new DefaultInteractionRunner(checker, aliceSigner, provider);
+    let alice: TestWallet;
+    let runner: DefaultInteractionRunner;
+    before(async function () {
+        alice = await loadAlice();
+        runner = new DefaultInteractionRunner(checker, alice.signer, provider);
+    });
 
     it("should interact with 'answer' (local testnet)", async function () {
         this.timeout(60000);
@@ -45,9 +46,9 @@ describe("test smart contract interactor", function () {
         assert.isTrue(queryResponseBundle.returnCode.equals(ReturnCode.Ok));
 
         // Execute, do not wait for execution
-        await runner.run(interaction.withNonce(alice.getNonceThenIncrement()));
+        await runner.run(interaction.withNonce(alice.account.getNonceThenIncrement()));
         // Execute, and wait for execution
-        let executionResultsBundle = await runner.runAwaitExecution(interaction.withNonce(alice.getNonceThenIncrement()));
+        let executionResultsBundle = await runner.runAwaitExecution(interaction.withNonce(alice.account.getNonceThenIncrement()));
 
         assert.lengthOf(executionResultsBundle.values, 1);
         assert.deepEqual(executionResultsBundle.firstValue.valueOf(), new BigNumber(42));
@@ -76,12 +77,12 @@ describe("test smart contract interactor", function () {
         assert.deepEqual(counterValue.valueOf(), new BigNumber(1));
 
         // Increment, wait for execution.
-        let { firstValue: valueAfterIncrement } = await runner.runAwaitExecution(incrementInteraction.withNonce(alice.getNonceThenIncrement()));
+        let { firstValue: valueAfterIncrement } = await runner.runAwaitExecution(incrementInteraction.withNonce(alice.account.getNonceThenIncrement()));
         assert.deepEqual(valueAfterIncrement.valueOf(), new BigNumber(2));
 
         // Decrement. Wait for execution of the second transaction.
-        await runner.run(decrementInteraction.withNonce(alice.getNonceThenIncrement()));
-        let { firstValue: valueAfterDecrement } = await runner.runAwaitExecution(decrementInteraction.withNonce(alice.getNonceThenIncrement()))
+        await runner.run(decrementInteraction.withNonce(alice.account.getNonceThenIncrement()));
+        let { firstValue: valueAfterDecrement } = await runner.runAwaitExecution(decrementInteraction.withNonce(alice.account.getNonceThenIncrement()))
         assert.deepEqual(valueAfterDecrement.valueOf(), new BigNumber(0));
     });
 
@@ -117,18 +118,18 @@ describe("test smart contract interactor", function () {
         ]).withGasLimit(new GasLimit(15000000));
 
         // start()
-        let { returnCode: startReturnCode, values: startReturnvalues } = await runner.runAwaitExecution(startInteraction.withNonce(alice.getNonceThenIncrement()))
+        let { returnCode: startReturnCode, values: startReturnvalues } = await runner.runAwaitExecution(startInteraction.withNonce(alice.account.getNonceThenIncrement()))
         assert.isTrue(startReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(startReturnvalues, 0);
 
         // status()
-        let { returnCode: statusReturnCode, values: statusReturnValues, firstValue: statusFirstValue } = await runner.runAwaitExecution(lotteryStatusInteraction.withNonce(alice.getNonceThenIncrement()))
+        let { returnCode: statusReturnCode, values: statusReturnValues, firstValue: statusFirstValue } = await runner.runAwaitExecution(lotteryStatusInteraction.withNonce(alice.account.getNonceThenIncrement()))
         assert.isTrue(statusReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(statusReturnValues, 1);
         assert.equal(statusFirstValue.valueOf(), "Running");
 
         // lotteryInfo() (this is a view function, but for the sake of the test, we'll execute it)
-        let { returnCode: infoReturnCode, values: infoReturnValues, firstValue: infoFirstValue } = await runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(alice.getNonceThenIncrement()))
+        let { returnCode: infoReturnCode, values: infoReturnValues, firstValue: infoFirstValue } = await runner.runAwaitExecution(getLotteryInfoInteraction.withNonce(alice.account.getNonceThenIncrement()))
         assert.isTrue(infoReturnCode.equals(ReturnCode.Ok));
         assert.lengthOf(infoReturnValues, 1);
 
@@ -159,8 +160,8 @@ describe("test smart contract interactor", function () {
         });
 
         // In these tests, all contracts are deployed by Alice.
-        transactionDeploy.setNonce(alice.getNonceThenIncrement());
-        await aliceSigner.sign(transactionDeploy);
+        transactionDeploy.setNonce(alice.account.getNonceThenIncrement());
+        await alice.signer.sign(transactionDeploy);
         await transactionDeploy.send(provider);
         await transactionDeploy.awaitExecuted(provider);
     }

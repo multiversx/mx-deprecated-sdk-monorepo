@@ -1,9 +1,7 @@
 import { assert } from "chai";
-import { TestWallets } from "../testutils";
 import { BLS, ValidatorSecretKey } from "./validatorKeys";
 
 describe("test validator keys", () => {
-    let wallets = new TestWallets();
 
     it("should create secret key and sign a message", async () => {
         await BLS.initIfNecessary();

@@ -4,7 +4,7 @@ import { TransactionWatcher } from "../transactionWatcher";
 import { ContractFunction } from "./function";
 import { Account } from "../account";
 import { NetworkConfig } from "../networkConfig";
-import { TestWallets } from "../testutils/wallets";
+import { loadTestWallets, TestWallet } from "../testutils/wallets";
 import { getLocalTestnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
 import { assert } from "chai";
@@ -15,10 +15,10 @@ import { BytesValue } from "./typesystem/bytes";
 
 describe("test on devnet (local)", function () {
     let devnet = getLocalTestnetProvider();
-    let wallets = new TestWallets();
-    let aliceWallet = wallets.alice;
-    let alice = new Account(aliceWallet.address);
-    let aliceSigner = aliceWallet.signer;
+    let alice: TestWallet, bob: TestWallet, carol: TestWallet;
+    before(async function () {
+        [alice, bob, carol] = await loadTestWallets(3);
+    });
 
     it("counter: should deploy, then simulate transactions", async function () {
         this.timeout(60000);
@@ -36,10 +36,10 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(3000000)
         });
 
-        transactionDeploy.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionDeploy);
+        transactionDeploy.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionDeploy);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // ++
         let transactionIncrement = contract.call({
@@ -47,10 +47,10 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(3000000)
         });
 
-        transactionIncrement.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionIncrement);
+        transactionIncrement.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionIncrement);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // Now, let's build a few transactions, to be simulated
         let simulateOne = contract.call({
@@ -63,11 +63,11 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(500000)
         });
 
-        simulateOne.setNonce(alice.nonce);
-        simulateTwo.setNonce(alice.nonce);
+        simulateOne.setNonce(alice.account.nonce);
+        simulateTwo.setNonce(alice.account.nonce);
 
-        await aliceSigner.sign(simulateOne);
-        await aliceSigner.sign(simulateTwo);
+        await alice.signer.sign(simulateOne);
+        await alice.signer.sign(simulateTwo);
 
         // Broadcast & execute
         await transactionDeploy.send(devnet);
@@ -97,10 +97,10 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(3000000)
         });
 
-        transactionDeploy.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionDeploy);
+        transactionDeploy.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionDeploy);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // ++
         let transactionIncrementFirst = contract.call({
@@ -108,10 +108,10 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(2000000)
         });
 
-        transactionIncrementFirst.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionIncrementFirst);
+        transactionIncrementFirst.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionIncrementFirst);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // ++
         let transactionIncrementSecond = contract.call({
@@ -119,10 +119,10 @@ describe("test on devnet (local)", function () {
             gasLimit: new GasLimit(2000000)
         });
 
-        transactionIncrementSecond.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionIncrementSecond);
+        transactionIncrementSecond.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionIncrementSecond);
 
-        alice.incrementNonce();
+        alice.account.incrementNonce();
 
         // Broadcast & execute
         await transactionDeploy.send(devnet);
@@ -157,31 +157,31 @@ describe("test on devnet (local)", function () {
 
         // The deploy transaction should be signed, so that the address of the contract
         // (required for the subsequent transactions) is computed.
-        transactionDeploy.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionDeploy);
-        alice.incrementNonce();
+        transactionDeploy.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionDeploy);
+        alice.account.incrementNonce();
 
         // Minting
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(9000000),
-            args: [new AddressValue(wallets.bob.address), new U32Value(1000)]
+            args: [new AddressValue(bob.address), new U32Value(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
             gasLimit: new GasLimit(9000000),
-            args: [new AddressValue(wallets.carol.address), new U32Value(1500)]
+            args: [new AddressValue(carol.address), new U32Value(1500)]
         });
 
         // Apply nonces and sign the remaining transactions
-        transactionMintBob.setNonce(alice.nonce);
-        alice.incrementNonce();
-        transactionMintCarol.setNonce(alice.nonce);
-        alice.incrementNonce();
+        transactionMintBob.setNonce(alice.account.nonce);
+        alice.account.incrementNonce();
+        transactionMintCarol.setNonce(alice.account.nonce);
+        alice.account.incrementNonce();
 
-        await aliceSigner.sign(transactionMintBob);
-        await aliceSigner.sign(transactionMintCarol);
+        await alice.signer.sign(transactionMintBob);
+        await alice.signer.sign(transactionMintCarol);
 
         // Broadcast & execute
         await transactionDeploy.send(devnet);
@@ -200,19 +200,19 @@ describe("test on devnet (local)", function () {
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [new AddressValue(wallets.alice.address)]
+            args: [new AddressValue(alice.address)]
         });
         assert.equal(7500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [new AddressValue(wallets.bob.address)]
+            args: [new AddressValue(bob.address)]
         });
         assert.equal(1000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [new AddressValue(wallets.carol.address)]
+            args: [new AddressValue(carol.address)]
         });
         assert.equal(1500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
@@ -236,9 +236,9 @@ describe("test on devnet (local)", function () {
 
         // The deploy transaction should be signed, so that the address of the contract
         // (required for the subsequent transactions) is computed.
-        transactionDeploy.setNonce(alice.nonce);
-        await aliceSigner.sign(transactionDeploy);
-        alice.incrementNonce();
+        transactionDeploy.setNonce(alice.account.nonce);
+        await alice.signer.sign(transactionDeploy);
+        alice.account.incrementNonce();
 
         // Start
         let transactionStart = contract.call({
@@ -256,9 +256,9 @@ describe("test on devnet (local)", function () {
         });
 
         // Apply nonces and sign the remaining transactions
-        transactionStart.setNonce(alice.nonce);
+        transactionStart.setNonce(alice.account.nonce);
 
-        await aliceSigner.sign(transactionStart);
+        await alice.signer.sign(transactionStart);
 
         // Broadcast & execute
         await transactionDeploy.send(devnet);
