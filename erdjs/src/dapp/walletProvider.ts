@@ -290,7 +290,6 @@ export class WalletProvider implements IDappProvider {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(_ => reject(false), DAPP_DEFAULT_TIMEOUT);
             const setConnected = (ev: IDappMessageEvent) => {
-                console.log("event", "setConnected", ev);
 
                 if (!this.mainFrame) {
                     return;
