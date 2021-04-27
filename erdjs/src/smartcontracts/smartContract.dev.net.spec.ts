@@ -1,4 +1,3 @@
-import { Code } from "./code";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
 import { TransactionWatcher } from "../transactionWatcher";
@@ -8,10 +7,11 @@ import { NetworkConfig } from "../networkConfig";
 import { TestWallets } from "../testutils/wallets";
 import { getDevnetProvider, loadContractCode } from "../testutils";
 import { Logger } from "../logger";
-import { Argument } from "./argument";
 import { assert } from "chai";
 import { Balance } from "../balance";
-import { OptionalValue, U32Value } from "./typesystem";
+import { AddressValue, BigUIntValue, OptionValue, U32Value } from "./typesystem";
+import { decodeUnsignedNumber } from "./codec";
+import { BytesValue } from "./typesystem/bytes";
 
 describe("test on devnet (local)", function () {
     let devnet = getDevnetProvider();
@@ -21,7 +21,7 @@ describe("test on devnet (local)", function () {
     let aliceSigner = aliceWallet.signer;
 
     it("counter: should deploy, then simulate transactions", async function() {
-        this.timeout(50000);
+        this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -82,7 +82,7 @@ describe("test on devnet (local)", function () {
     });
 
     it("counter: should deploy, call and query contract", async function() {
-        this.timeout(50000);
+        this.timeout(80000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -105,7 +105,7 @@ describe("test on devnet (local)", function () {
         // ++
         let transactionIncrementFirst = contract.call({
             func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(700000)
+            gasLimit: new GasLimit(2000000)
         });
 
         transactionIncrementFirst.setNonce(alice.nonce);
@@ -116,7 +116,7 @@ describe("test on devnet (local)", function () {
         // ++
         let transactionIncrementSecond = contract.call({
             func: new ContractFunction("increment"),
-            gasLimit: new GasLimit(700000)
+            gasLimit: new GasLimit(2000000)
         });
 
         transactionIncrementSecond.setNonce(alice.nonce);
@@ -135,11 +135,11 @@ describe("test on devnet (local)", function () {
 
         // Check counter
         let queryResponse = await contract.runQuery(devnet, { func: new ContractFunction("get") });
-        assert.equal(3, queryResponse.firstResult().asNumber);
+        assert.equal(3, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
 
     it("erc20: should deploy, call and query contract", async function() {
-        this.timeout(50000);
+        this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -152,7 +152,7 @@ describe("test on devnet (local)", function () {
         let transactionDeploy = contract.deploy({
             code: await loadContractCode("src/testdata/erc20.wasm"),
             gasLimit: new GasLimit(50000000),
-            initArguments: [Argument.fromNumber(10000)]
+            initArguments: [new U32Value(10000)]
         });
 
         // The deploy transaction should be signed, so that the address of the contract
@@ -164,14 +164,14 @@ describe("test on devnet (local)", function () {
         // Minting
         let transactionMintBob = contract.call({
             func: new ContractFunction("transferToken"),
-            gasLimit: new GasLimit(5000000),
-            args: [Argument.fromPubkey(wallets.bob.address), Argument.fromNumber(1000)]
+            gasLimit: new GasLimit(9000000),
+            args: [new AddressValue(wallets.bob.address), new U32Value(1000)]
         });
 
         let transactionMintCarol = contract.call({
             func: new ContractFunction("transferToken"),
-            gasLimit: new GasLimit(5000000),
-            args: [Argument.fromPubkey(wallets.carol.address), Argument.fromNumber(1500)]
+            gasLimit: new GasLimit(9000000),
+            args: [new AddressValue(wallets.carol.address), new U32Value(1500)]
         });
 
         // Apply nonces and sign the remaining transactions
@@ -196,29 +196,29 @@ describe("test on devnet (local)", function () {
         let queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("totalSupply")
         });
-        assert.equal(10000, queryResponse.firstResult().asNumber);
+        assert.equal(10000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
 
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.fromPubkey(wallets.alice.address)]
+            args: [new AddressValue(wallets.alice.address)]
         });
-        assert.equal(7500, queryResponse.firstResult().asNumber);
-
+        assert.equal(7500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
+        
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.fromPubkey(wallets.bob.address)]
+            args: [new AddressValue(wallets.bob.address)]
         });
-        assert.equal(1000, queryResponse.firstResult().asNumber);
-
+        assert.equal(1000, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
+        
         queryResponse = await contract.runQuery(devnet, {
             func: new ContractFunction("balanceOf"),
-            args: [Argument.fromPubkey(wallets.carol.address)]
+            args: [new AddressValue(wallets.carol.address)]
         });
-        assert.equal(1500, queryResponse.firstResult().asNumber);
+        assert.equal(1500, decodeUnsignedNumber(queryResponse.outputUntyped()[0]));
     });
 
     it("lottery: should deploy, call and query contract", async function() {
-        this.timeout(50000);
+        this.timeout(60000);
 
         TransactionWatcher.DefaultPollingInterval = 5000;
         TransactionWatcher.DefaultTimeout = 50000;
@@ -229,7 +229,7 @@ describe("test on devnet (local)", function () {
         // Deploy
         let contract = new SmartContract({});
         let transactionDeploy = contract.deploy({
-            code: await loadContractCode("src/testdata/lottery-egld.wasm"),
+            code: await loadContractCode("src/testdata/lottery_egld.wasm"),
             gasLimit: new GasLimit(100000000),
             initArguments: []
         });
@@ -243,15 +243,15 @@ describe("test on devnet (local)", function () {
         // Start
         let transactionStart = contract.call({
             func: new ContractFunction("start"),
-            gasLimit: new GasLimit(50000000),
+            gasLimit: new GasLimit(15000000),
             args: [
-                Argument.fromUTF8("foobar"), 
-                Argument.fromBigInt(Balance.eGLD(1).valueOf()),
-                Argument.fromMissingOptional(),
-                Argument.fromMissingOptional(),
-                Argument.fromProvidedOptional(new U32Value(1)),
-                Argument.fromMissingOptional(),
-                Argument.fromMissingOptional()
+                BytesValue.fromUTF8("foobar"),
+                new BigUIntValue(Balance.egld(1).valueOf()),
+                OptionValue.newMissing(),
+                OptionValue.newMissing(),
+                OptionValue.newProvided(new U32Value(1)),
+                OptionValue.newMissing(),
+                OptionValue.newMissing(),
             ]
         });
 
@@ -264,24 +264,31 @@ describe("test on devnet (local)", function () {
         await transactionDeploy.send(devnet);
         await transactionStart.send(devnet);
 
-        await transactionDeploy.awaitExecuted(devnet);
-        await transactionStart.awaitExecuted(devnet);
+        await transactionDeploy.awaitNotarized(devnet);
+        await transactionStart.awaitNotarized(devnet);
+
+        // Let's check the SCRs
+        let deployResults = (await transactionDeploy.getAsOnNetwork(devnet)).getSmartContractResults();
+        deployResults.getImmediate().assertSuccess();
+
+        let startResults = (await transactionStart.getAsOnNetwork(devnet)).getSmartContractResults();
+        startResults.getImmediate().assertSuccess();
 
         // Query state, do some assertions
         let queryResponse = await contract.runQuery(devnet, {
-            func: new ContractFunction("lotteryExists"),
+            func: new ContractFunction("status"),
             args: [
-                Argument.fromUTF8("foobar")
+                BytesValue.fromUTF8("foobar")
             ]
         });
-        assert.equal(queryResponse.firstResult().asBool, true);
+        assert.equal(decodeUnsignedNumber(queryResponse.outputUntyped()[0]), 1);
 
         queryResponse = await contract.runQuery(devnet, {
-            func: new ContractFunction("lotteryExists"),
+            func: new ContractFunction("status"),
             args: [
-                Argument.fromUTF8("missingLottery")
+                BytesValue.fromUTF8("missingLottery")
             ]
         });
-        assert.equal(queryResponse.firstResult().asBool, false);
+        assert.equal(decodeUnsignedNumber(queryResponse.outputUntyped()[0]), 0);
     });
 });

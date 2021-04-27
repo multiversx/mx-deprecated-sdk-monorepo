@@ -20,7 +20,7 @@ export class Account {
   /**
    * The balance of the account.
    */
-  balance: Balance = new Balance(BigInt(0));
+  balance: Balance = new Balance("0");
 
   private asOnNetwork: AccountOnNetwork = new AccountOnNetwork();
 
@@ -36,10 +36,7 @@ export class Account {
    * @param provider the Network provider
    * @param cacheLocally whether to save the query response within the object, locally
    */
-  async getAsOnNetwork(
-    provider: IProvider,
-    cacheLocally: boolean = true
-  ): Promise<AccountOnNetwork> {
+  async getAsOnNetwork(provider: IProvider, cacheLocally: boolean = true): Promise<AccountOnNetwork> {
     this.address.assertNotEmpty();
 
     let response = await provider.getAccount(this.address);
@@ -76,6 +73,15 @@ export class Account {
   }
 
   /**
+   * Gets then increments (locally) the nonce (the account sequence number).
+   */
+  getNonceThenIncrement(): Nonce {
+    let nonce = this.nonce;
+    this.nonce = this.nonce.increment();
+    return nonce;
+  }
+
+  /**
    * Converts the account to a pretty, plain JavaScript object.
    */
   toJSON(): any {
@@ -93,7 +99,7 @@ export class Account {
 export class AccountOnNetwork {
   address: Address = new Address();
   nonce: Nonce = new Nonce(0);
-  balance: Balance = new Balance(BigInt(0));
+  balance: Balance = new Balance("0");
   code: string = "";
   userName: string = "";
 
@@ -108,7 +114,7 @@ export class AccountOnNetwork {
     result.nonce = new Nonce(payload["nonce"] || 0);
     result.balance = Balance.fromString(payload["balance"]);
     result.code = payload["code"];
-    result.userName = payload["userName"];
+    result.userName = payload["username"];
 
     return result;
   }

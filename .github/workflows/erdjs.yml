@@ -4,10 +4,8 @@
 name: Build and Test erdjs
 
 on:
-  push:
-    branches: [ master, development ]
   pull_request:
-    branches: [ master, development ]
+    branches: [ master, development, erdjs* ]
   workflow_dispatch:
 
 jobs:

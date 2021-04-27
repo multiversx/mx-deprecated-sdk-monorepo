@@ -5,36 +5,45 @@ import AppElrond from "@elrondnetwork/hw-app-elrond";
 
 import platform from "platform";
 
-import {IDappProvider, IHWElrondApp} from "./interface";
-import {IProvider} from "../interface";
-import {Transaction} from "../transaction";
-import {Address} from "../address";
-import {Signature} from "../signature";
+import { IDappProvider, IHWElrondApp, IHWProvider } from "./interface";
+import { IProvider } from "../interface";
+import { Transaction } from "../transaction";
+import { Address } from "../address";
+import { Signature } from "../signature";
+import { compareVersions } from "../versioning";
+import { LEDGER_TX_HASH_SIGN_MIN_VERSION } from "./constants";
+import {TransactionOptions, TransactionVersion} from "../networkParams";
 
-export class HWProvider implements IDappProvider {
+export class HWProvider implements IHWProvider {
     provider: IProvider;
     hwApp?: IHWElrondApp;
+    addressIndex: number = 0;
 
-    constructor(httpProvider: IProvider) {
+    constructor(httpProvider: IProvider, addressIndex: number = 0) {
         this.provider = httpProvider;
+        this.addressIndex = addressIndex;
     }
 
     /**
      * Creates transport and initialises ledger app.
      */
     async init(): Promise<boolean> {
-        let webUSBSupported = await TransportWebUSB.isSupported();
-        webUSBSupported =
-            webUSBSupported && !!platform.os && platform.os.family !== "Windows" && platform.name !== "Opera";
+        try {
+            let webUSBSupported = await TransportWebUSB.isSupported();
+            webUSBSupported =
+                webUSBSupported && !!platform.os && platform.os.family !== "Windows" && platform.name !== "Opera";
 
-        const transport = webUSBSupported ? await TransportWebUSB.create() : await TransportU2f.create();
-        this.hwApp = new AppElrond(transport);
+            const transport = webUSBSupported ? await TransportWebUSB.create() : await TransportU2f.create();
+            this.hwApp = new AppElrond(transport);
 
-        return true;
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
-     * Returns true if init() was previously called succesfully
+     * Returns true if init() was previously called successfully
      */
     isInitialized(): boolean {
         return !!this.hwApp;
@@ -54,11 +63,32 @@ export class HWProvider implements IDappProvider {
         if (!this.hwApp) {
             throw new Error("HWApp not initialised, call init() first");
         }
-
-        const config = await this.hwApp.getAppConfiguration();
-        const { address } =  await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
+        const { address } = await this.hwApp.getAddress(0, this.addressIndex, true);
 
         return address;
+    }
+
+    async getAccounts(startIndex: number = 0, length: number = 10): Promise<string[]> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+        const addresses = [];
+
+        const indexesArray = this.generateArray(startIndex, length);
+
+        for await (const index of indexesArray) {
+            const { address } = await this.hwApp.getAddress(0, index);
+            addresses.push(address);
+        }
+        return addresses;
+    }
+
+    generateArray(startIndex = 0, length = 10) {
+        var data = [];
+        for (var i = length * startIndex; i < length * startIndex + length; i++) {
+            data.push(i);
+        }
+        return data;
     }
 
     /**
@@ -89,23 +119,38 @@ export class HWProvider implements IDappProvider {
         }
 
         const address = await this.getCurrentAddress();
-        transaction.sender = new Address(address);
-
-        const sig = await this.hwApp.signTransaction(transaction.serializeForSigning(new Address(address)));
-        transaction.signature = new Signature(sig);
+        let signUsingHash = await this.shouldSignUsingHash();
+        if(signUsingHash) {
+            transaction.options = TransactionOptions.withTxHashSignOptions();
+            transaction.version = TransactionVersion.withTxHashSignVersion();
+        }
+        const sig = await this.hwApp.signTransaction(
+            transaction.serializeForSigning(new Address(address)),
+            signUsingHash
+        );
+        transaction.applySignature(new Signature(sig), new Address(address));
 
         await transaction.send(this.provider);
 
         return transaction;
     }
 
-    private async getCurrentAddress(): Promise<string> {
+    private async shouldSignUsingHash(): Promise<boolean> {
         if (!this.hwApp) {
             throw new Error("HWApp not initialised, call init() first");
         }
 
         const config = await this.hwApp.getAppConfiguration();
-        const { address } =  await this.hwApp.getAddress(config.accountIndex, config.addressIndex);
+
+        let diff = compareVersions(config.version, LEDGER_TX_HASH_SIGN_MIN_VERSION);
+        return diff >= 0;
+    }
+
+    private async getCurrentAddress(): Promise<string> {
+        if (!this.hwApp) {
+            throw new Error("HWApp not initialised, call init() first");
+        }
+        const { address } = await this.hwApp.getAddress(0, this.addressIndex);
 
         return address;
     }

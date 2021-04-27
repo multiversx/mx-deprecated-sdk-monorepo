@@ -36,6 +36,7 @@ $root.proto = (function() {
          * @property {Uint8Array|null} [ChainID] Transaction ChainID
          * @property {number|null} [Version] Transaction Version
          * @property {Uint8Array|null} [Signature] Transaction Signature
+         * @property {number|null} [Options] Transaction Options
          */
 
         /**
@@ -150,6 +151,14 @@ $root.proto = (function() {
         Transaction.prototype.Signature = $util.newBuffer([]);
 
         /**
+         * Transaction Options.
+         * @member {number} Options
+         * @memberof proto.Transaction
+         * @instance
+         */
+        Transaction.prototype.Options = 0;
+
+        /**
          * Creates a new Transaction instance using the specified properties.
          * @function create
          * @memberof proto.Transaction
@@ -197,6 +206,8 @@ $root.proto = (function() {
                 writer.uint32(/* id 11, wireType 0 =*/88).uint32(message.Version);
             if (message.Signature != null && Object.hasOwnProperty.call(message, "Signature"))
                 writer.uint32(/* id 12, wireType 2 =*/98).bytes(message.Signature);
+            if (message.Options != null && Object.hasOwnProperty.call(message, "Options"))
+                writer.uint32(/* id 13, wireType 0 =*/104).uint32(message.Options);
             return writer;
         };
 
@@ -266,6 +277,9 @@ $root.proto = (function() {
                     break;
                 case 12:
                     message.Signature = reader.bytes();
+                    break;
+                case 13:
+                    message.Options = reader.uint32();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -338,6 +352,9 @@ $root.proto = (function() {
             if (message.Signature != null && message.hasOwnProperty("Signature"))
                 if (!(message.Signature && typeof message.Signature.length === "number" || $util.isString(message.Signature)))
                     return "Signature: buffer expected";
+            if (message.Options != null && message.hasOwnProperty("Options"))
+                if (!$util.isInteger(message.Options))
+                    return "Options: integer expected";
             return null;
         };
 
@@ -422,6 +439,8 @@ $root.proto = (function() {
                     $util.base64.decode(object.Signature, message.Signature = $util.newBuffer($util.base64.length(object.Signature)), 0);
                 else if (object.Signature.length)
                     message.Signature = object.Signature;
+            if (object.Options != null)
+                message.Options = object.Options >>> 0;
             return message;
         };
 
@@ -511,6 +530,7 @@ $root.proto = (function() {
                     if (options.bytes !== Array)
                         object.Signature = $util.newBuffer(object.Signature);
                 }
+                object.Options = 0;
             }
             if (message.Nonce != null && message.hasOwnProperty("Nonce"))
                 if (typeof message.Nonce === "number")
@@ -545,6 +565,8 @@ $root.proto = (function() {
                 object.Version = message.Version;
             if (message.Signature != null && message.hasOwnProperty("Signature"))
                 object.Signature = options.bytes === String ? $util.base64.encode(message.Signature, 0, message.Signature.length) : options.bytes === Array ? Array.prototype.slice.call(message.Signature) : message.Signature;
+            if (message.Options != null && message.hasOwnProperty("Options"))
+                object.Options = message.Options;
             return object;
         };
 

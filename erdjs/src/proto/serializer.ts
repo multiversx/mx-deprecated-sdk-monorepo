@@ -15,19 +15,20 @@ export class ProtoSerializer {
      */
     serializeTransaction(transaction: Transaction): Buffer {
         let protoTransaction = new proto.Transaction({
-            Nonce: transaction.nonce.valueOf(),
-            Value: this.serializeBalance(transaction.value),
-            RcvAddr: transaction.receiver.pubkey(),
+            // elrond-go's serializer handles nonce == 0 differently, thus we treat 0 as "undefined".
+            Nonce: transaction.getNonce().valueOf() ? transaction.getNonce().valueOf() : undefined,
+            Value: this.serializeBalance(transaction.getValue()),
+            RcvAddr: transaction.getReceiver().pubkey(),
             RcvUserName: null,
-            SndAddr: transaction.sender.pubkey(),
+            SndAddr: transaction.getSender().pubkey(),
             SndUserName: null,
-            GasPrice: transaction.gasPrice.valueOf(),
-            GasLimit: transaction.gasLimit.valueOf(),
-            Data: transaction.data.isEmpty() ? null : transaction.data.valueOf(),
-            ChainID: Buffer.from(transaction.chainID.valueOf()),
-            Version: transaction.version.valueOf(),
-            Signature: Buffer.from(transaction.signature.hex(), "hex")
-        });        
+            GasPrice: transaction.getGasPrice().valueOf(),
+            GasLimit: transaction.getGasLimit().valueOf(),
+            Data: transaction.getData().isEmpty() ? null : transaction.getData().valueOf(),
+            ChainID: Buffer.from(transaction.getChainID().valueOf()),
+            Version: transaction.getVersion().valueOf(),
+            Signature: Buffer.from(transaction.getSignature().hex(), "hex")
+        });
         
         let encoded = proto.Transaction.encode(protoTransaction).finish();
         let buffer = Buffer.from(encoded);
@@ -39,7 +40,7 @@ export class ProtoSerializer {
      */
     private serializeBalance(balance: Balance): Buffer {
         let value = balance.valueOf();
-        if (value == BigInt(0)) {
+        if (value.isZero()) {
             return Buffer.from([0, 0]);
         }
 

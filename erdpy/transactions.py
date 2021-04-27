@@ -112,6 +112,14 @@ class Transaction(ITransaction):
         logger.info(f"Hash: {self.hash}")
         return self.hash
 
+    def send_wait_result(self, proxy, timeout):
+        if not self.signature:
+            raise errors.TransactionIsNotSigned()
+
+        response = proxy.send_transaction_and_wait_for_result(self.to_dictionary(), timeout)
+        self.hash = response['hash']
+        return response
+
     def simulate(self, proxy: IElrondProxy):
         if not self.signature:
             raise errors.TransactionIsNotSigned()
