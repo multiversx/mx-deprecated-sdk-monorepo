@@ -131,14 +131,7 @@ export class ProxyProvider implements IProvider {
       let payload = response.data.data;
       return payload;
     } catch (error) {
-      if (!error.response) {
-        Logger.warn(error);
-        throw new errors.ErrApiProviderGet(resourceUrl, error.toString(), error);
-      }
-
-      let errorData = error.response.data;
-      let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
-      throw new errors.ErrApiProviderGet(resourceUrl, originalErrorMessage, error);
+      this.handleApiError(error, resourceUrl);
     }
   }
 
@@ -154,14 +147,7 @@ export class ProxyProvider implements IProvider {
       let responsePayload = response.data.data;
       return responsePayload;
     } catch (error) {
-      if (!error.response) {
-        Logger.warn(error);
-        throw new errors.ErrApiProviderPost(resourceUrl, error.toString(), error);
-      }
-
-      let errorData = error.response.data;
-      let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
-      throw new errors.ErrApiProviderPost(resourceUrl, originalErrorMessage, error);
+      this.handleApiError(error, resourceUrl);
     }
   }
 
@@ -175,6 +161,17 @@ export class ProxyProvider implements IProvider {
     }
 
     return `${endpoint}?${searchParams.toString()}`;
+  }
+
+  private handleApiError(error: any, resourceUrl: string) {
+    if (!error.response) {
+      Logger.warn(error);
+      throw new errors.ErrApiProviderGet(resourceUrl, error.toString(), error);
+    }
+
+    let errorData = error.response.data;
+    let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
+    throw new errors.ErrApiProviderGet(resourceUrl, originalErrorMessage, error);
   }
 }
 
