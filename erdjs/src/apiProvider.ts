@@ -30,7 +30,7 @@ export class ApiProvider implements IApiProvider {
    * Fetches the Network Stake.
    */
   async getNetworkStake(): Promise<NetworkStake> {
-    return this.doGetGeneric("stake", (response) => Stats.fromHttpResponse(response));
+    return this.doGetGeneric("stake", (response) => NetworkStake.fromHttpResponse(response));
   }
 
   /**
