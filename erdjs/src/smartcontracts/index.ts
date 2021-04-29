@@ -6,6 +6,7 @@
 export * from "./abi";
 export * from "./argSerializer";
 export * from "./code";
+export * from "./codec";
 export * from "./codeMetadata";
 export * from "./defaultRunner";
 export * from "./function";
