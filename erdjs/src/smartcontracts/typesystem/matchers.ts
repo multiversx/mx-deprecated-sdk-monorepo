@@ -8,6 +8,7 @@ import { H256Type, H256Value } from "./h256";
 import { NumericalType, NumericalValue } from "./numerical";
 import { Struct, StructType } from "./struct";
 import { TokenIdentifierType, TokenIdentifierValue } from "./tokenIdentifier";
+import { Tuple, TupleType } from "./tuple";
 import { Type, PrimitiveType, PrimitiveValue } from "./types";
 
 // TODO: Extend functionality or rename wrt. restricted / reduced functionality (not all types are handled: composite, variadic).
@@ -18,6 +19,7 @@ export function onTypeSelect<TResult>(
         onList: () => TResult;
         onPrimitive: () => TResult;
         onStruct: () => TResult;
+        onTuple: () => TResult;
         onEnum: () => TResult;
         onOther?: () => TResult;
     }
@@ -33,6 +35,9 @@ export function onTypeSelect<TResult>(
     }
     if (type instanceof StructType) {
         return selectors.onStruct();
+    }
+    if (type instanceof TupleType) {
+        return selectors.onTuple();
     }
     if (type instanceof EnumType) {
         return selectors.onEnum();
@@ -52,6 +57,7 @@ export function onTypedValueSelect<TResult>(
         onOption: () => TResult;
         onList: () => TResult;
         onStruct: () => TResult;
+        onTuple: () => TResult;
         onEnum: () => TResult;
         onOther?: () => TResult;
     }
@@ -67,6 +73,9 @@ export function onTypedValueSelect<TResult>(
     }
     if (value instanceof Struct) {
         return selectors.onStruct();
+    }
+    if (value instanceof Tuple) {
+        return selectors.onTuple();
     }
     if (value instanceof EnumValue) {
         return selectors.onEnum();
