@@ -1,5 +1,5 @@
 import { BinaryCodec } from "./codec";
-import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType, AddressType, AddressValue } from "./typesystem";
+import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType, AddressType, AddressValue, BooleanType, BooleanValue } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
 import { VariadicType, VariadicValue } from "./typesystem/variadic";
 import { OptionalType, OptionalValue } from "./typesystem/algebraic";
@@ -7,7 +7,8 @@ import BigNumber from "bignumber.js";
 import { ErrInvariantFailed } from "../errors";
 import { guardSameLength } from "../utils";
 import { Address } from "../address";
-import { TestWallet } from "..";
+import { Code, TestWallet } from "..";
+import { ContractWrapper } from "./wrapper/contractWrapper";
 
 export const ArgumentsSeparator = "@";
 
@@ -236,13 +237,22 @@ function toPrimitive(native: any, type: Type): TypedValue {
         return convertNumericalType(number, type);
     }
     if (type instanceof BytesType) {
+        if (native instanceof Code) {
+            return BytesValue.fromHex(native.toString());
+        }
         return BytesValue.fromUTF8(native);
     }
     if (type instanceof AddressType) {
         if (native instanceof TestWallet) {
             native = native.address;
         }
+        if (native instanceof ContractWrapper) {
+            native = native.getAddress();
+        }
         return new AddressValue(new Address(native));
+    }
+    if (type instanceof BooleanType) {
+        return new BooleanValue(native);
     }
     throw new ErrInvariantFailed(`unsupported type ${type}`);
 }

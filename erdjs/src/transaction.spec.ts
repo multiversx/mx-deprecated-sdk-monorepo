@@ -33,7 +33,7 @@ describe("test transaction", () => {
 describe("test transaction construction", async () => {
     let alice: TestWallet, bob: TestWallet;
     before(async function () {
-        [alice, bob] = await loadTestWallets(2);
+        ({ alice, bob } = await loadTestWallets());
     });
 
     it("with no data, no value", async () => {

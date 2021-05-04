@@ -15,16 +15,22 @@ import { NetworkConfig } from "../../networkConfig";
 import { EndpointDefinition } from "../typesystem";
 import { Balance } from "../../balance";
 import { BigNumber } from "bignumber.js";
+import { Transaction } from "../../transaction";
+import { Code } from "../code";
 
 
 /**
  * Provides a simple interface in order to easily call or query the smart contract's methods.
  */
 export class ContractWrapper {
-    private smartContract: SmartContract;
-    private context: SendContext;
-    private wasmPath: string | null;
-    private abi: SmartContractAbi;
+    private readonly smartContract: SmartContract;
+    private readonly context: SendContext;
+    private readonly wasmPath: string | null;
+    private readonly abi: SmartContractAbi;
+    readonly call: Record<string, Method<Promise<any>>>;
+    readonly query: Record<string, Method<Promise<any>>>;
+    readonly rawTx: Record<string, Method<Promise<Transaction>>>;
+    readonly argBuffers: Record<string, Method<Buffer[]>>;
     [key: string]: any;
 
     private constructor(
@@ -37,6 +43,18 @@ export class ContractWrapper {
         this.abi = abi;
         this.wasmPath = wasmPath;
         this.context = context;
+
+        let generatedCalls = this.generateMethods(this.handleCall);
+        for (const key in generatedCalls) {
+            this[key] = generatedCalls[key];
+        }
+        this.call = generatedCalls;
+        this.call.deploy = this.deploy.bind(this);
+        this.query = this.generateMethods(this.handleQuery);
+        this.rawTx = this.generateMethods(this.handleRawTx);
+        this.rawTx.deploy = this.rawTxDeploy.bind(this);
+        this.argBuffers = this.generateMethods(this.handleArgs);
+        this.argBuffers.deploy = this.handleArgs.bind(this, new ContractFunction("deploy"));
     }
 
     caller(caller: TestWallet): ContractWrapper {
@@ -59,8 +77,8 @@ export class ContractWrapper {
         return this;
     }
 
-    address(address: Address): ContractWrapper {
-        this.smartContract.setAddress(address);
+    address(address: Address | Buffer | string): ContractWrapper {
+        this.smartContract.setAddress(new Address(address));
         return this;
     }
 
@@ -73,10 +91,6 @@ export class ContractWrapper {
         return this;
     }
 
-    getContext(): SendContext {
-        return this.context;
-    }
-
     getAbi(): SmartContractAbi {
         return this.abi;
     }
@@ -85,34 +99,49 @@ export class ContractWrapper {
         return this.smartContract;
     }
 
-    async deploy(...args: any[]): Promise<void> {
+    async getCode(): Promise<Code> {
         if (this.wasmPath == null) {
             throw new Err("contract wasm path not configured");
         }
+        return await loadContractCode(this.wasmPath);
+    }
+
+    private async buildDeployTransaction(args: any[]): Promise<Transaction> {
+        let contractCode = await this.getCode();
         await synchronizeNetworkConfigIfNeeded(this.context);
 
         let constructorDefinition = this.abi.getConstructorDefinition();
         let convertedArgs = convertArgsFromNativeValues(args, constructorDefinition);
         let transactionDeploy = this.smartContract.deploy({
-            code: await loadContractCode(this.wasmPath),
+            code: contractCode,
             gasLimit: this.context.getGasLimit(),
             initArguments: convertedArgs
         });
+        return transactionDeploy;
+    }
+
+    async deploy(...args: any[]): Promise<void> {
+        let transactionDeploy = await this.buildDeployTransaction(args);
 
         let provider = this.context.getProvider();
         let callerAccount = this.context.getCaller().account;
         transactionDeploy.setNonce(callerAccount.nonce);
         await this.context.getCaller().signer.sign(transactionDeploy);
+        let logger = this.context.getLogger();
+        logger?.transactionCreated(transactionDeploy);
         callerAccount.incrementNonce();
         await transactionDeploy.send(provider);
-        let logger = this.context.getLogger();
-        logger?.deploySent(transactionDeploy);
+        logger?.transactionSent(transactionDeploy);
         await transactionDeploy.awaitExecuted(provider);
         let transactionOnNetwork = await transactionDeploy.getAsOnNetwork(provider, true, false);
         let smartContractResults = transactionOnNetwork.getSmartContractResults();
         let immediateResult = smartContractResults.getImmediate();
         immediateResult.assertSuccess();
         logger?.deployComplete(transactionDeploy, smartContractResults, this.smartContract.getAddress());
+    }
+
+    private async rawTxDeploy(...args: any[]): Promise<Transaction> {
+        return await this.buildDeployTransaction(args);
     }
 
     static async fromProject(provider: IProvider, projectPath: string = ".") {
@@ -130,7 +159,7 @@ export class ContractWrapper {
         let abiPath = expectSingleFileWithExtension(filesInOutput, outputPath, ".abi.json");
         let wasmPath = expectSingleFileWithExtension(filesInOutput, outputPath, ".wasm");
 
-        return ContractWrapper.fromAbi(provider, null, abiPath, wasmPath);
+        return await ContractWrapper.fromAbi(provider, null, abiPath, wasmPath);
     }
 
     static async fromAbi(provider: IProvider, name: string | null, abiPath: string, wasmPath: string | null) {
@@ -142,87 +171,96 @@ export class ContractWrapper {
         let sendContext = new SendContext(provider).logger(new ContractLogger());
         let contractWrapper = new ContractWrapper(smartContract, abi, wasmPath, sendContext);
 
-        let generatedCalls = contractWrapper.generateMethods(call);
-        //console.log(generatedCalls);
-        contractWrapper = Object.assign(contractWrapper, generatedCalls);
-        contractWrapper.call = generatedCalls;
-        contractWrapper.query = contractWrapper.generateMethods(query);
-
-        // TODO: build deploy (constructor) function
-
         return contractWrapper;
     }
 
-    private generateMethods(handleInteraction: typeof call | typeof query): any {
-        let generated: Record<string, AsyncMethod> = {};
+    private generateMethods<T>(handleInteraction: InteractionHandler<T>): Record<string, Method<T>> {
+        let generated: Record<string, Method<T>> = {};
         for (const endpoint of this.abi.getAllEndpoints()) {
             let functionName = endpoint.name;
             let func = new ContractFunction(functionName);
-            let generatedMethod = methodHandler.bind(null, this, handleInteraction, func);
-            generated[functionName] = generatedMethod;
+            generated[functionName] = handleInteraction.bind(this, func);
         }
         return generated;
     }
+
+    async handleQuery(func: ContractFunction, ...args: any[]): Promise<any> {
+        let interaction: Interaction = await this.prepareInteraction(func, args);
+        let provider = this.context.getProvider();
+        let logger = this.context.getLogger();
+
+        setValueForPayableMethods(this.context, interaction);
+        this.context.checker.checkInteraction(interaction);
+
+        let query = interaction.buildQuery();
+        logger?.queryCreated(query);
+        query.caller = this.context.getSender().address;
+        let response = await provider.queryContract(query);
+        let queryResponseBundle = interaction.interpretQueryResponse(response);
+        let result = queryResponseBundle.firstValue?.valueOf();
+        logger?.queryComplete(result, response);
+
+        return result;
+    }
+
+    async handleCall(func: ContractFunction, ...args: any[]): Promise<any> {
+        let { transaction, interaction } = await this.buildTransaction(func, args);
+
+        let provider = this.context.getProvider();
+        await this.context.getSender().signer.sign(transaction);
+        this.context.getSender().account.incrementNonce();
+        let logger = this.context.getLogger();
+        logger?.transactionCreated(transaction);
+        await transaction.send(provider);
+
+        logger?.transactionSent(transaction);
+        await transaction.awaitExecuted(provider);
+        let transactionOnNetwork = await transaction.getAsOnNetwork(provider, true, false);
+        let executionResultsBundle = interaction.interpretExecutionResults(transactionOnNetwork);
+        let result = executionResultsBundle.firstValue?.valueOf();
+        let smartContractResults = executionResultsBundle.smartContractResults;
+        logger?.transactionComplete(result, executionResultsBundle.immediateResult.data, transaction, smartContractResults);
+
+        return result;
+    }
+
+    async handleRawTx(func: ContractFunction, ...args: any[]): Promise<Transaction> {
+        let { transaction } = await this.buildInteractionAndTransaction(func, args);
+        return transaction;
+    }
+
+    handleArgs(func: ContractFunction, ...args: any[]): Buffer[] {
+        let endpointDefinition = func.name == "deploy" ? this.abi.getConstructorDefinition() : this.abi.getEndpoint(func.name);
+        let convertedArgs = convertArgsFromNativeValues(args, endpointDefinition);
+        let argSerializer = new ArgSerializer();
+        return argSerializer.valuesToBuffers(convertedArgs);
+    }
+
+    async buildTransaction(func: ContractFunction, args: any[]): Promise<{ transaction: Transaction, interaction: Interaction }> {
+        let interaction: Interaction = await this.prepareInteraction(func, args);
+
+        interaction.withGasLimit(this.context.getGasLimit());
+        interaction.withNonce(this.context.getSender().account.nonce);
+
+        setValueForPayableMethods(this.context, interaction);
+        this.context.checker.checkInteraction(interaction);
+
+        let transaction = interaction.buildTransaction();
+        return { transaction, interaction };
+    }
+
+    async prepareInteraction(func: ContractFunction, args: any[]): Promise<Interaction> {
+        let smartContract: SmartContract = this.getSmartContract();
+        let endpointDefinition: EndpointDefinition = this.getAbi().getEndpoint(func.name);
+        let convertedArgs = convertArgsFromNativeValues(args, endpointDefinition);
+        let interaction = new Interaction(smartContract, func, convertedArgs);
+        await synchronizeNetworkConfigIfNeeded(this.context);
+        return interaction;
+    }
 }
 
-type AsyncMethod = (...args: any[]) => Promise<any>;
-
-async function methodHandler(wrapper: ContractWrapper, handleInteraction: typeof call | typeof query, func: ContractFunction, ...args: any[]): Promise<any> {
-    let context: SendContext = wrapper.getContext();
-    let abi: SmartContractAbi = wrapper.getAbi();
-    let smartContract: SmartContract = wrapper.getSmartContract();
-    let endpointDefinition = abi.getEndpoint(func.name);
-    let convertedArgs = convertArgsFromNativeValues(args, endpointDefinition);
-    let interaction = new Interaction(smartContract, func, convertedArgs);
-    await synchronizeNetworkConfigIfNeeded(context);
-    return await handleInteraction(context, interaction);
-}
-
-async function query(context: SendContext, interaction: Interaction): Promise<any> {
-    let provider = context.getProvider();
-    let logger = context.getLogger();
-
-    setValueForPayableMethods(context, interaction);
-    context.checker.checkInteraction(interaction);
-
-    let query = interaction.buildQuery();
-    logger?.queryCreated(query);
-    query.caller = context.getSender().address;
-    let response = await provider.queryContract(query);
-    let queryResponseBundle = interaction.interpretQueryResponse(response);
-    let result = queryResponseBundle.firstValue?.valueOf();
-    logger?.queryComplete(result, response);
-
-    return result;
-}
-
-async function call(context: SendContext, interaction: Interaction): Promise<any> {
-    let provider = context.getProvider();
-
-    interaction.withGasLimit(context.getGasLimit());
-    let senderAccount = context.getSender().account;
-    interaction.withNonce(senderAccount.nonce);
-
-    setValueForPayableMethods(context, interaction);
-    context.checker.checkInteraction(interaction);
-
-    let transaction = interaction.buildTransaction();
-    await context.getSender().signer.sign(transaction);
-    senderAccount.incrementNonce();
-    let logger = context.getLogger();
-    logger?.transactionCreated(transaction);
-    await transaction.send(provider);
-
-    logger?.transactionSent(transaction);
-    await transaction.awaitExecuted(provider);
-    let transactionOnNetwork = await transaction.getAsOnNetwork(provider, true, false);
-    let executionResultsBundle = interaction.interpretExecutionResults(transactionOnNetwork);
-    let result = executionResultsBundle.firstValue?.valueOf();
-    let smartContractResults = executionResultsBundle.smartContractResults;
-    logger?.transactionComplete(result, executionResultsBundle.immediateResult.data, transaction, smartContractResults);
-
-    return result;
-}
+type InteractionHandler<T> = (this: ContractWrapper, func: ContractFunction, ...args: any[]) => T;
+type Method<T> = (...args: any[]) => T;
 
 function setValueForPayableMethods(context: SendContext, interaction: Interaction) {
     if (interaction.getEndpointDefinition().modifiers.isPayableInEGLD()) {

@@ -11,7 +11,7 @@ import { assert } from "chai";
 describe("test transaction", function () {
     let alice: TestWallet, bob: TestWallet;
     before(async function () {
-        [alice, bob] = await loadTestWallets(2);
+        ({ alice, bob } = await loadTestWallets());
     });
 
     it("should send transactions", async function () {

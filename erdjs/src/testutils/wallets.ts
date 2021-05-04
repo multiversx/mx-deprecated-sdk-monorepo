@@ -2,31 +2,31 @@ import * as fs from "fs";
 import * as path from "path";
 import { Account } from "../account";
 import { Address } from "../address";
+import { ErrInvalidArgument } from "../errors";
 import { IProvider, ISigner } from "../interface";
 import { UserSecretKey } from "../walletcore";
 import { UserSigner } from "../walletcore/userSigner";
 
-export async function loadAndSyncTestWallets(provider: IProvider, count: number): Promise<TestWallet[]> {
+export async function loadAndSyncTestWallets(provider: IProvider, count: number = 0): Promise<Record<string, TestWallet>> {
+    if (provider === undefined) {
+        throw new ErrInvalidArgument("The provider argument is missing");
+    }
     let wallets = await loadTestWallets(count);
-    return Promise.all(wallets.map(async wallet => await wallet.sync(provider)));
+    await Promise.all(Object.keys(wallets).map(async (name) => wallets[name].sync(provider)));
+    return wallets;
 }
 
-export async function loadTestWallets(count?: number): Promise<TestWallet[]> {
+export async function loadTestWallets(count: number = 0): Promise<Record<string, TestWallet>> {
     let walletNames = ["alice", "bob", "carol", "dan", "eve", "frank", "grace", "heidi", "ivan", "judy", "mallory", "mike"];
-    if (count) {
+    if (count > 0) {
         walletNames = walletNames.slice(0, count);
     }
-    return Promise.all(walletNames.map(async name => await loadTestWallet(name)));
-}
-
-export async function loadAlice(): Promise<TestWallet> {
-    let [alice]: TestWallet[] = await loadTestWallets(1);
-    return alice;
-}
-
-export async function loadAndSyncAlice(provider: IProvider): Promise<TestWallet> {
-    let [alice]: TestWallet[] = await loadAndSyncTestWallets(provider, 1);
-    return alice;
+    let wallets = await Promise.all(walletNames.map(async name => await loadTestWallet(name)));
+    let walletMap: Record<string, TestWallet> = {};
+    for (let i in walletNames) {
+        walletMap[walletNames[i]] = wallets[i];
+    }
+    return walletMap;
 }
 
 export async function loadMnemonic(): Promise<string> {

@@ -17,7 +17,7 @@ describe("test on devnet (local)", function () {
     let devnet = getLocalTestnetProvider();
     let alice: TestWallet, bob: TestWallet, carol: TestWallet;
     before(async function () {
-        [alice, bob, carol] = await loadTestWallets(3);
+        ({ alice, bob, carol } = await loadTestWallets());
     });
 
     it("counter: should deploy, then simulate transactions", async function () {

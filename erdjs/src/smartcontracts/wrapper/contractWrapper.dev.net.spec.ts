@@ -1,4 +1,4 @@
-import { getLocalTestnetProvider, loadAndSyncAlice, TestWallet } from "../../testutils";
+import { getLocalTestnetProvider, loadAndSyncTestWallets, TestWallet } from "../../testutils";
 import { assert } from "chai";
 import { Balance } from "../../balance";
 import BigNumber from "bignumber.js";
@@ -10,7 +10,7 @@ describe("test smart contract interactor", function () {
     let alice: TestWallet;
 
     before(async function () {
-        alice = await loadAndSyncAlice(provider);
+        ({ alice } = await loadAndSyncTestWallets(provider));
     });
 
     it("should interact with 'answer' (local testnet)", async function () {

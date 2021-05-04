@@ -12,7 +12,7 @@ describe("serialize transactions", () => {
     let serializer = new ProtoSerializer();
     let alice: TestWallet, bob: TestWallet;
     before(async function () {
-        [alice, bob] = await loadTestWallets(2);
+        ({ alice, bob } = await loadTestWallets());
     });
 
     it("with no data, no value", async () => {

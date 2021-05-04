@@ -1,4 +1,4 @@
-import { AddImmediateResult, loadAndSyncAlice, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallet } from "../../testutils";
+import { AddImmediateResult, loadAndSyncTestWallets, MarkNotarized, MockProvider, setupUnitTestWatcherTimeouts, TestWallet } from "../../testutils";
 import { Address } from "../../address";
 import { assert } from "chai";
 import { QueryResponse } from "../queryResponse";
@@ -13,7 +13,7 @@ describe("test smart contract wrapper", async function () {
     let provider = new MockProvider();
     let alice: TestWallet;
     before(async function () {
-        alice = await loadAndSyncAlice(provider);
+        ({ alice } = await loadAndSyncTestWallets(provider));
     });
 
     it("should interact with 'answer'", async function () {

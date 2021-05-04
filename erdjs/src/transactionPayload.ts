@@ -50,6 +50,14 @@ export class TransactionPayload {
         return this.data.toString();
     }
 
+    getEncodedArguments(): string[] {
+        return this.toString().split("@");
+    }
+
+    getRawArguments(): Buffer[] {
+        return this.getEncodedArguments().map(argument => Buffer.from(argument, "hex"));
+    }
+
     /**
      * Returns the length of the data.
      */

@@ -1,5 +1,5 @@
 import { NetworkConfig } from "../networkConfig";
-import { getLocalTestnetProvider, loadAlice, loadContractCode, TestWallet } from "../testutils";
+import { getLocalTestnetProvider, loadContractCode, loadTestWallets, TestWallet } from "../testutils";
 import { TransactionWatcher } from "../transactionWatcher";
 import { ContractFunction, SmartContract } from ".";
 import { GasLimit } from "../networkParams";
@@ -9,7 +9,7 @@ describe("fetch transactions from devnet", function () {
     let devnet = getLocalTestnetProvider();
     let alice: TestWallet;
     before(async function () {
-        alice = await loadAlice();
+        ({ alice } = await loadTestWallets());
     });
 
     it("counter smart contract", async function () {

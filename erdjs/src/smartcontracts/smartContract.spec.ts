@@ -4,7 +4,7 @@ import { Code } from "./code";
 import { Nonce } from "../nonce";
 import { SmartContract } from "./smartContract";
 import { GasLimit } from "../networkParams";
-import { loadAlice, MockProvider, setupUnitTestWatcherTimeouts, TestWallet, Wait } from "../testutils";
+import { loadTestWallets, MockProvider, setupUnitTestWatcherTimeouts, TestWallet, Wait } from "../testutils";
 import { TransactionStatus } from "../transaction";
 import { ContractFunction } from "./function";
 import { U32Value } from "./typesystem";
@@ -15,7 +15,7 @@ describe("test contract", () => {
     let provider = new MockProvider();
     let alice: TestWallet;
     before(async function () {
-        alice = await loadAlice();;
+        ({ alice } = await loadTestWallets());
     });
 
     it("should compute contract address", async () => {

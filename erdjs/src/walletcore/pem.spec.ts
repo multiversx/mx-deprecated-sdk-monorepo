@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 describe("test PEMs", () => {
     let alice: TestWallet, bob: TestWallet, carol: TestWallet;
     before(async function () {
-        [alice, bob, carol] = await loadTestWallets(3);
+        ({ alice, bob, carol } = await loadTestWallets());
     });
 
     it("should parseUserKey", () => {

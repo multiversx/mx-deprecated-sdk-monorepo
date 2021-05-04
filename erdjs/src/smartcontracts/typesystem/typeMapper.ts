@@ -23,7 +23,7 @@ import { TokenIdentifierType } from "./tokenIdentifier";
 import { Type, CustomType } from "./types";
 import { VariadicType } from "./variadic";
 import { OptionalType } from "./algebraic";
-import { TupleType } from ".";
+import { StringType, TupleType } from ".";
 
 type TypeConstructor = new (...typeParameters: Type[]) => Type;
 
@@ -73,6 +73,7 @@ export class TypeMapper {
             ["Address", new AddressType()],
             ["H256", new H256Type()],
             ["TokenIdentifier", new TokenIdentifierType()],
+            ["OperationCompletionStatus", new StringType()],
         ]);
 
         for (const customType of customTypes) {

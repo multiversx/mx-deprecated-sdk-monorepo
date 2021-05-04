@@ -1,7 +1,7 @@
 import * as errors from "../../errors";
 import { assert } from "chai";
-import { NumericalValue } from ".";
-import { I64Type, U16Type, U32Type, U32Value } from "./numerical";
+import { NumericalValue, StringType } from ".";
+import { I64Type, U16Type, U32Type, U32Value, U8Type } from "./numerical";
 import { PrimitiveType, Type } from "./types";
 import { BooleanType } from "./boolean";
 import { AddressType } from "./address";
@@ -11,7 +11,7 @@ import BigNumber from "bignumber.js";
 
 describe("test types", () => {
     let parser = new TypeExpressionParser();
-    
+
     it("for numeric values, should throw error when invalid input", () => {
         assert.throw(() => new U32Value(new BigNumber(-42)), errors.ErrInvalidArgument);
         assert.throw(() => new NumericalValue(new U16Type(), <any>Number(42)), errors.ErrInvalidArgument);
@@ -42,5 +42,6 @@ describe("test types", () => {
         assert.isTrue(parser.parse("MultiResultVec<u32>").equals(parser.parse("MultiResultVec<u32>")));
         assert.isFalse(parser.parse("MultiResultVec<u32>").equals(parser.parse("MultiResultVec<u33>")));
         assert.isTrue(parser.parse("Option<u32>").equals(new OptionType(new U32Type())));
+        assert.isTrue(parser.parse("utf-8 string").equals(new StringType()));
     });
 });
