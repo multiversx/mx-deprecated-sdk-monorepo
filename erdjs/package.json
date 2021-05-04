@@ -32,6 +32,7 @@
         "@elrondnetwork/hw-app-elrond": "0.2.0",
         "@ledgerhq/hw-transport-u2f": "^5.28.0",
         "@ledgerhq/hw-transport-webusb": "^5.28.0",
+        "@walletconnect/client": "^1.4.1",
         "abort-controller": "^3.0.0",
         "axios": "^0.21.1",
         "bech32": "^1.1.4",
