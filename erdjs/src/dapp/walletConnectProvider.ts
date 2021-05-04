@@ -4,6 +4,8 @@ import { Transaction } from "../transaction";
 import { Address } from "../address";
 import { IDappProvider } from "./interface";
 import { Signature } from "../signature";
+import { WALLETCONNECT_ELROND_CHAIN_ID } from "./constants";
+import { Logger } from "../logger";
 
 export class WalletConnectProvider extends EventTarget implements IDappProvider {
     provider: IProvider;
@@ -12,6 +14,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
     walletConnector: WalletClient | undefined;
     private onWalletConnectLogin: Event = new Event("onWalletConnectLogin");
     private onWalletConnectDisconect: Event = new Event("onWalletConnectDisconect");
+
     constructor(httpProvider: IProvider, walletConnectBridge: string = "") {
         super();
         this.provider = httpProvider;
@@ -49,13 +52,14 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      *
      */
     async login(): Promise<string> {
-        const chainId = 508;
+        const chainId = WALLETCONNECT_ELROND_CHAIN_ID;
         let returnUrl = "";
         if (!this.walletConnector) {
             await this.init();
         }
         if (this.walletConnector?.connected) {
             this.walletConnector.killSession();
+            Logger.trace("WalletConnect login started but walletConnect not initialized");
         } else {
             await this.walletConnector?.createSession({ chainId }).then(() => {
                 const uri = this.walletConnector?.uri;
@@ -83,6 +87,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
             throw error;
         }
         if (!params || !params[0]) {
+            Logger.error("Wallet Connect missing payload");
             throw new Error("missing payload");
         }
         const {
@@ -105,6 +110,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      */
     async logout(): Promise<boolean> {
         if (!this.walletConnector) {
+            Logger.error("logout: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
         this.walletConnector.killSession();
@@ -124,6 +130,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      */
     async sendTransaction(transaction: Transaction): Promise<Transaction> {
         if (!this.walletConnector) {
+            Logger.error("sendTransaction: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
 
@@ -138,6 +145,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
 
     private async signTransaction(method: any, params: any): Promise<any> {
         if (!this.walletConnector) {
+            Logger.error("signTransaction: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
         if (this.walletConnector.connected) {
@@ -177,22 +185,12 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         };
     }
 
-    private canTransformToPublicKey(address: string): boolean {
+    private addressIsValid(destinationAddress: string): boolean {
         try {
-            const checkAddress = new Address(address);
-            return Boolean(checkAddress.bech32());
+            new Address(destinationAddress);
+            return true;
         } catch {
             return false;
         }
-    }
-
-    private addressIsValid(destinationAddress: string): boolean {
-        const isValidBach = !(
-            !destinationAddress ||
-            !destinationAddress.startsWith("erd") ||
-            destinationAddress.length !== 62 ||
-            /^\w+$/.test(destinationAddress) !== true
-        );
-        return isValidBach && this.canTransformToPublicKey(destinationAddress);
     }
 }
