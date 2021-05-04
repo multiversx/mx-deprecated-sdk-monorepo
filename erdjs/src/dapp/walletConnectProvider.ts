@@ -3,6 +3,7 @@ import { IProvider } from "../interface";
 import { Transaction } from "../transaction";
 import { Address } from "../address";
 import { IDappProvider } from "./interface";
+import { Signature } from "../signature";
 
 export class WalletConnectProvider extends EventTarget implements IDappProvider {
     provider: IProvider;
@@ -104,7 +105,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      */
     async logout(): Promise<boolean> {
         if (!this.walletConnector) {
-            throw new Error("HWApp not initialised, call init() first");
+            throw new Error("Wallet Connect not initialised, call init() first");
         }
         this.walletConnector.killSession();
         return true;
@@ -121,9 +122,59 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      * Signs and sends a transaction. Returns the transaction hash
      * @param transaction
      */
-    sendTransaction(transaction: Transaction): Promise<Transaction> {
-        transaction;
-        throw new Error("Method not implemented.");
+    async sendTransaction(transaction: Transaction): Promise<Transaction> {
+        if (!this.walletConnector) {
+            throw new Error("Wallet Connect not initialised, call init() first");
+        }
+
+        const address = await this.getAddress();
+        const sig = await this.signTransaction("erd_sign", this.prepareWalletConnectMessage(transaction, address));
+        if (sig && sig.signature) transaction.applySignature(new Signature(sig.signature), new Address(address));
+
+        await transaction.send(this.provider);
+
+        return transaction;
+    }
+
+    private async signTransaction(method: any, params: any): Promise<any> {
+        if (!this.walletConnector) {
+            throw new Error("Wallet Connect not initialised, call init() first");
+        }
+        if (this.walletConnector.connected) {
+            const response = await this.walletConnector.sendCustomRequest({
+                method,
+                params,
+            });
+
+            return response;
+        } else {
+            return false;
+        }
+    }
+
+    private prepareWalletConnectMessage(transaction: Transaction, address: string): any {
+        return {
+            nonce: transaction.getNonce().valueOf(),
+            from: address,
+            to: transaction.getReceiver().toString(),
+            amount: transaction.getValue().toString(),
+            gasPrice: transaction
+                .getGasPrice()
+                .valueOf()
+                .toString(),
+            gasLimit: transaction
+                .getGasLimit()
+                .valueOf()
+                .toString(),
+            data: Buffer.from(
+                transaction
+                    .getData()
+                    .toString()
+                    .trim()
+            ).toString(),
+            chainId: transaction.getChainID().valueOf(),
+            version: transaction.getVersion().valueOf(),
+        };
     }
 
     private canTransformToPublicKey(address: string): boolean {
