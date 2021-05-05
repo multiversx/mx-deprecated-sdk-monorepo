@@ -74,7 +74,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         return returnUrl;
     }
 
-    loginAccount = async (address: string) => {
+    private async loginAccount(address: string) {
         if (this.addressIsValid(address)) {
             this.address = address;
             this.dispatchEvent(this.onWalletConnectLogin);
@@ -85,7 +85,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         if (this.walletConnector?.connected) {
             await this.walletConnector?.killSession();
         }
-    };
+    }
 
     onConnect = async (error: any, { params }: any) => {
         if (error) {
@@ -118,7 +118,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
             Logger.error("logout: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
-        this.walletConnector.killSession();
+        await this.walletConnector.killSession();
         return true;
     }
 
