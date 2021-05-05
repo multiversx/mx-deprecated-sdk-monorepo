@@ -57,28 +57,33 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         if (!this.walletConnector) {
             await this.init();
         }
+
         if (this.walletConnector?.connected) {
-            this.walletConnector.killSession();
+            await this.walletConnector.killSession();
             Logger.trace("WalletConnect login started but walletConnect not initialized");
-        } else {
-            await this.walletConnector?.createSession({ chainId }).then(() => {
-                const uri = this.walletConnector?.uri;
-                if (uri !== undefined) {
-                    returnUrl = uri;
-                }
-            });
+            return returnUrl;
         }
+
+        await this.walletConnector?.createSession({ chainId }).then(() => {
+            const uri = this.walletConnector?.uri;
+            if (uri !== undefined) {
+                returnUrl = uri;
+            }
+        });
+
         return returnUrl;
     }
 
-    loginAccount = (address: string) => {
+    loginAccount = async (address: string) => {
         if (this.addressIsValid(address)) {
             this.address = address;
             this.dispatchEvent(this.onWalletConnectLogin);
-        } else {
-            if (this.walletConnector?.connected) {
-                this.walletConnector?.killSession();
-            }
+            return;
+        }
+
+        Logger.error(`Wallet Connect invalid address ${address}`);
+        if (this.walletConnector?.connected) {
+            await this.walletConnector?.killSession();
         }
     };
 
@@ -136,10 +141,12 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
 
         const address = await this.getAddress();
         const sig = await this.signTransaction("erd_sign", this.prepareWalletConnectMessage(transaction, address));
-        if (sig && sig.signature) transaction.applySignature(new Signature(sig.signature), new Address(address));
+
+        if (sig && sig.signature) {
+            transaction.applySignature(new Signature(sig.signature), new Address(address));
+        }
 
         await transaction.send(this.provider);
-
         return transaction;
     }
 
@@ -148,16 +155,11 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
             Logger.error("signTransaction: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
-        if (this.walletConnector.connected) {
-            const response = await this.walletConnector.sendCustomRequest({
-                method,
-                params,
-            });
 
-            return response;
-        } else {
-            return false;
+        if (this.walletConnector.connected) {
+            return await this.walletConnector.sendCustomRequest({ method, params });
         }
+        return false;
     }
 
     private prepareWalletConnectMessage(transaction: Transaction, address: string): any {
@@ -187,8 +189,8 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
 
     private addressIsValid(destinationAddress: string): boolean {
         try {
-            new Address(destinationAddress);
-            return true;
+            const addr = new Address(destinationAddress);
+            return !!addr;
         } catch {
             return false;
         }
