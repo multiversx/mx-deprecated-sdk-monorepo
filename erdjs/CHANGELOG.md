@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [4.2.1] - 05.05.2021
+
+-   [Fix get transaction endpoint #290](https://github.com/ElrondNetwork/elrond-sdk/pull/290)
+
 ## [4.2.0] - 05.05.2021
 
 -   [Add wallet connect provider #286](https://github.com/ElrondNetwork/elrond-sdk/pull/286)
