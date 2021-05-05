@@ -14,5 +14,5 @@ export const DAPP_MESSAGE_SEND_TRANSACTION_URL = "dapp_message_send_transaction_
 // transactions' signing, and uses transaction's hash signing instead
 export const LEDGER_TX_HASH_SIGN_MIN_VERSION = "1.0.11";
 
-//Wallet Connect ChainId for Elrond blockchain
+// Wallet Connect ChainId for Elrond blockchain
 export const WALLETCONNECT_ELROND_CHAIN_ID = 508;
