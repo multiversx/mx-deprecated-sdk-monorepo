@@ -74,42 +74,6 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         return returnUrl;
     }
 
-    private async loginAccount(address: string) {
-        if (this.addressIsValid(address)) {
-            this.address = address;
-            this.dispatchEvent(this.onWalletConnectLogin);
-            return;
-        }
-
-        Logger.error(`Wallet Connect invalid address ${address}`);
-        if (this.walletConnector?.connected) {
-            await this.walletConnector?.killSession();
-        }
-    }
-
-    onConnect = async (error: any, { params }: any) => {
-        if (error) {
-            throw error;
-        }
-        if (!params || !params[0]) {
-            Logger.error("Wallet Connect missing payload");
-            throw new Error("missing payload");
-        }
-        const {
-            accounts: [account],
-        } = params[0];
-
-        this.loginAccount(account);
-    };
-
-    onDisconnect = async (error: any) => {
-        if (error) {
-            throw error;
-        }
-
-        this.dispatchEvent(this.onWalletConnectDisconect);
-    };
-
     /**
      * Mocks a logout request by returning true
      */
@@ -148,6 +112,42 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
 
         await transaction.send(this.provider);
         return transaction;
+    }
+
+    onConnect = async (error: any, { params }: any) => {
+        if (error) {
+            throw error;
+        }
+        if (!params || !params[0]) {
+            Logger.error("Wallet Connect missing payload");
+            throw new Error("missing payload");
+        }
+        const {
+            accounts: [account],
+        } = params[0];
+
+        this.loginAccount(account);
+    };
+
+    onDisconnect = async (error: any) => {
+        if (error) {
+            throw error;
+        }
+
+        this.dispatchEvent(this.onWalletConnectDisconect);
+    };
+
+    private async loginAccount(address: string) {
+        if (this.addressIsValid(address)) {
+            this.address = address;
+            this.dispatchEvent(this.onWalletConnectLogin);
+            return;
+        }
+
+        Logger.error(`Wallet Connect invalid address ${address}`);
+        if (this.walletConnector?.connected) {
+            await this.walletConnector?.killSession();
+        }
     }
 
     private async signTransaction(method: any, params: any): Promise<any> {
