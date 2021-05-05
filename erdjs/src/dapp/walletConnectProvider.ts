@@ -28,9 +28,9 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         this.walletConnector = new WalletClient({
             bridge: this.walletConnectBridge,
         });
-        this.walletConnector.on("connect", this.onConnect);
-        this.walletConnector.on("session_update", this.onDisconnect);
-        this.walletConnector.on("disconnect", this.onDisconnect);
+        this.walletConnector.on("connect", this.onConnect.bind(this));
+        this.walletConnector.on("session_update", this.onDisconnect.bind(this));
+        this.walletConnector.on("disconnect", this.onDisconnect.bind(this));
         return true;
     }
 
@@ -52,7 +52,6 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      *
      */
     async login(): Promise<string> {
-        const chainId = WALLETCONNECT_ELROND_CHAIN_ID;
         let returnUrl = "";
         if (!this.walletConnector) {
             await this.init();
@@ -64,7 +63,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
             return returnUrl;
         }
 
-        await this.walletConnector?.createSession({ chainId }).then(() => {
+        await this.walletConnector?.createSession({ chainId: WALLETCONNECT_ELROND_CHAIN_ID }).then(() => {
             const uri = this.walletConnector?.uri;
             if (uri !== undefined) {
                 returnUrl = uri;
@@ -114,7 +113,7 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         return transaction;
     }
 
-    onConnect = async (error: any, { params }: any) => {
+    private async onConnect(error: any, { params }: any) {
         if (error) {
             throw error;
         }
@@ -127,15 +126,15 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         } = params[0];
 
         this.loginAccount(account);
-    };
+    }
 
-    onDisconnect = async (error: any) => {
+    private async onDisconnect(error: any) {
         if (error) {
             throw error;
         }
 
         this.dispatchEvent(this.onWalletConnectDisconect);
-    };
+    }
 
     private async loginAccount(address: string) {
         if (this.addressIsValid(address)) {
