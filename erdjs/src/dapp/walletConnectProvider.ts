@@ -52,7 +52,6 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
      *
      */
     async login(): Promise<string> {
-        let returnUrl = "";
         if (!this.walletConnector) {
             await this.init();
         }
@@ -60,17 +59,12 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         if (this.walletConnector?.connected) {
             await this.walletConnector.killSession();
             Logger.trace("WalletConnect login started but walletConnect not initialized");
-            return returnUrl;
+            return "";
         }
 
-        await this.walletConnector?.createSession({ chainId: WALLETCONNECT_ELROND_CHAIN_ID }).then(() => {
-            const uri = this.walletConnector?.uri;
-            if (uri !== undefined) {
-                returnUrl = uri;
-            }
-        });
-
-        return returnUrl;
+        await this.walletConnector?.createSession({ chainId: WALLETCONNECT_ELROND_CHAIN_ID });
+        if (!this.walletConnector?.uri) return "";
+        return this.walletConnector?.uri;
     }
 
     /**
