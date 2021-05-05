@@ -4,6 +4,10 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [4.2.0] - 05.05.2021
+
+-   [Add wallet connect provider #286](https://github.com/ElrondNetwork/elrond-sdk/pull/286)
+
 ## [4.1.0] - 29.04.2021
 
 -   [Add decode string and decode bignumber #282](https://github.com/ElrondNetwork/elrond-sdk/pull/282)

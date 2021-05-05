@@ -18,7 +18,4 @@ export * from "./nullSigner";
 
 export * from "./smartcontracts";
 
-export * from "./dapp/constants";
-export * from "./dapp/interface";
-export * from "./dapp/hwProvider";
-export * from "./dapp/walletProvider";
+export * from "./dapp";

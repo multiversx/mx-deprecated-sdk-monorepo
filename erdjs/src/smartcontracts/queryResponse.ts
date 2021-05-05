@@ -39,7 +39,7 @@ export class QueryResponse {
             returnData: returnData,
             returnCode: new ReturnCode(returnCode),
             returnMessage: returnMessage,
-            gasUsed: gasUsed
+            gasUsed: gasUsed,
         });
     }
 
@@ -62,7 +62,7 @@ export class QueryResponse {
     outputUntyped(): Buffer[] {
         this.assertSuccess();
 
-        let buffers = this.returnData.map(item => Buffer.from(item, "base64"));
+        let buffers = this.returnData.map((item) => Buffer.from(item || "", "base64"));
         return buffers;
     }
 
@@ -84,7 +84,7 @@ export class QueryResponse {
             returnData: this.returnData,
             returnCode: this.returnCode,
             returnMessage: this.returnMessage,
-            gasUsed: this.gasUsed.valueOf()
+            gasUsed: this.gasUsed.valueOf(),
         };
     }
 }
