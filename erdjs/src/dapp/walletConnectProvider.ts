@@ -75,7 +75,9 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
             Logger.error("logout: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
-        await this.walletConnector.killSession();
+        if (this.walletConnector?.connected) {
+            await this.walletConnector?.killSession();
+        }
         return true;
     }
 
