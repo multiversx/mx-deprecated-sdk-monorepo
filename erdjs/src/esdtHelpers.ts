@@ -1,6 +1,7 @@
 import {ScArgumentsParser} from "./scArgumentsParser";
 import {ErrInvalidEsdtTransferDataField} from "./errors";
 import BigNumber from "bignumber.js";
+import {ESDT_TRANSFER_FUNCTION_NAME, ESDT_TRANSFER_GAS_LIMIT, ESDT_TRANSFER_VALUE} from "./constants";
 
 /**
  * This class exposes static methods that are useful for parsing ESDT transfer transactions
@@ -37,7 +38,7 @@ export class EsdtHelpers {
      * @param dataField dataField represents the string to be checked if it would trigger an ESDT transfer call
      */
     public static isEsdtTransferTransaction(dataField: string): Boolean {
-        if (!dataField.includes("ESDTTransfer", 0)) {
+        if (!dataField.includes(ESDT_TRANSFER_FUNCTION_NAME, 0)) {
             return false;
         }
 
@@ -49,5 +50,21 @@ export class EsdtHelpers {
         }
 
         return args.length == 2;
+    }
+
+    /**
+     * getTxFieldsForEsdtTransfer returns the needed value, gasLimit and data field (in string format) for sending an amount of ESDT token
+     * @param tokenIdentifier tokenIdentifier represents the identifier of the token to transfer
+     * @param amount amount represents the denominated amount of the token to send
+     */
+    public static getTxFieldsForEsdtTransfer(tokenIdentifier: string, amount: string) {
+        const encodedAmount = new BigNumber(amount, 10).toString(16);
+        const txDataField = [ESDT_TRANSFER_FUNCTION_NAME, tokenIdentifier, encodedAmount].join("@");
+
+        return {
+            value: ESDT_TRANSFER_VALUE,
+            gasLimit: ESDT_TRANSFER_GAS_LIMIT,
+            data: txDataField
+        };
     }
 }
