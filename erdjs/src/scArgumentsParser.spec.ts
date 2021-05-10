@@ -4,20 +4,20 @@ import {ErrInvalidScCallDataField} from "./errors";
 
 describe("test scArgumentsParser.isValidDataField", () => {
     it("should return true for valid data fields", () => {
-        assert.isTrue(ScArgumentsParser.isValidDataField("delegate"));
-        assert.isTrue(ScArgumentsParser.isValidDataField("function@01@6f6b"));
-        assert.isTrue(ScArgumentsParser.isValidDataField("ESDTTransfer@74657374746f6b656e6964@02b671"));
+        assert.isTrue(ScArgumentsParser.isValidSmartContractCallDataField("delegate"));
+        assert.isTrue(ScArgumentsParser.isValidSmartContractCallDataField("function@01@6f6b"));
+        assert.isTrue(ScArgumentsParser.isValidSmartContractCallDataField("ESDTTransfer@74657374746f6b656e6964@02b671"));
     });
 
     it("should return false for invalid length arguments", () => {
-        assert.isFalse(ScArgumentsParser.isValidDataField("stake@1"));
-        assert.isFalse(ScArgumentsParser.isValidDataField("function@01@6f6b6"));
-        assert.isFalse(ScArgumentsParser.isValidDataField("ESDTTransfer@74657374746f6b656e6964@02b6710"));
+        assert.isFalse(ScArgumentsParser.isValidSmartContractCallDataField("stake@1"));
+        assert.isFalse(ScArgumentsParser.isValidSmartContractCallDataField("function@01@6f6b6"));
+        assert.isFalse(ScArgumentsParser.isValidSmartContractCallDataField("ESDTTransfer@74657374746f6b656e6964@02b6710"));
     });
 
     it("should return false for non-hex arguments", () => {
-        assert.isFalse(ScArgumentsParser.isValidDataField("function@qwerty"));
-        assert.isFalse(ScArgumentsParser.isValidDataField("ESDTTransfer@74657374746f6b656e6964@02b6710g"));
+        assert.isFalse(ScArgumentsParser.isValidSmartContractCallDataField("function@qwerty"));
+        assert.isFalse(ScArgumentsParser.isValidSmartContractCallDataField("ESDTTransfer@74657374746f6b656e6964@02b6710g"));
     });
 });
 
