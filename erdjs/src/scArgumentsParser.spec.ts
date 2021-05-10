@@ -36,14 +36,22 @@ describe("test scArgumentsParser.isValidScArgument", () => {
     });
 });
 
-describe("test scArgumentsParser.getArgumentsFromDataField", () => {
-    it("should return correct value", () => {
+describe("test scArgumentsParser.parseSmartContractCallDataField", () => {
+    it("should extract function name and args", () => {
         let expected = ["01", "abcd"];
-        let actual = ScArgumentsParser.getArgumentsFromDataField("function@01@abcd");
-        assert.deepEqual(expected, actual);
+        let {functionName, args} = ScArgumentsParser.parseSmartContractCallDataField("function@01@abcd");
+        assert.deepEqual(expected, args);
+        assert.equal(functionName, "function");
+    });
+
+    it("should return only the function name if no arg", () => {
+        let expected: string[] = [];
+        let {functionName, args} = ScArgumentsParser.parseSmartContractCallDataField("function");
+        assert.deepEqual(expected, args);
+        assert.equal(functionName, "function");
     });
 
     it("should throw exception", () => {
-        assert.throw(() => ScArgumentsParser.getArgumentsFromDataField("function@01@bad"), ErrInvalidScCallDataField);
+        assert.throw(() => ScArgumentsParser.parseSmartContractCallDataField("function@01@bad"), ErrInvalidScCallDataField);
     });
 });

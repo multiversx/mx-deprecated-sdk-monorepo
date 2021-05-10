@@ -11,8 +11,10 @@ export class ScArgumentsParser {
     /**
      * Returns an array containing all the arguments from a data field representing a smart contract call
      * @param dataField dataField represents the data filed to extract arguments from
+     * @return {functionName, args} returns the function name and an array containing all the smart contract call arguments
+     * @throws ErrInvalidScCallDataField the function returns an ErrInvalidScCallDataField exception if the input isn't a smart contract call valid input
      */
-    public static getArgumentsFromDataField(dataField: string): Array<string> {
+    public static parseSmartContractCallDataField(dataField: string): { functionName: string, args: Array<string> } {
         if (!this.isValidDataField(dataField)) {
             throw new ErrInvalidScCallDataField(dataField);
         }
@@ -20,15 +22,20 @@ export class ScArgumentsParser {
         let args = new Array<string>();
         let items = dataField.split("@");
         if (items.length == 0) {
-            args.push(dataField);
-            return args; // no argument, return the array containing only the data field
+            return {
+                functionName: dataField,
+                args: new Array<string>(),
+            };
         }
 
         for (let i = 1; i < items.length; i++) {
             args.push(items[i]);
         }
 
-        return args;
+        return {
+            functionName: items[0],
+            args: args,
+        };
     }
 
     /**
@@ -53,6 +60,7 @@ export class ScArgumentsParser {
     /**
      *
      * @param input input represents the input argument to check
+     * @return true if the provided argument resembles a valid smart contract call argument
      */
     public static isValidScArgument(input: string): Boolean {
         if (input.length % 2 != 0) {

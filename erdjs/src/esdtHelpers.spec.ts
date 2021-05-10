@@ -22,9 +22,9 @@ describe("test EsdtHelpers.extractFieldsFromEsdtTransferDataField", () => {
 
 describe("test EsdtHelpers.getTxFieldsForEsdtTransfer", () => {
     it("should work", () => {
-        let result = EsdtHelpers.getTxFieldsForEsdtTransfer("4142432d317132773365", "999999999999999999999999999999999999999999999");
-        assert.equal(result.value, ESDT_TRANSFER_VALUE);
-        assert.equal(result.gasLimit, ESDT_TRANSFER_GAS_LIMIT);
-        assert.equal(result.data, "ESDTTransfer@4142432d317132773365@2cd76fe086b93ce2f768a00b229fffffffffff");
+        let {value, data, gasLimit} = EsdtHelpers.getTxFieldsForEsdtTransfer("4142432d317132773365", "999999999999999999999999999999999999999999999");
+        assert.equal(value, ESDT_TRANSFER_VALUE);
+        assert.equal(gasLimit, ESDT_TRANSFER_GAS_LIMIT);
+        assert.equal(data, "ESDTTransfer@4142432d317132773365@2cd76fe086b93ce2f768a00b229fffffffffff");
     });
 });
