@@ -16,6 +16,8 @@ internal fun GetAccountResponse.AccountData.toDomain(address: Address) = Account
     address = address,
     nonce = nonce,
     balance = balance,
+    code = code,
+    username = username
 )
 
 internal fun GetAddressTransactionsResponse.TransactionOnNetworkData.toDomain() =
