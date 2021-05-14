@@ -17,8 +17,9 @@ data class Transaction(
     val value: BigInteger = 0.toBigInteger(),
     val gasPrice: Long = 1000000000,
     val gasLimit: Long = 50000,
-    val version: Int = 1,
+    val version: Version = Version.DEFAULT,
     val data: String? = null,
+    val option: Option = Option.NONE,
     val signature: String = "",
     val txHash: String = ""
 ) {
@@ -52,7 +53,10 @@ data class Transaction(
                 put("data", encode(data))
             }
             put("chainID", chainID)
-            put("version", version)
+            put("version", version.serializedValue)
+            if (option != Option.NONE) {
+                put("option", option.serializedValue)
+            }
             if (signature.isNotEmpty()) {
                 put("signature", signature)
             }
@@ -69,4 +73,19 @@ data class Transaction(
         private val gson = GsonBuilder().disableHtmlEscaping().create()
     }
 
+    enum class Version {
+        DEFAULT,
+        TX_HASH_SIGN;
+
+        // Version starts at 1 and not 0
+        val serializedValue = ordinal + 1
+    }
+
+    enum class Option {
+        NONE,
+        TX_HASH_SIGN;
+
+        // for consistency with the other enum
+        val serializedValue = ordinal
+    }
 }
