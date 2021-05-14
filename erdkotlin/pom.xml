@@ -6,7 +6,7 @@
 
     <groupId>elrond</groupId>
     <artifactId>erdkotlin</artifactId>
-    <version>0.2.0</version>
+    <version>0.3.0</version>
 
     <name>erdkotlin</name>
     <url>https://github.com/ElrondNetwork/elrond-sdk</url>
