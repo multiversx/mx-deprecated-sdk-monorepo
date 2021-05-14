@@ -14,13 +14,15 @@ import com.elrond.erdkotlin.data.vm.responses.QueryContractResponse
 import com.elrond.erdkotlin.domain.transaction.models.Transaction
 import com.elrond.erdkotlin.domain.wallet.models.Address
 import com.google.gson.Gson
+import okhttp3.OkHttpClient
 
 internal class ElrondProxy(
-    url: String
+    url: String,
+    httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
 ) {
 
     private val gson = Gson()
-    private val elrondClient = ElrondClient(url, gson)
+    private val elrondClient = ElrondClient(url, gson, httpClientBuilder)
 
     fun setUrl(url: String) {
         elrondClient.url = url
