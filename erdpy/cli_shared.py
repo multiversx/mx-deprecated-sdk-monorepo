@@ -79,8 +79,8 @@ def add_wallet_args(sub: Any):
     sub.add_argument("--keyfile", required=check_if_sign_method_required("--keyfile"), help="🔑 a JSON keyfile, if PEM not provided")
     sub.add_argument("--passfile", required=(utils.is_arg_present("--keyfile", sys.argv)), help="🔑 a file containing keyfile's password, if keyfile provided")
     sub.add_argument("--ledger", action="store_true", required=check_if_sign_method_required("--ledger"), default=False, help="🔐 bool flag for signing transaction using ledger")
-    sub.add_argument("--ledger-account-index", default=0, help="🔐 the index of the account")
-    sub.add_argument("--ledger-address-index", default=0, help="🔐 the index of the address")
+    sub.add_argument("--ledger-account-index", default=0, help="🔐 the index of the account when using Ledger")
+    sub.add_argument("--ledger-address-index", default=0, help="🔐 the index of the address when using Ledger")
     sub.add_argument("--sender-username", required=False, help="🖄 the username of the sender")
 
 
