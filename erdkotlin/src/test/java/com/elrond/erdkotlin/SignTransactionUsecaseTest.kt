@@ -7,7 +7,6 @@ import com.elrond.erdkotlin.domain.transaction.SignTransactionUsecase
 import com.elrond.erdkotlin.domain.transaction.models.Transaction
 import com.elrond.erdkotlin.domain.wallet.models.Address
 import org.junit.Assert
-import org.junit.Ignore
 import org.junit.Test
 
 class SignTransactionUsecaseTest {
@@ -85,7 +84,7 @@ class SignTransactionUsecaseTest {
     fun `sign with option`() {
         // with an option
         val transaction = TestHelper.transactionWithoutData().copy(
-            option = Transaction.Option.TX_HASH_SIGN
+            option = Transaction.OPTION_TX_HASH_SIGN
         )
         val expectedSignature =
             "c48181af13b1c51426e7e985a790f62c98cf9e0297e8d0c0b044fe3a12391381fee833e71a33ca27287ffb5191aa46235747b1164ed574297e39ae74dd26b606"
