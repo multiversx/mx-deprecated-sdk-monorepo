@@ -4,6 +4,13 @@ All notable changes will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [5.0.0] - 19.05.2021
+
+-   [Remove event target and add callback #310](https://github.com/ElrondNetwork/elrond-sdk/pull/310)
+-   [FIx abi registry for struct type #309](https://github.com/ElrondNetwork/elrond-sdk/pull/309)
+-   [added helpers functions for esdt and sc arguments parser #301](https://github.com/ElrondNetwork/elrond-sdk/pull/301)
+-   Update packages #298, #299, #302, #303, #304, #305
+
 ## [4.2.2] - 06.05.2021
 
 -   [Fix infinite loop on wallet connect logout #294](https://github.com/ElrondNetwork/elrond-sdk/pull/294)
