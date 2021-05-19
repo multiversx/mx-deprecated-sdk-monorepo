@@ -93,7 +93,7 @@ export class WalletProvider implements IDappProvider {
     /**
      * Fetches the login hook url and redirects the client to the wallet login.
      */
-    async login(): Promise<string> {
+    async login(options?:{callbackUrl?:string}): Promise<string> {
         if (!this.mainFrame) {
             return '';
         }
@@ -131,7 +131,7 @@ export class WalletProvider implements IDappProvider {
 
             window.addEventListener('message', connectUrl);
         }).then((connectionUrl: string) => {
-            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${window.location.href}`;
+            window.location.href = `${this.baseWalletUrl()}${connectionUrl}?callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
             return window.location.href;
         }).catch(_ => {
             return '';
@@ -229,7 +229,7 @@ export class WalletProvider implements IDappProvider {
      *   the client to the send transaction hook
      * @param transaction
      */
-    async sendTransaction(transaction: Transaction): Promise<Transaction> {
+    async sendTransaction(transaction: Transaction, options?: {callbackUrl?: string}): Promise<Transaction> {
         if (!this.mainFrame) {
             throw new Error("Wallet provider is not initialised, call init() first");
         }
@@ -243,10 +243,10 @@ export class WalletProvider implements IDappProvider {
             let plainTransaction = transaction.toPlainObject();
 
             // We adjust the fields, in order to make them compatible with what the wallet expected
-            plainTransaction["data"] = transaction.data.valueOf().toString();
-            plainTransaction["value"] = transaction.value.toString();
-            plainTransaction["gasPrice"] = transaction.gasPrice.valueOf();
-            plainTransaction["gasLimit"] = transaction.gasLimit.valueOf();
+            plainTransaction["data"] = transaction.getData().valueOf().toString();
+            plainTransaction["value"] = transaction.getValue().toString();
+            plainTransaction["gasPrice"] = transaction.getGasPrice().valueOf();
+            plainTransaction["gasLimit"] = transaction.getGasLimit().valueOf();
             console.log("postMessage", DAPP_MESSAGE_SEND_TRANSACTION_URL, plainTransaction);
 
             contentWindow.postMessage({
@@ -281,7 +281,7 @@ export class WalletProvider implements IDappProvider {
 
             window.addEventListener('message', sendTransactionUrl);
         }).then((url: any) => {
-            window.location.href = `${this.baseWalletUrl()}${url}&callbackUrl=${window.location.href}`;
+            window.location.href = `${this.baseWalletUrl()}${url}&callbackUrl=${options !== undefined && options.callbackUrl !== undefined ? options.callbackUrl : window.location.href}`;
             return transaction;
         });
     }
@@ -290,7 +290,6 @@ export class WalletProvider implements IDappProvider {
         return new Promise((resolve, reject) => {
             const timeout = setTimeout(_ => reject(false), DAPP_DEFAULT_TIMEOUT);
             const setConnected = (ev: IDappMessageEvent) => {
-                console.log("event", "setConnected", ev);
 
                 if (!this.mainFrame) {
                     return;

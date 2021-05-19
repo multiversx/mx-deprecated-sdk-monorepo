@@ -11,6 +11,8 @@ const HRP = "erd";
  */
 const PUBKEY_LENGTH = 32;
 
+const SMART_CONTRACT_HEX_PUBKEY_PREFIX = "0".repeat(16);
+
 /**
  * An Elrond Address, as an immutable object.
  */
@@ -191,5 +193,9 @@ export class Address {
      */
     static Zero(): Address {
         return new Address("0".repeat(64));
+    }
+
+    isContractAddress(): boolean {
+        return this.hex().startsWith(SMART_CONTRACT_HEX_PUBKEY_PREFIX);
     }
 }
