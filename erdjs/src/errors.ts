@@ -315,7 +315,7 @@ export class ErrAsyncTimerAborted extends Err {
 }
 
 /**
- * Signals a timout for a {@link TransactioWatcher}.
+ * Signals a timout for a {@link TransactionWatcher}.
  */
 export class ErrTransactionWatcherTimeout extends Err {
     public constructor() {
@@ -450,5 +450,24 @@ export class ErrContractInteraction extends Err {
 export class ErrBadPEM extends ErrWallet {
   public constructor(message?: string) {
     super(message ? `Bad PEM: ${message}` : `Bad PEM`);
+  }
+}
+
+/**
+ * Signals an invalid smart contract call data field
+ */
+export class ErrInvalidScCallDataField extends Err {
+  public constructor(message?: string) {
+    message = " " + message ? message : ".";
+    super("Invalid smart contract call data field" + message);
+  }
+}
+
+/**
+ * Signals an invalid ESDT transfer data field
+ */
+export class ErrInvalidEsdtTransferDataField extends Err {
+  public constructor() {
+    super("Invalid ESDT transfer call data field");
   }
 }

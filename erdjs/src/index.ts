@@ -12,6 +12,8 @@ export * from "./networkParams";
 export * from "./utils";
 export * from "./proxyProvider";
 export * from "./apiProvider";
+export * from "./scArgumentsParser";
+export * from "./esdtHelpers";
 
 export * from "./walletcore";
 export * from "./nullSigner";
