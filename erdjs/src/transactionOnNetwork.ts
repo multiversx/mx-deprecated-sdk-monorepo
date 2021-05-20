@@ -52,7 +52,6 @@ export class TransactionOnNetwork {
         receipt: any,
         smartContractResults: any[]
     }): TransactionOnNetwork {
-        console.log("RESPONSE: ", response);
         let transactionOnNetwork = new TransactionOnNetwork();
 
         transactionOnNetwork.type = new TransactionOnNetworkType(response.type || "");
