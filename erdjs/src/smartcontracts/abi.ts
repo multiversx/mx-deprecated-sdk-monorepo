@@ -1,5 +1,7 @@
 import { ErrInvariantFailed } from "../errors";
-import { guardLength, guardValueIsSet } from "../utils";
+import { loadAbiRegistry } from "../testutils";
+import { guardValueIsSet } from "../utils";
+import { ContractFunction } from "./function";
 import { AbiRegistry, EndpointDefinition } from "./typesystem";
 import { ContractInterface } from "./typesystem/contractInterface";
 
@@ -8,6 +10,12 @@ export class SmartContractAbi {
 
     constructor(registry: AbiRegistry, implementsInterfaces: string[]) {
         this.interfaces.push(...registry.getInterfaces(implementsInterfaces));
+    }
+
+    static async loadSingleAbi(abiPath: string): Promise<SmartContractAbi> {
+        let abiRegistry = await loadAbiRegistry([abiPath]);
+        let interfaceNames = abiRegistry.interfaces.map(iface => iface.name);
+        return new SmartContractAbi(abiRegistry, interfaceNames);
     }
 
     getAllEndpoints(): EndpointDefinition[] {
@@ -34,7 +42,13 @@ export class SmartContractAbi {
         return constructors[0];
     }
 
-    getEndpoint(name: string): EndpointDefinition {
+    getEndpoint(name: string | ContractFunction): EndpointDefinition {
+        if (name instanceof ContractFunction) {
+            name = name.name;
+        }
+        if (name == "constructor" || name == "deploy") {
+            return this.getConstructorDefinition();
+        }
         let result = this.getAllEndpoints().find(item => item.name == name);
         guardValueIsSet("result", result);
         return result!;

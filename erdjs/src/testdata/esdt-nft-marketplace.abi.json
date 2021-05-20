@@ -1,0 +1,291 @@
+{
+    "name": "EsdtNftMarketplace",
+    "constructor": {
+        "inputs": [
+            {
+                "name": "bid_cut_percentage",
+                "type": "u64"
+            }
+        ],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "setCutPercentage",
+            "inputs": [
+                {
+                    "name": "new_cut_percentage",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "auctionToken",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "min_bid",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_bid",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "deadline",
+                    "type": "u64"
+                },
+                {
+                    "name": "accepted_payment_token",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "opt_accepted_payment_token_nonce",
+                    "type": "optional<u64>",
+                    "multi_arg": true
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "bid",
+            "payableInTokens": [
+                "*"
+            ],
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "endAuction",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "withdraw",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "isAlreadyUpForAuction",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
+            "name": "getPaymentTokenForAuctionedNft",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<EsdtToken>"
+                }
+            ]
+        },
+        {
+            "name": "getMinMaxBid",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<tuple2<BigUint,BigUint>>"
+                }
+            ]
+        },
+        {
+            "name": "getDeadline",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<u64>"
+                }
+            ]
+        },
+        {
+            "name": "getOriginalOwner",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "name": "getCurrentWinningBid",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<BigUint>"
+                }
+            ]
+        },
+        {
+            "name": "getCurrentWinner",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<Address>"
+                }
+            ]
+        },
+        {
+            "name": "getFullAuctionData",
+            "inputs": [
+                {
+                    "name": "nft_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nft_nonce",
+                    "type": "u64"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Option<Auction>"
+                }
+            ]
+        }
+    ],
+    "types": {
+        "Auction": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "payment_token",
+                    "type": "EsdtToken"
+                },
+                {
+                    "name": "min_bid",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "max_bid",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "deadline",
+                    "type": "u64"
+                },
+                {
+                    "name": "original_owner",
+                    "type": "Address"
+                },
+                {
+                    "name": "current_bid",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "current_winner",
+                    "type": "Address"
+                }
+            ]
+        },
+        "EsdtToken": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "token_type",
+                    "type": "TokenIdentifier"
+                },
+                {
+                    "name": "nonce",
+                    "type": "u64"
+                }
+            ]
+        }
+    }
+}

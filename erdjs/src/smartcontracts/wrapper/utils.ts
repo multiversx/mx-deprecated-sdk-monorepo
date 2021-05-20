@@ -4,24 +4,11 @@ import { Balance } from "../../balance";
 import { IProvider } from "../../interface";
 import { TestWallet } from "../../testutils";
 
-export function toBalance(balance: number | string | BigNumber | Balance): Balance {
-    let asBalance: Balance;
-    if (balance instanceof Balance) {
-        asBalance = balance;
-    } else {
-        let asBigNumber = new BigNumber(balance);
-        asBalance = new Balance(asBigNumber.toString());
-    }
-    return asBalance;
+export function printBalance(balance: Balance) {
+    console.log(balance.toCurrencyString());
 }
 
-export function printBalance(balance: number | string | BigNumber | Balance): Balance {
-    let asBalance = toBalance(balance);
-    console.log(asBalance.toCurrencyString());
-    return asBalance;
-}
-
-export async function refreshAccountBalance(walletOrAccount: TestWallet | Account, provider: IProvider): Promise<Balance> {
+export async function getAccountBalance(walletOrAccount: TestWallet | Account, provider: IProvider): Promise<Balance> {
     let account: Account;
     if (walletOrAccount instanceof TestWallet) {
         account = walletOrAccount.account;
@@ -32,17 +19,13 @@ export async function refreshAccountBalance(walletOrAccount: TestWallet | Accoun
     return account.balance;
 }
 
-export async function printAccountBalance(wallet: TestWallet | Account, provider: IProvider): Promise<Balance> {
-    let newBalance = await refreshAccountBalance(wallet, provider);
-    return printBalance(newBalance);
-}
-
-export async function nowNonce(provider: IProvider): Promise<number> {
+export async function currentNonce(provider: IProvider): Promise<number> {
     let networkStatus = await provider.getNetworkStatus();
     return networkStatus.Nonce;
 }
 
-export function minutesNonce(minutes: number): number {
+export function minutesToNonce(minutes: number): number {
+    // the nonce is incremented every 6 seconds - in a minute the nonce increases by 10
     return minutes * 10;
 }
 

@@ -12,7 +12,7 @@ import { IInteractionChecker } from "./interface";
  */
 export class StrictChecker implements IInteractionChecker {
     checkInteraction(interaction: Interaction): void {
-        let definition = interaction.getEndpointDefinition();
+        let definition = interaction.getEndpoint();
 
         this.checkPayable(interaction, definition);
         this.checkArguments(interaction, definition);
@@ -45,7 +45,7 @@ export class StrictChecker implements IInteractionChecker {
             let actualType = argument.getType();
             // isAssignableFrom() is responsible to handle covariance and contravariance (depending on the class that overrides it).
             let ok = expectedType.isAssignableFrom(actualType);
-            
+
             if (!ok) {
                 throw new errors.ErrContractInteraction(`type mismatch at index ${i}, expected: ${expectedType}, got: ${actualType}`);
             }

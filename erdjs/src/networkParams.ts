@@ -1,7 +1,7 @@
-import {TransactionPayload} from "./transactionPayload";
-import {NetworkConfig} from "./networkConfig";
+import { TransactionPayload } from "./transactionPayload";
+import { NetworkConfig } from "./networkConfig";
 import * as errors from "./errors";
-import {Balance} from "./balance";
+import { Egld } from "./balance";
 import {
     TRANSACTION_OPTIONS_DEFAULT,
     TRANSACTION_OPTIONS_TX_HASH_SIGN,
@@ -31,7 +31,7 @@ export class GasPrice {
     }
 
     toDenominated(): string {
-        let asBalance = new Balance(this.value.toString(10));
+        let asBalance = Egld.raw(this.value.toString(10));
         return asBalance.toDenominated();
     }
 

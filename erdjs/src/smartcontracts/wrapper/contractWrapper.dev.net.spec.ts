@@ -18,9 +18,9 @@ describe("test smart contract interactor", function () {
         // because the Transaction objects created under the hood point to the "default" NetworkConfig.
         this.timeout(60000);
 
-        let answer = await ContractWrapper.fromAbi(provider, "answer", "src/testdata/answer.abi.json", "src/testdata/answer.wasm");
+        let answer = await ContractWrapper.loadAbi(provider, "src/testdata/answer.abi.json", "src/testdata/answer.wasm");
 
-        await answer.caller(alice).gas(3_000_000).deploy();
+        await answer.sender(alice).gas(3_000_000).deploy();
 
         // Query
         let queryResponse = await answer.query.getUltimateAnswer();
@@ -34,9 +34,9 @@ describe("test smart contract interactor", function () {
     it("should interact with 'counter' (local testnet)", async function () {
         this.timeout(120000);
 
-        let counter = await ContractWrapper.fromAbi(provider, "counter", "src/testdata/counter.abi.json", "src/testdata/counter.wasm");
+        let counter = await ContractWrapper.loadAbi(provider, "src/testdata/counter.abi.json", "src/testdata/counter.wasm");
 
-        await counter.caller(alice).gas(3_000_000);
+        await counter.sender(alice).gas(3_000_000);
         await counter.deploy();
         assert.deepEqual(await counter.query.get(), new BigNumber(1));
         assert.deepEqual(await counter.increment(), new BigNumber(2));
@@ -47,9 +47,9 @@ describe("test smart contract interactor", function () {
     it("should interact with 'lottery_egld' (local testnet)", async function () {
         this.timeout(120000);
 
-        let lottery = await ContractWrapper.fromAbi(provider, "Lottery", "src/testdata/lottery_egld.abi.json", "src/testdata/lottery_egld.wasm");
+        let lottery = await ContractWrapper.loadAbi(provider, "src/testdata/lottery_egld.abi.json", "src/testdata/lottery_egld.wasm");
 
-        await lottery.caller(alice).gas(100_000_000).deploy();
+        await lottery.sender(alice).gas(100_000_000).deploy();
 
         lottery.gas(15_000_000);
         await lottery.start("lucky", Balance.egld(1), null, null, 1, null, null);

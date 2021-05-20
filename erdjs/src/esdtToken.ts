@@ -1,6 +1,13 @@
 
+export enum TokenType {
+    FungibleESDT,
+    SemiFungibleESDT,
+    NonFungibleESDT
+};
+
 export class ESDTToken {
     token: string = '';
+    type: TokenType = TokenType.FungibleESDT;
     name: string = '';
     owner: string = '';
     minted: string = '';
@@ -45,6 +52,10 @@ export class ESDTToken {
 
     getTokenIdentifier() {
         return this.token;
+    }
+
+    isEgld(): boolean {
+        return this.name == "EGLD";
     }
 
 }

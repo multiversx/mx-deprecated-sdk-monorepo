@@ -42,6 +42,7 @@ export class TypeMapper {
             ["OptionalArg", OptionalType],
             ["optional", OptionalType],
             ["OptionalResult", OptionalType],
+            ["multi", CompositeType],
             ["MultiArg", CompositeType],
             ["MultiResult", CompositeType],
             // Perhaps we can adjust the ABI generator to only output "tuple", instead of "tupleN"?
@@ -61,6 +62,7 @@ export class TypeMapper {
             ["u16", new U16Type()],
             ["u32", new U32Type()],
             ["u64", new U64Type()],
+            ["U64", new U64Type()],
             ["BigUint", new BigUIntType()],
             ["i8", new I8Type()],
             ["i16", new I16Type()],

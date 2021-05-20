@@ -17,7 +17,7 @@ export class AbiRegistry {
      * Convenience factory function to load ABIs (from files or URLs).
      * This function will also remap ABI types to know types (on best-efforts basis).
      */
-    static async load(json: { files?: string[]; urls?: string[] }) {
+    static async load(json: { files?: string[]; urls?: string[] }): Promise<AbiRegistry> {
         let registry = new AbiRegistry();
 
         for (const file of json.files || []) {

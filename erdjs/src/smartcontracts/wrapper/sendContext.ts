@@ -2,19 +2,16 @@ import { GasLimit } from "../../networkParams";
 import { IInteractionChecker } from "../interface";
 import { IProvider } from "../../interface";
 import { StrictChecker } from "../strictChecker";
-import * as errors from "../../errors";
 import { ContractLogger } from "./contractLogger";
 import { TestWallet } from "../../testutils";
 import { Balance } from "../../balance";
-import BigNumber from "bignumber.js";
+import { Err } from "../../errors";
 
 /**
- * SendContext stores contextual information which is needed when preparing a transaction.
- * 
- * This information 
+ * Stores contextual information which is needed when preparing a transaction.
  */
 export class SendContext {
-    private caller_: TestWallet | null;
+    private sender_: TestWallet | null;
     private provider_: IProvider;
     private gas_: GasLimit | null;
     private logger_: ContractLogger | null;
@@ -22,7 +19,7 @@ export class SendContext {
     readonly checker: IInteractionChecker;
 
     constructor(provider: IProvider) {
-        this.caller_ = null;
+        this.sender_ = null;
         this.provider_ = provider;
         this.gas_ = null;
         this.logger_ = null;
@@ -35,8 +32,8 @@ export class SendContext {
         return this;
     }
 
-    caller(caller: TestWallet): SendContext {
-        this.caller_ = caller;
+    sender(sender: TestWallet): SendContext {
+        this.sender_ = sender;
         return this;
     }
 
@@ -55,34 +52,17 @@ export class SendContext {
         return this;
     }
 
-    valueEgld(value: BigNumber.Value): SendContext {
-        return this.value(Balance.egld(value));
-    }
-
-    getAndResetValue(): Balance {
-        if (this.value_ == null) {
-            throw new errors.Err("Did not provide a value for a payable method");
-        }
+    getAndResetValue(): Balance | null {
         let value = this.value_;
         this.value_ = null;
         return value;
     }
 
-    assertNoValue(): void {
-        if (this.value_ != null) {
-            throw new errors.Err("Value was provided but the method is not payable");
-        }
-    }
-
-    getCaller(): TestWallet {
-        if (this.caller_) {
-            return this.caller_;
-        }
-        throw new errors.Err("caller not set");
-    }
-
     getSender(): TestWallet {
-        return this.getCaller();
+        if (this.sender_) {
+            return this.sender_;
+        }
+        throw new Err("sender not set");
     }
 
     getProvider(): IProvider {
@@ -93,7 +73,7 @@ export class SendContext {
         if (this.gas_) {
             return this.gas_;
         }
-        throw new errors.Err("gas limit not set");
+        throw new Err("gas limit not set");
     }
 
     getLogger(): ContractLogger | null {

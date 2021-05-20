@@ -89,23 +89,7 @@ export class Interaction {
      * The outcome is structured such that it allows quick access to each level of detail.
      */
     interpretExecutionResults(transactionOnNetwork: TransactionOnNetwork): ExecutionResultsBundle {
-        let smartContractResults = transactionOnNetwork.getSmartContractResults();
-        let immediateResult = smartContractResults.getImmediate();
-        let endpoint = this.getEndpointDefinition();
-
-        immediateResult.setEndpointDefinition(endpoint);
-
-        let values = immediateResult.outputTyped();
-        let returnCode = immediateResult.getReturnCode();
-
-        return {
-            transactionOnNetwork: transactionOnNetwork,
-            smartContractResults: smartContractResults,
-            immediateResult: immediateResult,
-            values: values,
-            firstValue: values[0],
-            returnCode: returnCode
-        };
+        return interpretExecutionResults(this.getEndpoint(), transactionOnNetwork);
     }
 
     /**
@@ -113,7 +97,7 @@ export class Interaction {
      * The outcome is structured such that it allows quick access to each level of detail.
      */
     interpretQueryResponse(queryResponse: QueryResponse): QueryResponseBundle {
-        let endpoint = this.getEndpointDefinition();
+        let endpoint = this.getEndpoint();
         queryResponse.setEndpointDefinition(endpoint);
 
         let values = queryResponse.outputTyped();
@@ -142,17 +126,26 @@ export class Interaction {
         return this;
     }
 
-    getEndpointDefinition(): EndpointDefinition {
-        let abi = this.getContract().getAbi();
-        let name = this.getFunction().toString();
-        if (name == "constructor") {
-            let constructor_definition = abi.getConstructorDefinition();
-            if (constructor_definition == null) {
-                throw new ErrInvariantFailed("no constructor in abi");
-            }
-        }
-        let endpoint = abi.getEndpoint(name);
-
-        return endpoint;
+    getEndpoint(): EndpointDefinition {
+        return this.getContract().getAbi().getEndpoint(this.getFunction());
     }
+}
+
+function interpretExecutionResults(endpoint: EndpointDefinition, transactionOnNetwork: TransactionOnNetwork): ExecutionResultsBundle {
+    let smartContractResults = transactionOnNetwork.getSmartContractResults();
+    let immediateResult = smartContractResults.getImmediate();
+
+    immediateResult.setEndpointDefinition(endpoint);
+
+    let values = immediateResult.outputTyped();
+    let returnCode = immediateResult.getReturnCode();
+
+    return {
+        transactionOnNetwork: transactionOnNetwork,
+        smartContractResults: smartContractResults,
+        immediateResult: immediateResult,
+        values: values,
+        firstValue: values[0],
+        returnCode: returnCode
+    };
 }

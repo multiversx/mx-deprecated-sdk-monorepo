@@ -20,7 +20,7 @@
         "compile-browser-nowallet-min": "tsc -p tsconfig.json && browserify out/index.js -o out-browser/erdjs.nowallet.min.js --standalone erdjs --exclude=**/walletcore/** -p tinyify",
         "compile": "tsc -p tsconfig.json && npm run copy-files",
         "compile-proto": "npx pbjs -t static-module -w commonjs -o src/proto/compiled.js src/proto/transaction.proto && npx pbts -o src/proto/compiled.d.ts src/proto/compiled.js",
-        "copy-files": "mkdir -p out/testutils/ && cp -R src/testutils/testwallets out/testutils/",
+        "copy-files": "mkdir -p out/testutils/ && cp -R src/testutils/testwallets out/testutils/ && mkdir -p out/abi/ && cp -R ../abi/ out/abi/",
         "browser-tests": "make clean && make browser-tests && http-server --port=9876 -o browser-tests/index.html",
         "pretest": "npm run compile",
         "prepare": "npm run compile && npm run compile-browser && npm run compile-browser-min && npm run compile-browser-nowallet && npm run compile-browser-nowallet-min"

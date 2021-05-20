@@ -1,14 +1,13 @@
 import { BinaryCodec } from "./codec";
-import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType, AddressType, AddressValue, BooleanType, BooleanValue } from "./typesystem";
+import { Type, EndpointParameterDefinition, TypedValue, OptionValue, OptionType, NumericalType, BytesValue, BytesType, U8Value, U16Type, U16Value, U32Value, U32Type, U8Type, U64Type, U64Value, BigUIntType, BigUIntValue, BigIntType, BigIntValue, I8Type, I8Value, I16Type, I16Value, I32Value, I32Type, I64Value, I64Type, PrimitiveType, AddressType, AddressValue, BooleanType, BooleanValue, TokenIdentifierValue, TokenIdentifierType, EndpointDefinition, ListType, List } from "./typesystem";
 import { CompositeType, CompositeValue } from "./typesystem/composite";
 import { VariadicType, VariadicValue } from "./typesystem/variadic";
 import { OptionalType, OptionalValue } from "./typesystem/algebraic";
 import BigNumber from "bignumber.js";
-import { ErrInvariantFailed } from "../errors";
+import { ErrInvalidArgument } from "../errors";
 import { guardSameLength } from "../utils";
 import { Address } from "../address";
-import { Code, TestWallet } from "..";
-import { ContractWrapper } from "./wrapper/contractWrapper";
+import { Code } from "..";
 
 export const ArgumentsSeparator = "@";
 
@@ -160,17 +159,39 @@ export class ArgSerializer {
         return buffers;
     }
 
+    static handleVariadicArgs(args: any[], endpoint: EndpointDefinition) {
+        let parameters = endpoint.input;
+
+        let { min, max, variadic } = getArgumentsCardinality(parameters);
+
+        if (!(min <= args.length && args.length <= max)) {
+            throw new ErrInvalidArgument(`Wrong number of arguments for endpoint ${endpoint.name}: expected between ${min} and ${max} arguments, have ${args.length}`);
+        }
+
+        if (variadic) {
+            let lastArgIndex = parameters.length - 1;
+            let lastArg = args.slice(lastArgIndex);
+            if (lastArg.length > 0) {
+                args[lastArgIndex] = lastArg;
+            }
+        }
+        return args;
+    }
+
     /**
      * Interprets a set of native javascript values into a set of typed values, given parameter definitions.
      */
-    static nativeToTypedValues(args: any[], parameters: EndpointParameterDefinition[]): TypedValue[] {
+    static nativeToTypedValues(args: any[], endpoint: EndpointDefinition): TypedValue[] {
         args = args || [];
-        guardSameLength(args, parameters);
+        this.handleVariadicArgs(args, endpoint);
 
+        let parameters = endpoint.input;
         let values: TypedValue[] = [];
 
         for (let i in parameters) {
-            let value = convertToTypedValue(args[i], parameters[i].type);
+            let parameter = parameters[i];
+            let errorContext = new ArgumentErrorContext(endpoint, i, parameter);
+            let value = convertToTypedValue(args[i], parameter.type, errorContext);
             values.push(value);
         }
 
@@ -178,86 +199,181 @@ export class ArgSerializer {
     }
 }
 
-function convertToTypedValue(native: any, type: Type): TypedValue {
-    if (type instanceof OptionType) {
-        return toOptionValue(native, type);
+class ArgumentErrorContext {
+    endpoint: EndpointDefinition;
+    argumentIndex: string;
+    parameterDefinition: EndpointParameterDefinition;
+
+    constructor(endpoint: EndpointDefinition, argumentIndex: string, parameterDefinition: EndpointParameterDefinition) {
+        this.endpoint = endpoint;
+        this.argumentIndex = argumentIndex;
+        this.parameterDefinition = parameterDefinition;
     }
-    if (type instanceof OptionalType) {
-        return toOptionalValue(native, type);
+
+    throwError(specificError: string): never {
+        throw new ErrInvalidArgument(`Error when converting arguments for endpoint (endpoint name: ${this.endpoint.name}, argument index: ${this.argumentIndex}, name: ${this.parameterDefinition.name}, type: ${this.parameterDefinition.type})\nNested error: ${specificError}`);
     }
-    if (type instanceof VariadicType) {
-        return toVariadicValue(native, type);
+
+    convertError(native: any, typeName: string): never {
+        this.throwError(`Can't convert argument (argument: ${native}, type ${typeof native}), wanted type: ${typeName})`);
     }
-    if (type instanceof CompositeType) {
-        return toCompositeType(native, type);
+
+    unhandledType(functionName: string, type: Type): never {
+        this.throwError(`Unhandled type (function: ${functionName}, type: ${type})`);
     }
-    if (type instanceof PrimitiveType) {
-        return toPrimitive(native, type);
-    }
-    throw new ErrInvariantFailed(`convertToTypedValue: unhandled type ${type}`);
 }
 
-function toOptionValue(native: any, type: Type): TypedValue {
+// A function may have one of the following formats:
+// f(arg1, arg2, optional<arg3>, optional<arg4>) returns { min: 2, max: 4, variadic: false }
+// f(arg1, variadic<bytes>) returns { min: 1, max: Infinity, variadic: true }
+// f(arg1, arg2, optional<arg3>, arg4, optional<arg5>, variadic<bytes>) returns { min: 4, max: Infinity, variadic: true }
+function getArgumentsCardinality(parameters: EndpointParameterDefinition[]): { min: number, max: number, variadic: boolean } {
+    let reversed = [...parameters].reverse(); // keep the original unchanged
+    let min = parameters.length;
+    let max = parameters.length;
+    let variadic = false;
+    if (reversed.length > 0 && reversed[0].type.getCardinality().isComposite()) {
+        max = Infinity;
+        variadic = true;
+    }
+    for (let parameter of reversed) {
+        if (parameter.type.getCardinality().isSingular()) {
+            break;
+        }
+        min -= 1;
+    }
+    return { min, max, variadic };
+}
+
+function convertToTypedValue(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
+    if (type instanceof OptionType) {
+        return toOptionValue(native, type, errorContext);
+    }
+    if (type instanceof OptionalType) {
+        return toOptionalValue(native, type, errorContext);
+    }
+    if (type instanceof VariadicType) {
+        return toVariadicValue(native, type, errorContext);
+    }
+    if (type instanceof CompositeType) {
+        return toCompositeValue(native, type, errorContext);
+    }
+    if (type instanceof ListType) {
+        return toListValue(native, type, errorContext);
+    }
+    if (type instanceof PrimitiveType) {
+        return toPrimitive(native, type, errorContext);
+    }
+    errorContext.throwError(`convertToTypedValue: unhandled type ${type}`);
+}
+
+function toOptionValue(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
     if (native == null) {
         return OptionValue.newMissing();
     }
-    let converted = convertToTypedValue(native, type.getFirstTypeParameter());
+    let converted = convertToTypedValue(native, type.getFirstTypeParameter(), errorContext);
     return OptionValue.newProvided(converted);
 }
 
-function toOptionalValue(native: any, type: Type): TypedValue {
+function toOptionalValue(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
     if (native == null) {
         return new OptionalValue(type);
     }
-    let converted = convertToTypedValue(native, type.getFirstTypeParameter());
+    let converted = convertToTypedValue(native, type.getFirstTypeParameter(), errorContext);
     return new OptionalValue(type, converted);
 }
 
-function toVariadicValue(native: any, type: Type): TypedValue {
+function toVariadicValue(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
+    if (native.map === undefined) {
+        errorContext.convertError(native, "Variadic");
+    }
     let converted = native.map(function (item: any) {
-        return convertToTypedValue(item, type.getFirstTypeParameter());
+        return convertToTypedValue(item, type.getFirstTypeParameter(), errorContext);
     });
     return new VariadicValue(type, converted);
 }
 
-function toCompositeType(native: any, type: Type): TypedValue {
+function toListValue(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
+    if (native.map === undefined) {
+        errorContext.convertError(native, "List");
+    }
+    let converted = native.map(function (item: any) {
+        return convertToTypedValue(item, type.getFirstTypeParameter(), errorContext);
+    });
+    return new List(type, converted);
+}
+
+function toCompositeValue(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
     let typedValues = [];
     let typeParameters = type.getTypeParameters();
     guardSameLength(native, typeParameters);
     for (let i in typeParameters) {
-        typedValues.push(convertToTypedValue(native[i], typeParameters[i]));
+        typedValues.push(convertToTypedValue(native[i], typeParameters[i], errorContext));
     }
 
     return new CompositeValue(type, typedValues);
 }
 
-function toPrimitive(native: any, type: Type): TypedValue {
+function toPrimitive(native: any, type: Type, errorContext: ArgumentErrorContext): TypedValue {
     if (type instanceof NumericalType) {
         let number = new BigNumber(native);
-        return convertNumericalType(number, type);
+        return convertNumericalType(number, type, errorContext);
     }
     if (type instanceof BytesType) {
-        if (native instanceof Code) {
-            return BytesValue.fromHex(native.toString());
-        }
-        return BytesValue.fromUTF8(native);
+        return convertNativeToBytesValue(native, errorContext);
     }
     if (type instanceof AddressType) {
-        if (native instanceof TestWallet) {
-            native = native.address;
-        }
-        if (native instanceof ContractWrapper) {
-            native = native.getAddress();
-        }
-        return new AddressValue(new Address(native));
+        return new AddressValue(convertNativeToAddress(native, errorContext));
     }
     if (type instanceof BooleanType) {
         return new BooleanValue(native);
     }
-    throw new ErrInvariantFailed(`unsupported type ${type}`);
+    if (type instanceof TokenIdentifierType) {
+        return new TokenIdentifierValue(convertNativeToBuffer(native, errorContext));
+    }
+    errorContext.throwError(`(function: toPrimitive) unsupported type ${type}`);
 }
 
-function convertNumericalType(number: BigNumber, type: Type): TypedValue {
+function convertNativeToBytesValue(native: any, errorContext: ArgumentErrorContext) {
+    if (native instanceof Code) {
+        return BytesValue.fromHex(native.toString());
+    }
+    if (native instanceof Buffer) {
+        return new BytesValue(native);
+    }
+    if (typeof native === "string") {
+        return BytesValue.fromUTF8(native);
+    }
+    errorContext.convertError(native, "BytesValue");
+}
+
+function convertNativeToBuffer(native: any, errorContext: ArgumentErrorContext): Buffer {
+    if (native instanceof Buffer) {
+        return native;
+    }
+    if (typeof native === "string") {
+        return Buffer.from(native);
+    }
+    errorContext.convertError(native, "Buffer");
+}
+
+function convertNativeToAddress(native: any, errorContext: ArgumentErrorContext): Address {
+    if (native instanceof Address) {
+        return native;
+    }
+    if (typeof native === "string" || native instanceof Buffer) {
+        return new Address(native);
+    }
+    if (native.getAddress !== undefined) { // ContractWrapper, SmartContract
+        return native.getAddress();
+    }
+    if (native.address !== undefined) { // TestWallet
+        return native.address;
+    }
+    errorContext.convertError(native, "Address");
+}
+
+function convertNumericalType(number: BigNumber, type: Type, errorContext: ArgumentErrorContext): TypedValue {
     if (type instanceof U8Type) {
         return new U8Value(number);
     }
@@ -288,5 +404,5 @@ function convertNumericalType(number: BigNumber, type: Type): TypedValue {
     if (type instanceof BigIntType) {
         return new BigIntValue(number);
     }
-    throw new ErrInvariantFailed(`convertNumericalType: unhandled type ${type}`);
+    errorContext.unhandledType("convertNumericalType", type);
 }

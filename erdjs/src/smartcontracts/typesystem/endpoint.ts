@@ -67,6 +67,10 @@ export class EndpointModifiers {
         return false;
     }
 
+    isPayable() {
+        return this.payableInTokens.length != 0;
+    }
+
     isReadonly() {
         return this.storageModifier == "readonly";
     }

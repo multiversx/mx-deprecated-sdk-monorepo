@@ -19,8 +19,8 @@ describe("test smart contract wrapper", async function () {
     it("should interact with 'answer'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let answer = await ContractWrapper.fromAbi(provider, "answer", "src/testdata/answer.abi.json", null);
-        answer.address(dummyAddress).caller(alice).gas(500_000);
+        let answer = await ContractWrapper.loadAbi(provider, "src/testdata/answer.abi.json", null);
+        answer.address(dummyAddress).sender(alice).gas(500_000);
 
         mockQuery(provider, "getUltimateAnswer", "Kg==");
 
@@ -34,8 +34,8 @@ describe("test smart contract wrapper", async function () {
     it("should interact with 'counter'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let counter = await ContractWrapper.fromAbi(provider, "counter", "src/testdata/counter.abi.json", null);
-        counter.address(dummyAddress).caller(alice).gas(500_000);
+        let counter = await ContractWrapper.loadAbi(provider, "src/testdata/counter.abi.json", null);
+        counter.address(dummyAddress).sender(alice).gas(500_000);
 
         // For "get()", return fake 7
         mockQuery(provider, "get", "Bw==");
@@ -55,8 +55,8 @@ describe("test smart contract wrapper", async function () {
     it("should interact with 'lottery_egld'", async function () {
         setupUnitTestWatcherTimeouts();
 
-        let lottery = await ContractWrapper.fromAbi(provider, "Lottery", "src/testdata/lottery_egld.abi.json", null);
-        lottery.address(dummyAddress).caller(alice).gas(5_000_000);
+        let lottery = await ContractWrapper.loadAbi(provider, "src/testdata/lottery_egld.abi.json", null);
+        lottery.address(dummyAddress).sender(alice).gas(5_000_000);
 
         await mockCall(provider, "@6f6b", lottery.start("lucky", Balance.egld(1), null, null, 1, null, null));
 
