@@ -12,15 +12,14 @@ export * from "./networkParams";
 export * from "./utils";
 export * from "./proxyProvider";
 export * from "./apiProvider";
+export * from "./scArgumentsParser";
+export * from "./esdtHelpers";
 
 export * from "./walletcore";
 export * from "./nullSigner";
 
 export * from "./smartcontracts";
 
-export * from "./dapp/constants";
-export * from "./dapp/interface";
-export * from "./dapp/hwProvider";
-export * from "./dapp/walletProvider";
+export * from "./dapp";
 
 export * from "./testutils";

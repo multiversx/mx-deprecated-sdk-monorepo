@@ -45,6 +45,7 @@ export class TypeMapper {
             ["multi", CompositeType],
             ["MultiArg", CompositeType],
             ["MultiResult", CompositeType],
+            ["multi", CompositeType],
             // Perhaps we can adjust the ABI generator to only output "tuple", instead of "tupleN"?
             ["tuple", TupleType],
             ["tuple2", TupleType],
@@ -53,7 +54,7 @@ export class TypeMapper {
             ["tuple5", TupleType],
             ["tuple6", TupleType],
             ["tuple7", TupleType],
-            ["tuple8", TupleType]
+            ["tuple8", TupleType],
         ]);
 
         // For closed types, we hold actual type instances instead of type constructors (no type parameters needed).
@@ -106,6 +107,11 @@ export class TypeMapper {
         }
 
         return knownClosedType;
+    }
+
+    feedCustomType(type: Type): void {
+        this.closedTypesMap.delete(type.getName());
+        this.closedTypesMap.set(type.getName(), type);
     }
 
     private mapStructType(type: StructType): StructType {
