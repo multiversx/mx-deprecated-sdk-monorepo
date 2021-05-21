@@ -30,10 +30,6 @@ export class Balance {
         this.token = token;
         this.nonce = new BigNumber(nonce);
         this.value = new BigNumber(value);
-
-        if (this.value.isNegative()) {
-            throw new errors.ErrBalanceInvalid(this.value);
-        }
     }
 
     /**
@@ -108,6 +104,30 @@ export class Balance {
     valueOf(): BigNumber {
         return this.value;
     }
+
+    plus(other: Balance) {
+        this.checkSameType(other);
+        return new Balance(this.token, this.nonce, this.value.plus(other.value));
+    }
+
+    minus(other: Balance) {
+        this.checkSameType(other);
+        return new Balance(this.token, this.nonce, this.value.minus(other.value));
+    }
+
+    isEqualTo(other: Balance) {
+        this.checkSameType(other);
+        return this.value.isEqualTo(other.value);
+    }
+
+    checkSameType(other: Balance) {
+        if (this.token != other.token) {
+            throw new errors.ErrInvalidArgument("Different token types");
+        }
+        if (!this.nonce.isEqualTo(other.nonce)) {
+            throw new errors.ErrInvalidArgument("Different nonces");
+        }
+    }
 }
 
 /**
@@ -123,7 +143,7 @@ export function FungibleToken(name: string, decimals: number): FungibleBalanceBu
     return getBoundFungibleBuilder(token);
 }
 
-interface FungibleBalanceBuilder {
+export interface FungibleBalanceBuilder {
     (value: BigNumber.Value): Balance;
     raw(value: BigNumber.Value): Balance;
     readonly token: ESDTToken;
@@ -147,7 +167,7 @@ export function SemiFungibleToken(name: string, decimals: number): SemiFungibleB
     return getBoundSemiFungibleBuilder(token);
 }
 
-interface SemiFungibleBalanceBuilder {
+export interface SemiFungibleBalanceBuilder {
     (value: BigNumber.Value, nonce: BigNumber.Value): Balance;
     raw(value: BigNumber.Value, nonce: BigNumber.Value): Balance;
     readonly token: ESDTToken;

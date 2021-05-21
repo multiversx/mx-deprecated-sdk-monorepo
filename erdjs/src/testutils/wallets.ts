@@ -3,18 +3,38 @@ import * as path from "path";
 import { NetworkConfig } from "..";
 import { Account } from "../account";
 import { Address } from "../address";
+import { Egld, FungibleBalanceBuilder } from "../balance";
+import { ErrInvalidArgument } from "../errors";
 import { IProvider, ISigner } from "../interface";
 import { UserSecretKey } from "../walletcore";
 import { UserSigner } from "../walletcore/userSigner";
-import { getLocalTestnetProvider } from "./utils";
+import { MockProvider } from "./mockProvider";
+import { getElrondDevnetProvider, getElrondMainnetProvider, getElrondTestnetProvider, getLocalTestnetProvider } from "./utils";
 
-export async function setupNode(provider?: IProvider): Promise<{ provider: IProvider } | Record<string, TestWallet>> {
-    if (typeof provider === "undefined") {
-        provider = getLocalTestnetProvider();
-    }
+type InteractivePackage = { provider: IProvider, Egld: FungibleBalanceBuilder } | Record<string, TestWallet>;
+
+export async function setupInteractive(providerChoice?: string): Promise<InteractivePackage> {
+    let provider = chooseProvider(providerChoice);
     await NetworkConfig.getDefault().sync(provider);
     let wallets = await loadAndSyncTestWallets(provider);
-    return { provider, ...wallets };
+    return { provider, Egld, ...wallets };
+}
+
+export function chooseProvider(providerChoice?: string): IProvider {
+    providerChoice = providerChoice || "local-testnet";
+    switch (providerChoice) {
+        case "local-testnet":
+            return getLocalTestnetProvider();
+        case "elrond-testnet":
+            return getElrondTestnetProvider();
+        case "elrond-devnet":
+            return getElrondDevnetProvider();
+        case "elrond-mainnet":
+            return getElrondMainnetProvider();
+        case "mock":
+            return new MockProvider();
+    }
+    throw new ErrInvalidArgument("providerChoice is not recognized (must be one of: \"local-testnet\", \"elrond-testnet\", \"elrond-devnet\", \"elrond-mainnet\", \"mock\")");
 }
 
 export async function loadAndSyncTestWallets(provider: IProvider): Promise<Record<string, TestWallet>> {

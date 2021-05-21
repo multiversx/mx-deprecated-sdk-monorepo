@@ -79,7 +79,6 @@ export class SmartContract implements ISmartContract {
      * Gets the address, as on Network.
      */
     getAddress(): Address {
-        this.address.assertNotEmpty();
         return this.address;
     }
 
@@ -192,8 +191,8 @@ export class SmartContract implements ISmartContract {
     /**
      * Creates a {@link Transaction} for calling (a function of) the Smart Contract.
      */
-    call({ func, args, value, gasLimit }
-        : { func: ContractFunction, args?: TypedValue[], value?: Balance, gasLimit: GasLimit }): Transaction {
+    call({ func, args, value, gasLimit, receiver }
+        : { func: ContractFunction, args?: TypedValue[], value?: Balance, gasLimit: GasLimit, receiver?: Address }): Transaction {
         args = args || [];
         value = value || Balance.Zero();
 
@@ -203,7 +202,7 @@ export class SmartContract implements ISmartContract {
             .build();
 
         let transaction = new Transaction({
-            receiver: this.getAddress(),
+            receiver: receiver ? receiver : this.getAddress(),
             value: value,
             gasLimit: gasLimit,
             data: payload

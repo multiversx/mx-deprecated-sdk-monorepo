@@ -1,4 +1,3 @@
-import { ErrInvariantFailed } from "../../errors";
 import { guardValueIsSet } from "../../utils";
 import { EndpointDefinition } from "./endpoint";
 
@@ -22,8 +21,7 @@ export class ContractInterface {
         json.name = json.name || NamePlaceholder;
         json.endpoints = json.endpoints || [];
 
-        // because the JSON field is named "constructor", when it's missing json.constructor contains Object.constructor, which is a Function
-        let constructorDefinition = !(json.constructor instanceof Function) ? EndpointDefinition.fromJSON(json.constructor) : null;
+        let constructorDefinition = constructorFromJSON(json);
         let endpoints = json.endpoints.map(item => EndpointDefinition.fromJSON(item));
         return new ContractInterface(json.name, constructorDefinition, endpoints);
     }
@@ -37,4 +35,15 @@ export class ContractInterface {
         guardValueIsSet("result", result);
         return result!;
     }
+}
+
+function constructorFromJSON(json: any): EndpointDefinition | null {
+    // if the JSON "constructor" field is missing
+    if (json.constructor == Object.constructor) {
+        return null;
+    }
+    // the name will be missing, so we add it manually
+    let constructorWithName = { name: "constructor", ...json.constructor };
+
+    return EndpointDefinition.fromJSON(constructorWithName);
 }

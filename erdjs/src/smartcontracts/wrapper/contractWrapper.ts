@@ -194,8 +194,12 @@ export class ContractWrapper {
 
         let logger = this.context.getLogger();
         logger?.transactionCreated(transaction);
-        sender.account.incrementNonce();
         await transaction.send(provider);
+
+        // increment the nonce only after the transaction is sent
+        // since an exception thrown by the provider means we will have to re-use the same nonce
+        // otherwise the next transactions will hang (and never complete)
+        sender.account.incrementNonce();
 
         logger?.transactionSent(transaction);
         await transaction.awaitExecuted(provider);
@@ -236,7 +240,9 @@ export class ContractWrapper {
     convertPreparedCallToInteraction(preparedCall: PreparedCall): Interaction {
         let func = preparedCall.formattedCall.getFunction();
         let typedValueArgs = preparedCall.formattedCall.toTypedValues();
-        return new Interaction(this.smartContract, func, typedValueArgs);
+        let interaction = new Interaction(this.smartContract, func, typedValueArgs, preparedCall.receiver);
+        interaction.withValue(preparedCall.egldValue);
+        return interaction;
     }
 
     applyValueModfiers(value: Balance | null, preparedCall: PreparedCall) {
@@ -253,7 +259,7 @@ export class ContractWrapper {
                 break;
             case TokenType.SemiFungibleESDT:
             case TokenType.NonFungibleESDT:
-                preparedCall.destination = this.context.getSender().address;
+                preparedCall.receiver = this.context.getSender().address;
                 preparedCall.formattedCall = this.ESDTAbiFormatter.ESDTNFTTransfer(value.token.name, value.getNonce(), value.valueOf(), this.smartContract, preparedCall.formattedCall);
                 break;
         }

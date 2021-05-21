@@ -47,7 +47,15 @@ export class FormattedCall {
         return new ArgSerializer().valuesToBuffers(typedValues);
     }
 
+    /**
+     * Formats the function name and its arguments as an array of buffers.
+     * This is useful for nested calls (for the multisig smart contract or for ESDT transfers).
+     * A formatted deploy call does not return the function name.
+     */
     toCallBuffers(): Buffer[] {
+        if (this.endpoint.isConstructor()) {
+            return this.toArgBuffers();
+        }
         return [Buffer.from(this.endpoint.name), ...this.toArgBuffers()];
     }
 

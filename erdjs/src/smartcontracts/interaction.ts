@@ -22,6 +22,7 @@ export class Interaction {
     private readonly contract: SmartContract;
     private readonly func: ContractFunction;
     private readonly args: TypedValue[];
+    private readonly receiver?: Address;
 
     private nonce: Nonce = new Nonce(0);
     private value: Balance = Balance.Zero();
@@ -30,11 +31,13 @@ export class Interaction {
     constructor(
         contract: SmartContract,
         func: ContractFunction,
-        args: TypedValue[]
+        args: TypedValue[],
+        receiver?: Address,
     ) {
         this.contract = contract;
         this.func = func;
         this.args = args;
+        this.receiver = receiver;
     }
 
     getContract(): SmartContract {
@@ -65,7 +68,8 @@ export class Interaction {
             gasLimit: this.gasLimit,
             args: this.args,
             // Value will be set using "withValue()".
-            value: this.value
+            value: this.value,
+            receiver: this.receiver,
         });
 
         transaction.setNonce(this.nonce);

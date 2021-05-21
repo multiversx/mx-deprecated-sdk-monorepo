@@ -18,6 +18,10 @@ export class EndpointDefinition {
         this.modifiers = modifiers;
     }
 
+    isConstructor(): boolean {
+        return this.name == "constructor";
+    }
+
     static fromJSON(json: {
         name: string,
         storageModifier: string,
