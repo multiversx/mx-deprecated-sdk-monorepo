@@ -24,7 +24,7 @@ internal class TransactionRepositoryImpl(
 
     override fun getTransactions(address: Address): List<TransactionOnNetwork> {
         val response = elrondProxy.getAddressTransactions(address)
-        return requireNotNull(response.data).transactions.map { it.toDomain() }
+        return response.data?.transactions?.map { it.toDomain() } ?: emptyList()
     }
 
     override fun estimateCostOfTransaction(transaction: Transaction): String {
