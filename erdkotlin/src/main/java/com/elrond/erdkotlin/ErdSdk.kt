@@ -16,6 +16,7 @@ import com.elrond.erdkotlin.domain.transaction.*
 import com.elrond.erdkotlin.domain.transaction.SignTransactionUsecase
 import com.elrond.erdkotlin.domain.dns.GetDnsRegistrationCostUsecase
 import com.elrond.erdkotlin.domain.vm.QuerySmartContractUsecase
+import okhttp3.OkHttpClient
 
 // Implemented as an `object` because we are not using any dependency injection library
 // We don't want to force the host app to use a specific library.
@@ -54,7 +55,8 @@ object ErdSdk {
 
     internal fun computeDnsAddressUsecase() = ComputeDnsAddressUsecase(checkUsernameUsecase())
 
-    private val elrondProxy = ElrondProxy(ElrondNetwork.DevNet.url())
+    val elrondHttpClientBuilder = OkHttpClient.Builder()
+    private val elrondProxy = ElrondProxy(ElrondNetwork.DevNet.url(), elrondHttpClientBuilder)
     private val networkConfigRepository = NetworkConfigRepositoryImpl(elrondProxy)
     private val accountRepository = AccountRepositoryImpl(elrondProxy)
     private val transactionRepository = TransactionRepositoryImpl(elrondProxy)
