@@ -16,6 +16,8 @@ internal fun GetAccountResponse.AccountData.toDomain(address: Address) = Account
     address = address,
     nonce = nonce,
     balance = balance,
+    code = code,
+    username = username
 )
 
 internal fun GetAddressTransactionsResponse.TransactionOnNetworkData.toDomain() =
@@ -78,9 +80,22 @@ internal fun QueryContractResponse.Data.toDomain() = SmartContractOutput(
 
 internal fun GetNetworkConfigResponse.NetworkConfigData.toDomain() = NetworkConfig(
     chainID = chainID,
+    erdDenomination = erdDenomination,
     gasPerDataByte = gasPerDataByte,
+    erdGasPriceModifier = erdGasPriceModifier,
+    erdLatestTagSoftwareVersion = erdLatestTagSoftwareVersion,
+    erdMetaConsensusGroupSize = erdMetaConsensusGroupSize,
     minGasLimit = minGasLimit,
     minGasPrice = minGasPrice,
-    minTransactionVersion = minTransactionVersion
+    minTransactionVersion = minTransactionVersion,
+    erdNumMetachainNodes = erdNumMetachainNodes,
+    erdNumNodesInShard = erdNumNodesInShard,
+    erdNumShardsWithoutMeta = erdNumShardsWithoutMeta,
+    erdRewardsTopUpGradientPoint = erdRewardsTopUpGradientPoint,
+    erdRoundDuration = erdRoundDuration,
+    erdRoundsPerEpoch = erdRoundsPerEpoch,
+    erdShardConsensusGroupSize = erdShardConsensusGroupSize,
+    erdStartTime = erdStartTime,
+    erdTopUpFactor = erdTopUpFactor
 )
 
