@@ -7,6 +7,8 @@ internal data class GetAccountResponse(
 ) {
     internal data class AccountData(
         val nonce: Long,
-        val balance: BigInteger
+        val balance: BigInteger,
+        val code: String?,
+        val username: String?
     )
 }

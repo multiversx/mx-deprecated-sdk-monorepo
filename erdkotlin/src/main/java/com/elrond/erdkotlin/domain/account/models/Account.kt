@@ -7,6 +7,8 @@ data class Account(
     val address: Address,
     val nonce: Long = 0,
     val balance: BigInteger = 0.toBigInteger(),
+    val code: String? = null,
+    val username: String? = null
 ) {
     // keep it to allow companion extension
     companion object
