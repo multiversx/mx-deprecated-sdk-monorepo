@@ -33,9 +33,9 @@ export class ProxyProvider implements IProvider {
      * Fetches the state of an {@link Account}.
      */
     async getAccount(address: Address): Promise<AccountOnNetwork> {
-        let response = await this.doGet(`address/${address.bech32()}`);
-        let payload = response.account;
-        return AccountOnNetwork.fromHttpResponse(payload);
+        return this.doGetGeneric(`address/${address.bech32()}`, (response) =>
+            AccountOnNetwork.fromHttpResponse(response.account)
+        );
     }
 
     /**
@@ -44,9 +44,9 @@ export class ProxyProvider implements IProvider {
     async queryContract(query: Query): Promise<QueryResponse> {
         try {
             let data = query.toHttpRequest();
-            let response = await this.doPost("vm-values/query", data);
-            let payload = response.data || response.vmOutput;
-            return QueryResponse.fromHttpResponse(payload);
+            return this.doPostGeneric("vm-values/query", data, (response) =>
+                QueryResponse.fromHttpResponse(response.data || response.vmOutput)
+            );
         } catch (err) {
             throw errors.ErrContractQuery.increaseSpecificity(err);
         }
@@ -56,56 +56,76 @@ export class ProxyProvider implements IProvider {
      * Broadcasts an already-signed {@link Transaction}.
      */
     async sendTransaction(tx: Transaction): Promise<TransactionHash> {
-        let response = await this.doPost("transaction/send", tx.toSendable());
-        let txHash = response.txHash;
-        return new TransactionHash(txHash);
+        return this.doPostGeneric(
+            "transaction/send",
+            tx.toSendable(),
+            (response) => new TransactionHash(response.txHash)
+        );
     }
 
     /**
      * Simulates the processing of an already-signed {@link Transaction}.
      */
     async simulateTransaction(tx: Transaction): Promise<any> {
-        let response = await this.doPost("transaction/simulate", tx.toSendable());
-        return response;
+        return this.doPostGeneric("transaction/simulate", tx.toSendable(), (response) => response);
     }
 
     /**
      * Fetches the state of a {@link Transaction}.
      */
-    async getTransaction(txHash: TransactionHash, hintSender?: Address, withResults?: boolean): Promise<TransactionOnNetwork> {
+    async getTransaction(
+        txHash: TransactionHash,
+        hintSender?: Address,
+        withResults?: boolean
+    ): Promise<TransactionOnNetwork> {
         let url = this.buildUrlWithQueryParameters(`transaction/${txHash.toString()}`, {
-            "withSender": hintSender ? hintSender.bech32() : "",
-            "withResults": withResults ? "true" : ""
+            withSender: hintSender ? hintSender.bech32() : "",
+            withResults: withResults ? "true" : "",
         });
 
-        let { transaction } = await this.doGet(url);
-        return TransactionOnNetwork.fromHttpResponse(transaction);
+        return this.doGetGeneric(url, (response) => TransactionOnNetwork.fromHttpResponse(response.transaction));
     }
 
     /**
      * Queries the status of a {@link Transaction}.
      */
     async getTransactionStatus(txHash: TransactionHash): Promise<TransactionStatus> {
-        let response = await this.doGet(`transaction/${txHash.toString()}/status`);
-        return new TransactionStatus(response.status);
+        return this.doGetGeneric(
+            `transaction/${txHash.toString()}/status`,
+            (response) => new TransactionStatus(response.status)
+        );
     }
 
     /**
      * Fetches the Network configuration.
      */
     async getNetworkConfig(): Promise<NetworkConfig> {
-        let response = await this.doGet("network/config");
-        let payload = response.config;
-        return NetworkConfig.fromHttpResponse(payload);
+        return this.doGetGeneric("network/config", (response) => NetworkConfig.fromHttpResponse(response.config));
     }
 
     /**
      * Fetches the network status configuration.
      */
     async getNetworkStatus(): Promise<NetworkStatus> {
-        let response = await this.doGet("network/status/4294967295");
-        let payload = response.status;
-        return NetworkStatus.fromHttpResponse(payload);
+        return this.doGetGeneric("network/status/4294967295", (response) =>
+            NetworkStatus.fromHttpResponse(response.status)
+        );
+    }
+
+    /**
+     * Get method that receives the resource url and on callback the method used to map the response.
+     */
+    async doGetGeneric(resourceUrl: string, callback: (response: any) => any): Promise<any> {
+        let response = await this.doGet(resourceUrl);
+        return callback(response);
+    }
+
+    /**
+     * Post method that receives the resource url, the post payload and on callback the method used to map the response.
+     */
+    async doPostGeneric(resourceUrl: string, payload: any, callback: (response: any) => any): Promise<any> {
+        let response = await this.doPost(resourceUrl, payload);
+        return callback(response);
     }
 
     private async doGet(resourceUrl: string): Promise<any> {
@@ -115,14 +135,7 @@ export class ProxyProvider implements IProvider {
             let payload = response.data.data;
             return payload;
         } catch (error) {
-            if (!error.response) {
-                Logger.warn(error);
-                throw new errors.ErrApiProviderGet(resourceUrl, error.toString(), error);
-            }
-
-            let errorData = error.response.data;
-            let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
-            throw new errors.ErrApiProviderGet(resourceUrl, originalErrorMessage, error);
+            this.handleApiError(error, resourceUrl);
         }
     }
 
@@ -138,14 +151,7 @@ export class ProxyProvider implements IProvider {
             let responsePayload = response.data.data;
             return responsePayload;
         } catch (error) {
-            if (!error.response) {
-                Logger.warn(error);
-                throw new errors.ErrApiProviderPost(resourceUrl, error.toString(), error);
-            }
-
-            let errorData = error.response.data;
-            let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
-            throw new errors.ErrApiProviderPost(resourceUrl, originalErrorMessage, error);
+            this.handleApiError(error, resourceUrl);
         }
     }
 
@@ -160,11 +166,22 @@ export class ProxyProvider implements IProvider {
 
         return `${endpoint}?${searchParams.toString()}`;
     }
+
+    private handleApiError(error: any, resourceUrl: string) {
+        if (!error.response) {
+            Logger.warn(error);
+            throw new errors.ErrApiProviderGet(resourceUrl, error.toString(), error);
+        }
+
+        let errorData = error.response.data;
+        let originalErrorMessage = errorData.error || errorData.message || JSON.stringify(errorData);
+        throw new errors.ErrApiProviderGet(resourceUrl, originalErrorMessage, error);
+    }
 }
 
 // See: https://github.com/axios/axios/issues/983
 axios.defaults.transformResponse = [
-    function (data) {
+    function(data) {
         return JSONbig.parse(data);
     },
 ];
