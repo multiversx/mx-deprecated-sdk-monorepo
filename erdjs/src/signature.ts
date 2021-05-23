@@ -21,6 +21,10 @@ export class Signature {
         }
     }
 
+    static empty(): Signature {
+        return new Signature();
+    }
+
     static fromHex(value: string): Signature {
         if (!Signature.isValidHex(value)) {
             throw new errors.ErrSignatureCannotCreate(value);

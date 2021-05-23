@@ -17,8 +17,9 @@ data class Transaction(
     val value: BigInteger = 0.toBigInteger(),
     val gasPrice: Long = 1000000000,
     val gasLimit: Long = 50000,
-    val version: Int = 1,
+    val version: Int = VERSION_DEFAULT,
     val data: String? = null,
+    val option: Int = OPTION_NONE,
     val signature: String = "",
     val txHash: String = ""
 ) {
@@ -53,6 +54,9 @@ data class Transaction(
             }
             put("chainID", chainID)
             put("version", version)
+            if (option != OPTION_NONE) {
+                put("option", option)
+            }
             if (signature.isNotEmpty()) {
                 put("signature", signature)
             }
@@ -67,6 +71,10 @@ data class Transaction(
 
     companion object {
         private val gson = GsonBuilder().disableHtmlEscaping().create()
+        const val VERSION_DEFAULT = 1
+        const val VERSION_TX_HASH_SIGN = 2
+        const val OPTION_NONE = 0
+        const val OPTION_TX_HASH_SIGN = 1
     }
 
 }
