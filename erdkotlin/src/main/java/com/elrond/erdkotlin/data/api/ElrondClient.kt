@@ -11,10 +11,11 @@ import java.io.IOException
 
 internal class ElrondClient(
     var url: String,
-    private val gson: Gson
-) {
+    private val gson: Gson,
+    httpClientBuilder: OkHttpClient.Builder = OkHttpClient.Builder()
 
-    private val httpClient = OkHttpClient()
+) {
+    private val httpClient: OkHttpClient by lazy { httpClientBuilder.build() }
 
     @Throws(IOException::class)
     inline fun <reified T : ResponseBase<*>> doGet(resourceUrl: String): T {
