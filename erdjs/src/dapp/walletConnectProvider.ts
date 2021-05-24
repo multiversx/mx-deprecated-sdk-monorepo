@@ -7,18 +7,22 @@ import { Signature } from "../signature";
 import { WALLETCONNECT_ELROND_CHAIN_ID } from "./constants";
 import { Logger } from "../logger";
 
-export class WalletConnectProvider extends EventTarget implements IDappProvider {
+interface IClientConnect {
+    onClientLogin: () => void;
+    onClientLogout(): void;
+}
+
+export class WalletConnectProvider implements IDappProvider {
     provider: IProvider;
     walletConnectBridge: string;
     address: string = "";
     walletConnector: WalletClient | undefined;
-    private onWalletConnectLogin: Event = new Event("onWalletConnectLogin");
-    private onWalletConnectDisconect: Event = new Event("onWalletConnectDisconect");
+    private onClientConnect: IClientConnect;
 
-    constructor(httpProvider: IProvider, walletConnectBridge: string = "") {
-        super();
+    constructor(httpProvider: IProvider, walletConnectBridge: string = "", onClientConnect: IClientConnect) {
         this.provider = httpProvider;
         this.walletConnectBridge = walletConnectBridge;
+        this.onClientConnect = onClientConnect;
     }
 
     /**
@@ -75,7 +79,9 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
             Logger.error("logout: Wallet Connect not initialised, call init() first");
             throw new Error("Wallet Connect not initialised, call init() first");
         }
-        await this.walletConnector.killSession();
+        if (this.walletConnector?.connected) {
+            await this.walletConnector?.killSession();
+        }
         return true;
     }
 
@@ -126,14 +132,13 @@ export class WalletConnectProvider extends EventTarget implements IDappProvider 
         if (error) {
             throw error;
         }
-
-        this.dispatchEvent(this.onWalletConnectDisconect);
+        this.onClientConnect.onClientLogout();
     }
 
     private async loginAccount(address: string) {
         if (this.addressIsValid(address)) {
             this.address = address;
-            this.dispatchEvent(this.onWalletConnectLogin);
+            this.onClientConnect.onClientLogin();
             return;
         }
 
