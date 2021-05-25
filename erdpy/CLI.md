@@ -445,13 +445,13 @@ Stake value into the Network
 optional arguments:
   -h, --help                         show this help message and exit
   --proxy PROXY                      🖧 the URL of the proxy (default: https://testnet-gateway.elrond.com)
-  --pem PEM                              🔑 the PEM file, if keyfile or ledger are not provided
-  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
-  --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM of ledger not provided
-  --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
-  --ledger                               🔐 bool flag for signing transaction using ledger
-  --ledger-account-index                 🔐 the index of the account (only applicable if --ledger is set)
-  --ledger-address-index                 🔐 the index of the address (only applicable if --ledger is set)
+  --pem PEM                          🔑 the PEM file, if keyfile or ledger are not provided
+  --pem-index PEM_INDEX              🔑 the index in the PEM file (default: 0)
+  --keyfile KEYFILE                  🔑 a JSON keyfile, if PEM of ledger not provided
+  --passfile PASSFILE                🔑 a file containing keyfile's password, if keyfile provided
+  --ledger                           🔐 bool flag for signing transaction using ledger
+  --ledger-account-index             🔐 the index of the account (only applicable if --ledger is set)
+  --ledger-address-index             🔐 the index of the address (only applicable if --ledger is set)
   --sender-username SENDER_USERNAME  🖄 the username of the sender
   --nonce NONCE                      # the nonce for the transaction
   --recall-nonce                     ⭮ whether to recall the nonce when creating the transaction (default: False)
@@ -582,13 +582,13 @@ Change the reward address
 optional arguments:
   -h, --help                         show this help message and exit
   --proxy PROXY                      🖧 the URL of the proxy (default: https://testnet-gateway.elrond.com)
-  --pem PEM                              🔑 the PEM file, if keyfile or ledger are not provided
-  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
-  --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM of ledger not provided
-  --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
-  --ledger                               🔐 bool flag for signing transaction using ledger
-  --ledger-account-index                 🔐 the index of the account (only applicable if --ledger is set)
-  --ledger-address-index                 🔐 the index of the address (only applicable if --ledger is set)
+  --pem PEM                          🔑 the PEM file, if keyfile or ledger are not provided
+  --pem-index PEM_INDEX              🔑 the index in the PEM file (default: 0)
+  --keyfile KEYFILE                  🔑 a JSON keyfile, if PEM of ledger not provided
+  --passfile PASSFILE                🔑 a file containing keyfile's password, if keyfile provided
+  --ledger                           🔐 bool flag for signing transaction using ledger
+  --ledger-account-index             🔐 the index of the account (only applicable if --ledger is set)
+  --ledger-address-index             🔐 the index of the address (only applicable if --ledger is set)
   --sender-username SENDER_USERNAME  🖄 the username of the sender
   --nonce NONCE                      # the nonce for the transaction
   --recall-nonce                     ⭮ whether to recall the nonce when creating the transaction (default: False)
@@ -1040,13 +1040,13 @@ Dispatch queued transactions
 optional arguments:
   -h, --help                         show this help message and exit
   --proxy PROXY                      🖧 the URL of the proxy (default: https://testnet-gateway.elrond.com)
-  --pem PEM                              🔑 the PEM file, if keyfile or ledger are not provided
-  --pem-index PEM_INDEX                  🔑 the index in the PEM file (default: 0)
-  --keyfile KEYFILE                      🔑 a JSON keyfile, if PEM of ledger not provided
-  --passfile PASSFILE                    🔑 a file containing keyfile's password, if keyfile provided
-  --ledger                               🔐 bool flag for signing transaction using ledger
-  --ledger-account-index                 🔐 the index of the account (only applicable if --ledger is set)
-  --ledger-address-index                 🔐 the index of the address (only applicable if --ledger is set)
+  --pem PEM                          🔑 the PEM file, if keyfile or ledger are not provided
+  --pem-index PEM_INDEX              🔑 the index in the PEM file (default: 0)
+  --keyfile KEYFILE                  🔑 a JSON keyfile, if PEM of ledger not provided
+  --passfile PASSFILE                🔑 a file containing keyfile's password, if keyfile provided
+  --ledger                           🔐 bool flag for signing transaction using ledger
+  --ledger-account-index             🔐 the index of the account (only applicable if --ledger is set)
+  --ledger-address-index             🔐 the index of the address (only applicable if --ledger is set)
   --sender-username SENDER_USERNAME  🖄 the username of the sender
 
 ```

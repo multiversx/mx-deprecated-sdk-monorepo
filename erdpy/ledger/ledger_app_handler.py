@@ -87,6 +87,9 @@ class ElrondLedgerApp:
 
             offset += chunk_size
 
+        return self.get_signature_from_apdus(apdus)
+
+    def get_signature_from_apdus(self, apdus):
         sw = []
         response = []
         for apdu in apdus:

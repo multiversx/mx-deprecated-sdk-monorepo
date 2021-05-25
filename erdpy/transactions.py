@@ -252,6 +252,7 @@ def do_prepare_transaction_ledger(args: Any) -> Transaction:
     tx.nonce = int(args.nonce)
     tx.value = args.value
     tx.receiver = args.receiver
+    tx.sender = args.ledger_address
     tx.senderUsername = getattr(args, "sender_username", None)
     tx.receiverUsername = getattr(args, "receiver_username", None)
     tx.gasPrice = int(args.gas_price)
@@ -259,6 +260,6 @@ def do_prepare_transaction_ledger(args: Any) -> Transaction:
     tx.data = args.data
     tx.chainID = args.chain
 
-    tx = erdpy.ledger.ledger_functions.sign_transaction_with_ledger(tx, account_index, address_index)
+    tx = erdpy.ledger.ledger_functions.sign_transaction_with_ledger(tx=tx, account_index=account_index, address_index=address_index)
 
     return tx

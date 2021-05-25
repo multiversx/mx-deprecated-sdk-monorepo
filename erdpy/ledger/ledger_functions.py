@@ -9,9 +9,7 @@ TX_HASH_SIGN_OPTIONS = 1
 
 def sign_transaction_with_ledger(tx: Transaction, account_index: int, address_index: int) -> Transaction:
     ledger_handler = ElrondLedgerApp()
-    ledger_address = ledger_handler.get_address(account_index=account_index, address_index=address_index)
     ledger_handler.set_address(account_index=account_index, address_index=address_index)
-    tx.sender = ledger_address
     ledger_version = ledger_handler.get_version()
 
     should_use_hash_signing = compare_versions(ledger_version, SIGN_USING_HASH_VERSION) >= 0
