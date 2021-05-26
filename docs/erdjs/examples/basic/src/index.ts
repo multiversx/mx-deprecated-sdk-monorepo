@@ -1,12 +1,12 @@
-import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, NullSigner, SimpleSigner, GasLimit, Account, Err } from "@elrondnetwork/erdjs";
+import { Address, Balance, TransactionPayload, ProxyProvider, NetworkConfig, Transaction, UserSigner, UserSecretKey, GasLimit, Account, Err } from "@elrondnetwork/erdjs";
 
 declare var $: any;
 
 $(async function () {
-    let signer = new NullSigner();
+    let signer = new UserSigner(UserSecretKey.fromString(getPrivateKey()));
     let provider = new ProxyProvider(getProxyUrl());
     let account = new Account(new Address());
-    let transaction = new Transaction();
+    let transaction = new Transaction({ receiver: new Address() });
 
     try {
         NetworkConfig.getDefault().sync(provider);
@@ -16,13 +16,13 @@ $(async function () {
 
     $("#LoadAccountButton").click(async function () {
         try {
-            signer = new SimpleSigner(getPrivateKey());
+            signer = new UserSigner(UserSecretKey.fromString(getPrivateKey()));
             account = new Account(signer.getAddress());
             await account.sync(provider);
 
             $("#AccountAddress").text(account.address.bech32());
-            $("#AccountNonce").text(account.nonce.value);
-            $("#AccountBalance").text(account.balance.formatted());
+            $("#AccountNonce").text(account.nonce.valueOf());
+            $("#AccountBalance").text(account.balance.toCurrencyString());
         } catch (error) {
             onError(error);
         }
@@ -47,7 +47,7 @@ $(async function () {
 
     $("#SignButton").click(async function () {
         try {
-            signer = new SimpleSigner(getPrivateKey());
+            signer = new UserSigner(UserSecretKey.fromString(getPrivateKey()));
             signer.sign(transaction);
             displayObject("SignedTransactionContainer", transaction.toPlainObject());
         } catch (error) {
@@ -91,7 +91,7 @@ function getReceiver(): Address {
 
 function getTransferValue(): Balance {
     let valueInput = Number($("#ValueInput").val());
-    let balance = Balance.eGLD(valueInput);
+    let balance = Balance.egld(valueInput);
     return balance;
 }
 
@@ -105,6 +105,7 @@ function getPrivateKey(): string {
 }
 
 function displayObject(container: string, obj: any) {
+    // Note that stringify will throw an error when the "5. Query transaction" button is clicked, probably because in this case "obj" contains BigNumber, which cannot be stringified. The error message defaults to "Address is empty".
     let json = JSON.stringify(obj, null, 4);
     $(`#${container}`).html(json);
 }

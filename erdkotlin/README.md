@@ -42,6 +42,29 @@ Log.d("Transaction", "tx:${sentTransaction.txHash}")
 In a real world example, the usescases would be injected  
 The sample application showcase how to do it on Android with Hilt framework (see the [Sample App](#sample-app)).
 
+## Usecases list
+
+##### API
+| Usecase  | Endpoint  |
+| ------------- | ------------- |
+| GetAccountUsecase  |  [GET address/:bech32Address](https://docs.elrond.com/sdk-and-tools/rest-api/addresses/#get-address) |
+| GetAddressBalanceUsecase  | [GET address/:bech32Address/balance](https://docs.elrond.com/sdk-and-tools/rest-api/addresses/#get-address-balance) |
+| GetAddressNonceUsecase  | [GET address/:bech32Address/nonce](https://docs.elrond.com/sdk-and-tools/rest-api/addresses/#get-address-nonce) |
+| GetAddressTransactionsUsecase  | [GET address/:bech32Address/transactions](https://docs.elrond.com/sdk-and-tools/rest-api/addresses/#get-address-transactions) |
+| GetTransactionInfoUsecase  | [GET transaction/:txHash](https://docs.elrond.com/sdk-and-tools/rest-api/transactions/#get-transaction) |
+| GetTransactionStatusUsecase  | [GET transaction/:txHash/status](https://docs.elrond.com/sdk-and-tools/rest-api/transactions/#get-transaction-status) |
+| SendTransactionUsecase  | [POST transaction/send](https://docs.elrond.com/sdk-and-tools/rest-api/transactions/#send-transaction) |
+| EstimateCostOfTransactionUsecase  | [POST transaction/cost](https://docs.elrond.com/sdk-and-tools/rest-api/transactions/#estimate-cost-of-transaction) |
+| GetNetworkConfigUsecase  | [GET network/config](https://docs.elrond.com/sdk-and-tools/rest-api/network/#get-network-configuration) |
+| QuerySmartContractUsecase  | [POST vm-values/query](https://docs.elrond.com/sdk-and-tools/rest-api/virtual-machine/#compute-output-of-pure-function) |
+
+##### DNS
+| Usecase  | Description  |
+| ------------- | ------------- |
+| RegisterDnsUsecase  | [`erdpy dns register`](https://docs.elrond.com/sdk-and-tools/erdpy/erdpy/) |
+| GetDnsRegistrationCostUsecase  | [`erdpy dns registration-cost`](https://docs.elrond.com/sdk-and-tools/erdpy/erdpy/) |
+| CheckUsernameUsecase  | Can be useful for validating a text field before calling `RegisterDnsUsecase `|
+
 
 ## Configuration
 ```
