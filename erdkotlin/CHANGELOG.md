@@ -1,7 +1,7 @@
 Changelog
 ============
 
-## [0.3.0] - 03.02.2021
+## [0.3.0] - 15.05.2021
 Add several fields to `NetworkConfig`  
 Add `code` and `username` fields to `Account`  
 Add `option` field to Transaction  
