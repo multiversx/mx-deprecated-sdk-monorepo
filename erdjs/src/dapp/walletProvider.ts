@@ -204,7 +204,6 @@ export class WalletProvider implements IDappProvider {
             const timeout = setTimeout(_ => reject('window not responding'), 5000);
 
             const getAddress = (ev: IDappMessageEvent) => {
-                console.log("event", "getAddress", ev);
 
                 if (!this.isValidWalletSource(ev.origin)) {
                     return;
