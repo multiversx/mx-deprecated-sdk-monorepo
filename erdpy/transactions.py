@@ -7,6 +7,10 @@ from typing import Any, Dict
 from erdpy import errors, utils
 from erdpy.accounts import Account, Address
 from erdpy.interfaces import IElrondProxy, ITransaction
+from erdpy.ledger.config import compare_versions
+from erdpy.ledger.ledger_app_handler import SIGN_USING_HASH_VERSION
+from erdpy.ledger.ledger_functions import do_get_ledger_version, TX_HASH_SIGN_VERSION, TX_HASH_SIGN_OPTIONS, \
+    do_sign_transaction_with_ledger
 from erdpy.wallet import signing
 
 logger = logging.getLogger("transactions")
@@ -239,8 +243,6 @@ def do_prepare_transaction(args: Any) -> Transaction:
 
 
 def do_prepare_transaction_ledger(args: Any) -> Transaction:
-    import erdpy.ledger.ledger_functions
-
     account_index = 0
     address_index = 0
     if args.ledger_account_index:
@@ -260,6 +262,21 @@ def do_prepare_transaction_ledger(args: Any) -> Transaction:
     tx.data = args.data
     tx.chainID = args.chain
 
-    tx = erdpy.ledger.ledger_functions.sign_transaction_with_ledger(tx=tx, account_index=account_index, address_index=address_index)
+    ledger_version = do_get_ledger_version()
+    should_use_hash_signing = compare_versions(ledger_version, SIGN_USING_HASH_VERSION) >= 0
+    if should_use_hash_signing:
+        tx.version = TX_HASH_SIGN_VERSION
+        tx.options = TX_HASH_SIGN_OPTIONS
+
+    tx.signature = ""
+
+    signature = do_sign_transaction_with_ledger(
+        tx_payload=tx.serialize(),
+        account_index=account_index,
+        address_index=address_index,
+        sign_using_hash=should_use_hash_signing,
+    )
+
+    tx.signature = signature
 
     return tx
