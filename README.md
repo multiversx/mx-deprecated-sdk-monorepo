@@ -1,5 +1,15 @@
 # elrond-sdk
 
+# Old repository
+
+This repository has been split into multiple repositories for each SDK. PRs to this repository won't be accepted anymore. Please refer to the new repositories:
+- [https://github.com/ElrondNetwork/elrond-sdk-erdjs](https://github.com/ElrondNetwork/elrond-sdk-erdjs)
+- [https://github.com/ElrondNetwork/elrond-sdk-erdpy](https://github.com/ElrondNetwork/elrond-sdk-erdpy)
+- [https://github.com/ElrondNetwork/elrond-sdk-erdjava](https://github.com/ElrondNetwork/elrond-sdk-erdjava)
+- [https://github.com/ElrondNetwork/elrond-sdk-erdkotlin](https://github.com/ElrondNetwork/elrond-sdk-erdkotlin)
+- [https://github.com/ElrondNetwork/elrond-sdk-erdgo](https://github.com/ElrondNetwork/elrond-sdk-erdgo)
+
+
 [![Build Status](https://travis-ci.com/ElrondNetwork/elrond-sdk.svg?branch=master)](https://travis-ci.com/ElrondNetwork/elrond-sdk)
 
 This is a monorepo containing the following:
